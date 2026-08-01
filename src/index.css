@@ -1,0 +1,94 @@
+@import "tailwindcss";
+
+html {
+  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+  font-size: 14px;
+  font-weight: 400;
+}
+
+/* Único uso de serifa do sistema: saudação de boas-vindas na área logada. */
+.texto-saudacao {
+  font-family: 'Lora', serif;
+  font-weight: 400;
+  font-size: 35px;
+  line-height: 1.2;
+}
+
+:root {
+  color-scheme: light;
+
+  /* Neutros — modo claro (tom levemente arroxeado, não cinza puro) */
+  --fundo-pagina: #f2f2f2;
+  --fundo-card: #fafafa;
+  --texto-principal: #424242;
+  --texto-secundario: #6b6b6b;
+  --texto-titulo: #49454f;
+  --borda: #e3e3e3;
+
+  /* Estados semânticos — cor sólida para texto/ícone; fundo sempre em baixa opacidade */
+  --cor-erro: #dc2626;
+  --cor-sucesso: #16a34a;
+  --cor-alerta: #d97706;
+
+  /* Cor da clínica — fallback até o valor real ser aplicado em runtime */
+  --cor-primaria: #0284c7;
+  --cor-secundaria: #0ea5e9;
+  --cor-menu: #2e1a47;
+
+  /* Derivados da cor primária: recalculam automaticamente por tema,
+     mas a cor-base da clínica nunca muda entre claro/escuro. */
+  --cor-primaria-hover: color-mix(in srgb, var(--cor-primaria) 85%, black);
+  --cor-primaria-suave: color-mix(in srgb, var(--cor-primaria) 12%, transparent);
+
+  /* Fundos dos estados semânticos: sempre ~12% de opacidade sobre transparent,
+     nunca cor sólida forte — funciona igual em claro e escuro pois deriva
+     do valor de --cor-erro/--cor-sucesso/--cor-alerta já resolvido no tema. */
+  --cor-erro-suave: color-mix(in srgb, var(--cor-erro) 12%, transparent);
+  --cor-erro-borda: color-mix(in srgb, var(--cor-erro) 30%, transparent);
+  --cor-sucesso-suave: color-mix(in srgb, var(--cor-sucesso) 12%, transparent);
+  --cor-sucesso-borda: color-mix(in srgb, var(--cor-sucesso) 30%, transparent);
+  --cor-alerta-suave: color-mix(in srgb, var(--cor-alerta) 12%, transparent);
+  --cor-alerta-borda: color-mix(in srgb, var(--cor-alerta) 30%, transparent);
+
+  /* Sobreposição do drawer mobile — mesma em claro/escuro (scrim neutro) */
+  --sobreposicao: rgba(0, 0, 0, 0.4);
+
+  /* Sidebar (fundo = --cor-menu, cor da clínica): texto/ícones SEMPRE brancos
+     por cima, conforme 08-REFERENCIA-VISUAL-DASHBOARD.md — constante entre
+     claro/escuro, igual à própria --cor-menu. */
+  --menu-texto: rgba(255, 255, 255, 0.92);
+  --menu-texto-secundario: rgba(255, 255, 255, 0.6);
+  --menu-texto-terciario: rgba(255, 255, 255, 0.4);
+  --menu-hover-bg: rgba(255, 255, 255, 0.08);
+  --menu-ativo-bg: rgba(255, 255, 255, 0.1);
+  --menu-avatar-bg: rgba(255, 255, 255, 0.14);
+  --menu-borda: rgba(255, 255, 255, 0.12);
+
+  /* Paleta placeholder de categorias (resumo por especialidade no Dashboard) —
+     sem relação com a cor de marca da clínica; usada só até o módulo real. */
+  --cor-categoria-1: #7f51b0;
+  --cor-categoria-2: #0597ae;
+  --cor-categoria-3: #1fad53;
+  --cor-categoria-4: #bd681e;
+  --cor-categoria-5: #c21951;
+}
+
+[data-theme="escuro"] {
+  color-scheme: dark;
+
+  /* Neutros — modo escuro: mesma ideia de profundidade sutil, invertida
+     (card mais claro/destacado que o fundo da página), leve matiz arroxeado. */
+  --fundo-pagina: #1c1a1f;
+  --fundo-card: #242229;
+  --texto-principal: #e8e6ea;
+  --texto-secundario: #b8b4bf;
+  --texto-titulo: #ded9e6;
+  --borda: #3a3640;
+
+  --cor-erro: #f87171;
+  --cor-sucesso: #4ade80;
+  --cor-alerta: #fbbf24;
+}
