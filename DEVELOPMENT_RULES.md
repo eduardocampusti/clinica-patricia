@@ -2,6 +2,27 @@
 
 > Regras inegociáveis. Todo módulo novo deve segui-las. Violá-las é a causa raiz de
 > "módulo novo saiu do padrão" ou de brechas de segurança.
+>
+> Ver `10-PLANO-DIRETOR.md` para a visão profissional de longo prazo (mapa, não
+> lista de tarefas — implementar incrementalmente).
+
+## Decisões estruturais formalizadas (01/08/2026)
+
+- **CNPJs diferentes por clínica, mesma proprietária** → 3 controladores de dados
+  distintos (LGPD). NÃO criar "paciente global" entre clínicas sem decisão jurídica.
+  Isolamento por `clinica_id` já protege isso.
+- **Proprietária NÃO tem acesso clínico automático.** Ser dona = acesso financeiro/
+  administrativo. Acesso ao conteúdo de prontuário exige necessidade assistencial
+  (princípio da minimização, LGPD). Não dar acesso a prontuário "por ser dona".
+- **RBAC por capacidades** (evolução futura dos 3 perfis fixos): papéis reúnem
+  capacidades granulares (ex.: `cash.close`, `clinical_record.sign`). Ver plano diretor.
+- **Consentimento LGPD — CORREÇÃO PENDENTE:** o bloqueio atual "não cadastrar paciente
+  sem consentimento" está juridicamente incorreto. Atendimento de saúde apoia-se na
+  base "tutela da saúde" (NÃO exige consentimento). Consentimento é só para finalidades
+  específicas (marketing, uso de imagem clínica). **Corrigir ao revisitar o módulo
+  Pacientes** — trocar o booleano obrigatório por registro de bases legais por
+  finalidade. Ver TODO. (Não mexer no código agora; decisão registrada para não
+  construir mais coisas sobre a suposição errada.)
 
 ## Método de trabalho
 

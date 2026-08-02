@@ -133,6 +133,51 @@ correto em todos os testes. Verificação interativa por clique (abrir/fechar
 drawer, trocar de tela pelo menu) não pôde ser confirmada ao vivo nesta sessão
 — recomenda-se um teste manual rápido do Eduardo assim que possível.
 
+## Sessão — 01/08/2026 (parte 4 — plano diretor + decisões estruturais)
+
+**Contexto:** Eduardo trouxe um plano diretor profissional (documento externo,
+nível de equipe experiente) e pediu comparação com o estado atual + recomendação.
+
+**Análise:** o plano é tecnicamente correto e mais completo que o planejamento
+atual — expande, não contradiz. Endossado como NORTE de longo prazo, salvo em
+`10-PLANO-DIRETOR.md`. Ressalva registrada: é um produto de 12-18 meses de equipe;
+Eduardo trabalha sozinho (~6 meses de experiência) com a IA como equipe. Risco
+principal identificado: excesso de ambição travar o projeto. Decisão: usar o plano
+como mapa, implementar incrementalmente, proteger o ritmo que já funciona.
+
+**Decisões estruturais formalizadas (registradas em 10-PLANO-DIRETOR e DEVELOPMENT_RULES):**
+- CNPJs diferentes por clínica, mesma dona → 3 controladores LGPD distintos; não
+  criar paciente global entre clínicas.
+- Proprietária sem acesso clínico automático (minimização LGPD).
+- Ritmo: camada Node/Fastify MÍNIMA antes do financeiro (equilíbrio — nem frágil,
+  nem enterprise completo).
+- RBAC por capacidades como evolução futura.
+
+**Correção registrada (sem mexer no código ainda):** o bloqueio de cadastro de
+paciente sem consentimento LGPD está juridicamente incorreto (saúde usa base "tutela
+da saúde", não consentimento). Adicionado ao TODO para corrigir ao revisitar o
+módulo Pacientes.
+
+## Sessão — 01/08/2026 (parte 3 — trava de banco de dados + GitHub)
+
+**O que foi feito:**
+- Criado `00-BANCO-DE-DADOS-OFICIAL.md`: trava documentando o project ref oficial
+  (`xftnkusbyqzyvzrovroj`) e alertando que Eduardo tem múltiplos sistemas com
+  projetos Supabase diferentes (ex.: "Brotar 2.1", `indshiztdvjgvgnzigqd` — outro
+  sistema). Checklist obrigatório: sempre reconferir o `.env` antes de qualquer
+  ação no banco. Referenciado no topo do `PROJECT_CONTEXT.md` e em
+  `DEVELOPMENT_RULES.md`.
+- **GitHub configurado e primeiro push feito:**
+  - Git local configurado (nome/e-mail do Eduardo).
+  - `.gitignore` revisado e reforçado (adicionado `.claude/`, já protegia `.env`,
+    `node_modules`, `dist`).
+  - Repositório criado: `https://github.com/eduardocampusti/clinica-patricia`
+    (**Privado**).
+  - Commit inicial (56 arquivos) enviado com sucesso — projeto tem backup e
+    histórico de versão a partir de agora.
+- Verificado antes do commit: nenhum arquivo sensível (`.env`, `.claude/`) foi
+  staged — conferido na saída do `git status` antes de commitar.
+
 ## Sessão — 01/08/2026 (parte 2 — troca de clínica + regra de escrita em produção)
 
 **O que foi feito:**

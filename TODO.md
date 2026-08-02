@@ -61,6 +61,14 @@
 
 ## Pendências — Frontend
 
+- [ ] **CORREÇÃO LGPD — consentimento no cadastro de paciente.** Hoje o cadastro é
+  bloqueado sem "consentimento LGPD" (um booleano). Isso está juridicamente errado:
+  atendimento de saúde usa a base "tutela da saúde", que não exige consentimento.
+  Corrigir: remover o bloqueio obrigatório e trocar por registro de bases legais por
+  finalidade (consentimento só para marketing/uso de imagem). Ver `10-PLANO-DIRETOR.md`
+  e `DEVELOPMENT_RULES.md`. Prioridade: fazer ao revisitar o módulo Pacientes (edição/
+  exclusão), para não empilhar mais código sobre a suposição errada.
+
 - [ ] **Resolução por subdomínio** — ler o subdomínio → resolver a clínica ativa → setar
   o contexto do app (e, quando houver backend, `app.clinica_ativa`).
 - [ ] **Tela de login pintada por clínica** — depende da RPC pública por subdomínio.
