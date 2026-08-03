@@ -2,6 +2,7 @@ import Fastify from 'fastify'
 import cors from '@fastify/cors'
 import { env } from './env.js'
 import { pingRoutes } from './routes/ping.js'
+import { caixaRoutes } from './routes/caixa.js'
 
 const fastify = Fastify({ logger: true })
 
@@ -12,6 +13,7 @@ await fastify.register(cors, {
 })
 
 await fastify.register(pingRoutes)
+await fastify.register(caixaRoutes)
 
 fastify.listen({ port: env.port, host: '0.0.0.0' }, (err, address) => {
   if (err) {

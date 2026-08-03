@@ -4,6 +4,7 @@ import { supabase } from './lib/supabase'
 import Login from './pages/Login'
 import Pacientes from './pages/Pacientes'
 import Cadastros from './pages/cadastros/Cadastros'
+import Financeiro from './pages/Financeiro'
 import Dashboard from './pages/Dashboard'
 import { useTheme } from './theme/ThemeProvider'
 import { useClinicaAtiva } from './hooks/useClinicaAtiva'
@@ -91,9 +92,13 @@ function App() {
           usuarioId={session.user.id}
         />
       )}
-      {tela !== 'dashboard' && tela !== 'pacientes' && tela !== 'cadastros' && (
-        <PlaceholderScreen titulo={TITULOS_TELA[tela]} />
+      {tela === 'financeiro' && (
+        <Financeiro clinicaAtivaId={clinicaAtivaId} carregandoClinica={carregandoClinica} />
       )}
+      {tela !== 'dashboard' &&
+        tela !== 'pacientes' &&
+        tela !== 'cadastros' &&
+        tela !== 'financeiro' && <PlaceholderScreen titulo={TITULOS_TELA[tela]} />}
     </AppShell>
   )
 }

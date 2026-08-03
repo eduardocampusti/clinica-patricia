@@ -4,6 +4,23 @@
 > para que qualquer conversa futura (chat ou Claude Code) tenha continuidade
 > e não "saia do contexto". Entrada mais recente no topo.
 
+## Sessão — 03/08/2026 (migration abrir_caixa aplicada no banco)
+
+**Decisão tomada:** quem pode abrir o caixa = **proprietária + recepção** (papel
+recepção ainda sem permissões detalhadas em geral no projeto, mas esta é a
+primeira definida).
+
+**Revisão e aplicação:** `abrir_caixa.sql` revisado pelo Claude (chat) — sem
+problemas encontrados — e aplicado com sucesso no projeto oficial
+(`xftnkusbyqzyvzrovroj`, confirmado antes de rodar). Tabela `sessoes_caixa`
+confirmada por consulta a `information_schema.tables`. Destaques do design:
+- Índice único parcial impede duas sessões `aberto` simultâneas na mesma clínica
+  — trava no banco, sobrevive a clique duplo.
+- Função `eh_proprietaria_ou_recepcao()` criada como helper reutilizável para as
+  próximas tabelas do Financeiro (despesas, repasses, fechamento).
+- Sem policy de UPDATE/DELETE ainda (fechamento de caixa é etapa futura) — RLS
+  habilitada sem policy bloqueia por padrão, comportamento correto e intencional.
+
 ## Sessão — 03/08/2026 (Backend Node.js + Fastify — fundação mínima)
 
 **Contexto:** primeiro passo da camada de backend (`10-PLANO-DIRETOR.md`,
