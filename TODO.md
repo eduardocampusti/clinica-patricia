@@ -2,6 +2,40 @@
 
 ## Concluído recentemente
 
+- [x] **Financeiro — Abrir Caixa** (primeira funcionalidade real do módulo,
+  `11-PERFIL-PROPRIETARIA.md` seção 4). Banco: tabela `sessoes_caixa` +
+  enum `status_sessao_caixa` + índice único parcial (`sessoes_caixa_aberta_unica`,
+  no máximo 1 sessão `aberto` por clínica, garantido no banco) + função
+  reutilizável `eh_proprietaria_ou_recepcao()` (decisão: proprietária E
+  recepção podem abrir caixa) + RLS (SELECT livre a vinculados, INSERT só
+  proprietária/recepção, **sem** policy de UPDATE/DELETE ainda — fechamento é
+  etapa futura) + auditoria. Aplicado no banco por Eduardo
+  (`abrir_caixa.sql`). Servidor: primeira rota de **escrita** real,
+  `POST /api/caixa/abrir` (`server/src/routes/caixa.ts`) — sem RPC/transação
+  customizada (um `INSERT` já é atômico; a corrida é resolvida pelo índice
+  único, não por lógica de aplicação), continua **sem `service_role`**.
+  Frontend: `src/pages/Financeiro.tsx` (substituiu o placeholder), lê o
+  status do caixa direto do Supabase (`useSessaoCaixaAberta`) e só a
+  abertura passa pelo servidor (`src/lib/api.ts`, nova `VITE_API_URL`).
+  **Testado, os 4 cenários:** médico tentando abrir → `403` (RLS, papel
+  errado); recepção de Brotas abrindo → `201`; tentando abrir de novo (mesma
+  clínica) → `409` com mensagem clara; tela confirmada nos dois estados
+  (formulário "Abrir caixa" quando não há sessão / cartão "Caixa aberto desde
+  HH:mm, valor inicial R$ X" quando há) — testado com dois usuários reais
+  (`teste_medico_ibitiara` para o estado vazio em Ibitiara,
+  `teste_recepcao_brotas` para abrir de verdade em Brotas). Responsivo
+  (mobile) e tema escuro conferidos sem regressão.
+  **Usuário de teste novo:** `teste_recepcao_brotas@teste.local` (papel
+  `recepcao`, só Clínica Brotas) — criado pelo Eduardo via painel do
+  Supabase (signup público rejeitou o domínio `.local`; não introduzimos
+  `service_role` para contornar, como combinado).
+  **Pendências remanescentes:** fechar caixa (valor_esperado/contado/
+  diferença, com sua própria migration e RLS de UPDATE); esconder o
+  formulário de abertura na tela para quem não é proprietária/recepção
+  (hoje a segurança real está no servidor/RLS — a UI só mostra um
+  formulário que falharia com 403 se um médico tentasse usá-lo); remover
+  a sessão de caixa de teste aberta em Brotas antes de produção.
+
 - [x] **Fundação mínima do backend Node.js + Fastify** (`/server`, pré-requisito
   do módulo Financeiro — `10-PLANO-DIRETOR.md`/`11-PERFIL-PROPRIETARIA.md`).
   Projeto próprio (`package.json`/`node_modules`/`tsconfig.json` independentes
@@ -149,6 +183,12 @@
   (só Ibitiara) e os registros de teste em Brotas — especialidade
   `Cardiologia Teste` (id `aaaaaaaa-1111-...`), profissional `Dr. Teste Brotas`
   (id `aaaaaaaa-2222-...`) e serviço `Consulta Teste` (id `aaaaaaaa-3333-...`).
+  Também da validação do módulo Financeiro/Abrir Caixa: usuário
+  `teste_recepcao_brotas@teste.local` (papel `recepcao`, só Brotas) e a
+  sessão de caixa de teste aberta em Brotas (`valor_abertura 150,50`, id
+  `a4a18e49-6634-4058-9fd8-07f3b065fd63`) — como ainda não existe "fechar
+  caixa", essa sessão fica aberta até essa feature existir ou até alguém
+  encerrá-la manualmente no banco.
 - [ ] **Rodar o SQL da cor da Clínica Ibitiara** (`ibitiara_cor.sql`, entregue ao
   Eduardo) — terracota `#c2410c`/`#fed7aa`/`#7c2d12`, escolhida e aprovada
   nesta sessão. Só falta executar no SQL Editor do Supabase.

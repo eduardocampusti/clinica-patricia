@@ -4,6 +4,64 @@
 > para que qualquer conversa futura (chat ou Claude Code) tenha continuidade
 > e não "saia do contexto". Entrada mais recente no topo.
 
+## Sessão — 03/08/2026 (Financeiro — Abrir Caixa: implementação + teste completo)
+
+**Continuação da sessão de aplicação da migration** (ver entrada abaixo,
+registrada pelo Eduardo). Com `sessoes_caixa` já no banco, implementei e
+testei o restante do módulo.
+
+**Implementado:**
+- `server/src/routes/caixa.ts` — `POST /api/caixa/abrir`, primeira rota de
+  **escrita** do servidor. Validação do `valor_abertura`, checagem prévia
+  amigável (evita depender só do erro cru do banco), `INSERT` via client
+  escopado ao token (sem `service_role` — decisão mantida), traduzindo
+  `23505` (índice único, corrida) → `409` e `42501` (RLS, papel errado) →
+  `403`. Registrada em `server/src/index.ts`.
+- `src/pages/Financeiro.tsx` (substitui o placeholder), `src/hooks/useSessaoCaixaAberta.ts`
+  (leitura direta Supabase — não é escrita/cálculo), `src/lib/api.ts`
+  (`abrirCaixa`, primeira chamada do frontend ao servidor próprio), nova
+  `VITE_API_URL` no `.env`/`.env.example`/`vite-env.d.ts`.
+- `npm run build` limpo em ambos (`server/` e raiz).
+
+**Teste de fumaça — usuário de teste novo necessário:** para testar sucesso/
+duplicata precisava de uma sessão `proprietaria` ou `recepcao` (só tinha o
+`teste_medico_ibitiara`, papel `medico`, serve só para o caso de bloqueio).
+Pedi a Eduardo um usuário `recepcao`. Tentei primeiro o caminho sem
+privilégio elevado que ele sugeriu (signup público via API do Supabase,
+só com a chave `anon`) — **rejeitado pela própria API**:
+`"Email address teste_recepcao_brotas@teste.local is invalid"` (o endpoint
+público de signup valida o domínio do e-mail e recusa `.local`; a criação
+via painel/Admin API não passa por essa validação). Confirmei que não dava
+para contornar sem `service_role` e, como combinado, **não introduzi a
+chave** — Eduardo criou `teste_recepcao_brotas@teste.local` (papel
+`recepcao`, só Clínica Brotas) pelo painel do Supabase, incluindo os
+registros em `usuarios`/`usuarios_clinicas` (confirmei os dois via `SELECT`
+com a própria sessão do usuário, RLS `self`, antes de testar).
+
+**Resultado dos 4 cenários (banco, via REST direto com token de sessão real,
+mesma técnica de sempre):**
+- Médico (`teste_medico_ibitiara`) tentando abrir caixa em Ibitiara → `403`
+  ("Você não tem permissão para abrir o caixa desta clínica.").
+- Recepção (`teste_recepcao_brotas`) abrindo caixa em Brotas
+  (`valor_abertura: 150.50`) → `201`, linha real criada
+  (`id a4a18e49-6634-4058-9fd8-07f3b065fd63`).
+- Mesma recepção tentando abrir de novo (mesma clínica, já aberta) → `409`
+  ("Já existe uma sessão de caixa aberta, iniciada às 14:55.").
+- Tela testada nos dois estados **de verdade** (login real, não só API):
+  `teste_medico_ibitiara` em Ibitiara (nenhum caixa aberto lá) → mostra o
+  formulário "Abrir caixa"; `teste_recepcao_brotas` em Brotas (caixa que
+  acabou de abrir) → mostra "Caixa aberto / Desde 14:55 · Valor inicial
+  R$ 150,50". Responsivo (mobile 375px, sem overflow) e tema escuro
+  conferidos sem regressão.
+
+**Módulo fechado.** Pendências registradas no `TODO.md`: fechar caixa (etapa
+futura, própria migration), esconder o formulário de abertura na tela para
+quem não é proprietária/recepção (hoje só cosmético — a segurança real já
+está no servidor/RLS), remover o usuário e a sessão de caixa de teste antes
+de produção.
+
+---
+
 ## Sessão — 03/08/2026 (migration abrir_caixa aplicada no banco)
 
 **Decisão tomada:** quem pode abrir o caixa = **proprietária + recepção** (papel
