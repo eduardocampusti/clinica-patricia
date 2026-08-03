@@ -3,6 +3,7 @@ import type { ClinicaAtiva } from '../../hooks/useClinicaAtiva'
 import { iniciais } from '../../lib/texto'
 import { TITULOS_TELA, type Tela } from './types'
 import {
+  IconeCadastro,
   IconeCadeado,
   IconeCalendario,
   IconeCheck,
@@ -19,6 +20,7 @@ const ITENS_MENU: { chave: Tela; Icone: typeof IconeGrid }[] = [
   { chave: 'dashboard', Icone: IconeGrid },
   { chave: 'agenda', Icone: IconeCalendario },
   { chave: 'pacientes', Icone: IconePessoas },
+  { chave: 'cadastros', Icone: IconeCadastro },
   { chave: 'prontuario', Icone: IconeArquivo },
   { chave: 'financeiro', Icone: IconeDinheiro },
   { chave: 'relatorios', Icone: IconeGrafico },

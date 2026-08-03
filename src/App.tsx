@@ -3,6 +3,7 @@ import type { Session } from '@supabase/supabase-js'
 import { supabase } from './lib/supabase'
 import Login from './pages/Login'
 import Pacientes from './pages/Pacientes'
+import Cadastros from './pages/cadastros/Cadastros'
 import Dashboard from './pages/Dashboard'
 import { useTheme } from './theme/ThemeProvider'
 import { useClinicaAtiva } from './hooks/useClinicaAtiva'
@@ -83,7 +84,16 @@ function App() {
           usuarioId={session.user.id}
         />
       )}
-      {tela !== 'dashboard' && tela !== 'pacientes' && <PlaceholderScreen titulo={TITULOS_TELA[tela]} />}
+      {tela === 'cadastros' && (
+        <Cadastros
+          clinicaAtivaId={clinicaAtivaId}
+          carregandoClinica={carregandoClinica}
+          usuarioId={session.user.id}
+        />
+      )}
+      {tela !== 'dashboard' && tela !== 'pacientes' && tela !== 'cadastros' && (
+        <PlaceholderScreen titulo={TITULOS_TELA[tela]} />
+      )}
     </AppShell>
   )
 }

@@ -84,6 +84,15 @@ export function IconeEngrenagem(props: IconeProps) {
   )
 }
 
+export function IconeCadastro(props: IconeProps) {
+  return (
+    <svg {...base(props)}>
+      <rect x="4.5" y="3" width="15" height="18" rx="2" />
+      <path d="M9 3v3h6V3M8 11h8M8 15h5" />
+    </svg>
+  )
+}
+
 export function IconeCadeado(props: IconeProps) {
   return (
     <svg {...base({ width: 12, height: 12, ...props })}>

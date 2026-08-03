@@ -4,6 +4,109 @@
 > para que qualquer conversa futura (chat ou Claude Code) tenha continuidade
 > e não "saia do contexto". Entrada mais recente no topo.
 
+## Sessão — 02/08/2026 (Cadastros Estruturais — plano + implementação + teste de fumaça APROVADO)
+
+**Atualização (fechamento do módulo):** Eduardo aplicou `cadastros_estruturais.sql`
+no projeto certo (`xftnkusbyqzyvzrovroj`) e criou um usuário de teste vinculado
+a UMA única clínica — `teste_medico_ibitiara@teste.local` (papel `medico`, só
+Clínica Ibitiara) — resolvendo o ponto em aberto sobre não haver um usuário
+single-clínica para provar isolamento estrito. Também rodou, a meu pedido, um
+INSERT de dados de teste em Brotas (especialidade `Cardiologia Teste`,
+profissional `Dr. Teste Brotas`, serviço `Consulta Teste`) — eu não rodei esse
+SQL (MCP continuava só no projeto "Brotar 2.1"), só validei que estava correto
+e seguro antes de pedir para ele rodar.
+
+**Teste de fumaça de segurança — resultado (banco, via REST direto com o
+token de sessão do usuário logado no navegador, não só a tela):**
+- `INSERT` em `especialidades` como `medico` → bloqueado (`42501`, RLS).
+- `INSERT` em `servicos`, mesmo na própria clínica dele → bloqueado (`42501`,
+  RLS) — confirma que a regra é por **papel**, não só por clínica.
+- RPC `cadastrar_profissional` chamada por `medico` → bloqueada com a mensagem
+  da própria função ("Sem permissão para cadastrar profissional nesta
+  clínica").
+- Profissional/serviço/vínculo de **Brotas** → **invisíveis** para o usuário
+  de Ibitiara (`SELECT` retornou `[]` para as 3 tabelas), confirmado tanto via
+  REST quanto nas abas Profissionais/Serviços da tela (mensagens "nenhum
+  registro").
+- Especialidade de teste (catálogo comum) **apareceu** normalmente para o
+  usuário de Ibitiara — esperado, catálogo é global por design, não é
+  vazamento.
+- Responsivo (mobile 375px, sem overflow horizontal) e tema escuro conferidos
+  na tela (`--fundo-card` resolvendo certo).
+
+**Módulo fechado.** Pendências remanescentes: edição de dados cadastrais do
+profissional (próxima iteração) e remoção dos dados de teste antes de
+produção (ver `TODO.md`).
+
+---
+
+**Contexto:** início do módulo "Cadastros Estruturais" (roadmap etapa 2,
+`10-PLANO-DIRETOR.md`): especialidades, profissionais, profissionais_clinicas
+e serviços/preços. Negócio: clínica volante — os mesmos profissionais atendem
+nas 3 clínicas (CNPJs diferentes) em dias diferentes, com preço podendo variar
+por clínica para o mesmo serviço.
+
+**Plano aprovado pelo Eduardo antes de qualquer implementação** (registrado em
+`C:\Users\Eduardo\.claude\plans\squishy-roaming-rabbit.md`), com 4 decisões via
+pergunta direta:
+1. Escrita (criar/editar) restrita a `papel = 'proprietaria'`; leitura livre a
+   qualquer vinculado à clínica.
+2. Criação de profissional novo é atômica via RPC `cadastrar_profissional`
+   (`SECURITY DEFINER`, cria profissional + primeiro vínculo de clínica na
+   mesma transação — mesmo padrão já usado para `cpf_encrypt`/`cpf_hash`).
+3. CPF cifrado incluso já no cadastro de profissional (mesmo padrão de
+   pacientes/usuarios), pensando no futuro módulo de repasse.
+4. Novo item "Cadastros" na sidebar, entre Pacientes e Prontuário.
+
+**⚠️ Achado de segurança de processo:** os dois conectores Supabase MCP desta
+sessão (`list_projects`) só enxergam o projeto **"Brotar 2.1"**
+(`indshiztdvjgvgnzigqd`) — nenhum vê o projeto oficial da Clínica Patrícia
+(`xftnkusbyqzyvzrovroj`, confirmado no `.env`). Exatamente o cenário descrito
+em `00-BANCO-DE-DADOS-OFICIAL.md`. Consequência: **não rodei nenhum SQL nesta
+sessão** (nem leitura nem escrita) — a migration foi só escrita em arquivo
+(`cadastros_estruturais.sql`, raiz do projeto) para o Eduardo revisar e rodar
+no SQL Editor do projeto certo (ou reautorizar o MCP na organização correta).
+
+**Modelagem (só em arquivo, NÃO aplicada no banco ainda):**
+- `especialidades` (catálogo comum, sem `clinica_id`).
+- `profissionais` (pessoa única no sistema; CPF cifrado; `usuario_id` opcional
+  — permite existir sem login; `UNIQUE(conselho_classe, registro_conselho)`).
+- `profissionais_clinicas` (N:N, mesmo padrão de `usuarios_clinicas`).
+- `servicos` (POR clínica: nome, especialidade, duração, preço). Preço
+  "congelado" resolvido SEM tabela nova — futuros registros de uso
+  (agenda/cobrança) vão copiar `preco`/`duracao_minutos` no momento da
+  criação; o histórico de mudança de preço já fica de graça na `auditoria`
+  via o trigger `fn_auditoria()` que as 4 tabelas novas também recebem.
+- Funções novas: `eh_proprietaria_alguma()`, `eh_proprietaria_de_profissional()`,
+  RPC `cadastrar_profissional(...)`.
+- RLS: variação do padrão de `pacientes` — aqui só proprietária escreve
+  (primeira tabela do projeto com essa regra).
+
+**Frontend implementado** (`npm run build` passou, typecheck limpo):
+- `src/hooks/usePapelNaClinica.ts` (novo).
+- `src/pages/cadastros/{Cadastros,Especialidades,Profissionais,Servicos}.tsx`
+  (novos) — abas dentro de uma tela só, reaproveitando os tokens/padrões
+  visuais de `Pacientes.tsx` (raio 12/16px, sombra `0px 1px 8px rgba(0,0,0,.1)`,
+  responsivo tabela/cards).
+- `src/components/shell/{types.ts,icons.tsx,Sidebar.tsx}` e `src/App.tsx`
+  ajustados para o novo item de menu "Cadastros".
+- Testado no preview só até a tela de Login (sem regressão) — **não deu para
+  testar as telas novas de ponta a ponta**: dependem de tabelas que ainda não
+  existem no banco (schema não aplicado) e eu não tenho credencial de sessão
+  real para logar.
+
+**Pendências para fechar o módulo (não fazer sem confirmação do Eduardo):**
+1. Eduardo rodar `cadastros_estruturais.sql` no projeto `xftnkusbyqzyvzrovroj`
+   (ou reautorizar o MCP na organização certa).
+2. Teste de fumaça de segurança no banco: profissional/serviço cadastrado em
+   Brotas não pode aparecer para usuário vinculado só a Ipupiara. **Em
+   aberto:** os usuários de teste documentados hoje (`teste_medico_brotas`)
+   estão vinculados a DUAS clínicas — não servem para provar isolamento
+   estrito de quem só tem uma. Precisa de um usuário single-clínica (novo ou
+   já existente) antes de rodar esse teste.
+3. Testar responsivo/tema nas telas novas com dados reais.
+4. Só depois disso, marcar o módulo como concluído no `TODO.md`.
+
 ## Sessão — 01/08/2026 (seletor de clínica funcional)
 
 **Contexto:** o Eduardo relatou dois sintomas — sidebar mostrando "Sem
@@ -132,6 +235,36 @@ no mobile); recarregando a página JÁ no tamanho certo, o comportamento saiu
 correto em todos os testes. Verificação interativa por clique (abrir/fechar
 drawer, trocar de tela pelo menu) não pôde ser confirmada ao vivo nesta sessão
 — recomenda-se um teste manual rápido do Eduardo assim que possível.
+
+## Sessão — 01/08/2026 (parte 5 — módulo Cadastros Estruturais aplicado no banco)
+
+**O que foi feito:**
+- Revisado e aprovado (por Eduardo, explicitamente) o `cadastros_estruturais.sql`
+  gerado pelo Claude Code. **Aplicado com sucesso** no projeto oficial
+  (`xftnkusbyqzyvzrovroj`, confirmado por título e ref antes de rodar).
+  4 tabelas criadas: `especialidades`, `profissionais`, `profissionais_clinicas`,
+  `servicos` — com RLS, RPC transacional `cadastrar_profissional`, e auditoria.
+  Verificado por consulta a `information_schema.tables` — as 4 existem.
+- **Achado importante:** o Claude Code tentou usar o Supabase MCP local e encontrou
+  o mesmo bloqueio documentado em `00-BANCO-DE-DADOS-OFICIAL.md` (conector só
+  enxergava "Brotar 2.1"). Corretamente, não rodou nada sozinho e pediu confirmação
+  — a trava funcionou como projetado.
+- **Usuário de teste single-clínica criado**, pedido pelo Claude Code para o teste
+  de fumaça de isolamento (os únicos usuários existentes tinham vínculo com 2-3
+  clínicas, insuficiente para provar isolamento estrito):
+  - `teste_medico_ibitiara@teste.local`, criado via painel Authentication > Add user
+    (não por INSERT direto em `auth.users` — mais seguro), e-mail confirmado
+    manualmente, vinculado **somente** à Clínica Ibitiara, papel `medico`.
+  - **Erro encontrado e corrigido na hora:** a primeira tentativa de inserir o
+    perfil em `public.usuarios` incluía uma coluna `email` que não existe nessa
+    tabela (o e-mail vive só em `auth.users`). A transação (`begin...commit`)
+    abortou tudo automaticamente sem deixar estado parcial — corrigido removendo
+    a coluna e re-executado com sucesso.
+
+**Pendência para o Claude Code:** com o usuário `teste_medico_ibitiara@teste.local`
+disponível, rodar o teste de fumaça de isolamento (login como esse usuário,
+confirmar que profissionais/serviços de Brotas e Ipupiara NÃO aparecem) e fechar
+o módulo Cadastros Estruturais no `TODO.md`.
 
 ## Sessão — 01/08/2026 (parte 4 — plano diretor + decisões estruturais)
 

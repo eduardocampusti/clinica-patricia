@@ -2,6 +2,34 @@
 
 ## Concluído recentemente
 
+- [x] **Módulo Cadastros Estruturais** (especialidades, profissionais,
+  profissionais_clinicas, serviços/preços) — schema aplicado no banco
+  (`cadastros_estruturais.sql`, rodado pelo Eduardo no projeto
+  `xftnkusbyqzyvzrovroj`), frontend implementado
+  (`src/pages/cadastros/{Cadastros,Especialidades,Profissionais,Servicos}.tsx`,
+  `src/hooks/usePapelNaClinica.ts`, item "Cadastros" na sidebar) e
+  `npm run build` limpo. **Teste de fumaça de segurança passou** (banco,
+  não só UI): usuário de teste `teste_medico_ibitiara@teste.local`
+  (papel `medico`, vinculado só à Clínica Ibitiara) —
+  - Escrita bloqueada pela RLS em `especialidades`/`servicos` e pela RPC
+    `cadastrar_profissional` (mensagem "Sem permissão"), mesmo na própria
+    clínica dele — confirma que só `proprietaria` escreve.
+  - Profissional, serviço e vínculo de teste cadastrados em **Brotas**
+    (`Dr. Teste Brotas`, `Consulta Teste`) ficaram **invisíveis** para esse
+    usuário, via REST direto (não só na tela) e na tela (abas Profissionais/
+    Serviços vazias).
+  - Especialidade de teste (catálogo comum) apareceu normalmente — correto,
+    catálogo é global por design, não é vazamento.
+  Responsivo (mobile 375px, sem overflow horizontal) e tema escuro conferidos
+  na tela nova (cor do card bate com o token `--fundo-card`).
+  **Pendências remanescentes (próxima iteração):** edição de dados
+  cadastrais do profissional (hoje só criar/vincular/desativar, mesmo recorte
+  que `Pacientes.tsx` adotou no início); remover os registros de teste
+  (`ESPECIALIDADE_TESTE_RLS_MEDICO` não foi criado — bloqueado; mas
+  `Cardiologia Teste` / `Dr. Teste Brotas` / `Consulta Teste` em Brotas
+  ficaram no banco e devem ser removidos antes de produção, junto com os
+  demais dados de teste já listados abaixo).
+
 - [x] **Seletor de clínica funcional (frontend)** — `useClinicaAtiva.ts` reescrito:
   não busca mais sozinho no banco (`.limit(1)`); agora recebe a lista completa
   de `useClinicasDoUsuario` e administra qual está ativa, com
@@ -96,7 +124,11 @@
   forma privada — os atuais são **provisórios de teste**. (Fazer antes da produção.)
 - [ ] **Remover dados de teste** do banco: usuário `teste_medico_brotas@teste.local`
   e pacientes de amostra (Maria Teste Silva / João Teste Souza / João Teste Cadastro,
-  este último criado durante a validação do módulo de Pacientes).
+  este último criado durante a validação do módulo de Pacientes). Também da
+  validação do módulo Cadastros: usuário `teste_medico_ibitiara@teste.local`
+  (só Ibitiara) e os registros de teste em Brotas — especialidade
+  `Cardiologia Teste` (id `aaaaaaaa-1111-...`), profissional `Dr. Teste Brotas`
+  (id `aaaaaaaa-2222-...`) e serviço `Consulta Teste` (id `aaaaaaaa-3333-...`).
 - [ ] **Rodar o SQL da cor da Clínica Ibitiara** (`ibitiara_cor.sql`, entregue ao
   Eduardo) — terracota `#c2410c`/`#fed7aa`/`#7c2d12`, escolhida e aprovada
   nesta sessão. Só falta executar no SQL Editor do Supabase.
