@@ -4,6 +4,65 @@
 > para que qualquer conversa futura (chat ou Claude Code) tenha continuidade
 > e não "saia do contexto". Entrada mais recente no topo.
 
+## Sessão — 03/08/2026 (Backend Node.js + Fastify — fundação mínima)
+
+**Contexto:** primeiro passo da camada de backend (`10-PLANO-DIRETOR.md`,
+"Ritmo": "Node/Fastify MÍNIMA... antes do módulo financeiro"), pré-requisito
+formal registrado em `11-PERFIL-PROPRIETARIA.md` (novo arquivo lido nesta
+sessão — mapa completo do perfil Proprietária: fluxo de caixa, formas de
+pagamento, abertura/fechamento de caixa, repasses por profissional,
+configurações). `ARCHITECTURE.md` dizia que essa camada "NÃO foi
+implementada" — deixa de ser verdade a partir de agora, mas só o esqueleto.
+
+**Plano aprovado antes de implementar** (`squishy-roaming-rabbit.md`), com uma
+decisão de arquitetura de menor privilégio proposta e aceita: **nenhuma chave
+`service_role` nesta etapa**. Para só validar identidade + resolver clínica
+ativa, o servidor cria um client Supabase por requisição, escopado ao MESMO
+token JWT do usuário (`Authorization: Bearer`) — toda consulta feita com esse
+client respeita a RLS já existente, sem bypass. `service_role` fica reservada
+para quando o Financeiro precisar de verdade ignorar RLS (transação de caixa
+atômica tocando várias tabelas).
+
+**Segunda decisão:** resolução de "clínica ativa" via header `X-Clinica-Id`
+(não subdomínio — isso ainda não existe nem no frontend, é `TODO` separado).
+O servidor recebe o id que o frontend já sabe (`useClinicaAtiva`) e CONFIRMA
+via RLS que pertence ao usuário — isolado numa função só
+(`resolveClinicaAtiva`) para trocar por subdomínio depois sem mexer no resto.
+
+**Implementado** (`server/`, projeto próprio, `package.json`/`node_modules`
+independentes do frontend):
+- `src/env.ts`, `src/supabase.ts` (factory do client escopado ao token).
+- `src/plugins/auth.ts` (`requireAuth`) e `src/plugins/clinicaAtiva.ts`
+  (`resolveClinicaAtiva`) — dois `preHandler` em cadeia.
+- `src/routes/ping.ts` (`GET /api/ping`) e `src/index.ts` (bootstrap Fastify +
+  `@fastify/cors`, restrito a `http://localhost:5173`).
+- `server/.env.example` (comitado) e `server/.env` (real, coberto pelo
+  `.gitignore` raiz — reaproveitei a mesma anon key do frontend, mas em
+  variável própria deste servidor, não importada do `.env` do Vite).
+- `server/README.md`: como rodar, porta, variáveis, contrato de headers, nota
+  explícita de quando introduzir `service_role`.
+
+**Teste local (`npm install && npm run build && npm run dev`, depois os 4
+cenários do plano, usando o token real da sessão já logada no navegador —
+mesma técnica dos testes de fumaça anteriores):**
+- Sem token → `401` (`curl` direto).
+- Token válido, sem `X-Clinica-Id` → `400`.
+- Token válido + `X-Clinica-Id` de Brotas (usuário de teste só tem vínculo com
+  Ibitiara) → `403` — prova que o servidor reforça o isolamento por conta
+  própria, não confia cegamente no header que o cliente manda.
+- Token válido + `X-Clinica-Id` de Ibitiara (vínculo real) → `200` com
+  `{ usuario: { id, email }, clinica: { id, nome } }` corretos.
+
+`npm run build` do servidor sem erro de tipos. `ARCHITECTURE.md` atualizado
+(seção "Divergência importante" + árvore de pastas). Servidor parado ao final
+da sessão (processo finalizado por PID, porta 3333 liberada).
+
+**O que NÃO foi feito nesta etapa (de propósito, fora de escopo):** nenhuma
+rota de negócio, nenhuma chamada do frontend a este servidor ainda, nenhuma
+lógica financeira, nenhuma chave privilegiada.
+
+---
+
 ## Sessão — 02/08/2026 (Cadastros Estruturais — plano + implementação + teste de fumaça APROVADO)
 
 **Atualização (fechamento do módulo):** Eduardo aplicou `cadastros_estruturais.sql`

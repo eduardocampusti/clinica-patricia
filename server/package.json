@@ -1,0 +1,22 @@
+{
+  "name": "clinica-patricia-server",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@fastify/cors": "^10.1.0",
+    "@supabase/supabase-js": "^2.111.0",
+    "dotenv": "^16.4.7",
+    "fastify": "^5.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.3",
+    "tsx": "^4.19.2",
+    "typescript": "~6.0.2"
+  }
+}

@@ -2,6 +2,26 @@
 
 ## Concluído recentemente
 
+- [x] **Fundação mínima do backend Node.js + Fastify** (`/server`, pré-requisito
+  do módulo Financeiro — `10-PLANO-DIRETOR.md`/`11-PERFIL-PROPRIETARIA.md`).
+  Projeto próprio (`package.json`/`node_modules`/`tsconfig.json` independentes
+  do frontend), Fastify + TypeScript + `tsx`. Sem lógica financeira e **sem
+  chave privilegiada (`service_role`)** nesta etapa — toda consulta usa um
+  client Supabase escopado ao token JWT da própria requisição, respeitando a
+  mesma RLS do frontend (ver `server/README.md` para quando introduzir
+  `service_role`). Implementado: `requireAuth` (valida `Authorization: Bearer`
+  via `auth.getUser`) + `resolveClinicaAtiva` (header `X-Clinica-Id`,
+  confirmado via RLS de `clinicas` — ponte até existir resolução por
+  subdomínio) + rota `GET /api/ping`. **Testado localmente, os 4 cenários:**
+  sem token → `401`; com token e sem `X-Clinica-Id` → `400`; com token e
+  clínica NÃO vinculada ao usuário → `403` (prova que o servidor reforça o
+  isolamento, não só confia no header); com token e clínica vinculada → `200`
+  com `{ usuario, clinica }` corretos. `npm run build` do servidor sem erro de
+  tipos. `ARCHITECTURE.md` atualizado (a camada deixou de ser "não
+  implementada"). **O frontend ainda não chama esse servidor** — só passa a
+  ser usado quando o módulo Financeiro existir (ver contrato de chamada
+  futura em `server/README.md`).
+
 - [x] **Módulo Cadastros Estruturais** (especialidades, profissionais,
   profissionais_clinicas, serviços/preços) — schema aplicado no banco
   (`cadastros_estruturais.sql`, rodado pelo Eduardo no projeto

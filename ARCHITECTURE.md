@@ -17,11 +17,18 @@ O plano de arquitetura inicial (docs do projeto, "aba projetos") previa uma cama
 **Node.js + Fastify + Prisma** entre o frontend e o banco, para regras de negócio
 complexas (especialmente o financeiro).
 
-**Estado real:** essa camada Node/Fastify/Prisma **NÃO foi implementada.** Hoje o
-frontend acessa o Supabase diretamente, e a segurança é garantida por **RLS no banco**.
-Isso é adequado para leituras/escritas simples (login, cadastro, listagem). A decisão
-de introduzir (ou não) a camada Node/Fastify fica para quando o **módulo financeiro**
-(cálculos, fechamento por profissional) exigir lógica que não deva rodar no frontend.
+**Estado real (atualizado):** existe agora um **esqueleto mínimo** dessa camada,
+em `/server` (Node.js + Fastify + TypeScript, **sem Prisma** — acesso ao banco
+via `@supabase/supabase-js`, cliente escopado ao token da requisição). Ele só
+valida identidade (Supabase Auth) e resolve/confirma a clínica ativa via header
+`X-Clinica-Id` (RLS já existente decide se o usuário pode); **nenhuma lógica de
+negócio ainda** (sem cálculo financeiro, sem chave privilegiada `service_role`).
+Ver `server/README.md` para o contrato completo. O frontend **ainda não chama**
+esse servidor — continua acessando o Supabase diretamente para tudo que já
+existe (login, cadastro, Cadastros Estruturais, listagem). O servidor só passa
+a ser usado de verdade quando o **módulo Financeiro** (cálculos, fechamento de
+caixa, repasse por profissional) precisar de lógica que não deva rodar no
+frontend nem confiar só em RLS simples.
 
 **Implicação de segurança a conhecer:** a "trava por clínica ativa" (ver
 `AUTH_AND_PERMISSIONS.md`) usa uma variável de sessão (`app.clinica_ativa`) que é
@@ -62,7 +69,7 @@ valendo sempre; a trava de "clínica ativa" precisa ser reforçada pela própria
 - **Mobile-first**, breakpoints nativos do Tailwind (sm/md/lg/xl). Alvos: celular,
   tablet e desktop.
 
-## Estrutura de pastas (frontend)
+## Estrutura de pastas (frontend + servidor)
 
 ```
 CLINICA PATRICIA/
@@ -74,6 +81,9 @@ CLINICA PATRICIA/
 ├─ package.json
 ├─ tsconfig*.json
 ├─ public/
+├─ server/              # backend Node.js + Fastify — projeto próprio, package.json
+│  │                    # e node_modules independentes do frontend (ver server/README.md)
+│  └─ src/
 └─ src/
    ├─ main.tsx
    ├─ App.tsx           # controle de sessão (getSession / onAuthStateChange)
