@@ -103,10 +103,11 @@ function Especialidades({ souProprietaria }: EspecialidadesProps) {
       {mostrarFormulario && (
         <form
           onSubmit={handleSubmit}
-          className="space-y-4 rounded-2xl border border-[var(--borda)] bg-[var(--fundo-card)] p-6 shadow-[0px_1px_8px_rgba(0,0,0,0.1)]"
+          className="space-y-4 rounded-[18px] bg-[var(--fundo-card)] p-6"
+          style={{ boxShadow: 'var(--sombra-neutra)' }}
         >
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-normal text-[var(--texto-titulo)]">Nova especialidade</h2>
+            <h2 className="texto-titulo-secao text-[var(--texto-principal)]">Nova especialidade</h2>
             <button
               type="button"
               onClick={() => setMostrarFormulario(false)}
@@ -152,7 +153,7 @@ function Especialidades({ souProprietaria }: EspecialidadesProps) {
       )}
 
       {!mostrarFormulario && (
-        <div className="rounded-2xl border border-[var(--borda)] bg-[var(--fundo-card)] shadow-[0px_1px_8px_rgba(0,0,0,0.1)]">
+        <div className="rounded-[18px] bg-[var(--fundo-card)]" style={{ boxShadow: 'var(--sombra-neutra)' }}>
           {carregando ? (
             <p className="p-8 text-center text-sm text-[var(--texto-secundario)]">Carregando...</p>
           ) : erroLista ? (

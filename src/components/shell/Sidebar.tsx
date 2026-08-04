@@ -16,6 +16,31 @@ import {
   IconePessoas,
 } from './icons'
 
+// Selo de clínica (01-DESIGN-SYSTEM.md §4 "O selo" + §6) — anel dourado fixo
+// (identidade do sistema, igual nas 3 clínicas) + letra na cor da própria
+// marca (variável por clínica, nunca uma cor nova). "Letra inicial" (singular):
+// usamos a segunda letra de iniciais() (ex.: "Clínica Brotas" → "CB" → "B"),
+// já que a primeira palavra é sempre "Clínica" e não distingue nada.
+function SeloClinica({ nome, corLetra, tamanho }: { nome: string; corLetra: string; tamanho: number }) {
+  const letra = iniciais(nome).slice(-1) || '—'
+  return (
+    <div
+      className="flex flex-none items-center justify-center rounded-full"
+      style={{
+        width: tamanho,
+        height: tamanho,
+        border: '1.5px solid var(--dourado)',
+        backgroundColor: 'var(--dourado-fundo)',
+        boxShadow: '0 2px 6px rgba(184, 135, 61, 0.3)',
+      }}
+    >
+      <span className="fonte-selo" style={{ color: corLetra, fontSize: Math.round(tamanho * 0.45) }}>
+        {letra}
+      </span>
+    </div>
+  )
+}
+
 const ITENS_MENU: { chave: Tela; Icone: typeof IconeGrid }[] = [
   { chave: 'dashboard', Icone: IconeGrid },
   { chave: 'agenda', Icone: IconeCalendario },
@@ -82,9 +107,13 @@ function Sidebar({
             onClick={() => setDropdownAberto((v) => !v)}
             className="flex w-full items-center gap-2.5 rounded-xl p-2 text-left transition hover:bg-[var(--menu-hover-bg)]"
           >
-            <div className="flex h-[34px] w-[34px] flex-none items-center justify-center rounded-[10px] bg-[var(--menu-avatar-bg)] text-[15px] font-bold text-[var(--menu-texto)]">
-              {clinicaAtiva ? iniciais(clinicaAtiva.nome) : '—'}
-            </div>
+            {clinicaAtiva ? (
+              <SeloClinica nome={clinicaAtiva.nome} corLetra="var(--cor-primaria)" tamanho={34} />
+            ) : (
+              <div className="flex h-[34px] w-[34px] flex-none items-center justify-center rounded-full border-[1.5px] border-[var(--dourado)] bg-[var(--dourado-fundo)] text-[var(--dourado-texto)]">
+                —
+              </div>
+            )}
             <div className="min-w-0 flex-1">
               <div className="truncate text-sm font-semibold text-[var(--menu-texto)]">
                 {clinicaAtiva?.nome ?? 'Sem clínica'}
@@ -101,9 +130,13 @@ function Sidebar({
           </button>
         ) : (
           <div className="flex w-full items-center gap-2.5 rounded-xl p-2">
-            <div className="flex h-[34px] w-[34px] flex-none items-center justify-center rounded-[10px] bg-[var(--menu-avatar-bg)] text-[15px] font-bold text-[var(--menu-texto)]">
-              {clinicaAtiva ? iniciais(clinicaAtiva.nome) : '—'}
-            </div>
+            {clinicaAtiva ? (
+              <SeloClinica nome={clinicaAtiva.nome} corLetra="var(--cor-primaria)" tamanho={34} />
+            ) : (
+              <div className="flex h-[34px] w-[34px] flex-none items-center justify-center rounded-full border-[1.5px] border-[var(--dourado)] bg-[var(--dourado-fundo)] text-[var(--dourado-texto)]">
+                —
+              </div>
+            )}
             <div className="min-w-0 flex-1">
               <div className="truncate text-sm font-semibold text-[var(--menu-texto)]">
                 {clinicaAtiva?.nome ?? 'Sem clínica'}
@@ -128,9 +161,7 @@ function Sidebar({
                     ativa ? 'bg-[var(--menu-ativo-bg)]' : ''
                   }`}
                 >
-                  <div className="flex h-[30px] w-[30px] flex-none items-center justify-center rounded-[9px] bg-[var(--menu-avatar-bg)] text-[13px] font-bold text-[var(--menu-texto)]">
-                    {iniciais(c.nome)}
-                  </div>
+                  <SeloClinica nome={c.nome} corLetra={c.cor_primaria} tamanho={16} />
                   <span className="flex-1 truncate text-[13.5px] font-medium text-[var(--menu-texto)]">
                     {c.nome}
                   </span>

@@ -81,11 +81,14 @@ function Financeiro({ clinicaAtivaId, carregandoClinica }: FinanceiroProps) {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-normal text-[var(--texto-titulo)]">Financeiro</h1>
+        <h1 className="texto-titulo-tela text-[var(--texto-principal)]">Financeiro</h1>
         <p className="text-sm text-[var(--texto-secundario)]">Fluxo de caixa da clínica.</p>
       </div>
 
-      <div className="rounded-2xl border border-[var(--borda)] bg-[var(--fundo-card)] p-6 shadow-[0px_1px_8px_rgba(0,0,0,0.1)] sm:p-8">
+      <div
+        className="rounded-[18px] bg-[var(--fundo-card)] p-6 sm:p-8"
+        style={{ boxShadow: 'var(--sombra-neutra)' }}
+      >
         {carregando ? (
           <p className="text-center text-sm text-[var(--texto-secundario)]">Carregando...</p>
         ) : !clinicaAtivaId ? (
@@ -93,19 +96,22 @@ function Financeiro({ clinicaAtivaId, carregandoClinica }: FinanceiroProps) {
             Nenhuma clínica vinculada ao seu usuário.
           </p>
         ) : sessao ? (
-          <div className="space-y-1.5">
-            <h2 className="text-lg font-normal text-[var(--texto-titulo)]">Caixa aberto</h2>
-            <p className="text-sm text-[var(--texto-secundario)]">
-              Desde {formatarHora(sessao.aberto_em)} · Valor inicial{' '}
-              <span className="font-medium text-[var(--texto-principal)]">
-                {formatarPreco(sessao.valor_abertura)}
-              </span>
-            </p>
+          <div className="space-y-2">
+            <h2 className="texto-titulo-secao text-[var(--texto-principal)]">Caixa aberto</h2>
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 flex-none rounded-full bg-[var(--cor-sucesso)]" />
+              <p className="text-sm text-[var(--texto-secundario)]">
+                Desde {formatarHora(sessao.aberto_em)} · Valor inicial{' '}
+                <span className="font-medium text-[var(--texto-principal)]">
+                  {formatarPreco(sessao.valor_abertura)}
+                </span>
+              </p>
+            </div>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <h2 className="mb-4 text-lg font-normal text-[var(--texto-titulo)]">Abrir caixa</h2>
+              <h2 className="texto-titulo-secao mb-4 text-[var(--texto-principal)]">Abrir caixa</h2>
               <label className="mb-1.5 block text-sm font-medium text-[var(--texto-principal)]">
                 Valor inicial em dinheiro <span className="text-[var(--cor-erro)]">*</span>
               </label>
@@ -256,9 +262,10 @@ function EntradasCaixa({ sessaoCaixaId, clinicaAtivaId }: EntradasCaixaProps) {
     <div className="space-y-6">
       <form
         onSubmit={handleSubmit}
-        className="space-y-5 rounded-2xl border border-[var(--borda)] bg-[var(--fundo-card)] p-6 shadow-[0px_1px_8px_rgba(0,0,0,0.1)] sm:p-8"
+        className="space-y-5 rounded-[18px] bg-[var(--fundo-card)] p-6 sm:p-8"
+        style={{ boxShadow: 'var(--sombra-neutra)' }}
       >
-        <h2 className="text-lg font-normal text-[var(--texto-titulo)]">Registrar entrada</h2>
+        <h2 className="texto-titulo-secao text-[var(--texto-principal)]">Registrar entrada</h2>
 
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <div>
@@ -368,13 +375,23 @@ function EntradasCaixa({ sessaoCaixaId, clinicaAtivaId }: EntradasCaixaProps) {
         </button>
       </form>
 
-      <div className="rounded-2xl border border-[var(--borda)] bg-[var(--fundo-card)] shadow-[0px_1px_8px_rgba(0,0,0,0.1)]">
+      <div className="rounded-[18px] bg-[var(--fundo-card)]" style={{ boxShadow: 'var(--sombra-neutra)' }}>
         <div className="flex items-center justify-between border-b border-[var(--borda)] px-5 py-4">
-          <h2 className="text-lg font-normal text-[var(--texto-titulo)]">Entradas da sessão</h2>
-          <p className="text-sm text-[var(--texto-secundario)]">
-            Total{' '}
-            <span className="text-base font-medium text-[var(--texto-principal)]">{formatarPreco(total)}</span>
-          </p>
+          <h2 className="texto-titulo-secao text-[var(--texto-principal)]">Entradas da sessão</h2>
+          <div
+            className="flex items-center gap-1.5 rounded-full px-3 py-1.5"
+            style={{ backgroundColor: 'var(--categoria-financeiro-fundo)' }}
+          >
+            <span className="text-xs font-medium" style={{ color: 'var(--categoria-financeiro-label)' }}>
+              Total
+            </span>
+            <span
+              className="numero-tabular text-sm font-semibold"
+              style={{ color: 'var(--categoria-financeiro-valor)' }}
+            >
+              {formatarPreco(total)}
+            </span>
+          </div>
         </div>
 
         {carregando ? (
@@ -411,7 +428,7 @@ function EntradasCaixa({ sessaoCaixaId, clinicaAtivaId }: EntradasCaixaProps) {
                       {ROTULO_FORMA_PAGAMENTO[entrada.forma_pagamento]}
                     </td>
                     <td className="px-5 py-3 text-[var(--texto-secundario)]">{entrada.descricao ?? '—'}</td>
-                    <td className="px-5 py-3 font-medium">{formatarPreco(entrada.valor)}</td>
+                    <td className="numero-tabular px-5 py-3 font-medium">{formatarPreco(entrada.valor)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -422,7 +439,9 @@ function EntradasCaixa({ sessaoCaixaId, clinicaAtivaId }: EntradasCaixaProps) {
                 <li key={entrada.id} className="space-y-1 p-4">
                   <div className="flex items-center justify-between">
                     <p className="font-medium text-[var(--texto-principal)]">{entrada.paciente_nome}</p>
-                    <p className="font-medium text-[var(--texto-principal)]">{formatarPreco(entrada.valor)}</p>
+                    <p className="numero-tabular font-medium text-[var(--texto-principal)]">
+                      {formatarPreco(entrada.valor)}
+                    </p>
                   </div>
                   <p className="text-sm text-[var(--texto-secundario)]">
                     {entrada.profissional_nome} · {ROTULO_FORMA_PAGAMENTO[entrada.forma_pagamento]}

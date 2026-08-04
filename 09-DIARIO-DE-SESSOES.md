@@ -4,6 +4,82 @@
 > para que qualquer conversa futura (chat ou Claude Code) tenha continuidade
 > e não "saia do contexto". Entrada mais recente no topo.
 
+## Sessão — 04/08/2026 (Design — definição do sistema visual premium v2)
+
+Eduardo pediu, a partir de agora, design premium/moderno pensado tela por
+tela — Claude (chat) assume papel de design lead, não só revisor de banco.
+
+**Processo:** protótipo interativo (HTML via ferramenta de visualização)
+mostrando um redesign do Dashboard, em duas rodadas:
+- v1: roxo mais confiante (`#6B3FA0`), Fraunces como serifada de título
+  (substitui Lora só-na-saudação da v1 do design system), números com
+  `tabular-nums`, selo circular dourado como elemento-assinatura (justificado
+  pelas clínicas terem CNPJ próprio — não é enfeite).
+- v2 (feedback do Eduardo: "mais sombras, estilo premium, cards com cores
+  suaves de acordo cada item"): sombras de duas camadas tingidas na cor de
+  cada card (não cinza neutro), cards de métrica com fundo suave por
+  categoria de significado (financeiro=verde, pessoas=roxo, agenda=azul,
+  repasse=dourado) em vez de brancos genéricos.
+
+**Aprovado pelo Eduardo** na v2. Sistema formalizado em
+`01-DESIGN-SYSTEM.md` (v2, substitui a v1 baseada no Soma Psico).
+
+**Decisão de escopo:** repaginar TODAS as telas já prontas, não só as
+novas. Ordem definida: Dashboard → Financeiro → Pacientes → Cadastros
+Estruturais (razão: Dashboard já tem protótipo pronto; Financeiro reaproveita
+os cards de categoria direto; Pacientes é a tela de maior uso diário;
+Cadastros fica por último por ter menor frequência de uso).
+
+**Correção antes de formalizar:** ao revisar o código real do Dashboard
+(`src/pages/Dashboard.tsx`, `src/index.css`), achei que o roxo do protótipo
+colidiria com o sistema de cor por clínica que já existe (`--cor-primaria`,
+runtime, via `color-mix()`). Conferi no banco (`select nome, cor_primaria
+from clinicas`): Brotas é azul (`#2563eb`), Ipupiara é verde (`#16a34a`),
+Ibitiara é laranja (`#c2410c`) — nenhuma roxa. Corrigi as categorias que
+colidiam (financeiro verde → verde-água, agenda azul → rosa) e deixei
+explícito no `01-DESIGN-SYSTEM.md` que `--brand` do protótipo é só um
+alias ilustrativo pra `--cor-primaria`, que já existe e não muda. O selo
+passou a usar anel dourado fixo + letra na cor da própria clínica, em vez
+de inventar mais uma cor variável.
+
+**Pendente para a próxima sessão:** escrever o prompt de implementação do
+Dashboard pro Codex, citando os valores exatos do `01-DESIGN-SYSTEM.md` v2
+(já corrigido) e reaproveitando `--cor-primaria`/`-hover`/`-suave` do
+código existente.
+
+**Atualização (mesma sessão, continuação):**
+- **Dashboard:** implementado, aprovado em duas rodadas. 2ª rodada
+  (feedback do Eduardo): sombra estava com o valor certo do token mas
+  parecia sutil na tela — aumentada em ~40% (dentro do limite de 50% que
+  autorizei). Adicionada seção "Repasse do dia por profissional"
+  (categoria dourada) — pedido do Eduardo, fechou o uso da 4ª categoria
+  que estava só documentada, nunca usada. Bug real encontrado nessa
+  etapa: fórmula do repasse esquecia de dividir a taxa por 100
+  (`1 - 20` em vez de `1 - 20/100`) — pego porque pedi a linha exata de
+  código antes de aprovar. Selo dourado implementado no seletor de
+  clínica (`Sidebar.tsx`) — letra = 2ª letra do nome (evita "C" repetido
+  nas 3 clínicas), cor da letra = `--cor-primaria` da clínica ativa.
+  Testado com usuário multi-clínica real (`teste_medico_brotas`),
+  confirmado por `getComputedStyle`, não só visual.
+- **Financeiro:** implementado e aprovado. Classe `.texto-saudacao`
+  renomeada pra `.texto-titulo-tela` (passou a servir título de página
+  em geral, não só saudação). Cards perderam a borda (sombra substitui,
+  §4) — decisão que o Codex tomou sozinho lendo o design system, sem eu
+  repetir no prompt.
+- **Pacientes:** implementado e aprovado. Chip "N pacientes" (categoria
+  pessoas). Cuidado confirmado: borda removida só do card, não dos
+  inputs nem da divisória entre linhas da tabela.
+- **Cadastros Estruturais:** prompt enviado (cobre `Cadastros.tsx`,
+  `Especialidades.tsx`, `Profissionais.tsx`, `Servicos.tsx`). Arquivos já
+  aparecem modificados no `git status`, mas a sessão foi interrompida por
+  limite de uso ANTES do Codex reportar/confirmar — não considerar
+  concluído sem essa confirmação.
+- **Nada disso foi commitado ainda.** Eduardo vai continuar em outra
+  ferramenta — commit feito nesta sessão antes da troca (ver abaixo) pra
+  não deixar trabalho não salvo em git.
+
+---
+
 ## Sessão — 04/08/2026 (Financeiro — Fundação do repasse profissional: implementação, teste e fechamento)
 
 **Escopo pedido** (dois pontos pequenos antes do módulo Agenda,

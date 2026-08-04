@@ -25,7 +25,7 @@ function Cadastros({ clinicaAtivaId, carregandoClinica, usuarioId }: CadastrosPr
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-normal text-[var(--texto-titulo)]">Cadastros</h1>
+        <h1 className="texto-titulo-tela text-[var(--texto-principal)]">Cadastros</h1>
         <p className="text-sm text-[var(--texto-secundario)]">
           Especialidades, profissionais e serviços da clínica.
         </p>

@@ -325,9 +325,25 @@ function Profissionais({ clinicaAtivaId, carregandoClinica, souProprietaria }: P
   return (
     <div className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-[var(--texto-secundario)]">
-          Profissionais que atendem nesta clínica.
-        </p>
+        <div className="flex items-center gap-3">
+          <p className="text-sm text-[var(--texto-secundario)]">
+            Profissionais que atendem nesta clínica.
+          </p>
+          <div
+            className="flex items-center gap-1.5 rounded-full px-3 py-1.5"
+            style={{ backgroundColor: 'var(--categoria-pessoas-fundo)' }}
+          >
+            <span
+              className="numero-tabular text-sm font-semibold"
+              style={{ color: 'var(--categoria-pessoas-valor)' }}
+            >
+              {profissionais.length}
+            </span>
+            <span className="text-xs font-medium" style={{ color: 'var(--categoria-pessoas-label)' }}>
+              {profissionais.length === 1 ? 'profissional' : 'profissionais'}
+            </span>
+          </div>
+        </div>
 
         {souProprietaria && !mostrarFormulario && (
           <button
@@ -342,7 +358,10 @@ function Profissionais({ clinicaAtivaId, carregandoClinica, souProprietaria }: P
       </div>
 
       {souProprietaria && !mostrarFormulario && disponiveis.length > 0 && (
-        <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-[var(--borda)] bg-[var(--fundo-card)] p-4 shadow-[0px_1px_8px_rgba(0,0,0,0.1)]">
+        <div
+          className="flex flex-wrap items-center gap-3 rounded-[18px] bg-[var(--fundo-card)] p-4"
+          style={{ boxShadow: 'var(--sombra-neutra)' }}
+        >
           <span className="text-sm font-medium text-[var(--texto-principal)]">
             Vincular profissional já cadastrado em outra clínica:
           </span>
@@ -374,10 +393,11 @@ function Profissionais({ clinicaAtivaId, carregandoClinica, souProprietaria }: P
       {mostrarFormulario && (
         <form
           onSubmit={handleSubmit}
-          className="space-y-5 rounded-2xl border border-[var(--borda)] bg-[var(--fundo-card)] p-6 shadow-[0px_1px_8px_rgba(0,0,0,0.1)] sm:p-8"
+          className="space-y-5 rounded-[18px] bg-[var(--fundo-card)] p-6 sm:p-8"
+          style={{ boxShadow: 'var(--sombra-neutra)' }}
         >
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-normal text-[var(--texto-titulo)]">Novo profissional</h2>
+            <h2 className="texto-titulo-secao text-[var(--texto-principal)]">Novo profissional</h2>
             <button
               type="button"
               onClick={() => setMostrarFormulario(false)}
@@ -527,7 +547,7 @@ function Profissionais({ clinicaAtivaId, carregandoClinica, souProprietaria }: P
       )}
 
       {!mostrarFormulario && (
-        <div className="rounded-2xl border border-[var(--borda)] bg-[var(--fundo-card)] shadow-[0px_1px_8px_rgba(0,0,0,0.1)]">
+        <div className="rounded-[18px] bg-[var(--fundo-card)]" style={{ boxShadow: 'var(--sombra-neutra)' }}>
           {carregandoClinica || carregandoLista ? (
             <p className="p-8 text-center text-sm text-[var(--texto-secundario)]">Carregando...</p>
           ) : !clinicaAtivaId ? (
@@ -617,10 +637,10 @@ function Profissionais({ clinicaAtivaId, carregandoClinica, souProprietaria }: P
                         </>
                       ) : (
                         <>
-                          <td className="px-5 py-3 text-[var(--texto-secundario)]">
+                          <td className="numero-tabular px-5 py-3 text-[var(--texto-secundario)]">
                             {profissional.valor_consulta != null ? formatarPreco(profissional.valor_consulta) : '—'}
                           </td>
-                          <td className="px-5 py-3 text-[var(--texto-secundario)]">
+                          <td className="numero-tabular px-5 py-3 text-[var(--texto-secundario)]">
                             {profissional.taxa_repasse_clinica}%
                           </td>
                           {souProprietaria && (
@@ -706,7 +726,7 @@ function Profissionais({ clinicaAtivaId, carregandoClinica, souProprietaria }: P
                       </div>
                     ) : (
                       <>
-                        <p className="text-sm text-[var(--texto-secundario)]">
+                        <p className="numero-tabular text-sm text-[var(--texto-secundario)]">
                           {profissional.valor_consulta != null ? formatarPreco(profissional.valor_consulta) : 'Sem valor cadastrado'}
                           {' · '}Repasse clínica {profissional.taxa_repasse_clinica}%
                         </p>

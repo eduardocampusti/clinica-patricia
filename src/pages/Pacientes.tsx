@@ -202,11 +202,27 @@ function Pacientes({ clinicaAtivaId, carregandoClinica, usuarioId }: PacientesPr
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-xl font-normal text-[var(--texto-titulo)]">Pacientes</h1>
-          <p className="text-sm text-[var(--texto-secundario)]">
-            Pacientes cadastrados na clínica.
-          </p>
+        <div className="flex items-center gap-3">
+          <div>
+            <h1 className="texto-titulo-tela text-[var(--texto-principal)]">Pacientes</h1>
+            <p className="text-sm text-[var(--texto-secundario)]">
+              Pacientes cadastrados na clínica.
+            </p>
+          </div>
+          <div
+            className="flex items-center gap-1.5 rounded-full px-3 py-1.5"
+            style={{ backgroundColor: 'var(--categoria-pessoas-fundo)' }}
+          >
+            <span
+              className="numero-tabular text-sm font-semibold"
+              style={{ color: 'var(--categoria-pessoas-valor)' }}
+            >
+              {pacientes.length}
+            </span>
+            <span className="text-xs font-medium" style={{ color: 'var(--categoria-pessoas-label)' }}>
+              {pacientes.length === 1 ? 'paciente' : 'pacientes'}
+            </span>
+          </div>
         </div>
 
         {!mostrarFormulario && (
@@ -230,10 +246,11 @@ function Pacientes({ clinicaAtivaId, carregandoClinica, usuarioId }: PacientesPr
       {mostrarFormulario && (
         <form
           onSubmit={handleSubmit}
-          className="space-y-5 rounded-2xl border border-[var(--borda)] bg-[var(--fundo-card)] p-6 shadow-[0px_1px_8px_rgba(0,0,0,0.1)] sm:p-8"
+          className="space-y-5 rounded-[18px] bg-[var(--fundo-card)] p-6 sm:p-8"
+          style={{ boxShadow: 'var(--sombra-neutra)' }}
         >
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-normal text-[var(--texto-titulo)]">Novo paciente</h2>
+            <h2 className="texto-titulo-secao text-[var(--texto-principal)]">Novo paciente</h2>
             <button
               type="button"
               onClick={fecharFormulario}
@@ -403,7 +420,7 @@ function Pacientes({ clinicaAtivaId, carregandoClinica, usuarioId }: PacientesPr
       )}
 
       {!mostrarFormulario && (
-        <div className="rounded-2xl border border-[var(--borda)] bg-[var(--fundo-card)] shadow-[0px_1px_8px_rgba(0,0,0,0.1)]">
+        <div className="rounded-[18px] bg-[var(--fundo-card)]" style={{ boxShadow: 'var(--sombra-neutra)' }}>
           {carregandoClinica || carregandoLista ? (
             <p className="p-8 text-center text-sm text-[var(--texto-secundario)]">Carregando...</p>
           ) : !clinicaAtivaId ? (
@@ -435,7 +452,7 @@ function Pacientes({ clinicaAtivaId, carregandoClinica, usuarioId }: PacientesPr
                       className="border-b border-[var(--borda)] text-[var(--texto-principal)] last:border-0"
                     >
                       <td className="px-5 py-3 font-medium">{paciente.nome_completo}</td>
-                      <td className="px-5 py-3 text-[var(--texto-secundario)]">{paciente.cpf}</td>
+                      <td className="numero-tabular px-5 py-3 text-[var(--texto-secundario)]">{paciente.cpf}</td>
                       <td className="px-5 py-3 text-[var(--texto-secundario)]">
                         {formatarData(paciente.data_nascimento)}
                       </td>
@@ -454,7 +471,7 @@ function Pacientes({ clinicaAtivaId, carregandoClinica, usuarioId }: PacientesPr
                     <p className="font-medium text-[var(--texto-principal)]">
                       {paciente.nome_completo}
                     </p>
-                    <p className="text-sm text-[var(--texto-secundario)]">CPF: {paciente.cpf}</p>
+                    <p className="numero-tabular text-sm text-[var(--texto-secundario)]">CPF: {paciente.cpf}</p>
                     <p className="text-sm text-[var(--texto-secundario)]">
                       Nascimento: {formatarData(paciente.data_nascimento)}
                     </p>

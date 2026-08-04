@@ -47,15 +47,31 @@ const ESPECIALIDADES_PLACEHOLDER: { nome: string; quantidade: number; cor: strin
 const ENTRADAS_PLACEHOLDER = 12480
 const SAIDAS_PLACEHOLDER = 4120
 
+// TODO: plugar no status real do caixa (módulo Financeiro/Abrir Caixa) e no
+// nome de quem abriu, quando o Dashboard passar a ler dados de verdade.
+const BRIEFING_PLACEHOLDER = 'Caixa aberto desde 08:14 · Recepção Ana Paula'
+
+// TODO: substituir por soma real de entradas_caixa por profissional (join com
+// profissionais.taxa_repasse_clinica de cada um, ver sessão do repasse
+// profissional) quando o Dashboard passar a ler dado real.
+// ATENÇÃO: taxa_repasse_clinica vem do banco como INTEIRO 0-100 (ex.: 20 =
+// 20%), não como fração — por isso o placeholder abaixo também usa 20 (não
+// 0.2) e a fórmula divide por 100. Usar o inteiro direto na conta faria o
+// repasse sair 100x errado.
+const REPASSE_PLACEHOLDER: { nome: string; especialidade: string; atendimentos: number; totalProduzido: number }[] = [
+  { nome: 'Dra. Ana Ferreira', especialidade: 'Clínica Geral', atendimentos: 3, totalProduzido: 690 },
+  { nome: 'Dra. Juliana Prado', especialidade: 'Psicologia', atendimentos: 2, totalProduzido: 400 },
+  { nome: 'Dr. Marcos Lima', especialidade: 'Pediatria', atendimentos: 2, totalProduzido: 460 },
+  { nome: 'Dr. Felipe Cordeiro', especialidade: 'Dermatologia', atendimentos: 1, totalProduzido: 220 },
+]
+const TAXA_REPASSE_CLINICA_PLACEHOLDER = 20 // inteiro 0-100, mesmo formato de profissionais.taxa_repasse_clinica
+
 function formatarMoeda(valor: number): string {
   return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 }
 
 function Dashboard() {
   const saldo = ENTRADAS_PLACEHOLDER - SAIDAS_PLACEHOLDER
-  const maiorValor = Math.max(ENTRADAS_PLACEHOLDER, SAIDAS_PLACEHOLDER)
-  const entradasPct = Math.round((ENTRADAS_PLACEHOLDER / maiorValor) * 100)
-  const saidasPct = Math.round((SAIDAS_PLACEHOLDER / maiorValor) * 100)
 
   const maiorEspecialidade = Math.max(...ESPECIALIDADES_PLACEHOLDER.map((e) => e.quantidade))
 
@@ -69,77 +85,87 @@ function Dashboard() {
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="texto-saudacao text-[var(--texto-titulo)]">Olá!</h1>
-          <p className="mt-1.5 text-sm text-[var(--texto-secundario)]">
-            {dataFormatada} · Painel do dia
-          </p>
-        </div>
-        <div className="rounded-[10px] border border-[var(--borda)] bg-[var(--fundo-card)] px-4 py-2.5 text-sm font-medium text-[var(--texto-principal)]">
-          {ATENDIMENTOS_PLACEHOLDER.length} atendimentos hoje
-        </div>
+      <header>
+        <h1 className="texto-titulo-tela text-[var(--texto-principal)]">Olá!</h1>
+        <p className="mt-1.5 text-sm text-[var(--texto-secundario)]">{dataFormatada} · Painel do dia</p>
       </header>
 
-      <section className="flex flex-wrap items-center gap-10 rounded-2xl border border-[var(--borda)] bg-[var(--fundo-card)] p-7 shadow-[0px_1px_8px_rgba(0,0,0,0.1)]">
-        <div>
-          <div className="mb-1.5 text-sm font-medium text-[var(--texto-secundario)]">
-            Fluxo de caixa do dia
-          </div>
+      <section
+        className="flex items-center gap-3 rounded-[18px] bg-[var(--fundo-card)] px-5 py-4"
+        style={{ boxShadow: 'var(--sombra-neutra)' }}
+      >
+        <span className="h-2 w-2 flex-none rounded-full bg-[var(--cor-sucesso)]" />
+        <p className="text-sm font-medium text-[var(--texto-principal)]">{BRIEFING_PLACEHOLDER}</p>
+      </section>
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div
+          className="rounded-[18px] bg-[var(--fundo-card)] p-5"
+          style={{ boxShadow: 'var(--sombra-neutra)' }}
+        >
+          <div className="text-sm font-medium text-[var(--texto-secundario)]">Saldo do dia</div>
           <div
-            className="text-[42px] leading-none font-bold tracking-tight"
+            className="numero-tabular mt-1.5 text-[28px] leading-none font-semibold"
             style={{ color: saldo >= 0 ? 'var(--cor-sucesso)' : 'var(--cor-erro)' }}
           >
             {formatarMoeda(saldo)}
           </div>
-          <div className="mt-2 text-sm text-[var(--texto-secundario)]">Saldo líquido de hoje</div>
+          <div className="mt-2 text-xs text-[var(--texto-terciario)]">Entradas menos saídas</div>
         </div>
 
-        <div className="hidden self-stretch w-px bg-[var(--borda)] sm:block" />
-
-        <div className="flex flex-1 flex-wrap gap-8" style={{ minWidth: 280 }}>
-          <div className="flex-1" style={{ minWidth: 150 }}>
-            <div className="mb-2 flex items-center gap-2">
-              <span className="flex h-[22px] w-[22px] items-center justify-center rounded-md bg-[var(--cor-sucesso-suave)] text-sm font-bold text-[var(--cor-sucesso)]">
-                ↑
-              </span>
-              <span className="text-sm font-medium text-[var(--texto-secundario)]">Entradas</span>
-            </div>
-            <div className="text-xl font-bold text-[var(--texto-principal)]">
-              {formatarMoeda(ENTRADAS_PLACEHOLDER)}
-            </div>
-            <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-[var(--fundo-pagina)]">
-              <div
-                className="h-full rounded-full bg-[var(--cor-sucesso)]"
-                style={{ width: `${entradasPct}%` }}
-              />
-            </div>
+        <div
+          className="rounded-[18px] p-5"
+          style={{ backgroundColor: 'var(--categoria-financeiro-fundo)', boxShadow: 'var(--categoria-financeiro-sombra)' }}
+        >
+          <div className="text-sm font-medium" style={{ color: 'var(--categoria-financeiro-label)' }}>
+            ↑ Entradas
           </div>
-
-          <div className="flex-1" style={{ minWidth: 150 }}>
-            <div className="mb-2 flex items-center gap-2">
-              <span className="flex h-[22px] w-[22px] items-center justify-center rounded-md bg-[var(--cor-erro-suave)] text-sm font-bold text-[var(--cor-erro)]">
-                ↓
-              </span>
-              <span className="text-sm font-medium text-[var(--texto-secundario)]">Saídas</span>
-            </div>
-            <div className="text-xl font-bold text-[var(--texto-principal)]">
-              {formatarMoeda(SAIDAS_PLACEHOLDER)}
-            </div>
-            <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-[var(--fundo-pagina)]">
-              <div
-                className="h-full rounded-full bg-[var(--cor-erro)]"
-                style={{ width: `${saidasPct}%` }}
-              />
-            </div>
+          <div
+            className="numero-tabular mt-1.5 text-[28px] leading-none font-semibold"
+            style={{ color: 'var(--categoria-financeiro-valor)' }}
+          >
+            {formatarMoeda(ENTRADAS_PLACEHOLDER)}
           </div>
         </div>
-      </section>
+
+        <div
+          className="rounded-[18px] p-5"
+          style={{ backgroundColor: 'var(--categoria-financeiro-fundo)', boxShadow: 'var(--categoria-financeiro-sombra)' }}
+        >
+          <div className="text-sm font-medium" style={{ color: 'var(--categoria-financeiro-label)' }}>
+            ↓ Saídas
+          </div>
+          <div
+            className="numero-tabular mt-1.5 text-[28px] leading-none font-semibold"
+            style={{ color: 'var(--categoria-financeiro-valor)' }}
+          >
+            {formatarMoeda(SAIDAS_PLACEHOLDER)}
+          </div>
+        </div>
+
+        <div
+          className="rounded-[18px] p-5"
+          style={{ backgroundColor: 'var(--categoria-agenda-fundo)', boxShadow: 'var(--categoria-agenda-sombra)' }}
+        >
+          <div className="text-sm font-medium" style={{ color: 'var(--categoria-agenda-label)' }}>
+            Atendimentos hoje
+          </div>
+          <div
+            className="numero-tabular mt-1.5 text-[28px] leading-none font-semibold"
+            style={{ color: 'var(--categoria-agenda-valor)' }}
+          >
+            {ATENDIMENTOS_PLACEHOLDER.length}
+          </div>
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[1.7fr_1fr]">
-        <section className="rounded-2xl border border-[var(--borda)] bg-[var(--fundo-card)] p-6 shadow-[0px_1px_8px_rgba(0,0,0,0.1)]">
+        <section
+          className="rounded-[18px] bg-[var(--fundo-card)] p-6"
+          style={{ boxShadow: 'var(--sombra-neutra)' }}
+        >
           <div className="mb-2 flex items-center justify-between">
-            <h2 className="text-xl font-normal text-[var(--texto-titulo)]">Atendimentos de hoje</h2>
+            <h2 className="texto-titulo-secao text-[var(--texto-principal)]">Atendimentos de hoje</h2>
             <span className="text-sm text-[var(--texto-secundario)]">
               {ATENDIMENTOS_PLACEHOLDER.length} no total
             </span>
@@ -164,7 +190,7 @@ function Dashboard() {
                       {a.especialidade}
                     </div>
                   </div>
-                  <div className="w-14 flex-none text-right text-sm font-medium text-[var(--texto-principal)]">
+                  <div className="numero-tabular w-14 flex-none text-right text-sm font-medium text-[var(--texto-principal)]">
                     {a.horario}
                   </div>
                   <div
@@ -179,8 +205,11 @@ function Dashboard() {
           </ul>
         </section>
 
-        <section className="flex flex-col gap-4 rounded-2xl border border-[var(--borda)] bg-[var(--fundo-card)] p-6 shadow-[0px_1px_8px_rgba(0,0,0,0.1)]">
-          <h2 className="text-xl font-normal text-[var(--texto-titulo)]">Resumo por especialidade</h2>
+        <section
+          className="flex flex-col gap-4 rounded-[18px] bg-[var(--fundo-card)] p-6"
+          style={{ boxShadow: 'var(--sombra-neutra)' }}
+        >
+          <h2 className="texto-titulo-secao text-[var(--texto-principal)]">Resumo por especialidade</h2>
 
           {ESPECIALIDADES_PLACEHOLDER.map((e) => (
             <div key={e.nome} className="flex flex-col gap-1.5">
@@ -192,7 +221,7 @@ function Dashboard() {
                   />
                   <span className="text-sm font-medium text-[var(--texto-principal)]">{e.nome}</span>
                 </div>
-                <span className="text-sm font-semibold text-[var(--texto-secundario)]">
+                <span className="numero-tabular text-sm font-semibold text-[var(--texto-secundario)]">
                   {e.quantidade}
                 </span>
               </div>
@@ -209,6 +238,43 @@ function Dashboard() {
           ))}
         </section>
       </div>
+
+      <section
+        className="rounded-[18px] p-6"
+        style={{ backgroundColor: 'var(--categoria-repasse-fundo)', boxShadow: 'var(--categoria-repasse-sombra)' }}
+      >
+        <h2 className="texto-titulo-secao" style={{ color: 'var(--categoria-repasse-valor)' }}>
+          Repasse do dia por profissional
+        </h2>
+
+        <ul className="mt-2">
+          {REPASSE_PLACEHOLDER.map((p, indice) => {
+            const valorRepassado = p.totalProduzido * (1 - TAXA_REPASSE_CLINICA_PLACEHOLDER / 100)
+            return (
+              <li
+                key={p.nome}
+                className={`flex items-center gap-3.5 py-3 ${indice > 0 ? 'border-t' : ''}`}
+                style={{ borderColor: 'color-mix(in srgb, var(--categoria-repasse-label) 20%, transparent)' }}
+              >
+                <div className="min-w-0 flex-1">
+                  <div className="truncate text-sm font-semibold" style={{ color: 'var(--categoria-repasse-valor)' }}>
+                    {p.nome}
+                  </div>
+                  <div className="mt-0.5 text-xs" style={{ color: 'var(--categoria-repasse-label)' }}>
+                    {p.especialidade} · {p.atendimentos} atendimento{p.atendimentos > 1 ? 's' : ''}
+                  </div>
+                </div>
+                <div
+                  className="numero-tabular flex-none text-right text-sm font-semibold"
+                  style={{ color: 'var(--categoria-repasse-valor)' }}
+                >
+                  {formatarMoeda(valorRepassado)}
+                </div>
+              </li>
+            )
+          })}
+        </ul>
+      </section>
     </div>
   )
 }

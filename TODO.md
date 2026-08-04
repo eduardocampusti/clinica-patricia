@@ -2,6 +2,38 @@
 
 ## Concluído recentemente
 
+- [x] **Design system v2 — retrofit visual premium** (`01-DESIGN-SYSTEM.md`,
+  sessão 04/08/2026). Claude assumiu papel de design lead. Direção definida
+  e aprovada por protótipo interativo (sombra tingida de duas camadas,
+  cards com fundo por categoria de significado — financeiro/pessoas/
+  agenda/repasse —, tipografia Fraunces+Inter, selo dourado como elemento-
+  assinatura). Corrigido antes de aplicar: paleta de categoria ajustada
+  pra não colidir com as cores reais de marca por clínica (Brotas azul,
+  Ipupiara verde, Ibitiara laranja — conferido no banco); `--cor-primaria`
+  e derivados mantidos intocados, sistema de marca por clínica não mudou.
+  - **Dashboard.tsx** — concluído. Ajustes de uma segunda rodada: sombra
+    reforçada (~40% mais blur, dentro do limite autorizado), nova seção
+    "Repasse do dia por profissional" (categoria dourada, fórmula
+    `total * (1 - taxa/100)` — bug de unidade encontrado e corrigido
+    nessa etapa), selo dourado no seletor de clínica (`Sidebar.tsx`,
+    letra = 2ª letra do nome pra não dar "C" nas 3 clínicas, cor da letra
+    = `--cor-primaria` da clínica ativa). Testado claro/escuro, seletor
+    principal + variante mini do dropdown (usuário multi-clínica real).
+  - **Financeiro.tsx** — concluído. Título → `.texto-titulo-tela` (classe
+    renomeada de `.texto-saudacao`, reaproveitada em todas as telas).
+    Cards sem borda (sombra substitui, §4 do design system). Chip "Total"
+    em categoria financeiro. Testado com entrada real na tabela.
+  - **Pacientes.tsx** — concluído. Mesmo padrão de card. Chip "N
+    pacientes" em categoria pessoas. CPF com tabular-nums. Inputs e
+    divisórias de tabela mantiveram borda (só o card perdeu).
+  - **Cadastros Estruturais** (`Cadastros.tsx` + `Especialidades.tsx` +
+    `Profissionais.tsx` + `Servicos.tsx`) — **prompt enviado, arquivos já
+    modificados localmente, mas SEM confirmação/print de retorno ainda**
+    (sessão foi interrompida por limite de uso antes do Codex reportar).
+    Verificar com o Codex antes de considerar concluído.
+  - **Pendência:** nada disso está commitado ainda — ver seção de commits
+    pendentes abaixo.
+
 - [x] **Financeiro — Fundação do repasse profissional** (`10-PLANO-DIRETOR.md`,
   seção "Modelo real de repasse", decisões de 03/08/2026). Dois escopos
   pequenos, preparando o cálculo de repasse (80/20) que ainda não existe:
