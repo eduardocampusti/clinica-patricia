@@ -23,6 +23,10 @@
   Pacientes** — trocar o booleano obrigatório por registro de bases legais por
   finalidade. Ver TODO. (Não mexer no código agora; decisão registrada para não
   construir mais coisas sobre a suposição errada.)
+- **Usuários de teste: sempre pelo painel Authentication → Add user.** Nunca criar
+  via INSERT direto em `auth.users` — falta o registro em `auth.identities` que o
+  login por senha exige, causando erro 500 ("Database error querying schema").
+  Incidente registrado em `09-DIARIO-DE-SESSOES.md`, sessão de 03/08/2026.
 
 ## Método de trabalho
 

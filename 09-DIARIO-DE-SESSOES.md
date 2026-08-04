@@ -4,6 +4,79 @@
 > para que qualquer conversa futura (chat ou Claude Code) tenha continuidade
 > e não "saia do contexto". Entrada mais recente no topo.
 
+## Sessão — 03/08/2026 (bug: teste_medico_brotas sem auth.identities)
+
+**Problema:** login de `teste_medico_brotas@teste.local` retornava 500
+("Database error querying schema") no Supabase Auth durante teste do módulo
+Registrar Entrada. Investigado via SQL (projeto oficial confirmado): a conta não
+tinha registro em `auth.identities` (tabela interna exigida pelo login por senha).
+Provável causa: essa conta foi criada num método antigo (INSERT direto em
+`auth.users`), antes de adotarmos o painel "Add user" como padrão.
+
+**Correção aplicada:** inserido o registro faltante em `auth.identities`
+(provider `email`, `identity_data` no mesmo formato de uma conta funcional),
+copiando o padrão observado em `teste_recepcao_brotas` (criada hoje pelo painel).
+Confirmado por consulta — registro existe agora. Senha também foi redefinida
+via SQL (`crypt()`/`gen_salt('bf')`, mesma criptografia do Supabase) já que a
+senha original nunca tinha sido documentada.
+
+**Regra reforçada:** todo usuário de teste deve ser criado exclusivamente pelo
+painel Authentication → Add user (nunca por INSERT direto em `auth.users`), pois
+o painel cria automaticamente o par `auth.users` + `auth.identities` necessário
+para login funcionar. Ver `DEVELOPMENT_RULES.md`.
+
+## Sessão — 03/08/2026 (Financeiro — Registrar Entrada: implementação, SQL ainda não aplicado)
+
+Reconfirmei o módulo Abrir Caixa ao vivo antes de começar (ver entrada
+abaixo, verificação de continuidade): 409 confirmado ao vivo contra a
+sessão de teste que já estava aberta em Brotas; o 201 já estava provado
+por essa mesma sessão (dados batendo com o que já estava documentado).
+
+**Escopo pedido:** "Registrar entrada" — lançamento manual de recebimento
+dentro do caixa aberto, sem vínculo com agenda ainda (`11-PERFIL-PROPRIETARIA.md`
+seção 2). Li `PROJECT_CONTEXT.md`, `DEVELOPMENT_RULES.md`, `10-PLANO-DIRETOR.md`,
+`11-PERFIL-PROPRIETARIA.md`, `server/README.md`, `00-BANCO-DE-DADOS-OFICIAL.md`
+e o código de Abrir Caixa antes de propor o plano, para seguir exatamente o
+mesmo padrão.
+
+**Plano apresentado e aprovado antes de codar** (método combinado): mostrei
+o SQL completo (`entradas_caixa.sql`) e só depois implementei o resto.
+Eduardo escolheu **não rodar o SQL ainda** ("quero revisar antes") e
+**criar um usuário de teste novo** (proprietária/recepção de uma clínica
+sem caixa aberto — Ipupiara ou Ibitiara) para o cenário "sem caixa aberto
+→ 409", em paralelo. Autorizado a seguir com a implementação de
+código enquanto isso.
+
+**Implementado (código pronto, banco NÃO tocado ainda):**
+- `entradas_caixa.sql` (mostrado, aguardando confirmação/ajuste do Eduardo):
+  tabela `entradas_caixa` + enum `forma_pagamento_caixa` + RLS reaproveitando
+  `eh_proprietaria_ou_recepcao()` (mesma função criada na migration de Abrir
+  Caixa — o comentário lá já previa isso) + trava dupla de sessão
+  aberta/mesma clínica (`WITH CHECK` na policy de INSERT, além da checagem
+  na rota) + **sem** UPDATE/DELETE (registro financeiro publicado é
+  imutável) + auditoria no mesmo padrão.
+- `server/src/routes/entradaCaixa.ts` — `POST /api/caixa/entrada`, registrada
+  em `server/src/index.ts`. Decisão de design: o cliente **nunca** envia
+  `sessao_caixa_id` — o servidor resolve a sessão aberta da clínica ativa
+  sozinho, o que já elimina a classe de erro "mandar sessão de outra
+  clínica/fechada". Sem sessão aberta → `409`; forma de pagamento fora da
+  whitelist ou valor ≤ 0 → `400`; RLS rejeitando por papel → `403`.
+- `src/pages/Financeiro.tsx` — nova seção "Registrar entrada" (formulário:
+  forma de pagamento, valor, descrição opcional) + "Entradas da sessão"
+  (lista mais recente primeiro, total em destaque), aparece só quando já há
+  caixa aberto. Mesmos tokens/raios/sombra do resto do projeto, sem cor
+  literal. `src/hooks/useEntradasCaixa.ts` (leitura direta Supabase, mesmo
+  padrão de `useSessaoCaixaAberta`) e `registrarEntradaCaixa()` novo em
+  `src/lib/api.ts`.
+- `npm run build` limpo em `server/` e na raiz.
+
+**Não fechado ainda.** Falta: Eduardo revisar/confirmar o SQL e rodá-lo,
+criar o usuário de teste para clínica sem caixa aberto, e então rodar os 4
+cenários de teste (sucesso, sem caixa aberto, médico bloqueado, valor
+zero/negativo) antes de marcar como concluído no `TODO.md`.
+
+---
+
 ## Sessão — 03/08/2026 (Financeiro — Abrir Caixa: implementação + teste completo)
 
 **Continuação da sessão de aplicação da migration** (ver entrada abaixo,

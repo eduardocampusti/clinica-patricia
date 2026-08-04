@@ -1,5 +1,38 @@
 # TODO.md — Clínica Patrícia
 
+## Em andamento
+
+- [ ] **Financeiro — Registrar Entrada** (recebimento manual dentro do caixa
+  aberto, ainda sem vínculo com agenda — `11-PERFIL-PROPRIETARIA.md` seção 2).
+  Segue exatamente o padrão de Abrir Caixa. **Código já implementado, SQL
+  ainda NÃO aplicado no banco** (aguardando confirmação do Eduardo, em
+  paralelo à criação do usuário de teste).
+  - Banco (`entradas_caixa.sql`, mostrado ao Eduardo, não rodado ainda):
+    tabela `entradas_caixa` + enum `forma_pagamento_caixa` (dinheiro, pix,
+    cartão débito/crédito, transferência, convênio, cortesia) + RLS (mesmo
+    padrão de `sessoes_caixa`, reaproveitando `eh_proprietaria_ou_recepcao()`)
+    — trava dupla de que a sessão referenciada esteja `aberto` e seja da
+    mesma clínica: no `WITH CHECK` da policy de INSERT **e** na rota do
+    servidor (não confia só na RLS). **Sem** policy de UPDATE/DELETE —
+    registro financeiro publicado é imutável (correção futura é por
+    estorno, não edição). Auditoria no mesmo padrão.
+  - Servidor: `POST /api/caixa/entrada` (`server/src/routes/entradaCaixa.ts`,
+    registrada em `server/src/index.ts`) — o cliente nunca escolhe
+    `sessao_caixa_id`, o servidor resolve a sessão aberta da clínica ativa
+    sozinho. Sem sessão aberta → `409`; forma de pagamento inválida ou valor
+    ≤ 0 → `400`; RLS rejeitando por papel → `403`.
+  - Frontend: `src/pages/Financeiro.tsx` ganhou a seção "Registrar entrada"
+    (formulário) + "Entradas da sessão" (lista mais recente primeiro + total
+    em destaque), visível só quando já há caixa aberto. Nova
+    `src/hooks/useEntradasCaixa.ts` (leitura direta Supabase, mesmo padrão de
+    `useSessaoCaixaAberta`) e `registrarEntradaCaixa()` em `src/lib/api.ts`.
+  - `npm run build` limpo em ambos (`server/` e raiz).
+  - **Falta:** Eduardo aplicar o SQL, criar usuário de teste
+    proprietária/recepção para uma clínica sem caixa aberto (Ipupiara ou
+    Ibitiara — necessário para testar o cenário "sem caixa aberto → 409"),
+    depois rodar os 4 testes (sucesso, sem caixa aberto, médico bloqueado,
+    valor zero/negativo) e fechar o módulo aqui e no diário.
+
 ## Concluído recentemente
 
 - [x] **Financeiro — Abrir Caixa** (primeira funcionalidade real do módulo,
