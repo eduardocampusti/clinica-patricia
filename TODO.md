@@ -2,6 +2,14 @@
 
 ## Concluído recentemente
 
+- [x] **Agenda — lista de espera** (`agenda_lista_espera.sql`, sessão
+  04/08/2026, complemento do schema da Agenda). Tabela `lista_espera`,
+  vinculada a paciente + profissional específico (mesma disciplina de
+  `agendamentos`). Índice único impede o mesmo paciente entrar 2x na fila
+  do mesmo profissional enquanto ainda "aguardando" (mesmo princípio do
+  caixa). RLS igual a agendamentos (proprietária/recepção tudo, médico só
+  a própria fila).
+
 - [x] **Agenda — fundação do schema** (`agenda_fundacao.sql`, sessão
   04/08/2026). Decisões confirmadas com o Eduardo antes de desenhar:
   horário semanal fixo com exceções pontuais por cima; duração da
