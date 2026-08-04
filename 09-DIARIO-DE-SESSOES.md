@@ -4,6 +4,46 @@
 > para que qualquer conversa futura (chat ou Claude Code) tenha continuidade
 > e não "saia do contexto". Entrada mais recente no topo.
 
+## Sessão — 03/08/2026 (Financeiro — Registrar Entrada: teste completo, módulo fechado)
+
+**Continuação direta da sessão de implementação** (ver entrada abaixo) depois
+que Eduardo aplicou o SQL (`entradas_caixa.sql`, revisado antes de rodar) e
+criou o usuário `teste_recepcao_ipupiara@teste.local`.
+
+**Achado de segurança durante a investigação do login do `teste_medico_brotas`
+(ver entrada de bug logo abaixo, mesmo dia):** ao tentar usar uma ferramenta
+MCP do Supabase disponível nesta sessão para investigar logs de Auth,
+`get_project_url` retornou `indshiztdvjgvgnzigqd` ("Brotar 2.1", outro
+sistema do Eduardo) — **não** `xftnkusbyqzyvzrovroj` (Clínica Patrícia).
+Exatamente o cenário descrito em `00-BANCO-DE-DADOS-OFICIAL.md`. **Parei
+imediatamente, não rodei nenhuma consulta por esse conector** e segui só
+com REST direto (técnica de sempre, com o `SUPABASE_URL` do `.env`, correto).
+Eduardo investigou e corrigiu a causa raiz do login diretamente (ver entrada
+de bug abaixo). Registrado como risco conhecido no `TODO.md`.
+
+**Resultado dos 4 cenários (banco, via REST direto com token de sessão real,
+servidor local em `localhost:3333`):**
+- Recepção (`teste_recepcao_brotas`) registrando entrada em Brotas (caixa já
+  aberto, `pix`, `R$ 85,90`) → `201`, linha real criada
+  (`id bf9ba585-9c57-4851-a9cc-0f2ffd27af7c`).
+- Médico (`teste_medico_brotas`, depois do login corrigido) tentando
+  registrar em Brotas (mesmo caixa aberto — testa a RLS por papel
+  especificamente, não a falta de sessão) → `403` ("Você não tem permissão
+  para registrar entradas nesta clínica.").
+- Valor `0` e valor negativo (recepção de Brotas) → `400` nos dois
+  ("Informe um valor numérico maior que zero.").
+- Recepção de Ipupiara (`teste_recepcao_ipupiara`, sem caixa aberto lá) →
+  `409` ("Nenhum caixa aberto. Abra o caixa antes de registrar uma
+  entrada.").
+
+**Módulo fechado.** Pendências registradas no `TODO.md`: as mesmas de Abrir
+Caixa (fechar caixa, esconder formulários de quem não é
+proprietária/recepção) + remover os dados de teste desta rodada (usuário
+`teste_recepcao_ipupiara` e a entrada de teste em Brotas) + reconferir o
+conector MCP do Supabase antes de usá-lo de novo neste projeto.
+
+---
+
 ## Sessão — 03/08/2026 (bug: teste_medico_brotas sem auth.identities + tokens NULL)
 
 **Problema:** login de `teste_medico_brotas@teste.local` retornava 500

@@ -1,39 +1,47 @@
 # TODO.md — Clínica Patrícia
 
-## Em andamento
-
-- [ ] **Financeiro — Registrar Entrada** (recebimento manual dentro do caixa
-  aberto, ainda sem vínculo com agenda — `11-PERFIL-PROPRIETARIA.md` seção 2).
-  Segue exatamente o padrão de Abrir Caixa. **Código já implementado, SQL
-  ainda NÃO aplicado no banco** (aguardando confirmação do Eduardo, em
-  paralelo à criação do usuário de teste).
-  - Banco (`entradas_caixa.sql`, mostrado ao Eduardo, não rodado ainda):
-    tabela `entradas_caixa` + enum `forma_pagamento_caixa` (dinheiro, pix,
-    cartão débito/crédito, transferência, convênio, cortesia) + RLS (mesmo
-    padrão de `sessoes_caixa`, reaproveitando `eh_proprietaria_ou_recepcao()`)
-    — trava dupla de que a sessão referenciada esteja `aberto` e seja da
-    mesma clínica: no `WITH CHECK` da policy de INSERT **e** na rota do
-    servidor (não confia só na RLS). **Sem** policy de UPDATE/DELETE —
-    registro financeiro publicado é imutável (correção futura é por
-    estorno, não edição). Auditoria no mesmo padrão.
-  - Servidor: `POST /api/caixa/entrada` (`server/src/routes/entradaCaixa.ts`,
-    registrada em `server/src/index.ts`) — o cliente nunca escolhe
-    `sessao_caixa_id`, o servidor resolve a sessão aberta da clínica ativa
-    sozinho. Sem sessão aberta → `409`; forma de pagamento inválida ou valor
-    ≤ 0 → `400`; RLS rejeitando por papel → `403`.
-  - Frontend: `src/pages/Financeiro.tsx` ganhou a seção "Registrar entrada"
-    (formulário) + "Entradas da sessão" (lista mais recente primeiro + total
-    em destaque), visível só quando já há caixa aberto. Nova
-    `src/hooks/useEntradasCaixa.ts` (leitura direta Supabase, mesmo padrão de
-    `useSessaoCaixaAberta`) e `registrarEntradaCaixa()` em `src/lib/api.ts`.
-  - `npm run build` limpo em ambos (`server/` e raiz).
-  - **Falta:** Eduardo aplicar o SQL, criar usuário de teste
-    proprietária/recepção para uma clínica sem caixa aberto (Ipupiara ou
-    Ibitiara — necessário para testar o cenário "sem caixa aberto → 409"),
-    depois rodar os 4 testes (sucesso, sem caixa aberto, médico bloqueado,
-    valor zero/negativo) e fechar o módulo aqui e no diário.
-
 ## Concluído recentemente
+
+- [x] **Financeiro — Registrar Entrada** (recebimento manual dentro do caixa
+  aberto, ainda sem vínculo com agenda — `11-PERFIL-PROPRIETARIA.md` seção 2).
+  Segue exatamente o padrão de Abrir Caixa. Banco: tabela `entradas_caixa`
+  (`entradas_caixa.sql`) + enum `forma_pagamento_caixa` (dinheiro, pix, cartão
+  débito/crédito, transferência, convênio, cortesia) + RLS reaproveitando
+  `eh_proprietaria_ou_recepcao()` — trava dupla de que a sessão referenciada
+  esteja `aberto` e seja da mesma clínica (`WITH CHECK` da policy de INSERT
+  **e** checagem na rota do servidor) + **sem** policy de UPDATE/DELETE
+  (registro financeiro publicado é imutável) + auditoria. Aplicado no banco
+  por Eduardo, revisado antes de rodar (arquivo mostrado, confirmação
+  explícita). Servidor: `POST /api/caixa/entrada`
+  (`server/src/routes/entradaCaixa.ts`) — o cliente nunca escolhe
+  `sessao_caixa_id`, o servidor resolve a sessão aberta da clínica ativa
+  sozinho. Frontend: `src/pages/Financeiro.tsx` ganhou "Registrar entrada"
+  (formulário) + "Entradas da sessão" (lista mais recente primeiro + total em
+  destaque), visível só quando há caixa aberto; novo
+  `src/hooks/useEntradasCaixa.ts` e `registrarEntradaCaixa()` em
+  `src/lib/api.ts`.
+  **Testado, os 4 cenários, ao vivo via REST com token de sessão real:**
+  recepção de Brotas registrando entrada (caixa já aberto) → `201`; médico
+  (`teste_medico_brotas`) tentando registrar em Brotas (mesmo caixa aberto)
+  → `403`; valor `0` e valor negativo → `400` nos dois; recepção de Ipupiara
+  (sem caixa aberto lá) → `409` "Nenhum caixa aberto...". `npm run build`
+  limpo em ambos (`server/` e raiz); tela conferida no navegador (form +
+  lista + total, mobile 375px sem overflow, tema escuro via tokens) antes do
+  SQL rodar — sem submeter de verdade, só depois com o banco pronto.
+  **Usuário de teste novo:** `teste_recepcao_ipupiara@teste.local` (papel
+  `recepcao`, só Clínica Ipupiara, sem caixa aberto) — necessário para o
+  cenário `409`.
+  **Nota sobre `teste_medico_brotas`:** login estava quebrado (`500 Database
+  error querying schema`) por a conta ter sido criada direto nas tabelas do
+  Supabase Auth (fora do fluxo `Authentication > Add user`) — faltava
+  registro em `auth.identities` e havia colunas internas (`confirmation_token`
+  e afins) `NULL` em vez de vazias. Eduardo corrigiu direto no banco (dois
+  ajustes, o primeiro não resolveu sozinho). Ver risco equivalente já
+  registrado em "Erros / riscos conhecidos" — não criar mais contas de teste
+  fora do painel do Supabase.
+  **Pendências remanescentes:** as mesmas de Abrir Caixa (fechar caixa,
+  esconder formulários de quem não é proprietária/recepção na UI) + remover
+  os dados de teste desta rodada (ver "Remover dados de teste" abaixo).
 
 - [x] **Financeiro — Abrir Caixa** (primeira funcionalidade real do módulo,
   `11-PERFIL-PROPRIETARIA.md` seção 4). Banco: tabela `sessoes_caixa` +
@@ -221,7 +229,10 @@
   sessão de caixa de teste aberta em Brotas (`valor_abertura 150,50`, id
   `a4a18e49-6634-4058-9fd8-07f3b065fd63`) — como ainda não existe "fechar
   caixa", essa sessão fica aberta até essa feature existir ou até alguém
-  encerrá-la manualmente no banco.
+  encerrá-la manualmente no banco. Também da validação do módulo
+  Financeiro/Registrar Entrada: usuário `teste_recepcao_ipupiara@teste.local`
+  (papel `recepcao`, só Ipupiara) e a entrada de teste registrada em Brotas
+  (`forma_pagamento pix`, `valor 85,90`, id `bf9ba585-9c57-4851-a9cc-0f2ffd27af7c`).
 - [ ] **Rodar o SQL da cor da Clínica Ibitiara** (`ibitiara_cor.sql`, entregue ao
   Eduardo) — terracota `#c2410c`/`#fed7aa`/`#7c2d12`, escolhida e aprovada
   nesta sessão. Só falta executar no SQL Editor do Supabase.
@@ -259,6 +270,21 @@
   da trava exige backend próprio OU disciplina do app (filtrar/gravar pela clínica do
   endereço). Ver `AUTH_AND_PERMISSIONS.md`.
 - Segredos do Vault são **provisórios** (ver acima).
+- **Conector MCP do Supabase desta sessão aponta para o projeto errado**
+  (`indshiztdvjgvgnzigqd`, "Brotar 2.1" — outro sistema do Eduardo) em vez do
+  Clínica Patrícia (`xftnkusbyqzyvzrovroj`). Confirmado via `get_project_url`
+  durante a sessão de 03/08/2026 (Registrar Entrada); é o mesmo tipo de
+  problema já descrito em `00-BANCO-DE-DADOS-OFICIAL.md`. **Nenhuma consulta
+  foi rodada por esse conector.** Antes de usar qualquer ferramenta MCP do
+  Supabase neste projeto, reconferir `get_project_url` contra o `.env` —
+  não presumir que está certo.
+- **Contas de usuário de teste criadas fora do painel `Authentication > Add
+  user`** (ex.: direto em `auth.users`) ficam com registros incompletos
+  (faltando `auth.identities`, colunas internas `NULL` em vez de vazias) e
+  quebram o login com `500 Database error querying schema` — sem relação
+  com senha/RLS. Encontrado e corrigido no `teste_medico_brotas` em
+  03/08/2026. Sempre criar usuário de teste pelo painel, nunca por INSERT
+  direto.
 
 ## Fase 2 (futuro)
 
