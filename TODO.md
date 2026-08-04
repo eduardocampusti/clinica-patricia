@@ -2,6 +2,47 @@
 
 ## Concluído recentemente
 
+- [x] **Financeiro — Fundação do repasse profissional** (`10-PLANO-DIRETOR.md`,
+  seção "Modelo real de repasse", decisões de 03/08/2026). Dois escopos
+  pequenos, preparando o cálculo de repasse (80/20) que ainda não existe:
+  - **Valor da consulta no profissional:** colunas `valor_consulta` (numeric,
+    opcional) e `taxa_repasse_clinica` (numeric, `not null default 20`) em
+    `profissionais`. RPC `cadastrar_profissional` atualizada para aceitar os
+    dois campos novos (parâmetros com default, sem quebrar a assinatura
+    existente). RLS de UPDATE já existente (`profissionais_update`) já cobria
+    a edição — sem policy nova. Tela `Profissionais.tsx`: campos no formulário
+    de cadastro + colunas "Valor consulta"/"Repasse clínica" na lista + nova
+    ação **"Editar valores"** (só proprietária, edição inline via `UPDATE`
+    direto).
+  - **Vínculo paciente + profissional na entrada:** colunas `paciente_id` e
+    `profissional_id` (`not null`, referenciando `pacientes`/`profissionais`)
+    em `entradas_caixa`. RLS de INSERT reforçada: além do que já existia
+    (sessão aberta da mesma clínica), agora também exige que o paciente e o
+    profissional referenciados pertençam à mesma clínica do lançamento — trava
+    dupla também no servidor (`POST /api/caixa/entrada` valida os dois antes
+    do INSERT, `400` claro se inválidos). Tela `Financeiro.tsx`: seletores de
+    paciente e profissional (ambos obrigatórios); ao escolher o profissional,
+    o campo "Valor" é pré-preenchido com o `valor_consulta` dele (editável).
+  - SQL (`valor_consulta_e_vinculos.sql`) apagou a única entrada de teste
+    antiga de `entradas_caixa` (sem paciente/profissional real para
+    preencher retroativamente) antes de tornar as colunas obrigatórias —
+    mostrado e confirmado pelo Eduardo antes de rodar.
+  - **Testado, ao vivo, no navegador:** proprietária definiu `valor_consulta
+    R$ 500,00` no "Dr. Teste Brotas" pela tela "Editar valores" (confirmado
+    no banco); recepção de Brotas logada de verdade, selecionou "Maria Teste
+    Silva" + "Dr. Teste Brotas", valor pré-preencheu `500` automaticamente,
+    registrou a entrada → apareceu na lista (Paciente/Profissional/Forma/
+    Valor) e no total (`R$ 500,00`); confirmado também via consulta direta
+    que a linha gravou `paciente_id`/`profissional_id` corretos. `npm run
+    build` limpo em `server/` e na raiz.
+  - **Pendências remanescentes:** cálculo automático do repasse (80/20) a
+    partir da soma das entradas por profissional — ainda não construído,
+    é a próxima etapa depois da Agenda, conforme sequência decidida no
+    `10-PLANO-DIRETOR.md`; histórico de pagamento na ficha do paciente
+    (mesma seção do plano diretor); remover a entrada de teste registrada
+    nesta sessão (`Maria Teste Silva`/`Dr. Teste Brotas`, `R$ 500,00`, id
+    `23cc9df1-8aba-418a-b77a-4e474948a265`) antes de produção.
+
 - [x] **Financeiro — Registrar Entrada** (recebimento manual dentro do caixa
   aberto, ainda sem vínculo com agenda — `11-PERFIL-PROPRIETARIA.md` seção 2).
   Segue exatamente o padrão de Abrir Caixa. Banco: tabela `entradas_caixa`
@@ -232,7 +273,13 @@
   encerrá-la manualmente no banco. Também da validação do módulo
   Financeiro/Registrar Entrada: usuário `teste_recepcao_ipupiara@teste.local`
   (papel `recepcao`, só Ipupiara) e a entrada de teste registrada em Brotas
-  (`forma_pagamento pix`, `valor 85,90`, id `bf9ba585-9c57-4851-a9cc-0f2ffd27af7c`).
+  (`forma_pagamento pix`, `valor 85,90`, id `bf9ba585-...`) — **já removida**,
+  apagada pelo próprio SQL de `valor_consulta_e_vinculos.sql` (03/08/2026).
+  Também da validação da Fundação do repasse: `valor_consulta R$ 500,00`
+  cadastrado no profissional de teste `Dr. Teste Brotas` (rever se é valor
+  real antes de produção, ou zerar) e a nova entrada de teste em Brotas
+  (paciente `Maria Teste Silva`, profissional `Dr. Teste Brotas`,
+  `valor 500,00`, id `23cc9df1-8aba-418a-b77a-4e474948a265`).
 - [ ] **Rodar o SQL da cor da Clínica Ibitiara** (`ibitiara_cor.sql`, entregue ao
   Eduardo) — terracota `#c2410c`/`#fed7aa`/`#7c2d12`, escolhida e aprovada
   nesta sessão. Só falta executar no SQL Editor do Supabase.

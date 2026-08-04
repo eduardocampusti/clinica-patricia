@@ -1,7 +1,23 @@
-import { useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useState, type FormEvent } from 'react'
+import { supabase } from '../lib/supabase'
 import { useSessaoCaixaAberta } from '../hooks/useSessaoCaixaAberta'
 import { useEntradasCaixa } from '../hooks/useEntradasCaixa'
 import { abrirCaixa, registrarEntradaCaixa, type FormaPagamento } from '../lib/api'
+
+interface PacienteOpcao {
+  id: string
+  nome_completo: string
+}
+
+interface ProfissionalOpcao {
+  id: string
+  nome_completo: string
+  valor_consulta: number | null
+}
+
+interface ProfissionalVinculoRow {
+  profissionais: { id: string; nome_completo: string; valor_consulta: number | null } | { id: string; nome_completo: string; valor_consulta: number | null }[] | null
+}
 
 const FORMAS_PAGAMENTO: { valor: FormaPagamento; rotulo: string }[] = [
   { valor: 'dinheiro', rotulo: 'Dinheiro' },
@@ -140,10 +156,57 @@ function EntradasCaixa({ sessaoCaixaId, clinicaAtivaId }: EntradasCaixaProps) {
   const [formaPagamento, setFormaPagamento] = useState<FormaPagamento>('dinheiro')
   const [valor, setValor] = useState('')
   const [descricao, setDescricao] = useState('')
+  const [pacienteId, setPacienteId] = useState('')
+  const [profissionalId, setProfissionalId] = useState('')
   const [registrando, setRegistrando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
 
+  const [pacientes, setPacientes] = useState<PacienteOpcao[]>([])
+  const [profissionais, setProfissionais] = useState<ProfissionalOpcao[]>([])
+
+  const carregarOpcoes = useCallback(async (clinicaId: string) => {
+    const [respPacientes, respProfissionais] = await Promise.all([
+      supabase
+        .from('pacientes')
+        .select('id, nome_completo')
+        .eq('clinica_id', clinicaId)
+        .eq('ativo', true)
+        .order('nome_completo', { ascending: true }),
+      supabase
+        .from('profissionais_clinicas')
+        .select('profissionais(id, nome_completo, valor_consulta)')
+        .eq('clinica_id', clinicaId)
+        .eq('ativo', true),
+    ])
+
+    setPacientes(respPacientes.data ?? [])
+
+    const linhas = (respProfissionais.data ?? []) as unknown as ProfissionalVinculoRow[]
+    const listaProfissionais = linhas
+      .map((linha) => (Array.isArray(linha.profissionais) ? linha.profissionais[0] : linha.profissionais))
+      .filter((p): p is NonNullable<typeof p> => p !== null && p !== undefined)
+      .sort((a, b) => a.nome_completo.localeCompare(b.nome_completo))
+    setProfissionais(listaProfissionais)
+  }, [])
+
+  useEffect(() => {
+    if (!clinicaAtivaId) {
+      setPacientes([])
+      setProfissionais([])
+      return
+    }
+    carregarOpcoes(clinicaAtivaId)
+  }, [clinicaAtivaId, carregarOpcoes])
+
   const total = entradas.reduce((soma, entrada) => soma + entrada.valor, 0)
+
+  function handleProfissionalChange(id: string) {
+    setProfissionalId(id)
+    const profissional = profissionais.find((p) => p.id === id)
+    if (profissional?.valor_consulta != null) {
+      setValor(String(profissional.valor_consulta).replace('.', ','))
+    }
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -157,11 +220,30 @@ function EntradasCaixa({ sessaoCaixaId, clinicaAtivaId }: EntradasCaixaProps) {
       return
     }
 
+    if (!pacienteId) {
+      setErro('Selecione o paciente.')
+      return
+    }
+
+    if (!profissionalId) {
+      setErro('Selecione o profissional.')
+      return
+    }
+
     setRegistrando(true)
     try {
-      await registrarEntradaCaixa(clinicaAtivaId, formaPagamento, valorNumerico, descricao.trim() || null)
+      await registrarEntradaCaixa(
+        clinicaAtivaId,
+        formaPagamento,
+        valorNumerico,
+        descricao.trim() || null,
+        pacienteId,
+        profissionalId,
+      )
       setValor('')
       setDescricao('')
+      setPacienteId('')
+      setProfissionalId('')
       await recarregar()
     } catch (err) {
       setErro(err instanceof Error ? err.message : 'Não foi possível registrar a entrada.')
@@ -179,6 +261,46 @@ function EntradasCaixa({ sessaoCaixaId, clinicaAtivaId }: EntradasCaixaProps) {
         <h2 className="text-lg font-normal text-[var(--texto-titulo)]">Registrar entrada</h2>
 
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-[var(--texto-principal)]">
+              Paciente <span className="text-[var(--cor-erro)]">*</span>
+            </label>
+            <select
+              required
+              value={pacienteId}
+              onChange={(e) => setPacienteId(e.target.value)}
+              disabled={registrando}
+              className="w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 py-2.5 text-[var(--texto-principal)] outline-none transition focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60"
+            >
+              <option value="">Selecione...</option>
+              {pacientes.map((paciente) => (
+                <option key={paciente.id} value={paciente.id}>
+                  {paciente.nome_completo}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-[var(--texto-principal)]">
+              Profissional <span className="text-[var(--cor-erro)]">*</span>
+            </label>
+            <select
+              required
+              value={profissionalId}
+              onChange={(e) => handleProfissionalChange(e.target.value)}
+              disabled={registrando}
+              className="w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 py-2.5 text-[var(--texto-principal)] outline-none transition focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60"
+            >
+              <option value="">Selecione...</option>
+              {profissionais.map((profissional) => (
+                <option key={profissional.id} value={profissional.id}>
+                  {profissional.nome_completo}
+                </option>
+              ))}
+            </select>
+          </div>
+
           <div>
             <label className="mb-1.5 block text-sm font-medium text-[var(--texto-principal)]">
               Forma de pagamento <span className="text-[var(--cor-erro)]">*</span>
@@ -267,6 +389,8 @@ function EntradasCaixa({ sessaoCaixaId, clinicaAtivaId }: EntradasCaixaProps) {
               <thead>
                 <tr className="border-b border-[var(--borda)] text-[var(--texto-secundario)]">
                   <th className="px-5 py-3 font-medium">Horário</th>
+                  <th className="px-5 py-3 font-medium">Paciente</th>
+                  <th className="px-5 py-3 font-medium">Profissional</th>
                   <th className="px-5 py-3 font-medium">Forma</th>
                   <th className="px-5 py-3 font-medium">Descrição</th>
                   <th className="px-5 py-3 font-medium">Valor</th>
@@ -281,7 +405,11 @@ function EntradasCaixa({ sessaoCaixaId, clinicaAtivaId }: EntradasCaixaProps) {
                     <td className="px-5 py-3 text-[var(--texto-secundario)]">
                       {formatarHora(entrada.registrado_em)}
                     </td>
-                    <td className="px-5 py-3 font-medium">{ROTULO_FORMA_PAGAMENTO[entrada.forma_pagamento]}</td>
+                    <td className="px-5 py-3 font-medium">{entrada.paciente_nome}</td>
+                    <td className="px-5 py-3 text-[var(--texto-secundario)]">{entrada.profissional_nome}</td>
+                    <td className="px-5 py-3 text-[var(--texto-secundario)]">
+                      {ROTULO_FORMA_PAGAMENTO[entrada.forma_pagamento]}
+                    </td>
                     <td className="px-5 py-3 text-[var(--texto-secundario)]">{entrada.descricao ?? '—'}</td>
                     <td className="px-5 py-3 font-medium">{formatarPreco(entrada.valor)}</td>
                   </tr>
@@ -293,11 +421,12 @@ function EntradasCaixa({ sessaoCaixaId, clinicaAtivaId }: EntradasCaixaProps) {
               {entradas.map((entrada) => (
                 <li key={entrada.id} className="space-y-1 p-4">
                   <div className="flex items-center justify-between">
-                    <p className="font-medium text-[var(--texto-principal)]">
-                      {ROTULO_FORMA_PAGAMENTO[entrada.forma_pagamento]}
-                    </p>
+                    <p className="font-medium text-[var(--texto-principal)]">{entrada.paciente_nome}</p>
                     <p className="font-medium text-[var(--texto-principal)]">{formatarPreco(entrada.valor)}</p>
                   </div>
+                  <p className="text-sm text-[var(--texto-secundario)]">
+                    {entrada.profissional_nome} · {ROTULO_FORMA_PAGAMENTO[entrada.forma_pagamento]}
+                  </p>
                   <p className="text-sm text-[var(--texto-secundario)]">
                     {formatarHora(entrada.registrado_em)}
                     {entrada.descricao ? ` · ${entrada.descricao}` : ''}

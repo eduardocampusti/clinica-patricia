@@ -18,10 +18,16 @@ interface RegistrarEntradaBody {
   forma_pagamento?: unknown
   valor?: unknown
   descricao?: unknown
+  paciente_id?: unknown
+  profissional_id?: unknown
 }
 
 function ehFormaPagamentoValida(valor: unknown): valor is FormaPagamento {
   return typeof valor === 'string' && (FORMAS_PAGAMENTO as readonly string[]).includes(valor)
+}
+
+function ehIdValido(valor: unknown): valor is string {
+  return typeof valor === 'string' && valor.trim().length > 0
 }
 
 export async function entradaCaixaRoutes(fastify: FastifyInstance) {
@@ -32,6 +38,8 @@ export async function entradaCaixaRoutes(fastify: FastifyInstance) {
       const formaPagamento = request.body?.forma_pagamento
       const valor = request.body?.valor
       const descricao = request.body?.descricao
+      const pacienteId = request.body?.paciente_id
+      const profissionalId = request.body?.profissional_id
 
       if (!ehFormaPagamentoValida(formaPagamento)) {
         return reply.code(400).send({ erro: 'Informe uma forma de pagamento válida.' })
@@ -39,6 +47,14 @@ export async function entradaCaixaRoutes(fastify: FastifyInstance) {
 
       if (typeof valor !== 'number' || !Number.isFinite(valor) || valor <= 0) {
         return reply.code(400).send({ erro: 'Informe um valor numérico maior que zero.' })
+      }
+
+      if (!ehIdValido(pacienteId)) {
+        return reply.code(400).send({ erro: 'Selecione o paciente.' })
+      }
+
+      if (!ehIdValido(profissionalId)) {
+        return reply.code(400).send({ erro: 'Selecione o profissional.' })
       }
 
       const descricaoTratada = typeof descricao === 'string' && descricao.trim() ? descricao.trim() : null
@@ -60,6 +76,31 @@ export async function entradaCaixaRoutes(fastify: FastifyInstance) {
         return reply.code(409).send({ erro: 'Nenhum caixa aberto. Abra o caixa antes de registrar uma entrada.' })
       }
 
+      // Checagem prévia (amigável): quem garante de verdade é a RLS
+      // (paciente/profissional precisam ser da mesma clínica do lançamento).
+      const { data: paciente } = await supabase
+        .from('pacientes')
+        .select('id')
+        .eq('id', pacienteId)
+        .eq('clinica_id', clinicaId)
+        .maybeSingle()
+
+      if (!paciente) {
+        return reply.code(400).send({ erro: 'Paciente inválido para esta clínica.' })
+      }
+
+      const { data: vinculoProfissional } = await supabase
+        .from('profissionais_clinicas')
+        .select('profissional_id')
+        .eq('profissional_id', profissionalId)
+        .eq('clinica_id', clinicaId)
+        .eq('ativo', true)
+        .maybeSingle()
+
+      if (!vinculoProfissional) {
+        return reply.code(400).send({ erro: 'Profissional inválido para esta clínica.' })
+      }
+
       const { data, error } = await supabase
         .from('entradas_caixa')
         .insert({
@@ -68,8 +109,12 @@ export async function entradaCaixaRoutes(fastify: FastifyInstance) {
           forma_pagamento: formaPagamento,
           valor,
           descricao: descricaoTratada,
+          paciente_id: pacienteId,
+          profissional_id: profissionalId,
         })
-        .select('id, sessao_caixa_id, clinica_id, forma_pagamento, valor, descricao, registrado_por, registrado_em')
+        .select(
+          'id, sessao_caixa_id, clinica_id, forma_pagamento, valor, descricao, paciente_id, profissional_id, registrado_por, registrado_em',
+        )
         .single()
 
       if (error) {

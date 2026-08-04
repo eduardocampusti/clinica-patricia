@@ -13,26 +13,23 @@ interface Profissional {
   conselho_classe: string | null
   registro_conselho: string | null
   especialidade_nome: string
+  valor_consulta: number | null
+  taxa_repasse_clinica: number
+}
+
+interface ProfissionalVinculado {
+  id: string
+  nome_completo: string
+  conselho_classe: string | null
+  registro_conselho: string | null
+  especialidades: { nome: string } | { nome: string }[] | null
+  valor_consulta: number | null
+  taxa_repasse_clinica: number
 }
 
 interface VinculoRow {
   ativo: boolean
-  profissionais:
-    | {
-        id: string
-        nome_completo: string
-        conselho_classe: string | null
-        registro_conselho: string | null
-        especialidades: { nome: string } | { nome: string }[] | null
-      }
-    | {
-        id: string
-        nome_completo: string
-        conselho_classe: string | null
-        registro_conselho: string | null
-        especialidades: { nome: string } | { nome: string }[] | null
-      }[]
-    | null
+  profissionais: ProfissionalVinculado | ProfissionalVinculado[] | null
 }
 
 interface ProfissionalDisponivel {
@@ -47,6 +44,8 @@ const FORM_INICIAL = {
   conselhoClasse: '',
   registroConselho: '',
   especialidadePrincipalId: '',
+  valorConsulta: '',
+  taxaRepasseClinica: '20',
 }
 
 function extrairEspecialidadeNome(
@@ -54,6 +53,10 @@ function extrairEspecialidadeNome(
 ): string {
   const item = Array.isArray(valor) ? valor[0] : valor
   return item?.nome ?? '—'
+}
+
+function formatarPreco(valor: number): string {
+  return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 }
 
 function extrairProfissional(linha: VinculoRow) {
@@ -82,6 +85,12 @@ function Profissionais({ clinicaAtivaId, carregandoClinica, souProprietaria }: P
   const [vinculando, setVinculando] = useState(false)
   const [erroVinculo, setErroVinculo] = useState<string | null>(null)
 
+  const [editandoValoresId, setEditandoValoresId] = useState<string | null>(null)
+  const [valorConsultaEdit, setValorConsultaEdit] = useState('')
+  const [taxaRepasseEdit, setTaxaRepasseEdit] = useState('')
+  const [salvandoValores, setSalvandoValores] = useState(false)
+  const [erroValores, setErroValores] = useState<string | null>(null)
+
   useEffect(() => {
     supabase
       .from('especialidades')
@@ -98,7 +107,7 @@ function Profissionais({ clinicaAtivaId, carregandoClinica, souProprietaria }: P
     const { data, error } = await supabase
       .from('profissionais_clinicas')
       .select(
-        'ativo, profissionais(id, nome_completo, conselho_classe, registro_conselho, especialidades(nome))',
+        'ativo, profissionais(id, nome_completo, conselho_classe, registro_conselho, especialidades(nome), valor_consulta, taxa_repasse_clinica)',
       )
       .eq('clinica_id', clinicaId)
       .eq('ativo', true)
@@ -119,6 +128,8 @@ function Profissionais({ clinicaAtivaId, carregandoClinica, souProprietaria }: P
         conselho_classe: p.conselho_classe,
         registro_conselho: p.registro_conselho,
         especialidade_nome: extrairEspecialidadeNome(p.especialidades),
+        valor_consulta: p.valor_consulta,
+        taxa_repasse_clinica: p.taxa_repasse_clinica,
       }))
       .sort((a, b) => a.nome_completo.localeCompare(b.nome_completo))
 
@@ -190,6 +201,21 @@ function Profissionais({ clinicaAtivaId, carregandoClinica, souProprietaria }: P
       return
     }
 
+    let valorConsulta: number | null = null
+    if (form.valorConsulta.trim()) {
+      valorConsulta = Number(form.valorConsulta.replace(',', '.'))
+      if (Number.isNaN(valorConsulta) || valorConsulta < 0) {
+        setErroFormulario('Informe um valor de consulta válido, ou deixe em branco.')
+        return
+      }
+    }
+
+    const taxaRepasseClinica = Number(form.taxaRepasseClinica.replace(',', '.'))
+    if (Number.isNaN(taxaRepasseClinica) || taxaRepasseClinica < 0 || taxaRepasseClinica > 100) {
+      setErroFormulario('Informe um repasse para a clínica entre 0 e 100%.')
+      return
+    }
+
     setSalvando(true)
 
     const { error } = await supabase.rpc('cadastrar_profissional', {
@@ -199,6 +225,8 @@ function Profissionais({ clinicaAtivaId, carregandoClinica, souProprietaria }: P
       p_registro_conselho: form.registroConselho.trim() || null,
       p_especialidade_principal_id: form.especialidadePrincipalId,
       p_clinica_id: clinicaAtivaId,
+      p_valor_consulta: valorConsulta,
+      p_taxa_repasse_clinica: taxaRepasseClinica,
     })
 
     if (error) {
@@ -244,6 +272,54 @@ function Profissionais({ clinicaAtivaId, carregandoClinica, souProprietaria }: P
       .eq('profissional_id', profissionalId)
       .eq('clinica_id', clinicaAtivaId)
     await Promise.all([carregarProfissionais(clinicaAtivaId), carregarDisponiveis(clinicaAtivaId)])
+  }
+
+  function abrirEdicaoValores(profissional: Profissional) {
+    setEditandoValoresId(profissional.id)
+    setValorConsultaEdit(profissional.valor_consulta != null ? String(profissional.valor_consulta).replace('.', ',') : '')
+    setTaxaRepasseEdit(String(profissional.taxa_repasse_clinica).replace('.', ','))
+    setErroValores(null)
+  }
+
+  function cancelarEdicaoValores() {
+    setEditandoValoresId(null)
+    setErroValores(null)
+  }
+
+  async function salvarValores(profissionalId: string) {
+    setErroValores(null)
+
+    let valorConsulta: number | null = null
+    if (valorConsultaEdit.trim()) {
+      valorConsulta = Number(valorConsultaEdit.replace(',', '.'))
+      if (Number.isNaN(valorConsulta) || valorConsulta < 0) {
+        setErroValores('Informe um valor de consulta válido, ou deixe em branco.')
+        return
+      }
+    }
+
+    const taxaRepasseClinica = Number(taxaRepasseEdit.replace(',', '.'))
+    if (Number.isNaN(taxaRepasseClinica) || taxaRepasseClinica < 0 || taxaRepasseClinica > 100) {
+      setErroValores('Informe um repasse para a clínica entre 0 e 100%.')
+      return
+    }
+
+    setSalvandoValores(true)
+
+    const { error } = await supabase
+      .from('profissionais')
+      .update({ valor_consulta: valorConsulta, taxa_repasse_clinica: taxaRepasseClinica })
+      .eq('id', profissionalId)
+
+    if (error) {
+      setErroValores('Não foi possível salvar os valores. Tente novamente.')
+      setSalvandoValores(false)
+      return
+    }
+
+    setSalvandoValores(false)
+    setEditandoValoresId(null)
+    if (clinicaAtivaId) await carregarProfissionais(clinicaAtivaId)
   }
 
   return (
@@ -389,6 +465,36 @@ function Profissionais({ clinicaAtivaId, carregandoClinica, souProprietaria }: P
                 className="w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 py-2.5 text-[var(--texto-principal)] outline-none transition focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60"
               />
             </div>
+
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-[var(--texto-principal)]">
+                Valor da consulta (R$)
+              </label>
+              <input
+                type="text"
+                inputMode="decimal"
+                placeholder="0,00"
+                value={form.valorConsulta}
+                onChange={(e) => setForm((f) => ({ ...f, valorConsulta: e.target.value }))}
+                disabled={salvando}
+                className="w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 py-2.5 text-[var(--texto-principal)] outline-none transition focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-[var(--texto-principal)]">
+                Repasse para a clínica (%) <span className="text-[var(--cor-erro)]">*</span>
+              </label>
+              <input
+                type="text"
+                inputMode="decimal"
+                required
+                value={form.taxaRepasseClinica}
+                onChange={(e) => setForm((f) => ({ ...f, taxaRepasseClinica: e.target.value }))}
+                disabled={salvando}
+                className="w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 py-2.5 text-[var(--texto-principal)] outline-none transition focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60"
+              />
+            </div>
           </div>
 
           {erroFormulario && (
@@ -442,6 +548,8 @@ function Profissionais({ clinicaAtivaId, carregandoClinica, souProprietaria }: P
                     <th className="px-5 py-3 font-medium">Nome</th>
                     <th className="px-5 py-3 font-medium">Especialidade</th>
                     <th className="px-5 py-3 font-medium">Conselho</th>
+                    <th className="px-5 py-3 font-medium">Valor consulta</th>
+                    <th className="px-5 py-3 font-medium">Repasse clínica</th>
                     {souProprietaria && <th className="px-5 py-3 font-medium">Ações</th>}
                   </tr>
                 </thead>
@@ -460,16 +568,82 @@ function Profissionais({ clinicaAtivaId, carregandoClinica, souProprietaria }: P
                           ? `${profissional.conselho_classe} ${profissional.registro_conselho ?? ''}`
                           : '—'}
                       </td>
-                      {souProprietaria && (
-                        <td className="px-5 py-3">
-                          <button
-                            type="button"
-                            onClick={() => desativarVinculo(profissional.id)}
-                            className="text-[var(--texto-secundario)] transition hover:text-[var(--cor-erro)]"
-                          >
-                            Remover desta clínica
-                          </button>
-                        </td>
+                      {editandoValoresId === profissional.id ? (
+                        <>
+                          <td className="px-5 py-3">
+                            <input
+                              type="text"
+                              inputMode="decimal"
+                              placeholder="0,00"
+                              value={valorConsultaEdit}
+                              onChange={(e) => setValorConsultaEdit(e.target.value)}
+                              disabled={salvandoValores}
+                              className="w-28 rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-2 py-1.5 text-[var(--texto-principal)] outline-none transition focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60"
+                            />
+                          </td>
+                          <td className="px-5 py-3">
+                            <input
+                              type="text"
+                              inputMode="decimal"
+                              value={taxaRepasseEdit}
+                              onChange={(e) => setTaxaRepasseEdit(e.target.value)}
+                              disabled={salvandoValores}
+                              className="w-20 rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-2 py-1.5 text-[var(--texto-principal)] outline-none transition focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60"
+                            />
+                          </td>
+                          {souProprietaria && (
+                            <td className="px-5 py-3">
+                              <div className="flex flex-wrap items-center gap-3">
+                                <button
+                                  type="button"
+                                  onClick={() => salvarValores(profissional.id)}
+                                  disabled={salvandoValores}
+                                  className="text-[var(--cor-primaria)] transition hover:opacity-80 disabled:opacity-60"
+                                >
+                                  {salvandoValores ? 'Salvando...' : 'Salvar'}
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={cancelarEdicaoValores}
+                                  disabled={salvandoValores}
+                                  className="text-[var(--texto-secundario)] transition hover:text-[var(--texto-principal)]"
+                                >
+                                  Cancelar
+                                </button>
+                                {erroValores && <p className="w-full text-sm text-[var(--cor-erro)]">{erroValores}</p>}
+                              </div>
+                            </td>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          <td className="px-5 py-3 text-[var(--texto-secundario)]">
+                            {profissional.valor_consulta != null ? formatarPreco(profissional.valor_consulta) : '—'}
+                          </td>
+                          <td className="px-5 py-3 text-[var(--texto-secundario)]">
+                            {profissional.taxa_repasse_clinica}%
+                          </td>
+                          {souProprietaria && (
+                            <td className="px-5 py-3">
+                              <div className="flex gap-3">
+                                <button
+                                  type="button"
+                                  onClick={() => abrirEdicaoValores(profissional)}
+                                  className="text-[var(--cor-primaria)] transition hover:opacity-80"
+                                >
+                                  Editar valores
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => desativarVinculo(profissional.id)}
+                                  className="text-[var(--texto-secundario)] transition hover:text-[var(--cor-erro)]"
+                                >
+                                  Remover desta clínica
+                                </button>
+                              </div>
+                            </td>
+                          )}
+                        </>
                       )}
                     </tr>
                   ))}
@@ -488,14 +662,73 @@ function Profissionais({ clinicaAtivaId, carregandoClinica, souProprietaria }: P
                         ? ` · ${profissional.conselho_classe} ${profissional.registro_conselho ?? ''}`
                         : ''}
                     </p>
-                    {souProprietaria && (
-                      <button
-                        type="button"
-                        onClick={() => desativarVinculo(profissional.id)}
-                        className="pt-1 text-sm text-[var(--texto-secundario)]"
-                      >
-                        Remover desta clínica
-                      </button>
+                    {editandoValoresId === profissional.id ? (
+                      <div className="space-y-2 pt-1">
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            inputMode="decimal"
+                            placeholder="Valor consulta (R$)"
+                            value={valorConsultaEdit}
+                            onChange={(e) => setValorConsultaEdit(e.target.value)}
+                            disabled={salvandoValores}
+                            className="w-1/2 rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-2 py-1.5 text-sm text-[var(--texto-principal)] outline-none transition focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60"
+                          />
+                          <input
+                            type="text"
+                            inputMode="decimal"
+                            placeholder="Repasse clínica (%)"
+                            value={taxaRepasseEdit}
+                            onChange={(e) => setTaxaRepasseEdit(e.target.value)}
+                            disabled={salvandoValores}
+                            className="w-1/2 rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-2 py-1.5 text-sm text-[var(--texto-principal)] outline-none transition focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60"
+                          />
+                        </div>
+                        {erroValores && <p className="text-sm text-[var(--cor-erro)]">{erroValores}</p>}
+                        <div className="flex gap-4 text-sm">
+                          <button
+                            type="button"
+                            onClick={() => salvarValores(profissional.id)}
+                            disabled={salvandoValores}
+                            className="text-[var(--cor-primaria)] disabled:opacity-60"
+                          >
+                            {salvandoValores ? 'Salvando...' : 'Salvar'}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={cancelarEdicaoValores}
+                            disabled={salvandoValores}
+                            className="text-[var(--texto-secundario)]"
+                          >
+                            Cancelar
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <p className="text-sm text-[var(--texto-secundario)]">
+                          {profissional.valor_consulta != null ? formatarPreco(profissional.valor_consulta) : 'Sem valor cadastrado'}
+                          {' · '}Repasse clínica {profissional.taxa_repasse_clinica}%
+                        </p>
+                        {souProprietaria && (
+                          <div className="flex gap-4 pt-1 text-sm">
+                            <button
+                              type="button"
+                              onClick={() => abrirEdicaoValores(profissional)}
+                              className="text-[var(--cor-primaria)]"
+                            >
+                              Editar valores
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => desativarVinculo(profissional.id)}
+                              className="text-[var(--texto-secundario)]"
+                            >
+                              Remover desta clínica
+                            </button>
+                          </div>
+                        )}
+                      </>
                     )}
                   </li>
                 ))}

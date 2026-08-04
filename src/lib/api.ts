@@ -62,6 +62,8 @@ export interface EntradaCaixa {
   forma_pagamento: FormaPagamento
   valor: number
   descricao: string | null
+  paciente_id: string
+  profissional_id: string
   registrado_por: string | null
   registrado_em: string
 }
@@ -71,6 +73,8 @@ export async function registrarEntradaCaixa(
   formaPagamento: FormaPagamento,
   valor: number,
   descricao: string | null,
+  pacienteId: string,
+  profissionalId: string,
 ): Promise<EntradaCaixa> {
   const token = await tokenDaSessao()
 
@@ -81,7 +85,13 @@ export async function registrarEntradaCaixa(
       Authorization: `Bearer ${token}`,
       'X-Clinica-Id': clinicaId,
     },
-    body: JSON.stringify({ forma_pagamento: formaPagamento, valor, descricao }),
+    body: JSON.stringify({
+      forma_pagamento: formaPagamento,
+      valor,
+      descricao,
+      paciente_id: pacienteId,
+      profissional_id: profissionalId,
+    }),
   })
 
   const body = (await resp.json()) as EntradaCaixa & ErroApi

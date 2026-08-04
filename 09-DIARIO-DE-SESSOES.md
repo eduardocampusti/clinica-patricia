@@ -4,6 +4,64 @@
 > para que qualquer conversa futura (chat ou Claude Code) tenha continuidade
 > e não "saia do contexto". Entrada mais recente no topo.
 
+## Sessão — 04/08/2026 (Financeiro — Fundação do repasse profissional: implementação, teste e fechamento)
+
+**Escopo pedido** (dois pontos pequenos antes do módulo Agenda,
+`10-PLANO-DIRETOR.md` seção "Modelo real de repasse", decisões de
+03/08/2026): (1) `valor_consulta`/`taxa_repasse_clinica` no cadastro do
+profissional; (2) vincular paciente + profissional na entrada de caixa, com
+o valor sugerido a partir do profissional escolhido. Li o plano diretor,
+`DEVELOPMENT_RULES.md`, `00-BANCO-DE-DADOS-OFICIAL.md` e o código existente
+de Profissionais/entradas_caixa antes de propor o plano.
+
+**Ruído na comunicação no início da sessão:** algumas mensagens do Eduardo
+chegaram corrompidas/ilegíveis (provavelmente tecla presa ou colagem
+acidental). Não tomei nenhuma ação com base nelas — só segui depois que ele
+reenviou o pedido original por completo.
+
+**Plano mostrado e SQL revisado antes de codar** (método combinado): SQL
+salvo em `valor_consulta_e_vinculos.sql` a pedido do Eduardo (revisão com
+outro assistente antes de confirmar). Eduardo aplicou e confirmou no banco.
+
+**Implementado:**
+- SQL: colunas `valor_consulta`/`taxa_repasse_clinica` em `profissionais`;
+  RPC `cadastrar_profissional` atualizada (parâmetros novos com default, sem
+  quebrar a assinatura antiga — RLS de UPDATE já existente cobria a edição,
+  sem policy nova). Colunas `paciente_id`/`profissional_id` (`not null`) em
+  `entradas_caixa`, com a única entrada de teste antiga apagada antes (sem
+  dado real para preencher retroativamente) e a RLS de INSERT reforçada para
+  também exigir que paciente e profissional pertençam à mesma clínica do
+  lançamento (mesmo princípio já usado para `sessao_caixa_id`).
+- Servidor (`server/src/routes/entradaCaixa.ts`): passou a exigir
+  `paciente_id`/`profissional_id`, validando os dois contra a clínica ativa
+  antes do INSERT (trava dupla, não só RLS).
+- Frontend: `src/pages/cadastros/Profissionais.tsx` ganhou os dois campos no
+  formulário de cadastro, colunas na lista, e uma ação nova **"Editar
+  valores"** (só proprietária, inline, `UPDATE` direto — RLS já existente).
+  `src/pages/Financeiro.tsx` ganhou seletores de paciente/profissional na
+  entrada (ambos obrigatórios), com o valor pré-preenchido a partir do
+  `valor_consulta` do profissional escolhido (editável depois).
+  `src/hooks/useEntradasCaixa.ts` passou a trazer os nomes via join para a
+  lista. `npm run build` limpo em `server/` e na raiz.
+
+**Teste ao vivo, no navegador (não só API):** pedi ao Eduardo para definir
+`valor_consulta R$ 500,00` no profissional de teste "Dr. Teste Brotas" pela
+própria tela "Editar valores" (ele confirmou direto no banco). Logada como
+`teste_recepcao_brotas` de verdade: selecionei paciente "Maria Teste Silva"
++ profissional "Dr. Teste Brotas" — o campo Valor pré-encheu `500`
+automaticamente. Registrei a entrada → apareceu na lista (Paciente/
+Profissional/Forma/Valor) e no total (`R$ 500,00`), sem erro no console.
+Confirmado também via consulta direta que a linha gravou `paciente_id`/
+`profissional_id` corretos (`id 23cc9df1-8aba-418a-b77a-4e474948a265`).
+
+**Módulo fechado.** Pendências registradas no `TODO.md`: cálculo automático
+do repasse (80/20) — próxima etapa depois da Agenda, conforme sequência já
+decidida; histórico de pagamento na ficha do paciente; remover os dados de
+teste desta sessão (valor de teste no "Dr. Teste Brotas", entrada de teste
+nova) antes de produção.
+
+---
+
 ## Sessão — 03/08/2026 (Financeiro — Registrar Entrada: teste completo, módulo fechado)
 
 **Continuação direta da sessão de implementação** (ver entrada abaixo) depois
