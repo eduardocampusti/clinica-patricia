@@ -2,6 +2,33 @@
 
 ## Concluído recentemente
 
+- [x] **Agenda — fundação do schema** (`agenda_fundacao.sql`, sessão
+  04/08/2026). Decisões confirmadas com o Eduardo antes de desenhar:
+  horário semanal fixo com exceções pontuais por cima; duração da
+  consulta fixa por profissional (não por serviço); só proprietária/
+  recepção criam ou editam agendamentos (médico só vê a própria agenda).
+  - `profissionais.duracao_consulta_minutos` (default 30min). Aproveitado
+    pra limpar a duplicidade de `cadastrar_profissional` que ficou da
+    sessão do repasse (existiam 2 versões sobrepostas, 6 e 8 parâmetros —
+    agora é uma só, com 9).
+  - `disponibilidade_padrao` — template semanal (profissional + clínica +
+    dia da semana + horário). Sem trava de sobreposição no banco aqui de
+    propósito (baixo risco, é só template administrativo).
+  - `agenda_excecoes` — folga ou horário especial pontual por data.
+  - `agendamentos` — o compromisso real. `hora_fim` sempre calculado no
+    banco (trigger) a partir da duração do profissional, nunca aceito do
+    cliente. **Trava de exclusão no banco impede 2 agendamentos do mesmo
+    profissional sobrepondo horário** (cancelados não contam) — testada
+    ao vivo: inseri 2 horários sobrepostos de propósito, o banco bloqueou
+    o segundo com `exclusion_violation`, e limpei o teste depois.
+  - RLS: proprietária/recepção veem e editam tudo da clínica; médico só
+    vê a própria agenda (via `profissionais.usuario_id`). Trava dupla no
+    INSERT igual à de `entradas_caixa` (paciente e profissional precisam
+    ser da mesma clínica do agendamento).
+  - **Pendente:** frontend (telas de disponibilidade, exceções e
+    calendário de agendamentos) ainda não existe — só o banco foi
+    construído nesta etapa.
+
 - [x] **Design system v2 — retrofit visual premium** (`01-DESIGN-SYSTEM.md`,
   sessão 04/08/2026). Claude assumiu papel de design lead. Direção definida
   e aprovada por protótipo interativo (sombra tingida de duas camadas,

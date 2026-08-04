@@ -4,6 +4,35 @@
 > para que qualquer conversa futura (chat ou Claude Code) tenha continuidade
 > e não "saia do contexto". Entrada mais recente no topo.
 
+## Sessão — 04/08/2026 (Agenda — fundação do schema)
+
+Retrofit visual fechado (Dashboard/Financeiro/Pacientes/Cadastros — ver
+entrada abaixo). Próximo módulo do roadmap: Agenda. Antes de desenhar,
+2 perguntas de negócio pro Eduardo: (1) horário se repete toda semana ou
+é configurado dia a dia? → padrão semanal fixo, recepção ajusta exceções
+pontuais. (2) duração da consulta é fixa por profissional ou varia por
+serviço? → fixa por profissional. Mais uma decisão já tomada anteriormente
+(10-PLANO-DIRETOR.md): só proprietária/recepção criam agendamentos, médico
+só vê a própria agenda.
+
+Desenhei o schema (`agenda_fundacao.sql`): `profissionais.
+duracao_consulta_minutos`, `disponibilidade_padrao` (template semanal),
+`agenda_excecoes` (folga/horário especial pontual), `agendamentos`
+(hora_fim calculado por trigger a partir da duração do profissional —
+nunca aceito do cliente — e trava de exclusão no banco impedindo dois
+agendamentos do mesmo profissional se sobrepondo). Aproveitei pra limpar
+a duplicidade de `cadastrar_profissional` (6 e 8 parâmetros) que ficou
+pendente da sessão do repasse — agora é uma função só, 9 parâmetros.
+
+Revisado, aprovado ("pode rodar"), executado via SQL Editor. Testei a
+trava de sobreposição de verdade: inseri 2 agendamentos do mesmo
+profissional em horários que se cruzam, o banco bloqueou o segundo com
+`exclusion_violation`, limpei os dados de teste depois. RLS confirmada
+(3 tabelas com `rowsecurity` ligado). Frontend ainda não existe — só o
+banco foi construído nesta etapa.
+
+---
+
 ## Sessão — 04/08/2026 (Design — definição do sistema visual premium v2)
 
 Eduardo pediu, a partir de agora, design premium/moderno pensado tela por

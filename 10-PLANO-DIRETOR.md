@@ -65,6 +65,16 @@ abaixo como "JÁ DECIDIDO" foram formalizadas nesta sessão.
         próprio, dedicado, com o mesmo rigor de teste dos demais — PRÓXIMO GRANDE.
      3. Integração Agenda → Financeiro (atendimento concluído gera a entrada
         automaticamente) — DEPOIS.
+   - **Integridade histórica do repasse (complemento técnico, 04/08/2026):** o
+     percentual aplicado no fechamento deve ser **gravado no momento do fechamento**
+     do repasse — nunca recalculado depois com base no valor "atual" cadastrado no
+     perfil do profissional. Se o percentual padrão mudar no futuro, repasses já
+     fechados não podem mudar de valor retroativamente (quebra a trilha de auditoria
+     já exigida no projeto).
+   - **Transação atômica no fechamento (complemento técnico, 04/08/2026):** o cálculo
+     do repasse do expediente (soma das entradas do período por profissional,
+     aplicação do percentual, geração do valor a pagar) deve ocorrer numa única
+     transação — evita expediente fechado sem repasse correspondente registrado.
 
 ## Princípios de arquitetura (do plano diretor)
 
