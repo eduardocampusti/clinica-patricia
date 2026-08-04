@@ -4,26 +4,38 @@
 > para que qualquer conversa futura (chat ou Claude Code) tenha continuidade
 > e não "saia do contexto". Entrada mais recente no topo.
 
-## Sessão — 03/08/2026 (bug: teste_medico_brotas sem auth.identities)
+## Sessão — 03/08/2026 (bug: teste_medico_brotas sem auth.identities + tokens NULL)
 
 **Problema:** login de `teste_medico_brotas@teste.local` retornava 500
 ("Database error querying schema") no Supabase Auth durante teste do módulo
-Registrar Entrada. Investigado via SQL (projeto oficial confirmado): a conta não
-tinha registro em `auth.identities` (tabela interna exigida pelo login por senha).
-Provável causa: essa conta foi criada num método antigo (INSERT direto em
-`auth.users`), antes de adotarmos o painel "Add user" como padrão.
+Registrar Entrada. Causa: essa conta foi criada num método antigo (INSERT direto
+em `auth.users`), antes de adotarmos o painel "Add user" como padrão — faltavam
+peças que só o painel cria automaticamente.
 
-**Correção aplicada:** inserido o registro faltante em `auth.identities`
-(provider `email`, `identity_data` no mesmo formato de uma conta funcional),
-copiando o padrão observado em `teste_recepcao_brotas` (criada hoje pelo painel).
-Confirmado por consulta — registro existe agora. Senha também foi redefinida
-via SQL (`crypt()`/`gen_salt('bf')`, mesma criptografia do Supabase) já que a
-senha original nunca tinha sido documentada.
+**Duas causas reais, corrigidas em sequência (a primeira não foi suficiente sozinha):**
+
+1. **Faltava registro em `auth.identities`** (exigido pelo login por senha).
+   Inserido no mesmo formato de uma conta funcional (`teste_recepcao_brotas`).
+   Corrigiu parte do problema, mas o erro 500 persistiu.
+2. **Causa real final, encontrada nos logs de Auth (Supabase → Logs → Auth):**
+   `error finding user: sql: Scan error on column index 3, name
+   "confirmation_token": converting NULL to string is unsupported`. Campos internos
+   (`confirmation_token`, `recovery_token`, `email_change_token_new`,
+   `email_change_token_current`, `email_change`, `phone_change`,
+   `phone_change_token`, `reauthentication_token`) estavam `NULL` em vez de string
+   vazia `''` — o Go/GoTrue não aceita `NULL` nesses campos. Corrigido com
+   `coalesce(campo, '')` em todos eles (só altera onde já era `NULL`, não toca em
+   valor existente). Login voltou a funcionar.
+
+**Lição:** quando um erro 500 "Database error querying schema" persistir mesmo após
+uma correção plausível, **checar os Logs de Auth no painel do Supabase** (Logs →
+Auth) antes de tentar mais uma hipótese — a mensagem de erro exata ali é muito mais
+rápida do que adivinhar de novo.
 
 **Regra reforçada:** todo usuário de teste deve ser criado exclusivamente pelo
 painel Authentication → Add user (nunca por INSERT direto em `auth.users`), pois
-o painel cria automaticamente o par `auth.users` + `auth.identities` necessário
-para login funcionar. Ver `DEVELOPMENT_RULES.md`.
+o painel cria automaticamente `auth.identities` e preenche os campos de token como
+string vazia, evitando os dois problemas acima. Ver `DEVELOPMENT_RULES.md`.
 
 ## Sessão — 03/08/2026 (Financeiro — Registrar Entrada: implementação, SQL ainda não aplicado)
 
