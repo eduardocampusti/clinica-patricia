@@ -43,6 +43,29 @@ abaixo como "JÁ DECIDIDO" foram formalizadas nesta sessão.
    (LGPD), ser dona dá acesso financeiro/administrativo, NÃO acesso ao conteúdo de
    prontuários. Acesso assistencial ≠ acesso administrativo.
 
+5. **Modelo real de repasse confirmado com a proprietária (03/08/2026):**
+   - Quem recebe o pagamento do paciente é a **recepcionista** (dinheiro — preferência
+     —, Pix ou cartão débito/crédito), não o médico.
+   - Cada consulta/procedimento tem um **valor cadastrado no perfil do profissional**
+     (cadastro exclusivo da proprietária) — funciona como valor **sugerido**, editável
+     pela recepção no momento do lançamento (pode haver desconto/variação).
+   - Todo lançamento de entrada deve registrar **qual paciente** e **qual profissional**
+     — sem isso não há como saber quem repassar depois.
+   - **No fim do expediente, a clínica repassa 80% ao médico e fica com 20%** — cálculo
+     automático a partir da soma das entradas do período por profissional. Taxa
+     modelada como **configurável por profissional** (default 20%), mesmo a
+     proprietária tendo dito que hoje é uniforme — é mais barato deixar preparado
+     agora do que remodelar depois.
+   - O pagamento também deve aparecer no **histórico da ficha do paciente**.
+   - **Sequência de implementação decidida** (evita construir Agenda + ajuste
+     financeiro ao mesmo tempo):
+     1. Vincular paciente + profissional + valor no lançamento de entrada (pequeno,
+        reaproveita Pacientes e Profissionais já existentes) — AGORA.
+     2. Módulo Agenda completo (calendário, horários, disponibilidade) — módulo
+        próprio, dedicado, com o mesmo rigor de teste dos demais — PRÓXIMO GRANDE.
+     3. Integração Agenda → Financeiro (atendimento concluído gera a entrada
+        automaticamente) — DEPOIS.
+
 ## Princípios de arquitetura (do plano diretor)
 
 - **Monólito modular** (não microserviços): um sistema, dividido internamente em
@@ -130,7 +153,6 @@ Documentação atualizada · Regressão (o que funcionava continua funcionando).
 - Quando nasce a cobrança? (agenda, check-in ou conclusão)
 - Cancelamento tardio gera cobrança?
 - Quem pode dar desconto/cortesia? Quem aprova estorno/reabertura de caixa?
-- Qual a regra de repasse atual de cada profissional?
 - Atendimento só particular, ou haverá convênio (TISS)?
 - RPO/RTO aceitáveis (perda de dados / tempo de recuperação).
 - Política de retenção por tipo de documento.
