@@ -27,12 +27,14 @@
     pacientes" em categoria pessoas. CPF com tabular-nums. Inputs e
     divisórias de tabela mantiveram borda (só o card perdeu).
   - **Cadastros Estruturais** (`Cadastros.tsx` + `Especialidades.tsx` +
-    `Profissionais.tsx` + `Servicos.tsx`) — **prompt enviado, arquivos já
-    modificados localmente, mas SEM confirmação/print de retorno ainda**
-    (sessão foi interrompida por limite de uso antes do Codex reportar).
-    Verificar com o Codex antes de considerar concluído.
-  - **Pendência:** nada disso está commitado ainda — ver seção de commits
-    pendentes abaixo.
+    `Profissionais.tsx` + `Servicos.tsx`) — **concluído, fechado por
+    revisão de código** (`git show d3c664a`, linha a linha) em vez de
+    print, já que segue exatamente o mesmo padrão de token já confirmado
+    ao vivo em Financeiro/Pacientes. Chip "N profissionais" com
+    singular/plural tratado, tabular-nums em valor_consulta/taxa_repasse
+    (desktop e mobile), cards sem borda, título e sombra padronizados.
+  - **Retrofit visual completo** (Dashboard → Financeiro → Pacientes →
+    Cadastros) — fechado em 04/08/2026.
 
 - [x] **Financeiro — Fundação do repasse profissional** (`10-PLANO-DIRETOR.md`,
   seção "Modelo real de repasse", decisões de 03/08/2026). Dois escopos
