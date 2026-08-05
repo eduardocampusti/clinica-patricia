@@ -78,7 +78,7 @@ function App() {
       emailUsuario={session.user.email ?? ''}
       onSair={handleSignOut}
     >
-      {tela === 'dashboard' && <Dashboard />}
+      {tela === 'dashboard' && <Dashboard clinicaAtivaId={clinicaAtivaId} />}
       {tela === 'agenda' && (
         <Agenda clinicaAtiva={clinicaAtiva} carregandoClinica={carregandoClinica} usuarioId={session.user.id} />
       )}

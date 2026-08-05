@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react'
+import { supabase } from '../lib/supabase'
 import { iniciais } from '../lib/texto'
 
 // ⚠️ PLACEHOLDER — dados fixos de exemplo, só para validar o layout do dashboard.
@@ -70,7 +72,70 @@ function formatarMoeda(valor: number): string {
   return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 }
 
-function Dashboard() {
+function paraISODate(data: Date): string {
+  const ano = data.getFullYear()
+  const mes = String(data.getMonth() + 1).padStart(2, '0')
+  const dia = String(data.getDate()).padStart(2, '0')
+  return `${ano}-${mes}-${dia}`
+}
+
+function agoraHHMMSS(): string {
+  const agora = new Date()
+  return `${String(agora.getHours()).padStart(2, '0')}:${String(agora.getMinutes()).padStart(2, '0')}:${String(agora.getSeconds()).padStart(2, '0')}`
+}
+
+interface ProximoPaciente {
+  nome: string
+  horario: string
+}
+
+interface DashboardProps {
+  clinicaAtivaId: string | null
+}
+
+function Dashboard({ clinicaAtivaId }: DashboardProps) {
+  const [proximoPaciente, setProximoPaciente] = useState<ProximoPaciente | null>(null)
+  const [carregandoProximo, setCarregandoProximo] = useState(true)
+
+  useEffect(() => {
+    if (!clinicaAtivaId) {
+      setProximoPaciente(null)
+      setCarregandoProximo(false)
+      return
+    }
+
+    let cancelado = false
+    setCarregandoProximo(true)
+
+    supabase
+      .from('agendamentos')
+      .select('hora_inicio, pacientes(nome_completo)')
+      .eq('clinica_id', clinicaAtivaId)
+      .eq('data', paraISODate(new Date()))
+      .in('status', ['agendado', 'confirmado'])
+      .gte('hora_inicio', agoraHHMMSS())
+      .order('hora_inicio', { ascending: true })
+      .limit(1)
+      .then(({ data }) => {
+        if (cancelado) return
+
+        type Linha = { hora_inicio: string; pacientes: { nome_completo: string } | { nome_completo: string }[] | null }
+        const linha = (data as Linha[] | null)?.[0]
+
+        if (!linha) {
+          setProximoPaciente(null)
+        } else {
+          const paciente = Array.isArray(linha.pacientes) ? linha.pacientes[0] : linha.pacientes
+          setProximoPaciente({ nome: paciente?.nome_completo ?? '—', horario: linha.hora_inicio.slice(0, 5) })
+        }
+        setCarregandoProximo(false)
+      })
+
+    return () => {
+      cancelado = true
+    }
+  }, [clinicaAtivaId])
+
   const saldo = ENTRADAS_PLACEHOLDER - SAIDAS_PLACEHOLDER
 
   const maiorEspecialidade = Math.max(...ESPECIALIDADES_PLACEHOLDER.map((e) => e.quantidade))
@@ -96,6 +161,32 @@ function Dashboard() {
       >
         <span className="h-2 w-2 flex-none rounded-full bg-[var(--cor-sucesso)]" />
         <p className="text-sm font-medium text-[var(--texto-principal)]">{BRIEFING_PLACEHOLDER}</p>
+      </section>
+
+      <section
+        className="flex items-center gap-3.5 rounded-[18px] bg-[var(--fundo-card)] px-5 py-4"
+        style={{ boxShadow: 'var(--sombra-neutra)' }}
+      >
+        {carregandoProximo ? (
+          <p className="text-sm text-[var(--texto-secundario)]">Carregando...</p>
+        ) : proximoPaciente ? (
+          <>
+            <div className="flex h-[38px] w-[38px] flex-none items-center justify-center rounded-full bg-[var(--cor-primaria-suave)] text-sm font-semibold text-[var(--cor-primaria)]">
+              {iniciais(proximoPaciente.nome)}
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="text-xs font-medium text-[var(--texto-secundario)]">Próximo paciente</div>
+              <div className="truncate text-sm font-semibold text-[var(--texto-principal)]">
+                {proximoPaciente.nome}
+              </div>
+            </div>
+            <div className="numero-tabular flex-none text-sm font-medium text-[var(--texto-principal)]">
+              {proximoPaciente.horario}
+            </div>
+          </>
+        ) : (
+          <p className="text-sm text-[var(--texto-secundario)]">Nenhum agendamento restante hoje.</p>
+        )}
       </section>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">

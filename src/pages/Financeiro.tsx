@@ -2,18 +2,15 @@ import { useCallback, useEffect, useState, type FormEvent } from 'react'
 import { supabase } from '../lib/supabase'
 import { useSessaoCaixaAberta } from '../hooks/useSessaoCaixaAberta'
 import { useEntradasCaixa } from '../hooks/useEntradasCaixa'
-import { abrirCaixa, registrarEntradaCaixa, type FormaPagamento } from '../lib/api'
+import { abrirCaixa, type FormaPagamento } from '../lib/api'
+import {
+  FormRegistrarEntrada,
+  type PacienteOpcaoEntrada,
+  type ProfissionalOpcaoEntrada,
+} from '../components/financeiro/FormRegistrarEntrada'
 
-interface PacienteOpcao {
-  id: string
-  nome_completo: string
-}
-
-interface ProfissionalOpcao {
-  id: string
-  nome_completo: string
-  valor_consulta: number | null
-}
+type PacienteOpcao = PacienteOpcaoEntrada
+type ProfissionalOpcao = ProfissionalOpcaoEntrada
 
 interface ProfissionalVinculoRow {
   profissionais: { id: string; nome_completo: string; valor_consulta: number | null } | { id: string; nome_completo: string; valor_consulta: number | null }[] | null
@@ -159,13 +156,6 @@ interface EntradasCaixaProps {
 
 function EntradasCaixa({ sessaoCaixaId, clinicaAtivaId }: EntradasCaixaProps) {
   const { entradas, carregando, recarregar } = useEntradasCaixa(sessaoCaixaId)
-  const [formaPagamento, setFormaPagamento] = useState<FormaPagamento>('dinheiro')
-  const [valor, setValor] = useState('')
-  const [descricao, setDescricao] = useState('')
-  const [pacienteId, setPacienteId] = useState('')
-  const [profissionalId, setProfissionalId] = useState('')
-  const [registrando, setRegistrando] = useState(false)
-  const [erro, setErro] = useState<string | null>(null)
 
   const [pacientes, setPacientes] = useState<PacienteOpcao[]>([])
   const [profissionais, setProfissionais] = useState<ProfissionalOpcao[]>([])
@@ -206,174 +196,16 @@ function EntradasCaixa({ sessaoCaixaId, clinicaAtivaId }: EntradasCaixaProps) {
 
   const total = entradas.reduce((soma, entrada) => soma + entrada.valor, 0)
 
-  function handleProfissionalChange(id: string) {
-    setProfissionalId(id)
-    const profissional = profissionais.find((p) => p.id === id)
-    if (profissional?.valor_consulta != null) {
-      setValor(String(profissional.valor_consulta).replace('.', ','))
-    }
-  }
-
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    setErro(null)
-
-    if (!clinicaAtivaId) return
-
-    const valorNumerico = Number(valor.replace(',', '.'))
-    if (Number.isNaN(valorNumerico) || valorNumerico <= 0) {
-      setErro('Informe um valor válido, maior que zero.')
-      return
-    }
-
-    if (!pacienteId) {
-      setErro('Selecione o paciente.')
-      return
-    }
-
-    if (!profissionalId) {
-      setErro('Selecione o profissional.')
-      return
-    }
-
-    setRegistrando(true)
-    try {
-      await registrarEntradaCaixa(
-        clinicaAtivaId,
-        formaPagamento,
-        valorNumerico,
-        descricao.trim() || null,
-        pacienteId,
-        profissionalId,
-      )
-      setValor('')
-      setDescricao('')
-      setPacienteId('')
-      setProfissionalId('')
-      await recarregar()
-    } catch (err) {
-      setErro(err instanceof Error ? err.message : 'Não foi possível registrar a entrada.')
-    } finally {
-      setRegistrando(false)
-    }
-  }
-
   return (
     <div className="space-y-6">
-      <form
-        onSubmit={handleSubmit}
-        className="space-y-5 rounded-[18px] bg-[var(--fundo-card)] p-6 sm:p-8"
-        style={{ boxShadow: 'var(--sombra-neutra)' }}
-      >
-        <h2 className="texto-titulo-secao text-[var(--texto-principal)]">Registrar entrada</h2>
-
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-          <div>
-            <label className="mb-1.5 block text-sm font-medium text-[var(--texto-principal)]">
-              Paciente <span className="text-[var(--cor-erro)]">*</span>
-            </label>
-            <select
-              required
-              value={pacienteId}
-              onChange={(e) => setPacienteId(e.target.value)}
-              disabled={registrando}
-              className="w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 py-2.5 text-[var(--texto-principal)] outline-none transition focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60"
-            >
-              <option value="">Selecione...</option>
-              {pacientes.map((paciente) => (
-                <option key={paciente.id} value={paciente.id}>
-                  {paciente.nome_completo}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="mb-1.5 block text-sm font-medium text-[var(--texto-principal)]">
-              Profissional <span className="text-[var(--cor-erro)]">*</span>
-            </label>
-            <select
-              required
-              value={profissionalId}
-              onChange={(e) => handleProfissionalChange(e.target.value)}
-              disabled={registrando}
-              className="w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 py-2.5 text-[var(--texto-principal)] outline-none transition focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60"
-            >
-              <option value="">Selecione...</option>
-              {profissionais.map((profissional) => (
-                <option key={profissional.id} value={profissional.id}>
-                  {profissional.nome_completo}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="mb-1.5 block text-sm font-medium text-[var(--texto-principal)]">
-              Forma de pagamento <span className="text-[var(--cor-erro)]">*</span>
-            </label>
-            <select
-              required
-              value={formaPagamento}
-              onChange={(e) => setFormaPagamento(e.target.value as FormaPagamento)}
-              disabled={registrando}
-              className="w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 py-2.5 text-[var(--texto-principal)] outline-none transition focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60"
-            >
-              {FORMAS_PAGAMENTO.map((forma) => (
-                <option key={forma.valor} value={forma.valor}>
-                  {forma.rotulo}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="mb-1.5 block text-sm font-medium text-[var(--texto-principal)]">
-              Valor (R$) <span className="text-[var(--cor-erro)]">*</span>
-            </label>
-            <input
-              type="text"
-              inputMode="decimal"
-              placeholder="0,00"
-              required
-              value={valor}
-              onChange={(e) => setValor(e.target.value)}
-              disabled={registrando}
-              className="w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 py-2.5 text-[var(--texto-principal)] outline-none transition focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60"
-            />
-          </div>
-
-          <div className="sm:col-span-2">
-            <label className="mb-1.5 block text-sm font-medium text-[var(--texto-principal)]">
-              Descrição (opcional)
-            </label>
-            <input
-              type="text"
-              value={descricao}
-              onChange={(e) => setDescricao(e.target.value)}
-              disabled={registrando}
-              className="w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 py-2.5 text-[var(--texto-principal)] outline-none transition focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60"
-            />
-          </div>
-        </div>
-
-        {erro && (
-          <p
-            role="alert"
-            className="rounded-lg border border-[var(--cor-erro-borda)] bg-[var(--cor-erro-suave)] px-3 py-2 text-sm text-[var(--cor-erro)]"
-          >
-            {erro}
-          </p>
-        )}
-
-        <button
-          type="submit"
-          disabled={registrando}
-          className="rounded-xl bg-[var(--cor-primaria)] px-5 py-2.5 font-medium text-white transition hover:bg-[var(--cor-primaria-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--cor-primaria)] disabled:cursor-not-allowed disabled:opacity-70"
-        >
-          {registrando ? 'Registrando...' : 'Registrar entrada'}
-        </button>
-      </form>
+      {clinicaAtivaId && (
+        <FormRegistrarEntrada
+          clinicaAtivaId={clinicaAtivaId}
+          pacientes={pacientes}
+          profissionais={profissionais}
+          onRegistrado={recarregar}
+        />
+      )}
 
       <div className="rounded-[18px] bg-[var(--fundo-card)]" style={{ boxShadow: 'var(--sombra-neutra)' }}>
         <div className="flex items-center justify-between border-b border-[var(--borda)] px-5 py-4">

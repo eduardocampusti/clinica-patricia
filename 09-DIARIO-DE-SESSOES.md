@@ -4,6 +4,53 @@
 > para que qualquer conversa futura (chat ou Claude Code) tenha continuidade
 > e não "saia do contexto". Entrada mais recente no topo.
 
+## Sessão — 05/08/2026 (Integração Agenda → Financeiro + Dashboard "Próximo paciente")
+
+Orquestração entre telas que já existiam (Agenda, Financeiro, Dashboard) —
+nenhuma tabela nova, só ligação entre o que já estava pronto.
+
+**Refatoração antes de integrar:** o pedido era "reaproveitar componente,
+não duplicar lógica" — extraí o formulário de "Registrar entrada" (antes
+vivendo só dentro do `EntradasCaixa` do `Financeiro.tsx`) para
+`src/components/financeiro/FormRegistrarEntrada.tsx`, com props de prefill
+(`pacienteIdInicial`/`profissionalIdInicial`) e um `comCard` opcional (pra
+não duplicar sombra/raio quando o formulário já está dentro do `ModalBase`
+da Agenda). `Financeiro.tsx` ficou mais enxuto, comportamento idêntico —
+testado e confirmado que continua funcionando igual.
+
+**Agenda → Financeiro:** no `mudarStatus` do Agenda.tsx, ao marcar
+"concluido", checa se há sessão de caixa aberta na clínica. Com caixa
+aberto: abre o `FormRegistrarEntrada` num modal, pré-preenchido com
+paciente/profissional do agendamento e valor sugerido
+(`profissionais.valor_consulta`). Sem caixa aberto: a mudança de status
+acontece do mesmo jeito (nunca fica bloqueada por causa do caixa), só
+aparece um aviso não-bloqueante e dispensável.
+
+**Dashboard "Próximo paciente":** novo card logo abaixo do briefing,
+reaproveitando o mesmo padrão visual (avatar + nome + horário) já usado em
+"Atendimentos de hoje". Busca real em `agendamentos` (clínica ativa, hoje,
+status agendado/confirmado, `hora_inicio >= agora`, primeiro por horário).
+Resto do Dashboard continua placeholder, como combinado — só essa seção
+virou dado real.
+
+**Teste do cenário "sem caixa aberto" — bloqueio e solução:** não havia
+como testar isso ao vivo com o que já existia: Brotas (única clínica com
+profissional cadastrado) sempre tem caixa aberto (não existe "fechar
+caixa" ainda); Ipupiara não tem caixa aberto, mas também não tem nenhum
+profissional vinculado, e só proprietária cadastra/vincula profissional
+(a recepção de teste não consegue). Perguntei ao Eduardo como resolver;
+ele optou por fechar a sessão de caixa de Brotas **manualmente, direto no
+banco**, só pra esse teste pontual (confirmei antes, por leitura, que não
+havia sessão `aberto` pra Brotas). Testado o cenário completo (aviso
+aparece, sem modal, status muda normalmente, aviso é dispensável) —
+depois avisei o Eduardo pra reabrir o caixa e restaurar o estado anterior.
+
+**Testado ao vivo, os dois cenários de caixa + os dois estados do
+"Próximo paciente", claro e escuro, sem erro de console.** `npm run build`
+limpo. Módulo fechado — detalhes completos no `TODO.md`.
+
+---
+
 ## Sessão — 04/08/2026 (Agenda — frontend completo, módulo fechado)
 
 Schema já existia (`agenda_fundacao.sql` + `agenda_lista_espera.sql`, ver

@@ -2,6 +2,52 @@
 
 ## Concluído recentemente
 
+- [x] **Integração Agenda → Financeiro + Dashboard "Próximo paciente"**
+  (sessão 05/08/2026). Orquestração entre telas que já existiam — nenhuma
+  tabela nova.
+  - **Agenda → Financeiro:** ao marcar um agendamento como "concluido" (menu
+    rápido de status), a Agenda checa se há sessão de caixa aberta na
+    clínica. Se houver, abre o modal "Registrar entrada" — **mesmo
+    componente do Financeiro**, extraído para
+    `src/components/financeiro/FormRegistrarEntrada.tsx` (props
+    `pacienteIdInicial`/`profissionalIdInicial`, mais um `comCard` pra não
+    duplicar sombra/raio quando já está dentro de um modal) — pré-preenchido
+    com paciente, profissional e valor sugerido (`profissionais.valor_consulta`
+    do profissional do agendamento). Se não houver caixa aberto, a mudança de
+    status acontece normalmente e só aparece um aviso não-bloqueante e
+    dispensável ("Sem caixa aberto — lance essa entrada manualmente quando
+    abrir.") — nunca trava a mudança de status.
+  - **Dashboard "Próximo paciente":** novo card (mesmo formato visual —
+    avatar/nome/horário — já usado em "Atendimentos de hoje"), busca em
+    `agendamentos` (clínica ativa, hoje, status agendado/confirmado,
+    `hora_inicio >= agora`, primeiro por horário). Estado vazio: "Nenhum
+    agendamento restante hoje." Fora de escopo (combinado): resto do
+    Dashboard (Entradas/Saídas/Atendimentos hoje/Resumo por
+    especialidade/Repasse) continua placeholder — só essa seção passou a
+    usar dado real.
+  - **Testado ao vivo, os dois cenários, claro e escuro:**
+    - Com caixa aberto (Brotas): marquei "Maria Teste Silva" (10:00) como
+      concluído → modal abriu sozinho, paciente/profissional/valor (R$
+      500,00) corretos → registrei de verdade → total do Financeiro foi de
+      R$ 500 para R$ 1.000, confirmando que a entrada gravou.
+    - Sem caixa aberto: **Eduardo fechou a sessão de caixa de Brotas
+      manualmente no banco só pra esse teste** (pedido por mim, já que
+      "fechar caixa" ainda não existe como funcionalidade e não havia
+      clínica de teste com profissional cadastrado e sem caixa aberto ao
+      mesmo tempo — Ipupiara tem recepção de teste mas nenhum profissional
+      vinculado, e só proprietária cadastra/vincula profissional). Marquei o
+      mesmo agendamento como concluído de novo → aviso apareceu, sem abrir
+      modal, status mudou normalmente, botão de fechar o aviso funciona.
+      **Eduardo reabre o caixa em seguida**, restaurando o estado anterior.
+    - "Próximo paciente": testado vazio ("Nenhum agendamento restante
+      hoje") e com dado real (criei agendamento de teste às 14:00 do dia,
+      apareceu certo).
+  - `npm run build` limpo, sem erro de console em nenhum teste.
+  - **Dado de teste desta sessão:** agendamento novo criado para
+    05/08/2026 14:00 (Maria Teste Silva / Dr. Teste Brotas, status
+    `agendado`) — só pra provar "Próximo paciente"; remover antes de
+    produção junto com os outros dados de teste já listados.
+
 - [x] **Agenda — frontend completo** (`src/pages/Agenda.tsx`, novo painel
   "Horários de atendimento" em `Profissionais.tsx`; schema já existia —
   `agenda_fundacao.sql`/`agenda_lista_espera.sql`, sessão anterior). Sistema
