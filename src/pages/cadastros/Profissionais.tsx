@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type FormEvent } from 'react'
+import { Fragment, useCallback, useEffect, useState, type FormEvent } from 'react'
 import { supabase } from '../../lib/supabase'
 import { apenasDigitos, cpfValido, formatarCpf } from '../../lib/cpf'
 
@@ -38,6 +38,21 @@ interface ProfissionalDisponivel {
   clinicas_vinculadas: string[]
 }
 
+interface LinhaHorario {
+  id: string
+  diaSemana: number
+  horaInicio: string
+  horaFim: string
+}
+
+const DIAS_SEMANA = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado']
+
+let contadorLinhaHorario = 0
+function novaLinhaHorario(): LinhaHorario {
+  contadorLinhaHorario += 1
+  return { id: `nova-${contadorLinhaHorario}`, diaSemana: 1, horaInicio: '08:00', horaFim: '18:00' }
+}
+
 const FORM_INICIAL = {
   nomeCompleto: '',
   cpf: '',
@@ -67,9 +82,10 @@ interface ProfissionaisProps {
   clinicaAtivaId: string | null
   carregandoClinica: boolean
   souProprietaria: boolean
+  podeGerenciarAgenda: boolean
 }
 
-function Profissionais({ clinicaAtivaId, carregandoClinica, souProprietaria }: ProfissionaisProps) {
+function Profissionais({ clinicaAtivaId, carregandoClinica, souProprietaria, podeGerenciarAgenda }: ProfissionaisProps) {
   const [especialidades, setEspecialidades] = useState<Especialidade[]>([])
   const [profissionais, setProfissionais] = useState<Profissional[]>([])
   const [carregandoLista, setCarregandoLista] = useState(true)
@@ -90,6 +106,12 @@ function Profissionais({ clinicaAtivaId, carregandoClinica, souProprietaria }: P
   const [taxaRepasseEdit, setTaxaRepasseEdit] = useState('')
   const [salvandoValores, setSalvandoValores] = useState(false)
   const [erroValores, setErroValores] = useState<string | null>(null)
+
+  const [editandoHorariosId, setEditandoHorariosId] = useState<string | null>(null)
+  const [linhasHorarios, setLinhasHorarios] = useState<LinhaHorario[]>([])
+  const [carregandoHorarios, setCarregandoHorarios] = useState(false)
+  const [salvandoHorarios, setSalvandoHorarios] = useState(false)
+  const [erroHorarios, setErroHorarios] = useState<string | null>(null)
 
   useEffect(() => {
     supabase
@@ -320,6 +342,96 @@ function Profissionais({ clinicaAtivaId, carregandoClinica, souProprietaria }: P
     setSalvandoValores(false)
     setEditandoValoresId(null)
     if (clinicaAtivaId) await carregarProfissionais(clinicaAtivaId)
+  }
+
+  async function abrirHorarios(profissionalId: string) {
+    if (!clinicaAtivaId) return
+    setEditandoHorariosId(profissionalId)
+    setErroHorarios(null)
+    setCarregandoHorarios(true)
+
+    const { data } = await supabase
+      .from('disponibilidade_padrao')
+      .select('id, dia_semana, hora_inicio, hora_fim')
+      .eq('profissional_id', profissionalId)
+      .eq('clinica_id', clinicaAtivaId)
+      .eq('ativo', true)
+      .order('dia_semana', { ascending: true })
+
+    const linhas = (data ?? []).map((linha) => ({
+      id: linha.id,
+      diaSemana: linha.dia_semana,
+      horaInicio: linha.hora_inicio.slice(0, 5),
+      horaFim: linha.hora_fim.slice(0, 5),
+    }))
+    setLinhasHorarios(linhas.length > 0 ? linhas : [novaLinhaHorario()])
+    setCarregandoHorarios(false)
+  }
+
+  function fecharHorarios() {
+    setEditandoHorariosId(null)
+    setErroHorarios(null)
+  }
+
+  function adicionarLinhaHorario() {
+    setLinhasHorarios((linhas) => [...linhas, novaLinhaHorario()])
+  }
+
+  function removerLinhaHorario(id: string) {
+    setLinhasHorarios((linhas) => linhas.filter((l) => l.id !== id))
+  }
+
+  function atualizarLinhaHorario(id: string, campo: 'diaSemana' | 'horaInicio' | 'horaFim', valor: string) {
+    setLinhasHorarios((linhas) =>
+      linhas.map((l) => (l.id === id ? { ...l, [campo]: campo === 'diaSemana' ? Number(valor) : valor } : l)),
+    )
+  }
+
+  async function salvarHorarios(profissionalId: string) {
+    setErroHorarios(null)
+
+    for (const linha of linhasHorarios) {
+      if (linha.horaFim <= linha.horaInicio) {
+        setErroHorarios(`Em ${DIAS_SEMANA[linha.diaSemana]}, o horário de fim precisa ser depois do início.`)
+        return
+      }
+    }
+
+    if (!clinicaAtivaId) return
+    setSalvandoHorarios(true)
+
+    const { error: erroDelete } = await supabase
+      .from('disponibilidade_padrao')
+      .delete()
+      .eq('profissional_id', profissionalId)
+      .eq('clinica_id', clinicaAtivaId)
+
+    if (erroDelete) {
+      setErroHorarios('Não foi possível salvar os horários. Tente novamente.')
+      setSalvandoHorarios(false)
+      return
+    }
+
+    if (linhasHorarios.length > 0) {
+      const { error: erroInsert } = await supabase.from('disponibilidade_padrao').insert(
+        linhasHorarios.map((linha) => ({
+          profissional_id: profissionalId,
+          clinica_id: clinicaAtivaId,
+          dia_semana: linha.diaSemana,
+          hora_inicio: linha.horaInicio,
+          hora_fim: linha.horaFim,
+        })),
+      )
+
+      if (erroInsert) {
+        setErroHorarios('Não foi possível salvar os horários. Tente novamente.')
+        setSalvandoHorarios(false)
+        return
+      }
+    }
+
+    setSalvandoHorarios(false)
+    setEditandoHorariosId(null)
   }
 
   return (
@@ -570,13 +682,13 @@ function Profissionais({ clinicaAtivaId, carregandoClinica, souProprietaria }: P
                     <th className="px-5 py-3 font-medium">Conselho</th>
                     <th className="px-5 py-3 font-medium">Valor consulta</th>
                     <th className="px-5 py-3 font-medium">Repasse clínica</th>
-                    {souProprietaria && <th className="px-5 py-3 font-medium">Ações</th>}
+                    {(souProprietaria || podeGerenciarAgenda) && <th className="px-5 py-3 font-medium">Ações</th>}
                   </tr>
                 </thead>
                 <tbody>
                   {profissionais.map((profissional) => (
+                    <Fragment key={profissional.id}>
                     <tr
-                      key={profissional.id}
                       className="border-b border-[var(--borda)] text-[var(--texto-principal)] last:border-0"
                     >
                       <td className="px-5 py-3 font-medium">{profissional.nome_completo}</td>
@@ -643,29 +755,60 @@ function Profissionais({ clinicaAtivaId, carregandoClinica, souProprietaria }: P
                           <td className="numero-tabular px-5 py-3 text-[var(--texto-secundario)]">
                             {profissional.taxa_repasse_clinica}%
                           </td>
-                          {souProprietaria && (
+                          {(souProprietaria || podeGerenciarAgenda) && (
                             <td className="px-5 py-3">
-                              <div className="flex gap-3">
-                                <button
-                                  type="button"
-                                  onClick={() => abrirEdicaoValores(profissional)}
-                                  className="text-[var(--cor-primaria)] transition hover:opacity-80"
-                                >
-                                  Editar valores
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => desativarVinculo(profissional.id)}
-                                  className="text-[var(--texto-secundario)] transition hover:text-[var(--cor-erro)]"
-                                >
-                                  Remover desta clínica
-                                </button>
+                              <div className="flex flex-wrap gap-3">
+                                {souProprietaria && (
+                                  <button
+                                    type="button"
+                                    onClick={() => abrirEdicaoValores(profissional)}
+                                    className="text-[var(--cor-primaria)] transition hover:opacity-80"
+                                  >
+                                    Editar valores
+                                  </button>
+                                )}
+                                {podeGerenciarAgenda && (
+                                  <button
+                                    type="button"
+                                    onClick={() => abrirHorarios(profissional.id)}
+                                    className="text-[var(--cor-primaria)] transition hover:opacity-80"
+                                  >
+                                    Horários de atendimento
+                                  </button>
+                                )}
+                                {souProprietaria && (
+                                  <button
+                                    type="button"
+                                    onClick={() => desativarVinculo(profissional.id)}
+                                    className="text-[var(--texto-secundario)] transition hover:text-[var(--cor-erro)]"
+                                  >
+                                    Remover desta clínica
+                                  </button>
+                                )}
                               </div>
                             </td>
                           )}
                         </>
                       )}
                     </tr>
+                    {editandoHorariosId === profissional.id && (
+                      <tr>
+                        <td colSpan={souProprietaria || podeGerenciarAgenda ? 6 : 5} className="p-0">
+                          <PainelHorarios
+                            linhas={linhasHorarios}
+                            carregando={carregandoHorarios}
+                            salvando={salvandoHorarios}
+                            erro={erroHorarios}
+                            onAdicionar={adicionarLinhaHorario}
+                            onRemover={removerLinhaHorario}
+                            onAtualizar={atualizarLinhaHorario}
+                            onSalvar={() => salvarHorarios(profissional.id)}
+                            onCancelar={fecharHorarios}
+                          />
+                        </td>
+                      </tr>
+                    )}
+                    </Fragment>
                   ))}
                 </tbody>
               </table>
@@ -730,31 +873,170 @@ function Profissionais({ clinicaAtivaId, carregandoClinica, souProprietaria }: P
                           {profissional.valor_consulta != null ? formatarPreco(profissional.valor_consulta) : 'Sem valor cadastrado'}
                           {' · '}Repasse clínica {profissional.taxa_repasse_clinica}%
                         </p>
-                        {souProprietaria && (
-                          <div className="flex gap-4 pt-1 text-sm">
-                            <button
-                              type="button"
-                              onClick={() => abrirEdicaoValores(profissional)}
-                              className="text-[var(--cor-primaria)]"
-                            >
-                              Editar valores
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => desativarVinculo(profissional.id)}
-                              className="text-[var(--texto-secundario)]"
-                            >
-                              Remover desta clínica
-                            </button>
+                        {(souProprietaria || podeGerenciarAgenda) && (
+                          <div className="flex flex-wrap gap-4 pt-1 text-sm">
+                            {souProprietaria && (
+                              <button
+                                type="button"
+                                onClick={() => abrirEdicaoValores(profissional)}
+                                className="text-[var(--cor-primaria)]"
+                              >
+                                Editar valores
+                              </button>
+                            )}
+                            {podeGerenciarAgenda && (
+                              <button
+                                type="button"
+                                onClick={() => abrirHorarios(profissional.id)}
+                                className="text-[var(--cor-primaria)]"
+                              >
+                                Horários de atendimento
+                              </button>
+                            )}
+                            {souProprietaria && (
+                              <button
+                                type="button"
+                                onClick={() => desativarVinculo(profissional.id)}
+                                className="text-[var(--texto-secundario)]"
+                              >
+                                Remover desta clínica
+                              </button>
+                            )}
                           </div>
                         )}
                       </>
+                    )}
+                    {editandoHorariosId === profissional.id && (
+                      <PainelHorarios
+                        linhas={linhasHorarios}
+                        carregando={carregandoHorarios}
+                        salvando={salvandoHorarios}
+                        erro={erroHorarios}
+                        onAdicionar={adicionarLinhaHorario}
+                        onRemover={removerLinhaHorario}
+                        onAtualizar={atualizarLinhaHorario}
+                        onSalvar={() => salvarHorarios(profissional.id)}
+                        onCancelar={fecharHorarios}
+                      />
                     )}
                   </li>
                 ))}
               </ul>
             </>
           )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+interface PainelHorariosProps {
+  linhas: LinhaHorario[]
+  carregando: boolean
+  salvando: boolean
+  erro: string | null
+  onAdicionar: () => void
+  onRemover: (id: string) => void
+  onAtualizar: (id: string, campo: 'diaSemana' | 'horaInicio' | 'horaFim', valor: string) => void
+  onSalvar: () => void
+  onCancelar: () => void
+}
+
+// Mesmo padrão visual de "Editar valores": painel inline, mesma clínica de
+// tokens (--sombra-neutra, raio 18px) por ser um bloco separado do resto da
+// linha (01-DESIGN-SYSTEM.md §4 — sombra em vez de borda no card).
+function PainelHorarios({
+  linhas,
+  carregando,
+  salvando,
+  erro,
+  onAdicionar,
+  onRemover,
+  onAtualizar,
+  onSalvar,
+  onCancelar,
+}: PainelHorariosProps) {
+  return (
+    <div className="m-4 rounded-[18px] bg-[var(--fundo-pagina)] p-5" style={{ boxShadow: 'var(--sombra-neutra)' }}>
+      <h3 className="texto-titulo-secao mb-3 text-[var(--texto-principal)]">Horários de atendimento</h3>
+
+      {carregando ? (
+        <p className="text-sm text-[var(--texto-secundario)]">Carregando...</p>
+      ) : (
+        <div className="space-y-3">
+          {linhas.map((linha) => (
+            <div key={linha.id} className="flex flex-wrap items-center gap-2.5">
+              <select
+                value={linha.diaSemana}
+                onChange={(e) => onAtualizar(linha.id, 'diaSemana', e.target.value)}
+                disabled={salvando}
+                className="rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-2.5 py-2 text-sm text-[var(--texto-principal)] outline-none transition focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60"
+              >
+                {DIAS_SEMANA.map((dia, indice) => (
+                  <option key={dia} value={indice}>
+                    {dia}
+                  </option>
+                ))}
+              </select>
+              <input
+                type="time"
+                value={linha.horaInicio}
+                onChange={(e) => onAtualizar(linha.id, 'horaInicio', e.target.value)}
+                disabled={salvando}
+                className="rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-2.5 py-2 text-sm text-[var(--texto-principal)] outline-none transition focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60"
+              />
+              <span className="text-sm text-[var(--texto-secundario)]">até</span>
+              <input
+                type="time"
+                value={linha.horaFim}
+                onChange={(e) => onAtualizar(linha.id, 'horaFim', e.target.value)}
+                disabled={salvando}
+                className="rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-2.5 py-2 text-sm text-[var(--texto-principal)] outline-none transition focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60"
+              />
+              <button
+                type="button"
+                onClick={() => onRemover(linha.id)}
+                disabled={salvando}
+                className="text-sm text-[var(--texto-secundario)] transition hover:text-[var(--cor-erro)] disabled:opacity-60"
+              >
+                Remover
+              </button>
+            </div>
+          ))}
+
+          <button
+            type="button"
+            onClick={onAdicionar}
+            disabled={salvando}
+            className="text-sm font-medium text-[var(--cor-primaria)] transition hover:opacity-80 disabled:opacity-60"
+          >
+            + Adicionar linha
+          </button>
+
+          {erro && (
+            <p role="alert" className="rounded-lg border border-[var(--cor-erro-borda)] bg-[var(--cor-erro-suave)] px-3 py-2 text-sm text-[var(--cor-erro)]">
+              {erro}
+            </p>
+          )}
+
+          <div className="flex justify-end gap-3 pt-1">
+            <button
+              type="button"
+              onClick={onCancelar}
+              disabled={salvando}
+              className="rounded-xl border border-[var(--borda)] px-4 py-2 text-sm font-medium text-[var(--texto-principal)] transition hover:bg-[var(--fundo-card)] disabled:opacity-60"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              onClick={onSalvar}
+              disabled={salvando}
+              className="rounded-xl bg-[var(--cor-primaria)] px-4 py-2 text-sm font-medium text-white transition hover:bg-[var(--cor-primaria-hover)] disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              {salvando ? 'Salvando...' : 'Salvar horários'}
+            </button>
+          </div>
         </div>
       )}
     </div>

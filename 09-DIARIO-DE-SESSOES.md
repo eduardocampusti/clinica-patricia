@@ -4,6 +4,64 @@
 > para que qualquer conversa futura (chat ou Claude Code) tenha continuidade
 > e não "saia do contexto". Entrada mais recente no topo.
 
+## Sessão — 04/08/2026 (Agenda — frontend completo, módulo fechado)
+
+Schema já existia (`agenda_fundacao.sql` + `agenda_lista_espera.sql`, ver
+entrada abaixo) e o design já vinha aprovado por protótipo. Construí
+`src/pages/Agenda.tsx` (página nova, grade do dia + resumo + lista de
+espera + 3 modais) e um painel novo "Horários de atendimento" dentro de
+`Profissionais.tsx`, seguindo o sistema visual v2 já validado no retrofit.
+
+**Achado e corrigido durante a sessão:** gateei o botão "Horários de
+atendimento" só para `souProprietaria`, copiando o padrão de "Editar
+valores" — mas o RLS de `disponibilidade_padrao` (`disponibilidade_insert`,
+já no schema) permite proprietária **e** recepção. Corrigido antes de
+testar: `Cadastros.tsx` agora calcula `podeGerenciarAgenda` (a partir do
+`papel`, não só `souProprietaria`) e passa como prop nova; as 3 ações da
+coluna "Ações" em Profissionais.tsx passaram a ser gateadas uma a uma
+(Editar valores/Remover só proprietária; Horários de atendimento também
+recepção) em vez de todas atrás do mesmo `souProprietaria`.
+
+**Teste ao vivo, ponta a ponta, como `teste_recepcao_brotas` (recepção,
+só Brotas):**
+- Cadastrou horário de terça-feira (08:00–18:00) para "Dr. Teste Brotas"
+  pelo painel novo → grade do dia passou a mostrar a coluna dele, com
+  "fora do expediente" (hachurado) corretamente antes das 08:00 e depois
+  das 18:00.
+- Criou agendamento real (Maria Teste Silva, 10:00) → bloco posicionado
+  certo na grade, cor neutra de "agendado".
+- Tentou criar um segundo agendamento no mesmo horário/profissional →
+  bloqueado pelo banco (`exclusion_violation`), mensagem amigável exibida:
+  "Esse profissional já tem um agendamento nesse horário."
+- Clicou no agendamento, mudou status para "Confirmado" pelo menu rápido →
+  cor mudou pra verde, card de resumo "Confirmados" foi de 0 pra 1.
+- Adicionou "João Teste Cadastro" à lista de espera do mesmo profissional →
+  painel e chip "Lista de espera" atualizaram (0→1).
+- Tentou adicionar o mesmo paciente+profissional de novo → bloqueado pelo
+  índice único, mensagem amigável: "Esse paciente já está na lista de
+  espera deste profissional."
+- Clicou "Agendar" na entrada da lista de espera → modal de novo
+  agendamento abriu com paciente e profissional já pré-preenchidos.
+- Marcou folga pro mesmo profissional numa terça futura (11/08) → coluna
+  inteira da grade virou hachurado, sem nenhuma disponibilidade visível.
+
+Testado claro e escuro, mobile (375px, sem overflow), sem erro de console
+em nenhum momento. `npm run build` limpo.
+
+**Pendência de UX anotada, não resolvida agora:** não existe caminho na UI
+pra marcar "horário especial" num dia em que o profissional não tem
+NENHUM expediente cadastrado — a coluna (e o botão que abre esse modal) só
+aparece quando já existe disponibilidade ou exceção pra aquele dia. Um
+caso real (atender num sábado excepcional, por exemplo) ficaria sem
+solução até isso ser revisitado.
+
+**Módulo fechado.** Dados de teste desta sessão (horário de terça do "Dr.
+Teste Brotas", agendamento da "Maria Teste Silva", "João Teste Cadastro"
+na lista de espera, folga de 11/08) ficam registrados no TODO.md para
+remoção antes de produção.
+
+---
+
 ## Sessão — 04/08/2026 (Agenda — fundação do schema)
 
 Retrofit visual fechado (Dashboard/Financeiro/Pacientes/Cadastros — ver

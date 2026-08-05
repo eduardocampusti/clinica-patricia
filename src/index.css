@@ -38,6 +38,18 @@ body {
   font-weight: 600;
 }
 
+/* Área "fora do expediente" na grade da Agenda — hachurado diagonal sutil,
+   tons de --fundo-pagina (não é cor de status, é ausência de expediente). */
+.agenda-fora-expediente {
+  background-image: repeating-linear-gradient(
+    45deg,
+    var(--fundo-pagina),
+    var(--fundo-pagina) 8px,
+    color-mix(in srgb, var(--fundo-pagina) 60%, var(--texto-terciario)) 8px,
+    color-mix(in srgb, var(--fundo-pagina) 60%, var(--texto-terciario)) 9px
+  );
+}
+
 :root {
   color-scheme: light;
 
@@ -85,6 +97,40 @@ body {
   --categoria-repasse-label: #8c6529;
   --categoria-repasse-valor: #6b4a17;
   --categoria-repasse-sombra: 0 2px 6px rgba(184, 135, 61, 0.1), 0 14px 40px rgba(184, 135, 61, 0.16);
+
+  /* Status de agendamento (Agenda) — protótipo aprovado 04/08/2026. Sem
+     azul de propósito: colide com a cor de marca da Brotas, que já aparece
+     nos avatares da grade ("em atendimento" é verde-água, não azul).
+     "agendado" fica neutro (--fundo-card/--texto-terciario), sem token novo. */
+  --status-concluido-fundo: #ede9f6;
+  --status-concluido-borda: #6b3fa0;
+  --status-concluido-texto: #3a2159;
+  --status-concluido-badge-fundo: #e1daf2;
+  --status-concluido-badge-texto: #5b4b8a;
+
+  --status-confirmado-fundo: #dff3e6;
+  --status-confirmado-borda: #15803d;
+  --status-confirmado-texto: #14532d;
+  --status-confirmado-badge-fundo: #c9ead3;
+  --status-confirmado-badge-texto: #15803d;
+
+  --status-em-atendimento-fundo: #d6f3f3;
+  --status-em-atendimento-borda: #0e7c86;
+  --status-em-atendimento-texto: #0b4f55;
+  --status-em-atendimento-badge-fundo: #bde8e8;
+  --status-em-atendimento-badge-texto: #0e7c86;
+
+  --status-aguardando-fundo: #fdecd1;
+  --status-aguardando-borda: #b45309;
+  --status-aguardando-texto: #7c3a0a;
+  --status-aguardando-badge-fundo: #fadfb3;
+  --status-aguardando-badge-texto: #b45309;
+
+  --status-cancelado-fundo: #fbe1e1;
+  --status-cancelado-borda: #b91c1c;
+  --status-cancelado-texto: #7f1d1d;
+  --status-cancelado-badge-fundo: #f7cfcf;
+  --status-cancelado-badge-texto: #b91c1c;
 
   /* Estados semânticos — cor sólida para texto/ícone; fundo sempre em baixa opacidade */
   --cor-erro: #dc2626;
@@ -185,4 +231,38 @@ body {
   --categoria-repasse-valor: #f5e2ae;
   --categoria-repasse-fundo: color-mix(in srgb, var(--categoria-repasse-label) 18%, transparent);
   --categoria-repasse-sombra: 0 2px 6px rgba(184, 135, 61, 0.22), 0 14px 42px rgba(184, 135, 61, 0.32);
+
+  /* Status de agendamento — mesma lógica: borda mantém o matiz (levemente
+     clareada pra continuar visível como faixa de 3px sobre fundo escuro),
+     fundo/badge derivados por color-mix (translúcido, não pastel sólido),
+     texto claro pra contraste. */
+  --status-concluido-borda: color-mix(in srgb, #6b3fa0 85%, white);
+  --status-concluido-fundo: color-mix(in srgb, #6b3fa0 22%, transparent);
+  --status-concluido-texto: color-mix(in srgb, #6b3fa0 70%, white);
+  --status-concluido-badge-fundo: color-mix(in srgb, #6b3fa0 30%, transparent);
+  --status-concluido-badge-texto: color-mix(in srgb, #6b3fa0 78%, white);
+
+  --status-confirmado-borda: color-mix(in srgb, #15803d 85%, white);
+  --status-confirmado-fundo: color-mix(in srgb, #15803d 22%, transparent);
+  --status-confirmado-texto: color-mix(in srgb, #15803d 70%, white);
+  --status-confirmado-badge-fundo: color-mix(in srgb, #15803d 30%, transparent);
+  --status-confirmado-badge-texto: color-mix(in srgb, #15803d 78%, white);
+
+  --status-em-atendimento-borda: color-mix(in srgb, #0e7c86 85%, white);
+  --status-em-atendimento-fundo: color-mix(in srgb, #0e7c86 22%, transparent);
+  --status-em-atendimento-texto: color-mix(in srgb, #0e7c86 70%, white);
+  --status-em-atendimento-badge-fundo: color-mix(in srgb, #0e7c86 30%, transparent);
+  --status-em-atendimento-badge-texto: color-mix(in srgb, #0e7c86 78%, white);
+
+  --status-aguardando-borda: color-mix(in srgb, #b45309 85%, white);
+  --status-aguardando-fundo: color-mix(in srgb, #b45309 22%, transparent);
+  --status-aguardando-texto: color-mix(in srgb, #b45309 70%, white);
+  --status-aguardando-badge-fundo: color-mix(in srgb, #b45309 30%, transparent);
+  --status-aguardando-badge-texto: color-mix(in srgb, #b45309 78%, white);
+
+  --status-cancelado-borda: color-mix(in srgb, #b91c1c 85%, white);
+  --status-cancelado-fundo: color-mix(in srgb, #b91c1c 22%, transparent);
+  --status-cancelado-texto: color-mix(in srgb, #b91c1c 70%, white);
+  --status-cancelado-badge-fundo: color-mix(in srgb, #b91c1c 30%, transparent);
+  --status-cancelado-badge-texto: color-mix(in srgb, #b91c1c 78%, white);
 }

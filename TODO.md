@@ -2,6 +2,61 @@
 
 ## Concluído recentemente
 
+- [x] **Agenda — frontend completo** (`src/pages/Agenda.tsx`, novo painel
+  "Horários de atendimento" em `Profissionais.tsx`; schema já existia —
+  `agenda_fundacao.sql`/`agenda_lista_espera.sql`, sessão anterior). Sistema
+  visual v2 (sombra tingida, Fraunces, cores de status próprias — sem azul,
+  de propósito, pra não colidir com a marca da Brotas).
+  - **Grade do dia**: coluna por profissional com disponibilidade OU exceção
+    no dia (profissionais sem nada naquele dia não aparecem); posiciona
+    agendamentos por horário/duração real (`duracao_consulta_minutos`, não
+    recalculada na tela); área fora do expediente com hachurado diagonal
+    (exceção `folga`/`horario_especial` sempre prevalece sobre
+    `disponibilidade_padrao` daquele dia). Clique no agendamento abre menu
+    rápido de status (update direto).
+  - **Faixa de resumo** (5 cards, contagem real do dia) + **painel de lista
+    de espera** (botão "Agendar" pré-preenche o modal com paciente+
+    profissional).
+  - **3 modais funcionais**: Novo agendamento (hora_fim calculada pelo
+    trigger do banco, nunca pelo front; erro de sobreposição —
+    `exclusion_violation`/`23P01` — vira mensagem amigável), Marcar folga/
+    horário especial (`agenda_excecoes`), Adicionar à lista de espera (erro
+    de duplicata — `23505` — mensagem amigável).
+  - **Painel "Horários de atendimento"** em Profissionais.tsx: lista de
+    linhas dia da semana + início + fim (`disponibilidade_padrao`), salvar
+    é delete+insert do conjunto. **Correção de permissão feita durante a
+    sessão**: gateei o botão por engano só para proprietária (copiando
+    "Editar valores"); o RLS de `disponibilidade_padrao` na verdade permite
+    proprietária **e** recepção — criado `podeGerenciarAgenda` (papel via
+    `usePapelNaClinica`) em `Cadastros.tsx`, passado como prop nova, e as
+    3 ações da coluna Ações passaram a ser gateadas individualmente (Editar
+    valores/Remover só proprietária; Horários de atendimento também
+    recepção).
+  - **Testado ao vivo, ponta a ponta, com `teste_recepcao_brotas`**: cadastrou
+    horário de terça (08:00–18:00) pelo painel novo → apareceu certo na
+    grade, com "fora do expediente" antes das 08:00 e depois das 18:00;
+    criou agendamento real (Maria Teste Silva, 10:00) → posicionado certo;
+    tentou criar outro no mesmo horário → bloqueado com a mensagem de
+    sobreposição; mudou status para "Confirmado" pelo menu rápido → cor e
+    contagem do card "Confirmados" atualizaram; adicionou paciente à lista
+    de espera → chip "Lista de espera" e painel atualizaram; tentou
+    duplicar → bloqueado com mensagem amigável; clicou "Agendar" na lista
+    de espera → modal abriu com paciente/profissional pré-preenchidos;
+    marcou folga num dia de semana igual (11/08) → coluna inteira virou
+    hachurado. Claro e escuro, sem erro de console. `npm run build` limpo.
+  - **Pendência de UX identificada, não resolvida nesta etapa**: não dá para
+    marcar "horário especial" num dia em que o profissional não tem nenhum
+    expediente cadastrado (a coluna, e o botão "⋯" que abre esse modal,
+    só aparecem quando já existe disponibilidade OU exceção naquele dia —
+    efeito colateral do requisito "profissionais sem expediente não
+    aparecem"). Caso de uso real (ex.: atender num sábado excepcional)
+    ainda não tem caminho na UI.
+  - **Dados de teste desta sessão** (remover antes de produção): horário de
+    terça cadastrado para "Dr. Teste Brotas"; agendamento de "Maria Teste
+    Silva" às 10:00 em 04/08 (status confirmado); "João Teste Cadastro" na
+    lista de espera do "Dr. Teste Brotas"; exceção de folga em 11/08/2026
+    para "Dr. Teste Brotas".
+
 - [x] **Agenda — lista de espera** (`agenda_lista_espera.sql`, sessão
   04/08/2026, complemento do schema da Agenda). Tabela `lista_espera`,
   vinculada a paciente + profissional específico (mesma disciplina de

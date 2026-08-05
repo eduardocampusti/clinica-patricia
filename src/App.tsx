@@ -6,6 +6,7 @@ import Pacientes from './pages/Pacientes'
 import Cadastros from './pages/cadastros/Cadastros'
 import Financeiro from './pages/Financeiro'
 import Dashboard from './pages/Dashboard'
+import Agenda from './pages/Agenda'
 import { useTheme } from './theme/ThemeProvider'
 import { useClinicaAtiva } from './hooks/useClinicaAtiva'
 import { useClinicasDoUsuario } from './hooks/useClinicasDoUsuario'
@@ -78,6 +79,9 @@ function App() {
       onSair={handleSignOut}
     >
       {tela === 'dashboard' && <Dashboard />}
+      {tela === 'agenda' && (
+        <Agenda clinicaAtiva={clinicaAtiva} carregandoClinica={carregandoClinica} usuarioId={session.user.id} />
+      )}
       {tela === 'pacientes' && (
         <Pacientes
           clinicaAtivaId={clinicaAtivaId}
@@ -96,6 +100,7 @@ function App() {
         <Financeiro clinicaAtivaId={clinicaAtivaId} carregandoClinica={carregandoClinica} />
       )}
       {tela !== 'dashboard' &&
+        tela !== 'agenda' &&
         tela !== 'pacientes' &&
         tela !== 'cadastros' &&
         tela !== 'financeiro' && <PlaceholderScreen titulo={TITULOS_TELA[tela]} />}

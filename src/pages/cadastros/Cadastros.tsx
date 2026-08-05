@@ -20,7 +20,8 @@ interface CadastrosProps {
 
 function Cadastros({ clinicaAtivaId, carregandoClinica, usuarioId }: CadastrosProps) {
   const [aba, setAba] = useState<Aba>('especialidades')
-  const { souProprietaria } = usePapelNaClinica(usuarioId, clinicaAtivaId)
+  const { papel, souProprietaria } = usePapelNaClinica(usuarioId, clinicaAtivaId)
+  const podeGerenciarAgenda = papel === 'proprietaria' || papel === 'recepcao'
 
   return (
     <div className="space-y-6">
@@ -61,6 +62,7 @@ function Cadastros({ clinicaAtivaId, carregandoClinica, usuarioId }: CadastrosPr
           clinicaAtivaId={clinicaAtivaId}
           carregandoClinica={carregandoClinica}
           souProprietaria={souProprietaria}
+          podeGerenciarAgenda={podeGerenciarAgenda}
         />
       )}
       {aba === 'servicos' && (
