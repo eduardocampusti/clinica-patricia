@@ -4,6 +4,43 @@
 > para que qualquer conversa futura (chat ou Claude Code) tenha continuidade
 > e não "saia do contexto". Entrada mais recente no topo.
 
+## Sessão — 05/08/2026 (Prontuário — fundação do schema)
+
+Antes de desenhar, li o que já estava decidido no plano diretor sobre
+Prontuário/LGPD (bem mais rigoroso que os módulos anteriores: imutável
+após assinatura, leitura auditada, psicologia como caso especial,
+proprietária sem acesso clínico automático). 3 decisões de escopo com o
+Eduardo (respostas "decide você" nas 3): assinatura = trava no sistema,
+não certificado ICP-Brasil por enquanto; núcleo comum = 7 campos
+confirmados + jsonb pra extensão; auditoria de leitura construída já,
+não adiada pro passo 9.
+
+Ponto que fiz questão de deixar explícito antes de rodar: apliquei o
+princípio "proprietária sem acesso clínico automático" à risca — nem a
+Patrícia consegue abrir o conteúdo de um prontuário pelo app, só o
+profissional que atendeu. Eduardo confirmou (não pediu exceção).
+
+Desenhei `prontuario_fundacao.sql`: atendimentos (imutável via trigger,
+não só validação), atendimentos_adendos e documentos_clinicos (append-
+only), auditoria_leitura_clinica (só gravada dentro da RPC
+abrir_atendimento — não tem como ler sem auditar), finalizar_atendimento
+(transição atômica).
+
+**Problema técnico:** a sessão de browser automation quebrou depois que
+a aba do Supabase deslogou sozinha e caiu numa tela de login com senha
+pré-preenchida (autocomplete do navegador). Não completei o login nem
+cliquei em "Sign in" — é ação proibida mesmo com campo já preenchido.
+Pedi pro Eduardo logar manualmente; mesmo depois disso a aba ficou
+travada pra automação (não consegui mais nem screenshot). Resolvido
+colando o SQL em texto no chat pra ele copiar e rodar manualmente, e
+pedindo o resultado + uma query de verificação de volta. Confirmado:
+4 tabelas, 2 RPCs, RLS nas 4, trigger de imutabilidade — tudo certo,
+só que sem eu ter executado diretamente desta vez.
+
+Frontend ainda não existe — só o schema desta etapa.
+
+---
+
 ## Sessão — 05/08/2026 (Integração Agenda → Financeiro + Dashboard "Próximo paciente")
 
 Orquestração entre telas que já existiam (Agenda, Financeiro, Dashboard) —

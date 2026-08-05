@@ -2,6 +2,27 @@
 
 ## Concluído recentemente
 
+- [x] **Prontuário — fundação do schema** (`prontuario_fundacao.sql`,
+  sessão 04/08/2026). Decisões confirmadas com o Eduardo: assinatura =
+  trava no sistema por enquanto (sem ICP-Brasil); núcleo comum de 7
+  campos + `dados_adicionais` jsonb pra extensão por especialidade;
+  auditoria de leitura construída já; proprietária/recepção SEM acesso
+  clínico automático (só o profissional que atendeu vê o conteúdo —
+  proprietária só vê o log de quem abriu o quê, não o texto).
+  - `atendimentos` — imutável após finalizar via trigger (bloqueia
+    qualquer UPDATE, não só validação de tela). Correção só por adendo.
+  - `atendimentos_adendos`, `documentos_clinicos` (receita/atestado/
+    encaminhamento/solicitação de exame) — append-only, sem policy de
+    update/delete.
+  - `auditoria_leitura_clinica` — só gravada pela RPC `abrir_atendimento`
+    (é o único caminho pra ler o conteúdo completo; já audita dentro da
+    mesma operação). `finalizar_atendimento` faz a transição atômica.
+  - Executado manualmente pelo Eduardo (sessão de browser automation
+    ficou bloqueada depois de uma tela de login inesperada — decidido
+    não insistir com credenciais, ver diário). Confirmado via SQL de
+    verificação: 4 tabelas, 2 RPCs, RLS nas 4, trigger de imutabilidade.
+  - **Pendente:** frontend ainda não existe — só o schema desta etapa.
+
 - [x] **Integração Agenda → Financeiro + Dashboard "Próximo paciente"**
   (sessão 05/08/2026). Orquestração entre telas que já existiam — nenhuma
   tabela nova.
