@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 html {
-  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
 }
 
 body {
@@ -9,21 +9,32 @@ body {
   font-weight: 400;
 }
 
-/* Serifada do sistema visual v2 (01-DESIGN-SYSTEM.md) — título principal de
-   qualquer tela (saudação do Dashboard, "Financeiro", etc.). */
+/* Título de tela — Geist semibold (v3, substitui Fraunces) */
 .texto-titulo-tela {
-  font-family: 'Fraunces', serif;
-  font-weight: 400;
-  font-size: 35px;
-  line-height: 1.2;
+  font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 30px;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
 }
 
-/* Título de seção dentro de card (v2) — Fraunces no lugar do Inter. */
+/* Título de seção dentro de card (v3) */
 .texto-titulo-secao {
-  font-family: 'Fraunces', serif;
+  font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+}
+
+/* Label técnico / badge — JetBrains Mono (v3, novo) */
+.texto-label-tecnico {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
   font-weight: 500;
-  font-size: 16px;
-  line-height: 1.3;
+  font-size: 11px;
+  line-height: 1.45;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
 /* Números em lista/coluna (v2) — alinhamento tabular obrigatório. */
@@ -31,10 +42,9 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-/* Letra do selo de clínica (v2, §4 "O selo") — Fraunces, tamanho definido
-   por instância (selo principal 34px vs. mini 16px no dropdown). */
+/* Selo de clínica — agora em Geist (v3, era Fraunces) */
 .fonte-selo {
-  font-family: 'Fraunces', serif;
+  font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
   font-weight: 600;
 }
 
@@ -53,84 +63,35 @@ body {
 :root {
   color-scheme: light;
 
-  /* Neutros — modo claro (sistema v2, 01-DESIGN-SYSTEM.md — tingido de roxo,
-     nunca cinza puro). --fundo-pagina precisa ser mais escuro que os cards
-     para a sombra tingida (--sombra-neutra) aparecer. */
-  --fundo-pagina: #efebf5;
-  --fundo-card: #ffffff;
-  --texto-principal: #221d2e;
-  --texto-secundario: #5b5468;
-  --texto-terciario: #8b8594;
-  --texto-titulo: #49454f;
-  --borda: #e4e0ec;
+  /* Neutros — modo claro (v3 — slate neutro, sem tingimento roxo) */
+  --fundo-pagina: #F8FAFC;
+  --fundo-card: #FFFFFF;
+  --texto-principal: #131B2E;
+  --texto-secundario: #434655;
+  --texto-terciario: #737686;
+  --texto-titulo: #131B2E;
+  --borda: #E2E8F0;
 
-  /* Sombra neutra de dois planos, tingida de --texto-principal (v2) —
-     substitui o shadow-[0px_1px_8px_rgba(0,0,0,0.1)] hardcoded no JSX. */
-  --sombra-neutra: 0 2px 6px rgba(34, 29, 46, 0.05), 0 14px 42px rgba(34, 29, 46, 0.1);
+  /* Borda sutil — divisores internos de tabela */
+  --borda-sutil: #F1F5F9;
 
-  /* Dourado — uso EXCLUSIVO do selo de clínica e do card de repasse.
-     Nunca em botão/CTA/decoração solta (01-DESIGN-SYSTEM.md §1). */
+  /* 3 níveis de sombra (v3) */
+  --sombra-baixa: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+  --sombra-media: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -1px rgba(0,0,0,0.06);
+  --sombra-alta: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+
+  /* Alias temporário — não quebra componentes que ainda usam --sombra-neutra */
+  --sombra-neutra: var(--sombra-baixa);
+
+  /* Cor informativa (separada da cor da clínica) */
+  --cor-info: #2563EB;
+  --cor-info-suave: color-mix(in srgb, var(--cor-info) 10%, transparent);
+  --cor-info-borda: color-mix(in srgb, var(--cor-info) 25%, transparent);
+
+  /* Dourado — uso EXCLUSIVO do selo de clínica e do card de repasse. */
   --dourado: #b8873d;
   --dourado-texto: #8c6529;
   --dourado-fundo: #fbf6ec;
-
-  /* Categorias de card por SIGNIFICADO (não decoração) — mesma categoria,
-     mesma cor, em qualquer tela do sistema (01-DESIGN-SYSTEM.md §1).
-     Verificadas contra as cores de marca reais das 3 clínicas para não
-     colidir com --cor-primaria no menu lateral. */
-  --categoria-financeiro-fundo: #def5f1;
-  --categoria-financeiro-label: #0f766e;
-  --categoria-financeiro-valor: #0a5048;
-  --categoria-financeiro-sombra: 0 2px 6px rgba(15, 148, 132, 0.1), 0 14px 40px rgba(15, 148, 132, 0.16);
-
-  --categoria-pessoas-fundo: #f3eefa;
-  --categoria-pessoas-label: #6b3fa0;
-  --categoria-pessoas-valor: #3a2159;
-  --categoria-pessoas-sombra: 0 2px 6px rgba(107, 63, 160, 0.1), 0 14px 40px rgba(107, 63, 160, 0.16);
-
-  --categoria-agenda-fundo: #fbeaf0;
-  --categoria-agenda-label: #9a3b63;
-  --categoria-agenda-valor: #5c2038;
-  --categoria-agenda-sombra: 0 2px 6px rgba(154, 59, 99, 0.1), 0 14px 40px rgba(154, 59, 99, 0.16);
-
-  --categoria-repasse-fundo: #fbf6ec;
-  --categoria-repasse-label: #8c6529;
-  --categoria-repasse-valor: #6b4a17;
-  --categoria-repasse-sombra: 0 2px 6px rgba(184, 135, 61, 0.1), 0 14px 40px rgba(184, 135, 61, 0.16);
-
-  /* Status de agendamento (Agenda) — protótipo aprovado 04/08/2026. Sem
-     azul de propósito: colide com a cor de marca da Brotas, que já aparece
-     nos avatares da grade ("em atendimento" é verde-água, não azul).
-     "agendado" fica neutro (--fundo-card/--texto-terciario), sem token novo. */
-  --status-concluido-fundo: #ede9f6;
-  --status-concluido-borda: #6b3fa0;
-  --status-concluido-texto: #3a2159;
-  --status-concluido-badge-fundo: #e1daf2;
-  --status-concluido-badge-texto: #5b4b8a;
-
-  --status-confirmado-fundo: #dff3e6;
-  --status-confirmado-borda: #15803d;
-  --status-confirmado-texto: #14532d;
-  --status-confirmado-badge-fundo: #c9ead3;
-  --status-confirmado-badge-texto: #15803d;
-
-  --status-em-atendimento-fundo: #d6f3f3;
-  --status-em-atendimento-borda: #0e7c86;
-  --status-em-atendimento-texto: #0b4f55;
-  --status-em-atendimento-badge-fundo: #bde8e8;
-  --status-em-atendimento-badge-texto: #0e7c86;
-
-  --status-aguardando-fundo: #fdecd1;
-  --status-aguardando-borda: #b45309;
-  --status-aguardando-texto: #7c3a0a;
-  --status-aguardando-badge-fundo: #fadfb3;
-  --status-aguardando-badge-texto: #b45309;
-
-  --status-cancelado-fundo: #fbe1e1;
-  --status-cancelado-borda: #b91c1c;
-  --status-cancelado-texto: #7f1d1d;
-  --status-cancelado-badge-fundo: #f7cfcf;
-  --status-cancelado-badge-texto: #b91c1c;
 
   /* Estados semânticos — cor sólida para texto/ícone; fundo sempre em baixa opacidade */
   --cor-erro: #dc2626;
@@ -142,14 +103,11 @@ body {
   --cor-secundaria: #0ea5e9;
   --cor-menu: #2e1a47;
 
-  /* Derivados da cor primária: recalculam automaticamente por tema,
-     mas a cor-base da clínica nunca muda entre claro/escuro. */
+  /* Derivados da cor primária */
   --cor-primaria-hover: color-mix(in srgb, var(--cor-primaria) 85%, black);
   --cor-primaria-suave: color-mix(in srgb, var(--cor-primaria) 12%, transparent);
 
-  /* Fundos dos estados semânticos: sempre ~12% de opacidade sobre transparent,
-     nunca cor sólida forte — funciona igual em claro e escuro pois deriva
-     do valor de --cor-erro/--cor-sucesso/--cor-alerta já resolvido no tema. */
+  /* Fundos dos estados semânticos */
   --cor-erro-suave: color-mix(in srgb, var(--cor-erro) 12%, transparent);
   --cor-erro-borda: color-mix(in srgb, var(--cor-erro) 30%, transparent);
   --cor-sucesso-suave: color-mix(in srgb, var(--cor-sucesso) 12%, transparent);
@@ -157,12 +115,10 @@ body {
   --cor-alerta-suave: color-mix(in srgb, var(--cor-alerta) 12%, transparent);
   --cor-alerta-borda: color-mix(in srgb, var(--cor-alerta) 30%, transparent);
 
-  /* Sobreposição do drawer mobile — mesma em claro/escuro (scrim neutro) */
+  /* Sobreposição do drawer mobile */
   --sobreposicao: rgba(0, 0, 0, 0.4);
 
-  /* Sidebar (fundo = --cor-menu, cor da clínica): texto/ícones SEMPRE brancos
-     por cima, conforme 08-REFERENCIA-VISUAL-DASHBOARD.md — constante entre
-     claro/escuro, igual à própria --cor-menu. */
+  /* Sidebar (fundo = --cor-menu, cor da clínica) */
   --menu-texto: rgba(255, 255, 255, 0.92);
   --menu-texto-secundario: rgba(255, 255, 255, 0.6);
   --menu-texto-terciario: rgba(255, 255, 255, 0.4);
@@ -171,95 +127,128 @@ body {
   --menu-avatar-bg: rgba(255, 255, 255, 0.14);
   --menu-borda: rgba(255, 255, 255, 0.12);
 
-  /* Paleta placeholder de categorias (resumo por especialidade no Dashboard) —
-     sem relação com a cor de marca da clínica; usada só até o módulo real. */
+  /* Paleta placeholder de categorias (resumo por especialidade no Dashboard) */
   --cor-categoria-1: #7f51b0;
   --cor-categoria-2: #0597ae;
   --cor-categoria-3: #1fad53;
   --cor-categoria-4: #bd681e;
   --cor-categoria-5: #c21951;
+
+  /* Compatibilidade temporária com telas ainda no sistema visual v2.
+     Preserva o visual existente enquanto cada tela é migrada para v3. */
+  --categoria-financeiro-fundo: #def5f1;
+  --categoria-financeiro-label: #0f766e;
+  --categoria-financeiro-valor: #0a5048;
+  --categoria-financeiro-sombra: 0 2px 6px rgba(15, 148, 132, 0.1), 0 14px 40px rgba(15, 148, 132, 0.16);
+  --categoria-pessoas-fundo: #f3eefa;
+  --categoria-pessoas-label: #6b3fa0;
+  --categoria-pessoas-valor: #3a2159;
+  --categoria-pessoas-sombra: 0 2px 6px rgba(107, 63, 160, 0.1), 0 14px 40px rgba(107, 63, 160, 0.16);
+  --categoria-agenda-fundo: #fbeaf0;
+  --categoria-agenda-label: #9a3b63;
+  --categoria-agenda-valor: #5c2038;
+  --categoria-agenda-sombra: 0 2px 6px rgba(154, 59, 99, 0.1), 0 14px 40px rgba(154, 59, 99, 0.16);
+  --categoria-repasse-fundo: #fbf6ec;
+  --categoria-repasse-label: #8c6529;
+  --categoria-repasse-valor: #6b4a17;
+  --categoria-repasse-sombra: 0 2px 6px rgba(184, 135, 61, 0.1), 0 14px 40px rgba(184, 135, 61, 0.16);
+
+  --status-concluido-fundo: #ede9f6;
+  --status-concluido-borda: #6b3fa0;
+  --status-concluido-texto: #3a2159;
+  --status-concluido-badge-fundo: #e1daf2;
+  --status-concluido-badge-texto: #5b4b8a;
+  --status-confirmado-fundo: #dff3e6;
+  --status-confirmado-borda: #15803d;
+  --status-confirmado-texto: #14532d;
+  --status-confirmado-badge-fundo: #c9ead3;
+  --status-confirmado-badge-texto: #15803d;
+  --status-em-atendimento-fundo: #d6f3f3;
+  --status-em-atendimento-borda: #0e7c86;
+  --status-em-atendimento-texto: #0b4f55;
+  --status-em-atendimento-badge-fundo: #bde8e8;
+  --status-em-atendimento-badge-texto: #0e7c86;
+  --status-aguardando-fundo: #fdecd1;
+  --status-aguardando-borda: #b45309;
+  --status-aguardando-texto: #7c3a0a;
+  --status-aguardando-badge-fundo: #fadfb3;
+  --status-aguardando-badge-texto: #b45309;
+  --status-cancelado-fundo: #fbe1e1;
+  --status-cancelado-borda: #b91c1c;
+  --status-cancelado-texto: #7f1d1d;
+  --status-cancelado-badge-fundo: #f7cfcf;
+  --status-cancelado-badge-texto: #b91c1c;
 }
 
 [data-theme="escuro"] {
   color-scheme: dark;
 
-  /* Neutros — modo escuro: mesma ideia de profundidade sutil, invertida
-     (card mais claro/destacado que o fundo da página), leve matiz arroxeado. */
-  --fundo-pagina: #1c1a1f;
-  --fundo-card: #242229;
-  --texto-principal: #e8e6ea;
-  --texto-secundario: #b8b4bf;
-  --texto-terciario: #8b8594;
-  --texto-titulo: #ded9e6;
-  --borda: #3a3640;
+  /* Neutros — modo escuro (v3 — slate) */
+  --fundo-pagina: #0F172A;
+  --fundo-card: #1E293B;
+  --texto-principal: #F1F5F9;
+  --texto-secundario: #94A3B8;
+  --texto-terciario: #64748B;
+  --texto-titulo: #F1F5F9;
+  --borda: #334155;
+
+  --borda-sutil: #1E293B;
+
+  --sombra-baixa: 0 1px 3px rgba(0,0,0,0.2), 0 1px 2px rgba(0,0,0,0.3);
+  --sombra-media: 0 4px 6px -1px rgba(0,0,0,0.3), 0 2px 4px -1px rgba(0,0,0,0.25);
+  --sombra-alta: 0 10px 15px -3px rgba(0,0,0,0.4), 0 4px 6px -2px rgba(0,0,0,0.3);
+  --sombra-neutra: var(--sombra-baixa);
+
+  --cor-info: #60A5FA;
+  --cor-info-suave: color-mix(in srgb, var(--cor-info) 10%, transparent);
+  --cor-info-borda: color-mix(in srgb, var(--cor-info) 25%, transparent);
 
   --cor-erro: #f87171;
   --cor-sucesso: #4ade80;
   --cor-alerta: #fbbf24;
 
-  /* Sombra neutra — no escuro o contraste vem mais do preto puro que do
-     tingimento roxo (que já não se destaca sobre um fundo já arroxeado). */
-  --sombra-neutra: 0 2px 6px rgba(0, 0, 0, 0.3), 0 14px 42px rgba(0, 0, 0, 0.4);
-
-  /* Dourado — mesma lógica das cores semânticas acima: tom mais claro/vívido
-     para continuar legível sobre fundo escuro. Fundo derivado por
-     color-mix, mesmo padrão de --cor-erro-suave etc. */
   --dourado: #d4a64f;
   --dourado-texto: #e8c77a;
   --dourado-fundo: color-mix(in srgb, #b8873d 20%, transparent);
 
-  /* Categorias — mesmo raciocínio: label/valor mais claros para contraste,
-     fundo derivado por color-mix (tingido, translúcido) em vez de pastel
-     sólido (que ficaria "estourado" sobre fundo escuro), sombra um pouco
-     mais opaca (sombra tingida rende menos contraste no escuro). */
+  /* Compatibilidade temporária v2 — variantes para modo escuro. */
   --categoria-financeiro-label: #5eead4;
   --categoria-financeiro-valor: #99f6e4;
   --categoria-financeiro-fundo: color-mix(in srgb, var(--categoria-financeiro-label) 18%, transparent);
   --categoria-financeiro-sombra: 0 2px 6px rgba(15, 148, 132, 0.22), 0 14px 42px rgba(15, 148, 132, 0.32);
-
   --categoria-pessoas-label: #c4a8f0;
   --categoria-pessoas-valor: #e4d6fb;
   --categoria-pessoas-fundo: color-mix(in srgb, var(--categoria-pessoas-label) 18%, transparent);
   --categoria-pessoas-sombra: 0 2px 6px rgba(107, 63, 160, 0.22), 0 14px 42px rgba(107, 63, 160, 0.32);
-
   --categoria-agenda-label: #f3a9c6;
   --categoria-agenda-valor: #fbd9e6;
   --categoria-agenda-fundo: color-mix(in srgb, var(--categoria-agenda-label) 18%, transparent);
   --categoria-agenda-sombra: 0 2px 6px rgba(154, 59, 99, 0.22), 0 14px 42px rgba(154, 59, 99, 0.32);
-
   --categoria-repasse-label: #e8c77a;
   --categoria-repasse-valor: #f5e2ae;
   --categoria-repasse-fundo: color-mix(in srgb, var(--categoria-repasse-label) 18%, transparent);
   --categoria-repasse-sombra: 0 2px 6px rgba(184, 135, 61, 0.22), 0 14px 42px rgba(184, 135, 61, 0.32);
 
-  /* Status de agendamento — mesma lógica: borda mantém o matiz (levemente
-     clareada pra continuar visível como faixa de 3px sobre fundo escuro),
-     fundo/badge derivados por color-mix (translúcido, não pastel sólido),
-     texto claro pra contraste. */
   --status-concluido-borda: color-mix(in srgb, #6b3fa0 85%, white);
   --status-concluido-fundo: color-mix(in srgb, #6b3fa0 22%, transparent);
   --status-concluido-texto: color-mix(in srgb, #6b3fa0 70%, white);
   --status-concluido-badge-fundo: color-mix(in srgb, #6b3fa0 30%, transparent);
   --status-concluido-badge-texto: color-mix(in srgb, #6b3fa0 78%, white);
-
   --status-confirmado-borda: color-mix(in srgb, #15803d 85%, white);
   --status-confirmado-fundo: color-mix(in srgb, #15803d 22%, transparent);
   --status-confirmado-texto: color-mix(in srgb, #15803d 70%, white);
   --status-confirmado-badge-fundo: color-mix(in srgb, #15803d 30%, transparent);
   --status-confirmado-badge-texto: color-mix(in srgb, #15803d 78%, white);
-
   --status-em-atendimento-borda: color-mix(in srgb, #0e7c86 85%, white);
   --status-em-atendimento-fundo: color-mix(in srgb, #0e7c86 22%, transparent);
   --status-em-atendimento-texto: color-mix(in srgb, #0e7c86 70%, white);
   --status-em-atendimento-badge-fundo: color-mix(in srgb, #0e7c86 30%, transparent);
   --status-em-atendimento-badge-texto: color-mix(in srgb, #0e7c86 78%, white);
-
   --status-aguardando-borda: color-mix(in srgb, #b45309 85%, white);
   --status-aguardando-fundo: color-mix(in srgb, #b45309 22%, transparent);
   --status-aguardando-texto: color-mix(in srgb, #b45309 70%, white);
   --status-aguardando-badge-fundo: color-mix(in srgb, #b45309 30%, transparent);
   --status-aguardando-badge-texto: color-mix(in srgb, #b45309 78%, white);
-
   --status-cancelado-borda: color-mix(in srgb, #b91c1c 85%, white);
   --status-cancelado-fundo: color-mix(in srgb, #b91c1c 22%, transparent);
   --status-cancelado-texto: color-mix(in srgb, #b91c1c 70%, white);

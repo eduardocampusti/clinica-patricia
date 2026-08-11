@@ -1,20 +1,24 @@
 export type Tela =
   | 'dashboard'
   | 'agenda'
+  | 'atendimentos'
   | 'pacientes'
-  | 'cadastros'
   | 'prontuario'
   | 'financeiro'
   | 'relatorios'
+  | 'equipe'
+  | 'especialidades'
   | 'configuracoes'
 
 export const TITULOS_TELA: Record<Tela, string> = {
   dashboard: 'Dashboard',
   agenda: 'Agenda',
+  atendimentos: 'Atendimentos',
   pacientes: 'Pacientes',
-  cadastros: 'Cadastros',
-  prontuario: 'Prontuário',
+  prontuario: 'Prontuários',
   financeiro: 'Financeiro',
   relatorios: 'Relatórios',
+  equipe: 'Equipe',
+  especialidades: 'Especialidades',
   configuracoes: 'Configurações',
 }

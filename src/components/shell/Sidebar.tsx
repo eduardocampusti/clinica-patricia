@@ -3,7 +3,8 @@ import type { ClinicaAtiva } from '../../hooks/useClinicaAtiva'
 import { iniciais } from '../../lib/texto'
 import { TITULOS_TELA, type Tela } from './types'
 import {
-  IconeCadastro,
+  IconeAjuda,
+  IconeAtendimentos,
   IconeCadeado,
   IconeCalendario,
   IconeCheck,
@@ -11,16 +12,16 @@ import {
   IconeDinheiro,
   IconeArquivo,
   IconeEngrenagem,
+  IconeEquipe,
+  IconeEspecialidades,
+  IconeFechar,
   IconeGrafico,
   IconeGrid,
+  IconeMais,
+  IconePerfil,
   IconePessoas,
 } from './icons'
 
-// Selo de clínica (01-DESIGN-SYSTEM.md §4 "O selo" + §6) — anel dourado fixo
-// (identidade do sistema, igual nas 3 clínicas) + letra na cor da própria
-// marca (variável por clínica, nunca uma cor nova). "Letra inicial" (singular):
-// usamos a segunda letra de iniciais() (ex.: "Clínica Brotas" → "CB" → "B"),
-// já que a primeira palavra é sempre "Clínica" e não distingue nada.
 function SeloClinica({ nome, corLetra, tamanho }: { nome: string; corLetra: string; tamanho: number }) {
   const letra = iniciais(nome).slice(-1) || '—'
   return (
@@ -44,11 +45,13 @@ function SeloClinica({ nome, corLetra, tamanho }: { nome: string; corLetra: stri
 const ITENS_MENU: { chave: Tela; Icone: typeof IconeGrid }[] = [
   { chave: 'dashboard', Icone: IconeGrid },
   { chave: 'agenda', Icone: IconeCalendario },
+  { chave: 'atendimentos', Icone: IconeAtendimentos },
   { chave: 'pacientes', Icone: IconePessoas },
-  { chave: 'cadastros', Icone: IconeCadastro },
   { chave: 'prontuario', Icone: IconeArquivo },
   { chave: 'financeiro', Icone: IconeDinheiro },
   { chave: 'relatorios', Icone: IconeGrafico },
+  { chave: 'equipe', Icone: IconeEquipe },
+  { chave: 'especialidades', Icone: IconeEspecialidades },
   { chave: 'configuracoes', Icone: IconeEngrenagem },
 ]
 
@@ -58,9 +61,9 @@ interface SidebarProps {
   clinicaAtiva: ClinicaAtiva | null
   clinicasDoUsuario: ClinicaAtiva[]
   onSelecionarClinica: (id: string) => void
-  emailUsuario: string
   aberta: boolean
   onFechar: () => void
+  onSair: () => void
 }
 
 function Sidebar({
@@ -69,14 +72,11 @@ function Sidebar({
   clinicaAtiva,
   clinicasDoUsuario,
   onSelecionarClinica,
-  emailUsuario,
   aberta,
   onFechar,
+  onSair,
 }: SidebarProps) {
   const [dropdownAberto, setDropdownAberto] = useState(false)
-  // Só faz sentido oferecer troca quando há mais de uma clínica vinculada —
-  // com uma só, o bloco vira um display estático (comportamento de
-  // funcionário comum, ver AUTH_AND_PERMISSIONS.md).
   const podeTrocarClinica = clinicasDoUsuario.length > 1
 
   function selecionarTela(chave: Tela) {
@@ -178,6 +178,16 @@ function Sidebar({
         )}
       </div>
 
+      <button
+        type="button"
+        onClick={() => selecionarTela('agenda')}
+        className="mx-1 mb-4 flex w-[calc(100%-8px)] items-center justify-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-semibold shadow-sm transition hover:shadow-md"
+        style={{ color: 'var(--cor-primaria)' }}
+      >
+        <IconeMais className="h-4 w-4" />
+        Novo Agendamento
+      </button>
+
       <nav className="mt-3 flex flex-col gap-0.5">
         {ITENS_MENU.map(({ chave, Icone }) => {
           const ativo = tela === chave
@@ -209,15 +219,30 @@ function Sidebar({
         })}
       </nav>
 
-      <div className="mt-auto flex items-center gap-2.5 border-t border-[var(--menu-borda)] pt-4 pl-2">
-        <div className="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-[var(--menu-avatar-bg)] text-xs font-bold text-[var(--menu-texto)]">
-          {iniciais(emailUsuario.split('@')[0] ?? '?')}
-        </div>
-        <div className="min-w-0">
-          <div className="truncate text-[12.5px] font-semibold text-[var(--menu-texto)]">
-            {emailUsuario}
-          </div>
-          <div className="text-[11px] text-[var(--menu-texto-secundario)]">Usuário</div>
+      <div className="mt-auto border-t border-[var(--menu-borda)] pt-3">
+        <div className="flex flex-col gap-0.5">
+          <button
+            type="button"
+            className="flex items-center gap-3 rounded-[10px] py-2 pl-3.5 pr-3 text-sm text-[var(--menu-texto-secundario)] transition hover:bg-[var(--menu-hover-bg)]"
+          >
+            <IconeAjuda className="h-[18px] w-[18px]" />
+            <span>Ajuda</span>
+          </button>
+          <button
+            type="button"
+            className="flex items-center gap-3 rounded-[10px] py-2 pl-3.5 pr-3 text-sm text-[var(--menu-texto-secundario)] transition hover:bg-[var(--menu-hover-bg)]"
+          >
+            <IconePerfil className="h-[18px] w-[18px]" />
+            <span>Perfil</span>
+          </button>
+          <button
+            type="button"
+            onClick={onSair}
+            className="flex items-center gap-3 rounded-[10px] py-2 pl-3.5 pr-3 text-sm text-[var(--menu-texto-secundario)] transition hover:bg-[var(--menu-hover-bg)]"
+          >
+            <IconeFechar className="h-[18px] w-[18px]" />
+            <span>Sair</span>
+          </button>
         </div>
       </div>
     </aside>

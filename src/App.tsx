@@ -89,7 +89,7 @@ function App() {
           usuarioId={session.user.id}
         />
       )}
-      {tela === 'cadastros' && (
+      {tela === 'equipe' && (
         <Cadastros
           clinicaAtivaId={clinicaAtivaId}
           carregandoClinica={carregandoClinica}
@@ -102,7 +102,7 @@ function App() {
       {tela !== 'dashboard' &&
         tela !== 'agenda' &&
         tela !== 'pacientes' &&
-        tela !== 'cadastros' &&
+        tela !== 'equipe' &&
         tela !== 'financeiro' && <PlaceholderScreen titulo={TITULOS_TELA[tela]} />}
     </AppShell>
   )

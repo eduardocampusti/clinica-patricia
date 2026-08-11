@@ -69,9 +69,10 @@
 ## Frontend / visual (regras fundamentais)
 
 - **CONSULTAR SEMPRE `01-DESIGN-SYSTEM.md` antes de escrever qualquer prompt de
-  tela.** Ele tem os valores EXATOS (tipografia Lora/Inter, raios 12px/16px,
-  sombra `0px 1px 8px rgba(0,0,0,.1)`, neutros `#424242`/`#49454f`, regra de
-  "nenhum box-shadow em botão"). Nunca aproximar de memória — copiar os valores.
+  tela.** Ele tem os valores EXATOS. Versão atual: **v3** (11/08/2026) — tipografia
+  Geist/JetBrains Mono, neutros slate (#F8FAFC/#131B2E), sombras neutras
+  simplificadas, sidebar colorida por clínica, cards brancos com borda.
+  Nunca aproximar de memória — copiar os valores do arquivo.
   Falha registrada: nas primeiras telas (Login/Tema/Pacientes) esses valores
   não foram citados nos prompts e o resultado saiu genérico. Corrigido depois.
 - **Nenhuma cor literal** (hex/rgb/nome) em componente. Cores **só via tokens**
