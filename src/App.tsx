@@ -7,9 +7,11 @@ import Cadastros from './pages/cadastros/Cadastros'
 import Financeiro from './pages/Financeiro'
 import Dashboard from './pages/Dashboard'
 import Agenda from './pages/Agenda'
+import Prontuario from './pages/Prontuario'
 import { useTheme } from './theme/ThemeProvider'
 import { useClinicaAtiva } from './hooks/useClinicaAtiva'
 import { useClinicasDoUsuario } from './hooks/useClinicasDoUsuario'
+import { usePapelNaClinica } from './hooks/usePapelNaClinica'
 import AppShell from './components/shell/AppShell'
 import PlaceholderScreen from './components/shell/PlaceholderScreen'
 import { TITULOS_TELA, type Tela } from './components/shell/types'
@@ -26,6 +28,7 @@ function App() {
     selecionarClinica,
     carregando: carregandoClinica,
   } = useClinicaAtiva(clinicasDoUsuario, carregandoClinicas)
+  const { papel } = usePapelNaClinica(session?.user.id ?? '', clinicaAtivaId)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -76,6 +79,7 @@ function App() {
       clinicasDoUsuario={clinicasDoUsuario}
       onSelecionarClinica={selecionarClinica}
       emailUsuario={session.user.email ?? ''}
+      papel={papel}
       onSair={handleSignOut}
     >
       {tela === 'dashboard' && <Dashboard clinicaAtivaId={clinicaAtivaId} />}
@@ -96,6 +100,13 @@ function App() {
           usuarioId={session.user.id}
         />
       )}
+      {tela === 'prontuario' && (
+        <Prontuario
+          clinicaAtivaId={clinicaAtivaId}
+          carregandoClinica={carregandoClinica}
+          usuarioId={session.user.id}
+        />
+      )}
       {tela === 'financeiro' && (
         <Financeiro clinicaAtivaId={clinicaAtivaId} carregandoClinica={carregandoClinica} />
       )}
@@ -103,6 +114,7 @@ function App() {
         tela !== 'agenda' &&
         tela !== 'pacientes' &&
         tela !== 'equipe' &&
+        tela !== 'prontuario' &&
         tela !== 'financeiro' && <PlaceholderScreen titulo={TITULOS_TELA[tela]} />}
     </AppShell>
   )

@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from 'react'
 import type { ClinicaAtiva } from '../../hooks/useClinicaAtiva'
+import type { Papel } from '../../hooks/usePapelNaClinica'
 import { ThemeToggle } from '../../theme/ThemeToggle'
 import Sidebar from './Sidebar'
 import type { Tela } from './types'
@@ -12,6 +13,7 @@ interface AppShellProps {
   clinicasDoUsuario: ClinicaAtiva[]
   onSelecionarClinica: (id: string) => void
   emailUsuario: string
+  papel: Papel | null
   onSair: () => void
   children: ReactNode
 }
@@ -23,6 +25,7 @@ function AppShell({
   clinicasDoUsuario,
   onSelecionarClinica,
   emailUsuario,
+  papel,
   onSair,
   children,
 }: AppShellProps) {
@@ -36,6 +39,7 @@ function AppShell({
         clinicaAtiva={clinicaAtiva}
         clinicasDoUsuario={clinicasDoUsuario}
         onSelecionarClinica={onSelecionarClinica}
+        papel={papel}
         aberta={drawerAberto}
         onFechar={() => setDrawerAberto(false)}
         onSair={onSair}

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { ClinicaAtiva } from '../../hooks/useClinicaAtiva'
+import type { Papel } from '../../hooks/usePapelNaClinica'
 import { iniciais } from '../../lib/texto'
 import { TITULOS_TELA, type Tela } from './types'
 import {
@@ -61,6 +62,7 @@ interface SidebarProps {
   clinicaAtiva: ClinicaAtiva | null
   clinicasDoUsuario: ClinicaAtiva[]
   onSelecionarClinica: (id: string) => void
+  papel: Papel | null
   aberta: boolean
   onFechar: () => void
   onSair: () => void
@@ -72,11 +74,13 @@ function Sidebar({
   clinicaAtiva,
   clinicasDoUsuario,
   onSelecionarClinica,
+  papel,
   aberta,
   onFechar,
   onSair,
 }: SidebarProps) {
   const [dropdownAberto, setDropdownAberto] = useState(false)
+  const itensVisiveis = ITENS_MENU.filter((item) => item.chave !== 'prontuario' || papel === 'medico')
   const podeTrocarClinica = clinicasDoUsuario.length > 1
 
   function selecionarTela(chave: Tela) {
@@ -189,7 +193,7 @@ function Sidebar({
       </button>
 
       <nav className="mt-3 flex flex-col gap-0.5">
-        {ITENS_MENU.map(({ chave, Icone }) => {
+        {itensVisiveis.map(({ chave, Icone }) => {
           const ativo = tela === chave
           return (
             <button
