@@ -20,6 +20,10 @@ function App() {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
   const [tela, setTela] = useState<Tela>('dashboard')
+  // Atendimento criado a partir da Agenda ("Iniciar atendimento"): navega
+  // pra tela do Prontuário já com esse id, que abre o editor direto (sem
+  // passar pela RPC de leitura — acabou de ser criado nesta mesma ação).
+  const [atendimentoParaAbrir, setAtendimentoParaAbrir] = useState<string | null>(null)
   const { aplicarCoresClinica } = useTheme()
   const { clinicas: clinicasDoUsuario, carregando: carregandoClinicas } = useClinicasDoUsuario(!!session)
   const {
@@ -84,7 +88,15 @@ function App() {
     >
       {tela === 'dashboard' && <Dashboard clinicaAtivaId={clinicaAtivaId} />}
       {tela === 'agenda' && (
-        <Agenda clinicaAtiva={clinicaAtiva} carregandoClinica={carregandoClinica} usuarioId={session.user.id} />
+        <Agenda
+          clinicaAtiva={clinicaAtiva}
+          carregandoClinica={carregandoClinica}
+          usuarioId={session.user.id}
+          onAtendimentoIniciado={(atendimentoId) => {
+            setAtendimentoParaAbrir(atendimentoId)
+            setTela('prontuario')
+          }}
+        />
       )}
       {tela === 'pacientes' && (
         <Pacientes
@@ -105,6 +117,8 @@ function App() {
           clinicaAtivaId={clinicaAtivaId}
           carregandoClinica={carregandoClinica}
           usuarioId={session.user.id}
+          atendimentoParaAbrirId={atendimentoParaAbrir}
+          onAtendimentoParaAbrirConsumido={() => setAtendimentoParaAbrir(null)}
         />
       )}
       {tela === 'financeiro' && (

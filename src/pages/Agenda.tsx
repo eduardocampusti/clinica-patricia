@@ -158,12 +158,14 @@ interface AgendaProps {
   clinicaAtiva: ClinicaAtiva | null
   carregandoClinica: boolean
   usuarioId: string
+  onAtendimentoIniciado: (atendimentoId: string) => void
 }
 
-function Agenda({ clinicaAtiva, carregandoClinica, usuarioId }: AgendaProps) {
+function Agenda({ clinicaAtiva, carregandoClinica, usuarioId, onAtendimentoIniciado }: AgendaProps) {
   const clinicaAtivaId = clinicaAtiva?.id ?? null
   const { papel } = usePapelNaClinica(usuarioId, clinicaAtivaId)
   const podeEscrever = papel === 'proprietaria' || papel === 'recepcao'
+  const souMedico = papel === 'medico'
 
   const [dataSelecionada, setDataSelecionada] = useState(() => new Date())
   const [buscaPaciente, setBuscaPaciente] = useState('')
@@ -184,6 +186,10 @@ function Agenda({ clinicaAtiva, carregandoClinica, usuarioId }: AgendaProps) {
   const [profissionalParaExcecao, setProfissionalParaExcecao] = useState<string | null>(null)
   const [prefillEntrada, setPrefillEntrada] = useState<{ pacienteId: string; profissionalId: string } | null>(null)
   const [avisoSemCaixa, setAvisoSemCaixa] = useState<string | null>(null)
+
+  const [meuProfissionalId, setMeuProfissionalId] = useState<string | null>(null)
+  const [iniciandoAtendimentoId, setIniciandoAtendimentoId] = useState<string | null>(null)
+  const [erroIniciarAtendimento, setErroIniciarAtendimento] = useState<string | null>(null)
 
   const carregarProfissionais = useCallback(async (clinicaId: string) => {
     const { data } = await supabase
@@ -354,6 +360,53 @@ function Agenda({ clinicaAtiva, carregandoClinica, usuarioId }: AgendaProps) {
     carregarGradeDoDia(clinicaAtivaId, dataSelecionada)
   }, [clinicaAtivaId, dataSelecionada, carregarGradeDoDia])
 
+  useEffect(() => {
+    if (!souMedico) {
+      setMeuProfissionalId(null)
+      return
+    }
+    let cancelado = false
+    supabase
+      .from('profissionais')
+      .select('id')
+      .eq('usuario_id', usuarioId)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (!cancelado) setMeuProfissionalId(data?.id ?? null)
+      })
+    return () => {
+      cancelado = true
+    }
+  }, [souMedico, usuarioId])
+
+  async function iniciarAtendimento(ag: Agendamento) {
+    if (!clinicaAtivaId || !meuProfissionalId) return
+    setMenuStatusId(null)
+    setErroIniciarAtendimento(null)
+    setIniciandoAtendimentoId(ag.id)
+
+    const { data, error } = await supabase
+      .from('atendimentos')
+      .insert({
+        clinica_id: clinicaAtivaId,
+        paciente_id: ag.paciente_id,
+        profissional_id: meuProfissionalId,
+        agendamento_id: ag.id,
+        created_by: usuarioId,
+      })
+      .select('id')
+      .single()
+
+    setIniciandoAtendimentoId(null)
+
+    if (error || !data) {
+      setErroIniciarAtendimento('Não foi possível iniciar o atendimento. Tente novamente.')
+      return
+    }
+
+    onAtendimentoIniciado(data.id)
+  }
+
   async function recarregarTudo() {
     if (!clinicaAtivaId) return
     await Promise.all([carregarGradeDoDia(clinicaAtivaId, dataSelecionada), carregarListaEspera(clinicaAtivaId)])
@@ -494,6 +547,12 @@ function Agenda({ clinicaAtiva, carregandoClinica, usuarioId }: AgendaProps) {
         </div>
       </div>
 
+      {erroIniciarAtendimento && (
+        <p role="alert" className="rounded-lg border border-[var(--cor-erro-borda)] bg-[var(--cor-erro-suave)] px-3.5 py-2.5 text-sm text-[var(--cor-erro)]">
+          {erroIniciarAtendimento}
+        </p>
+      )}
+
       {avisoSemCaixa && (
         <p
           role="status"
@@ -609,7 +668,9 @@ function Agenda({ clinicaAtiva, carregandoClinica, usuarioId }: AgendaProps) {
                       <div key={ag.id} className="absolute inset-x-1" style={{ top, height: altura }}>
                         <button
                           type="button"
-                          onClick={() => podeEscrever && setMenuStatusId((atual) => (atual === ag.id ? null : ag.id))}
+                          onClick={() =>
+                            (podeEscrever || souMedico) && setMenuStatusId((atual) => (atual === ag.id ? null : ag.id))
+                          }
                           className="h-full w-full overflow-hidden rounded-lg border-l-[3px] px-2 py-1 text-left transition"
                           style={{ backgroundColor: estilo.fundo, borderColor: estilo.borda }}
                         >
@@ -625,27 +686,41 @@ function Agenda({ clinicaAtiva, carregandoClinica, usuarioId }: AgendaProps) {
                           <>
                             <div className="fixed inset-0 z-10" onClick={() => setMenuStatusId(null)} />
                             <div
-                              className="absolute left-0 top-full z-20 mt-1 w-44 rounded-xl bg-[var(--fundo-card)] p-1.5"
+                              className="absolute left-0 top-full z-20 mt-1 w-48 rounded-xl bg-[var(--fundo-card)] p-1.5"
                               style={{ boxShadow: 'var(--sombra-neutra)' }}
                             >
-                              {STATUS_ORDEM.map((status) => {
-                                const badge = badgeStatus(status)
-                                return (
+                              {souMedico &&
+                                ag.profissional_id === meuProfissionalId &&
+                                ag.status !== 'cancelado' &&
+                                paraISODate(dataSelecionada) === paraISODate(new Date()) && (
                                   <button
-                                    key={status}
                                     type="button"
-                                    onClick={() => mudarStatus(ag.id, status)}
-                                    className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-xs font-medium transition hover:bg-[var(--fundo-pagina)]"
+                                    onClick={() => iniciarAtendimento(ag)}
+                                    disabled={iniciandoAtendimentoId === ag.id}
+                                    className="mb-1 flex w-full items-center gap-2 rounded-lg bg-[var(--cor-primaria-suave)] px-2.5 py-1.5 text-left text-xs font-semibold text-[var(--cor-primaria)] transition hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-60"
                                   >
-                                    <span
-                                      className="rounded-full px-2 py-0.5"
-                                      style={{ backgroundColor: badge.fundo, color: badge.texto }}
-                                    >
-                                      {STATUS_LABEL[status]}
-                                    </span>
+                                    {iniciandoAtendimentoId === ag.id ? 'Iniciando...' : 'Iniciar atendimento'}
                                   </button>
-                                )
-                              })}
+                                )}
+                              {podeEscrever &&
+                                STATUS_ORDEM.map((status) => {
+                                  const badge = badgeStatus(status)
+                                  return (
+                                    <button
+                                      key={status}
+                                      type="button"
+                                      onClick={() => mudarStatus(ag.id, status)}
+                                      className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-xs font-medium transition hover:bg-[var(--fundo-pagina)]"
+                                    >
+                                      <span
+                                        className="rounded-full px-2 py-0.5"
+                                        style={{ backgroundColor: badge.fundo, color: badge.texto }}
+                                      >
+                                        {STATUS_LABEL[status]}
+                                      </span>
+                                    </button>
+                                  )
+                                })}
                             </div>
                           </>
                         )}

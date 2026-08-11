@@ -90,12 +90,16 @@ interface ProntuarioProps {
   clinicaAtivaId: string | null
   carregandoClinica: boolean
   usuarioId: string
+  atendimentoParaAbrirId?: string | null
+  onAtendimentoParaAbrirConsumido?: () => void
 }
 
 function Prontuario({
   clinicaAtivaId,
   carregandoClinica,
   usuarioId,
+  atendimentoParaAbrirId,
+  onAtendimentoParaAbrirConsumido,
 }: ProntuarioProps) {
   const { papel, carregando: carregandoPapel } = usePapelNaClinica(usuarioId, clinicaAtivaId)
   const souMedico = papel === 'medico'
@@ -275,6 +279,13 @@ function Prontuario({
     aplicarAtendimento(data as AtendimentoCompleto)
     setCarregandoAtendimento(false)
   }
+
+  useEffect(() => {
+    if (!atendimentoParaAbrirId) return
+    abrirRecemCriado(atendimentoParaAbrirId)
+    onAtendimentoParaAbrirConsumido?.()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [atendimentoParaAbrirId])
 
   async function carregarAdendos(atendimentoId: string) {
     const { data } = await supabase
