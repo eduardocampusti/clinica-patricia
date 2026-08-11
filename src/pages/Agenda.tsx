@@ -385,26 +385,19 @@ function Agenda({ clinicaAtiva, carregandoClinica, usuarioId, onAtendimentoInici
     setErroIniciarAtendimento(null)
     setIniciandoAtendimentoId(ag.id)
 
-    const { data, error } = await supabase
-      .from('atendimentos')
-      .insert({
-        clinica_id: clinicaAtivaId,
-        paciente_id: ag.paciente_id,
-        profissional_id: meuProfissionalId,
-        agendamento_id: ag.id,
-        created_by: usuarioId,
-      })
-      .select('id')
-      .single()
+    const { data, error } = await supabase.rpc('iniciar_atendimento_agendado', {
+      p_clinica_id: clinicaAtivaId,
+      p_agendamento_id: ag.id,
+    })
 
     setIniciandoAtendimentoId(null)
 
-    if (error || !data) {
+    if (error || typeof data !== 'string') {
       setErroIniciarAtendimento('Não foi possível iniciar o atendimento. Tente novamente.')
       return
     }
 
-    onAtendimentoIniciado(data.id)
+    onAtendimentoIniciado(data)
   }
 
   async function recarregarTudo() {

@@ -4,6 +4,29 @@
 > para que qualquer conversa futura (chat ou Claude Code) tenha continuidade
 > e não "saia do contexto". Entrada mais recente no topo.
 
+## Sessão — 11/08/2026 (Prontuário — hardening preparado, não aplicado)
+
+Após revisar o frontend e `prontuario_fundacao.sql`, foi confirmado que as
+policies originais ainda permitiam SELECT e UPDATE diretos em `atendimentos`,
+possibilitando contornar a RPC de auditoria e a finalização controlada.
+
+Foi preparado `prontuario_hardening.sql` como evolução incremental, sem alterar
+ou remover a fundação: RPCs com `SECURITY DEFINER` e `search_path` fixo,
+validação de usuário/papel/clínica/paciente/profissional/agendamento, leitura
+clínica auditada, escrita mediada, finalização atômica, unicidade por
+agendamento e grants mínimos. `prontuario_seguranca_testes.sql` contém os
+testes transacionais de isolamento, auditoria, imutabilidade e permissões.
+
+`Prontuario.tsx` e `Agenda.tsx` foram ajustados para usar essas RPCs e não
+acessar diretamente as tabelas clínicas. O encerramento administrativo do
+agendamento continua separado da finalização clínica para preservar o fluxo
+Agenda → Financeiro.
+
+**Nenhum SQL foi executado e nenhum acesso ao Supabase foi realizado nesta
+sessão.** A migration e os testes aguardam revisão e autorização explícita.
+
+---
+
 ## Sessão — 05/08/2026 (Prontuário — fundação do schema)
 
 Antes de desenhar, li o que já estava decidido no plano diretor sobre

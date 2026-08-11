@@ -2,6 +2,17 @@
 
 ## Concluído recentemente
 
+- [x] **Prontuário — hardening preparado no código** (`prontuario_hardening.sql`
+  e `prontuario_seguranca_testes.sql`, 11/08/2026). O frontend passou a usar
+  somente RPCs para listar metadados, abrir com auditoria, criar, salvar,
+  finalizar, adicionar adendos e emitir documentos. A finalização agora é uma
+  única operação atômica e o início pela Agenda é idempotente por agendamento.
+  - A migration é incremental e preserva `prontuario_fundacao.sql`.
+  - **NÃO APLICADO AO BANCO:** os scripts foram apenas preparados e precisam de
+    revisão/autorização explícita antes de qualquer execução no Supabase.
+  - Após aplicação em ambiente local/staging, executar integralmente
+    `prontuario_seguranca_testes.sql` antes de considerar produção.
+
 - [x] **Prontuário — fundação do schema** (`prontuario_fundacao.sql`,
   sessão 04/08/2026). Decisões confirmadas com o Eduardo: assinatura =
   trava no sistema por enquanto (sem ICP-Brasil); núcleo comum de 7
@@ -21,7 +32,8 @@
     ficou bloqueada depois de uma tela de login inesperada — decidido
     não insistir com credenciais, ver diário). Confirmado via SQL de
     verificação: 4 tabelas, 2 RPCs, RLS nas 4, trigger de imutabilidade.
-  - **Pendente:** frontend ainda não existe — só o schema desta etapa.
+  - O frontend foi implementado posteriormente; este item descreve somente o
+    estado existente na data da fundação.
 
 - [x] **Integração Agenda → Financeiro + Dashboard "Próximo paciente"**
   (sessão 05/08/2026). Orquestração entre telas que já existiam — nenhuma

@@ -58,6 +58,24 @@ PostgREST. Portanto:
 - Auditoria de **leitura** de dado sensível (READ_SENSIVEL) fica na camada de aplicação
   quando existir (o Postgres não tem trigger de SELECT).
 
+### Prontuário clínico
+
+O hardening preparado em `prontuario_hardening.sql` estabelece que:
+
+- somente o médico responsável, com vínculo ativo na clínica, abre o conteúdo;
+- proprietária e recepção não recebem acesso clínico automático;
+- toda abertura completa passa por `abrir_prontuario` e gera auditoria na mesma
+  transação;
+- não há SELECT/INSERT/UPDATE direto do frontend nas tabelas clínicas;
+- `created_by`, `finalizado_por`, vínculos e datas de finalização são definidos
+  no servidor;
+- a finalização é atômica e qualquer correção posterior ocorre por adendo
+  append-only.
+
+**Estado:** regras preparadas no código em 11/08/2026, ainda não aplicadas ao
+Supabase. Até a aplicação autorizada, o banco permanece com as permissões da
+fundação original.
+
 ## Dados sensíveis / criptografia
 
 - **CPF** é armazenado **cifrado** (`cpf_encrypted`, AES via pgcrypto/pgp_sym) e nunca em

@@ -107,6 +107,29 @@
 | `fn_auditoria()` | trigger, SECURITY DEFINER | grava automaticamente na auditoria em INSERT/UPDATE/DELETE |
 | `fn_bloqueia_mutacao()` | trigger | barra UPDATE/DELETE na auditoria (append-only) |
 
+## Prontuário eletrônico
+
+A fundação aplicada está registrada em `prontuario_fundacao.sql`. O hardening
+incremental está preparado em `prontuario_hardening.sql`, mas **ainda não foi
+aplicado ao banco**.
+
+Quando autorizado e aplicado, o frontend deixará de ter grants diretos nas
+tabelas `atendimentos`, `atendimentos_adendos` e `documentos_clinicos`:
+
+- a listagem usará `listar_atendimentos_prontuario` e retornará somente
+  metadados;
+- a leitura completa usará `abrir_prontuario`, que grava
+  `auditoria_leitura_clinica` na mesma transação;
+- criação, rascunho, finalização, adendos e documentos serão escritos por RPCs
+  com validação de `auth.uid()`, papel médico e isolamento por `clinica_id`;
+- `finalizar_atendimento_seguro` salvará o conteúdo e finalizará atomicamente;
+- um índice único parcial impedirá mais de um atendimento por agendamento.
+
+As RPCs do hardening são `SECURITY DEFINER`, usam `search_path = pg_catalog`,
+qualificam os objetos por schema e concedem `EXECUTE` somente a
+`authenticated`. As RPCs legadas são preservadas, mas terão execução revogada
+do aplicativo após a migration.
+
 ## Triggers
 
 - `trg_audit_clinicas`, `trg_audit_usuarios`, `trg_audit_usuarios_clinicas`,
