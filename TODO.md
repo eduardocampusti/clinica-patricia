@@ -2,6 +2,13 @@
 
 ## Concluído recentemente
 
+- [x] **Decisão arquitetural Ibitiara → Laboratório formalizada** (12/08/2026).
+  Referência canônica criada em `DECISAO-IBITIARA-LABORATORIO.md`: Brotas e
+  Ipupiara são as duas clínicas operacionais; Ibitiara é laboratório externo,
+  com CNPJ e sistema próprios. O estado histórico foi preservado e separado do
+  estado ainda não alterado do banco. A integração futura chama-se `INT-LAB`.
+  Nenhum SQL foi executado e `desativar_ibitiara.sql` não foi aprovado.
+
 - [x] **Financeiro — IMPLEMENTADO ESTATICAMENTE — AGUARDA TESTE EM BANCO**
   (12/08/2026). Foram escritos os quatro SQLs, contratos Fastify, asserção HMAC,
   pool PostgreSQL, endpoints, idempotência e fluxos de cobrança/cortesia,
@@ -500,9 +507,13 @@
   real antes de produção, ou zerar) e a nova entrada de teste em Brotas
   (paciente `Maria Teste Silva`, profissional `Dr. Teste Brotas`,
   `valor 500,00`, id `23cc9df1-8aba-418a-b77a-4e474948a265`).
-- [ ] **Rodar o SQL da cor da Clínica Ibitiara** (`ibitiara_cor.sql`, entregue ao
-  Eduardo) — terracota `#c2410c`/`#fed7aa`/`#7c2d12`, escolhida e aprovada
-  nesta sessão. Só falta executar no SQL Editor do Supabase.
+- [ ] ~~**Rodar o SQL da cor da Clínica Ibitiara**~~ — **CANCELADO** (ago/2026).
+  A unidade de Ibitiara não é mais uma clínica no sistema — é um laboratório com
+  sistema próprio. O arquivo `ibitiara_cor.sql` não deve ser executado. O registro
+  histórico da "Clínica Ibitiara" ainda existe no banco documentado e deverá ser
+  preservado. Sua futura inativação (`ativo = false`), os vínculos operacionais e
+  o tratamento de `teste_medico_ibitiara@teste.local` dependem de inventário e
+  plano aprovados. **Não executar `desativar_ibitiara.sql` no estado atual.**
 - [ ] **Nome de exibição da proprietária** — hoje "Proprietária" (placeholder).
 - [ ] Criar a **RPC `clinica_publica_por_subdomain`** (para theming pré-login).
 - [ ] **Refinamento da auditoria**: registros de mudança na própria `clinicas`/`usuarios`
@@ -557,17 +568,29 @@
 
 ## Fase 2 (futuro)
 
-- **Visão consolidada** (caixa somado das 3 clínicas para a proprietária).
+- **Visão consolidada** (caixa somado das 2 clínicas para a proprietária).
 - **Emissão automática de NF** via serviço terceirizado (NFe.io / Focus NFe / PlugNotas).
+  Atentar: são 2 CNPJs em prefeituras distintas.
 - **Perfil recepção/secretária** e permissões.
 - Painel de configurações da clínica (proprietária troca logo/cor pelo sistema).
+- **INT-LAB — Integração com laboratório** — consumir API do sistema do laboratório da
+  proprietária (Ibitiara). Bloqueado até o lab ter sistema próprio pronto e expor API.
+  Fluxo: médico pede exame → API do lab → resultado volta → vincula ao prontuário.
+  A iniciativa não tem número nem posição aprovada no roadmap. Ver a seção
+  "Integração com laboratório externo — INT-LAB" em `ARCHITECTURE.md` e
+  `DECISAO-IBITIARA-LABORATORIO.md`.
 
 ## Próximos passos recomendados (ordem sugerida)
 
 1. Criar **ambiente local/staging reproduzível + baseline do schema**.
-2. Validar os SQLs do Financeiro, RPCs, RLS, Vault, roles, concorrência,
+2. Fazer o inventário completo e exclusivamente de leitura do antigo tenant
+   Ibitiara e preparar um plano transacional/reversível; não executar
+   `desativar_ibitiara.sql` no estado atual.
+3. Antes de retomar o Financeiro, garantir documentalmente e depois testar que
+   frontend, backend, RLS e funções privadas rejeitam `clinicas.ativo = false`.
+4. Validar os SQLs do Financeiro, RPCs, RLS, Vault, roles, concorrência,
    fechamento atômico e repasses sem tocar produção.
-3. **Subdomínio + trava** no frontend (fecha o modelo de isolamento do médico).
-4. Ligar os cards financeiros do Dashboard a dados reais após validação do módulo.
-5. Antes de qualquer produção: trocar segredos do Vault, remover dados de teste,
+5. **Subdomínio + trava** no frontend (fecha o modelo de isolamento do médico).
+6. Ligar os cards financeiros do Dashboard a dados reais após validação do módulo.
+7. Antes de qualquer produção: trocar segredos do Vault, remover dados de teste,
    configurar GitHub/Vercel.

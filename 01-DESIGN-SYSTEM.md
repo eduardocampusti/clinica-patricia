@@ -24,12 +24,17 @@ Tokens derivados via `color-mix()`:
 - `--cor-primaria-hover` (85% da primária + 15% preto)
 - `--cor-primaria-suave` (12% da primária + 88% transparente)
 
-Valores reais no banco hoje:
+Paleta das duas clínicas que compõem o estado operacional aprovado:
 | Clínica | `cor_primaria` | `cor_menu` |
 |---|---|---|
 | Brotas | `#2563eb` (azul) | escuro derivado |
 | Ipupiara | `#16a34a` (verde) | escuro derivado |
-| Ibitiara | `#c2410c` (laranja) | escuro derivado |
+
+> Estado arquitetural (12/08/2026): Ibitiara foi reclassificada como laboratório
+> externo e não compõe a paleta operacional do sistema das clínicas. Estado real
+> documentado do banco: a antiga linha "Clínica Ibitiara" ainda existe e não foi
+> desativada; sua cor histórica deve ser preservada com o registro. A desativação
+> futura depende de plano aprovado. Ver `DECISAO-IBITIARA-LABORATORIO.md`.
 
 A v3 NÃO muda essa mecânica — usa os mesmos tokens.
 
@@ -247,7 +252,7 @@ Borda inferior: `1px solid var(--borda)`.
 Altura: `64px`.
 
 Conteúdo (da esquerda para direita):
-- **Abas de clínica** (SÓ para proprietária): "Brotas | Ipupiara | Ibitiara"
+- **Abas de clínica** (SÓ para proprietária): "Brotas | Ipupiara"
   — aba ativa com underline na `--cor-primaria` e texto peso 600.
   Para funcionário/médico: texto fixo "Clínica [Nome]" sem abas.
 - **Busca**: input com ícone de lupa + atalho "Cmd+K", fundo

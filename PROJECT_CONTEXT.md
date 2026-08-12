@@ -14,15 +14,22 @@
 para gestão de clínicas pertencentes à mesma proprietária. Cada clínica tem caixa,
 especialidades e dados **totalmente independentes** entre si.
 
-## Clínicas atendidas (3 inicialmente)
+## Unidades de negócio da proprietária
 
-| Clínica | Cidade | Cor de marca | Subdomínio (planejado) |
-|---|---|---|---|
-| Clínica Brotas | Brotas de Macaúbas, BA | Azul (`#2563eb`) | `brotas.` |
-| Clínica Ipupiara | Ipupiara, BA | Verde (`#16a34a`) | `ipupiara.` |
-| Clínica Ibitiara | Ibitiara, BA | Roxo provisório (`#7f51b0`) — **a definir** | `ibitiara.` |
+A proprietária (Patrícia) possui **3 unidades de negócio**, cada uma com **CNPJ próprio**.
+Apenas as **2 clínicas** são gerenciadas por este sistema. O laboratório é um negócio à
+parte, com sistema próprio independente.
 
-Todas administradas pela mesma proprietária.
+| Unidade | Cidade | Cor de marca | Subdomínio (planejado) | Neste sistema? |
+|---|---|---|---|---|
+| Clínica Brotas | Brotas de Macaúbas, BA | Azul (`#2563eb`) | `brotas.` | ✅ Sim |
+| Clínica Ipupiara | Ipupiara, BA | Verde (`#16a34a`) | `ipupiara.` | ✅ Sim |
+| Laboratório (nome a definir) | Ibitiara, BA | — | — | ❌ Sistema próprio |
+
+O laboratório **NÃO é uma unidade dentro do Clínica Patrícia**. Quando o sistema do lab
+estiver pronto, ele fornecerá uma API para a iniciativa futura **INT-LAB**.
+Ver `DECISAO-IBITIARA-LABORATORIO.md`, `TODO.md` e a seção
+"Integração com laboratório externo — INT-LAB" em `ARCHITECTURE.md`.
 
 ## Objetivos centrais
 
@@ -35,7 +42,7 @@ Todas administradas pela mesma proprietária.
 
 ## Perfis de usuário
 
-- **Proprietária** — vê todas as clínicas, único perfil com acesso multi-clínica e com
+- **Proprietária** — vê as 2 clínicas, único perfil com acesso multi-clínica e com
   o seletor de clínicas. Acesso pensado para um subdomínio de gestão (`gestao.`).
 - **Médico / funcionário** — vinculado a uma ou mais clínicas, mas a cada acesso fica
   **travado na clínica do endereço** (subdomínio). Nunca vê dados de outra clínica e
@@ -60,7 +67,12 @@ Desenvolvimento **modular**: um módulo por vez, no ciclo
 
 **Pronto e testado:**
 - Banco de dados completo no Supabase (tabelas, RLS, auditoria, criptografia de CPF).
-- 3 clínicas cadastradas; login da proprietária criado.
+- **Estado arquitetural aprovado:** 2 clínicas operacionais, Brotas e Ipupiara.
+- **Estado documentado do banco:** Brotas, Ipupiara e a antiga Clínica Ibitiara
+  continuam cadastradas; Ibitiara ainda não foi desativada. Nenhum banco foi
+  consultado nesta formalização. O registro e seus dados serão preservados e a
+  futura inativação depende de plano aprovado.
+- Login da proprietária criado.
 - Isolamento entre clínicas provado ao vivo (testes de fumaça no banco).
 - Tabela de pacientes com "trava por clínica ativa".
 - Projeto frontend criado (Vite + React + TS + Tailwind), conectado ao Supabase.

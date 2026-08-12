@@ -37,8 +37,23 @@ Garantido no **banco (RLS)**, não só na interface. Duas camadas de regra em `p
   Ipupiara. O médico entra pelo endereço da unidade onde está; **não há seletor** para
   ele escolher (evita erro de profissional desatento).
 - A proprietária acessa por um endereço de **gestão** (`gestao.dominio`), onde tem o
-  **seletor** e pode ver as 3 (clínica ativa não setada → vê todas as suas) ou filtrar
-  por uma.
+  **seletor** e pode ver as 2 clínicas (clínica ativa não setada → vê todas as suas)
+  ou filtrar por uma.
+
+### Ibitiara: decisão vigente e estado de transição
+
+- Brotas e Ipupiara são as únicas clínicas operacionais aprovadas.
+- Ibitiara será laboratório externo e não poderá conceder contexto de tenant,
+  aparecer no seletor ou ser aceita como clínica ativa.
+- O estado documentado do banco ainda contém o registro e vínculos históricos de
+  Ibitiara; a desativação não ocorreu e `desativar_ibitiara.sql` não está aprovado.
+- A autorização futura deverá exigir simultaneamente vínculo ativo e
+  `clinicas.ativo = true`. Isso deve valer no RLS, frontend e backend.
+- Inativar um perfil em `public.usuarios` não bloqueia por si só a autenticação da
+  identidade correspondente em `auth.users`. O tratamento de contas de teste e o
+  acesso ao acervo histórico exigem planos separados.
+
+Ver `DECISAO-IBITIARA-LABORATORIO.md`.
 
 ### Ponto de atenção (frontend-direto)
 No acesso frontend-direto atual, `app.clinica_ativa` não é setado automaticamente pelo

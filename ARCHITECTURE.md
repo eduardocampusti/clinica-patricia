@@ -50,14 +50,40 @@ valendo sempre; a trava de "clínica ativa" precisa ser reforçada pela própria
 
 ## Multi-tenancy (multi-clínica)
 
-- **Um único sistema**, isolamento por coluna `clinica_id` + **RLS**. NÃO são 3 sistemas.
+- **Um único sistema para as duas clínicas operacionais**, com isolamento por
+  coluna `clinica_id` + **RLS**.
 - Toda tabela sensível tem `clinica_id`. A política de RLS garante, **no nível do banco**,
   que um usuário de uma clínica não acessa dado de outra — mesmo com bug na aplicação
   (defesa em profundidade).
-- **Acesso por subdomínio por clínica** (planejado): `brotas.dominio`, `ipupiara.dominio`,
-  `ibitiara.dominio` (equipe, travados na clínica) + `gestao.dominio` (proprietária, vê
-  as 3, com seletor). O subdomínio resolve o `clinica_id` ativo. **O médico não escolhe
-  clínica** — o endereço decide.
+- **Acesso por subdomínio por clínica** (planejado): `brotas.dominio`, `ipupiara.dominio`
+  (equipe, travados na clínica) + `gestao.dominio` (proprietária, vê as 2, com seletor).
+  O subdomínio resolve o `clinica_id` ativo. **O médico não escolhe clínica** — o
+  endereço decide.
+- **O laboratório da proprietária (Ibitiara) NÃO é uma unidade neste sistema.** Terá
+  sistema próprio; integração futura via API exposta pelo lab, identificada como
+  **INT-LAB**. A decisão canônica está em `DECISAO-IBITIARA-LABORATORIO.md`.
+
+### Estado histórico, decisão e banco atual
+
+- **Histórico:** Ibitiara existiu como tenant e foi usada em testes de isolamento,
+  tema, autenticação e autorização. Esses fatos não devem ser reescritos.
+- **Decisão arquitetural:** somente Brotas e Ipupiara são tenants operacionais;
+  Ibitiara é laboratório externo.
+- **Estado documentado do banco:** o registro antigo ainda existe e não foi
+  desativado. A futura mudança será lógica (`ativo = false`), preservará todos os
+  dados e depende de plano aprovado. `desativar_ibitiara.sql` não está aprovado.
+
+## Integração com laboratório externo — INT-LAB
+
+`INT-LAB` será uma integração entre dois sistemas e dois domínios de dados, não
+uma comunicação entre tenants. O fluxo conceitual é pedido de exame na clínica →
+API do laboratório → resultado → vínculo auditável ao prontuário.
+
+O laboratório não terá acesso direto ao banco/Supabase das clínicas. Antes de
+implementar devem ser definidos contrato da API, autenticação máquina a máquina,
+identificação do paciente, base legal LGPD, idempotência, retentativas, auditoria,
+assinatura/versionamento do laudo, anexos e retenção. A iniciativa ainda não tem
+posição aprovada no roadmap.
 
 ## Identidade visual por clínica (theming) — regra fundamental
 

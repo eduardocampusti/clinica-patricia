@@ -22,9 +22,32 @@
 
 ---
 
+## DECISÃO ESTRUTURAL VIGENTE — IBITIARA
+
+- Os tenants operacionais aprovados são somente **Brotas** e **Ipupiara**.
+- Ibitiara é um laboratório externo, com CNPJ e sistema próprios, e não é tenant
+  do Clínica Patrícia.
+- O registro histórico ainda existe no banco documentado e não foi desativado.
+  Nenhum dado histórico pode ser apagado.
+- `desativar_ibitiara.sql` não está aprovado para execução.
+- A referência canônica é `DECISAO-IBITIARA-LABORATORIO.md`.
+
+**Nomenclatura:** “Módulo funcional 7” significa exclusivamente **Relatórios e
+Dashboards** neste mapa. A ordem 7 do plano diretor é uma **etapa de roadmap**
+(Templates por Especialidade), não este módulo funcional. A integração externa
+com o laboratório chama-se **INT-LAB** e ainda não tem número nem posição de
+implementação aprovada.
+
+---
+
 ## MÓDULO ATUAL: 5 — FINANCEIRO
 
 **Status oficial: IMPLEMENTADO ESTATICAMENTE — AGUARDA TESTE EM BANCO.**
+
+**Avanço temporariamente pausado:** antes de qualquer nova implementação ou
+execução em banco, devem ser consideradas as implicações da decisão Ibitiara →
+Laboratório, especialmente a rejeição explícita de clínicas inativas. Essa pausa
+não altera o status estático já versionado do Financeiro.
 
 O módulo financeiro é a **prioridade de negócio da proprietária** e deve ser
 validado em ambiente local/staging antes de qualquer aplicação em produção.

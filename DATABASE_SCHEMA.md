@@ -4,6 +4,23 @@
 > **exceto se a seção declarar explicitamente que é uma evolução preparada/não aplicada**.
 > Projeto Supabase: `xftnkusbyqzyvzrovroj` (região São Paulo, sa-east-1).
 
+## Estado arquitetural e estado documentado do banco
+
+- **Estado histórico:** o banco foi criado e testado com três tenants, incluindo
+  a Clínica Ibitiara. Os resultados históricos abaixo permanecem descritos com
+  três clínicas.
+- **Decisão arquitetural de 12/08/2026:** somente Brotas e Ipupiara serão tenants
+  operacionais; Ibitiara será laboratório externo.
+- **Estado documentado do banco nesta formalização:** a linha de Ibitiara ainda
+  existe e não foi marcada como inativa. Nenhum SQL foi executado ou banco
+  consultado para esta atualização documental.
+- **Estado futuro aprovado:** preservar a linha e todos os dados históricos e,
+  somente após inventário e plano aprovados, marcar `clinicas.ativo = false` e
+  retirar seus acessos operacionais.
+
+`desativar_ibitiara.sql` não está aprovado. A referência arquitetural canônica é
+`DECISAO-IBITIARA-LABORATORIO.md`.
+
 ## Extensões
 
 - `pgcrypto` (schema `extensions`) — criptografia e HMAC do CPF.
@@ -192,11 +209,15 @@ arquivos `financeiro_*.sql` ainda não foram aplicadas nem testadas em banco.
 
 - Usuário médico de teste: `teste_medico_brotas@teste.local` (id `4444...`), vinculado a
   Brotas e Ipupiara — criado para validar a trava.
+- Usuário histórico de teste `teste_medico_ibitiara@teste.local`, criado quando
+  Ibitiara ainda era tenant. Seu estado precisa ser inventariado. Inativar
+  `public.usuarios` não equivale a bloquear/remover `auth.users`.
 - 2 pacientes de amostra: **Maria Teste Silva** (Brotas) e **João Teste Souza** (Ipupiara).
 
 ## Testes de fumaça já realizados (todos passaram, no banco)
 
-- Médico de Brotas vê só Brotas; médico de Ipupiara vê só Ipupiara; proprietária vê as 3.
+- No modelo histórico então vigente, médico de Brotas via só Brotas, médico de
+  Ipupiara via só Ipupiara e a proprietária via as 3 clínicas, incluindo Ibitiara.
 - UPDATE/DELETE na auditoria é bloqueado ("append-only").
 - Médico não lê a auditoria; proprietária lê.
 - CPF criptografa e descriptografa corretamente; hash gera valor; unicidade funciona.
