@@ -184,7 +184,7 @@ function Agenda({ clinicaAtiva, carregandoClinica, usuarioId, onAtendimentoInici
     null,
   )
   const [profissionalParaExcecao, setProfissionalParaExcecao] = useState<string | null>(null)
-  const [prefillEntrada, setPrefillEntrada] = useState<{ pacienteId: string; profissionalId: string } | null>(null)
+  const [prefillEntrada, setPrefillEntrada] = useState<{ pacienteId: string; profissionalId: string; agendamentoId: string } | null>(null)
   const [avisoSemCaixa, setAvisoSemCaixa] = useState<string | null>(null)
 
   const [meuProfissionalId, setMeuProfissionalId] = useState<string | null>(null)
@@ -463,7 +463,7 @@ function Agenda({ clinicaAtiva, carregandoClinica, usuarioId, onAtendimentoInici
           .maybeSingle()
 
         if (sessaoAberta) {
-          setPrefillEntrada({ pacienteId: agendamento.paciente_id, profissionalId: agendamento.profissional_id })
+          setPrefillEntrada({ pacienteId: agendamento.paciente_id, profissionalId: agendamento.profissional_id, agendamentoId: agendamento.id })
           setModalAberto('entrada')
         } else {
           setAvisoSemCaixa('Sem caixa aberto — lance essa entrada manualmente quando abrir.')
@@ -816,6 +816,7 @@ function Agenda({ clinicaAtiva, carregandoClinica, usuarioId, onAtendimentoInici
             profissionais={profissionais}
             pacienteIdInicial={prefillEntrada.pacienteId}
             profissionalIdInicial={prefillEntrada.profissionalId}
+            agendamentoIdInicial={prefillEntrada.agendamentoId}
             onRegistrado={() => setModalAberto(null)}
             comCard={false}
           />

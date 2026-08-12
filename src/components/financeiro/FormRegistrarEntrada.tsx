@@ -28,6 +28,7 @@ interface FormRegistrarEntradaProps {
   profissionais: ProfissionalOpcaoEntrada[]
   pacienteIdInicial?: string
   profissionalIdInicial?: string
+  agendamentoIdInicial?: string
   onRegistrado: () => void | Promise<void>
   /** Card próprio (sombra + raio + fundo). Desliga quando o formulário já
    * está dentro de outro contêiner com esse chrome (ex.: um modal). */
@@ -44,6 +45,7 @@ export function FormRegistrarEntrada({
   profissionais,
   pacienteIdInicial,
   profissionalIdInicial,
+  agendamentoIdInicial,
   onRegistrado,
   comCard = true,
 }: FormRegistrarEntradaProps) {
@@ -86,6 +88,11 @@ export function FormRegistrarEntrada({
       return
     }
 
+    if (formaPagamento === 'cortesia' && !descricao.trim()) {
+      setErro('Informe o motivo da cortesia.')
+      return
+    }
+
     setRegistrando(true)
     try {
       await registrarEntradaCaixa(
@@ -95,6 +102,7 @@ export function FormRegistrarEntrada({
         descricao.trim() || null,
         pacienteId,
         profissionalId,
+        agendamentoIdInicial,
       )
       setValor('')
       setDescricao('')
@@ -194,7 +202,7 @@ export function FormRegistrarEntrada({
 
         <div className="sm:col-span-2">
           <label className="mb-1.5 block text-sm font-medium text-[var(--texto-principal)]">
-            Descrição (opcional)
+            {formaPagamento === 'cortesia' ? 'Motivo da cortesia' : 'Descrição (opcional)'}
           </label>
           <input
             type="text"
