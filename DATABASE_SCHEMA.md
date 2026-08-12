@@ -1,6 +1,7 @@
 # DATABASE_SCHEMA.md — Clínica Patrícia (Supabase / PostgreSQL)
 
-> Fonte da verdade do banco. Tudo abaixo já está **aplicado no Supabase** e testado.
+> Fonte da verdade do banco. Tudo abaixo está aplicado no Supabase e testado,
+> **exceto se a seção declarar explicitamente que é uma evolução preparada/não aplicada**.
 > Projeto Supabase: `xftnkusbyqzyvzrovroj` (região São Paulo, sa-east-1).
 
 ## Extensões
@@ -130,6 +131,30 @@ qualificam os objetos por schema e concedem `EXECUTE` somente a
 `authenticated`. As RPCs legadas são preservadas, mas terão execução revogada
 do aplicativo após a migration.
 
+## Financeiro — IMPLEMENTADO ESTATICAMENTE — AGUARDA TESTE EM BANCO
+
+Quatro artefatos foram preparados sem execução:
+
+- `financeiro_fundacao.sql`: cobranças, despesas, movimentos físicos,
+  fechamentos congelados, repasses, estornos, ajustes e idempotência;
+- `financeiro_api_privada.sql`: schema `financeiro_privado`, papéis técnicos,
+  asserção HMAC lida do Vault e RPCs atômicas;
+- `financeiro_bloqueio_postgrest.sql`: corte final dos INSERT/UPDATE/DELETE
+  diretos de `authenticated`;
+- `financeiro_seguranca_testes.sql`: testes para local/staging.
+
+Os SQLs dependem do schema-base real, da localização confirmada de `pgcrypto`,
+do comportamento de `fn_auditoria()` e do Vault. Esses pontos são preflights
+explícitos e não foram presumidos.
+
+Nenhum desses SQLs foi executado. Produção/Supabase não foi alterado. Não há
+validação em banco de RPCs, RLS, Vault, roles técnicas, idempotência concorrente,
+fechamento atômico, estornos ou repasses. Checks de TypeScript/build e testes
+unitários do backend não substituem os testes transacionais do catálogo SQL.
+
+**Próximo bloqueio:** ambiente local/staging reproduzível e baseline do schema
+real antes de executar `financeiro_fundacao.sql` ou qualquer etapa posterior.
+
 ## Triggers
 
 - `trg_audit_clinicas`, `trg_audit_usuarios`, `trg_audit_usuarios_clinicas`,
@@ -137,7 +162,10 @@ do aplicativo após a migration.
 - `trg_auditoria_imutavel` → executa `fn_bloqueia_mutacao()` antes de UPDATE/DELETE na
   `auditoria` (impede rasura).
 
-## RLS (Row Level Security) — ATIVO em todas as tabelas
+## RLS (Row Level Security) — ATIVO nas tabelas atualmente aplicadas
+
+Esta seção descreve o banco existente. As policies financeiras versionadas nos
+arquivos `financeiro_*.sql` ainda não foram aplicadas nem testadas em banco.
 
 | Tabela | Política | Regra (resumo) |
 |---|---|---|

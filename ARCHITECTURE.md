@@ -5,7 +5,7 @@
 | Camada | Tecnologia | Observação |
 |---|---|---|
 | Frontend | **React 19 + TypeScript + Vite + Tailwind CSS v4** | Rodando em `localhost:5173` em dev |
-| Acesso a dados | **@supabase/supabase-js** (cliente oficial) | O frontend fala **direto** com o Supabase |
+| Acesso a dados | **@supabase/supabase-js + pg** | Leituras simples via RLS; mutações financeiras via Fastify/RPC privada |
 | Banco de dados | **PostgreSQL via Supabase** | Com RLS (Row Level Security) nativo |
 | Autenticação | **Supabase Auth** (JWT) | signInWithPassword / getSession / onAuthStateChange |
 | Cofre de segredos | **Supabase Vault** | Guarda as chaves de criptografia de CPF |
@@ -17,18 +17,29 @@ O plano de arquitetura inicial (docs do projeto, "aba projetos") previa uma cama
 **Node.js + Fastify + Prisma** entre o frontend e o banco, para regras de negócio
 complexas (especialmente o financeiro).
 
-**Estado real (atualizado):** existe agora um **esqueleto mínimo** dessa camada,
-em `/server` (Node.js + Fastify + TypeScript, **sem Prisma** — acesso ao banco
-via `@supabase/supabase-js`, cliente escopado ao token da requisição). Ele só
-valida identidade (Supabase Auth) e resolve/confirma a clínica ativa via header
-`X-Clinica-Id` (RLS já existente decide se o usuário pode); **nenhuma lógica de
-negócio ainda** (sem cálculo financeiro, sem chave privilegiada `service_role`).
-Ver `server/README.md` para o contrato completo. O frontend **ainda não chama**
-esse servidor — continua acessando o Supabase diretamente para tudo que já
-existe (login, cadastro, Cadastros Estruturais, listagem). O servidor só passa
-a ser usado de verdade quando o **módulo Financeiro** (cálculos, fechamento de
-caixa, repasse por profissional) precisar de lógica que não deva rodar no
-frontend nem confiar só em RLS simples.
+**Estado real (atualizado em 12/08/2026): IMPLEMENTADO ESTATICAMENTE — AGUARDA
+TESTE EM BANCO.** O `/server` contém a fronteira financeira e o frontend está
+integrado aos comandos Fastify. O Fastify valida o JWT real, assina o comando
+com HMAC e usa uma conexão PostgreSQL limitada ao papel `financeiro_api`. As
+RPCs mutáveis ficam em `financeiro_privado`, fora do PostgREST, e revalidam
+identidade, clínica e papel. Não há Prisma nem `service_role`.
+
+Essa arquitetura ainda está **bloqueada para execução**: os SQLs não foram
+aplicados, o segredo não foi criado no Vault e o schema-base local/staging não
+foi reconstruído. Produção/Supabase não foi alterado. Até essa validação, o
+banco continua no estado anterior; RPCs, RLS, Vault, roles técnicas,
+idempotência concorrente, fechamento atômico e repasses não foram testados em
+banco.
+
+A configuração financeira é lazy: o backend existente inicia sem
+`FINANCEIRO_DATABASE_URL` e `FINANCEIRO_ASSERTION_HMAC_KEY`. A primeira operação
+financeira privada sem essas variáveis recebe HTTP `503` controlado e não cria o
+pool. Typecheck/build do backend, 6/6 testes unitários, `npm audit` sem
+vulnerabilidades e typecheck/build do frontend passaram em 12/08/2026.
+
+Commits técnicos na branch `financeiro-v2`: `ec36d1f` (SQL), `271db41`
+(Fastify) e `88b5bca` (frontend). O próximo bloqueio é um ambiente local/staging
+reproduzível com baseline do schema antes de executar os SQLs.
 
 **Implicação de segurança a conhecer:** a "trava por clínica ativa" (ver
 `AUTH_AND_PERMISSIONS.md`) usa uma variável de sessão (`app.clinica_ativa`) que é

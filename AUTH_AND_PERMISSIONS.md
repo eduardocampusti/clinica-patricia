@@ -76,6 +76,31 @@ O hardening preparado em `prontuario_hardening.sql` estabelece que:
 Supabase. Até a aplicação autorizada, o banco permanece com as permissões da
 fundação original.
 
+### Fronteira financeira Fastify → PostgreSQL
+
+**Status: IMPLEMENTADO ESTATICAMENTE — AGUARDA TESTE EM BANCO.** As mutações
+financeiras implementadas não usam `service_role`. O Fastify valida o
+JWT pelo Supabase Auth e produz uma asserção HMAC de curta duração contendo
+usuário, clínica, operação, idempotência e payload. A cópia do servidor fica
+somente em variável de ambiente; a cópia PostgreSQL fica exclusivamente no
+Supabase Vault quando a infraestrutura for aplicada.
+
+O papel `financeiro_api` pode apenas executar RPCs privadas. Ele não lê nem
+escreve tabelas. O papel `financeiro_vault_guard` valida a assinatura sem
+devolver o segredo, e `financeiro_executor` executa as regras sob RLS. O corte
+do PostgREST só poderá ocorrer depois dos testes em local/staging.
+
+Nenhum SQL financeiro foi executado e produção/Supabase não foi alterado. Logo,
+as garantias desenhadas para RPCs, RLS, Vault, roles técnicas, idempotência
+concorrente, fechamento atômico e repasses ainda não foram comprovadas em banco.
+O próximo bloqueio é um ambiente local/staging reproduzível com baseline do
+schema real.
+
+As credenciais financeiras são exigidas somente no uso da fronteira privada. O
+backend inicia sem `FINANCEIRO_DATABASE_URL` e
+`FINANCEIRO_ASSERTION_HMAC_KEY`; uma operação financeira nessas condições
+retorna HTTP `503` controlado antes de criar o pool ou tentar RPC.
+
 ## Dados sensíveis / criptografia
 
 - **CPF** é armazenado **cifrado** (`cpf_encrypted`, AES via pgcrypto/pgp_sym) e nunca em

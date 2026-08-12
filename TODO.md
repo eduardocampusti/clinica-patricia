@@ -2,6 +2,23 @@
 
 ## Concluído recentemente
 
+- [x] **Financeiro — IMPLEMENTADO ESTATICAMENTE — AGUARDA TESTE EM BANCO**
+  (12/08/2026). Foram escritos os quatro SQLs, contratos Fastify, asserção HMAC,
+  pool PostgreSQL, endpoints, idempotência e fluxos de cobrança/cortesia,
+  despesa, sangria, suprimento, fechamento, estorno e repasse integral.
+  O frontend foi integrado sem mutações financeiras diretas via PostgREST e sem
+  cálculos financeiros relevantes. Commits: `ec36d1f` (SQL), `271db41`
+  (Fastify) e `88b5bca` (frontend).
+  - Backend: typecheck/build, 6/6 testes e `npm audit` com 0 vulnerabilidades.
+  - Frontend: typecheck/build e revisão das chamadas financeiras concluídos.
+  - Startup: sem as duas variáveis financeiras privadas, o servidor inicia e a
+    rota financeira retorna HTTP `503` controlado.
+  - **Nenhum SQL financeiro foi executado e produção/Supabase não foi alterado.**
+  - Não considerar testados em banco: SQL/RPC/RLS, Vault, roles técnicas,
+    idempotência concorrente, fechamento atômico, estornos e repasses.
+  - **Próximo bloqueio:** ambiente local/staging reproduzível + baseline do
+    schema antes de qualquer execução dos SQLs.
+
 - [x] **Prontuário — hardening preparado no código** (`prontuario_hardening.sql`
   e `prontuario_seguranca_testes.sql`, 11/08/2026). O frontend passou a usar
   somente RPCs para listar metadados, abrir com auditoria, criar, salvar,
@@ -323,12 +340,13 @@
 
 - [x] **Fundação mínima do backend Node.js + Fastify** (`/server`, pré-requisito
   do módulo Financeiro — `10-PLANO-DIRETOR.md`/`11-PERFIL-PROPRIETARIA.md`).
+  **Registro histórico da etapa inicial; o estado atual está no primeiro item
+  deste arquivo e substitui as limitações descritas abaixo.**
   Projeto próprio (`package.json`/`node_modules`/`tsconfig.json` independentes
   do frontend), Fastify + TypeScript + `tsx`. Sem lógica financeira e **sem
   chave privilegiada (`service_role`)** nesta etapa — toda consulta usa um
   client Supabase escopado ao token JWT da própria requisição, respeitando a
-  mesma RLS do frontend (ver `server/README.md` para quando introduzir
-  `service_role`). Implementado: `requireAuth` (valida `Authorization: Bearer`
+  mesma RLS do frontend. Implementado: `requireAuth` (valida `Authorization: Bearer`
   via `auth.getUser`) + `resolveClinicaAtiva` (header `X-Clinica-Id`,
   confirmado via RLS de `clinicas` — ponte até existir resolução por
   subdomínio) + rota `GET /api/ping`. **Testado localmente, os 4 cenários:**
@@ -337,9 +355,8 @@
   isolamento, não só confia no header); com token e clínica vinculada → `200`
   com `{ usuario, clinica }` corretos. `npm run build` do servidor sem erro de
   tipos. `ARCHITECTURE.md` atualizado (a camada deixou de ser "não
-  implementada"). **O frontend ainda não chama esse servidor** — só passa a
-  ser usado quando o módulo Financeiro existir (ver contrato de chamada
-  futura em `server/README.md`).
+  implementada"). Naquela etapa, o frontend ainda não chamava o servidor; a
+  integração financeira foi implementada depois no commit `88b5bca`.
 
 - [x] **Módulo Cadastros Estruturais** (especialidades, profissionais,
   profissionais_clinicas, serviços/preços) — schema aplicado no banco
@@ -453,8 +470,8 @@
   de hoje" pronto no visual (`src/pages/Dashboard.tsx`), com dados placeholder;
   falta ligar aos dados reais quando o módulo existir.
 - [ ] **Módulo Prontuário** (templates por especialidade; dados clínicos criptografados).
-- [ ] **Módulo Financeiro** — o Dashboard já tem o card "Fluxo de caixa do dia"
-  pronto no visual, com dados placeholder; falta ligar aos dados reais.
+- [ ] **Dashboard financeiro com dados reais** — a fronteira operacional foi
+  implementada estaticamente, mas os cards do Dashboard continuam placeholder.
 - [ ] **Relatórios e dashboards** com dados reais (hoje é `PlaceholderScreen`).
 
 ## Pendências — Backend / Infra
@@ -491,14 +508,16 @@
 - [ ] **Refinamento da auditoria**: registros de mudança na própria `clinicas`/`usuarios`
   ficam com `clinica_id` nulo e ninguém os lê; decidir política (ex.: preencher com o id
   da clínica ou dar acesso à proprietária).
-- [ ] **Decidir sobre a camada Node.js + Fastify (+ Prisma)** — necessária para reforçar
-  a trava por clínica ativa e para a lógica do financeiro. Ver `ARCHITECTURE.md`.
+- [x] **Camada Node.js + Fastify para o Financeiro** — implementada sem Prisma e
+  sem `service_role`; aguarda validação em banco local/staging.
+- [ ] **Criar ambiente local/staging reproduzível e capturar baseline do schema**
+  antes de executar qualquer SQL do Financeiro ou hardening adicional.
 - [ ] **Política de esquecimento LGPD** vs auditoria (apagar/anonimizar dado, preservar
   registro de que existiu).
 - [ ] Configurar **GitHub** (versionamento/backup) e deploy na **Vercel** com wildcard de
   subdomínio.
 
-## Módulo Financeiro — regras de negócio já decididas (a implementar)
+## Módulo Financeiro — regras implementadas estaticamente, ainda não testadas em banco
 
 - **Objetivo:** proprietária com o fluxo de caixa "na palma da mão" (saldo do dia por
   clínica, sem cliques).
@@ -509,7 +528,7 @@
 - Vínculo **agenda → atendimento → status de pagamento** (quem pagou / quem deve).
 - **Fechamento por especialidade/profissional** (quanto cada médico gerou).
 - Todo lançamento financeiro **auditável** (quem lançou, quando, editou).
-- **Cálculos financeiros nunca no frontend** — passam por backend próprio quando existir.
+- **Cálculos financeiros nunca no frontend** — passam pelo backend Fastify/RPC privada.
 
 ## Erros / riscos conhecidos
 
@@ -545,9 +564,10 @@
 
 ## Próximos passos recomendados (ordem sugerida)
 
-1. Concluir o **tema** (cor por clínica + claro/escuro).
-2. **Cadastro/lista de pacientes** (primeira função de uso real).
+1. Criar **ambiente local/staging reproduzível + baseline do schema**.
+2. Validar os SQLs do Financeiro, RPCs, RLS, Vault, roles, concorrência,
+   fechamento atômico e repasses sem tocar produção.
 3. **Subdomínio + trava** no frontend (fecha o modelo de isolamento do médico).
-4. **Módulo financeiro** (prioridade de negócio) — avaliar backend Node/Fastify aqui.
+4. Ligar os cards financeiros do Dashboard a dados reais após validação do módulo.
 5. Antes de qualquer produção: trocar segredos do Vault, remover dados de teste,
    configurar GitHub/Vercel.

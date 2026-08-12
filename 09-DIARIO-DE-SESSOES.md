@@ -4,6 +4,53 @@
 > para que qualquer conversa futura (chat ou Claude Code) tenha continuidade
 > e não "saia do contexto". Entrada mais recente no topo.
 
+## Sessão — 12/08/2026 (Financeiro — implementação estática versionada)
+
+O Financeiro foi organizado na branch `financeiro-v2` e versionado em três
+commits técnicos:
+
+- `ec36d1f6db3885d2e0fa4c55cc013f079f184fef` — fundação SQL, API privada,
+  bloqueio do PostgREST mutável e testes SQL;
+- `271db411b106768f8b772ee939294e5e323a5af6` — fronteira Fastify, pool lazy,
+  asserção HMAC, rotas e testes unitários;
+- `88b5bca9cd8fbeba8b94184f8ec167b8372507ae` — integração do frontend aos
+  comandos financeiros.
+
+**Status: IMPLEMENTADO ESTATICAMENTE — AGUARDA TESTE EM BANCO.** Typecheck e
+build do backend passaram; 6/6 testes unitários passaram; `npm audit` encontrou
+0 vulnerabilidades. Typecheck e build do frontend passaram, e a revisão
+confirmou que mutações financeiras usam Fastify, sem cálculo financeiro
+relevante ou credencial privilegiada no frontend.
+
+O backend continua iniciando quando `FINANCEIRO_DATABASE_URL` e
+`FINANCEIRO_ASSERTION_HMAC_KEY` não existem. Nessas condições, uma operação
+financeira privada falha de forma controlada com HTTP `503`, antes de criar o
+pool ou tentar uma RPC.
+
+**Nenhum SQL financeiro foi executado. Produção/Supabase não foi acessado nem
+alterado.** Portanto SQL, RPCs, RLS, Vault, roles técnicas, idempotência
+concorrente, fechamento atômico e repasses não estão validados em banco.
+
+**Próximo bloqueio:** ambiente local/staging reproduzível e baseline do schema
+real antes de qualquer execução dos SQLs.
+
+---
+
+## Sessão — 11/08/2026 (Financeiro — código preparado sem banco)
+
+Com a arquitetura Fastify → PostgreSQL aprovada, foram preparados os artefatos
+estáticos do Financeiro: migrations separadas em fundação, API privada e corte
+do PostgREST; testes SQL; asserção HMAC com segredo no Vault; pool do papel
+`financeiro_api`; endpoints e frontend operacional. Cortesia não gera entrada
+nem repasse, fechamento congela os valores e estorno posterior gera ajuste
+para repasse futuro. Pagamento de repasse é integral e exclusivo da
+proprietária.
+
+**Nenhum SQL foi executado, nenhum papel/segredo foi criado e o Supabase não
+foi acessado.** A validação real aguarda ambiente local/staging reproduzível.
+
+---
+
 ## Sessão — 11/08/2026 (Prontuário — hardening preparado, não aplicado)
 
 Após revisar o frontend e `prontuario_fundacao.sql`, foi confirmado que as
