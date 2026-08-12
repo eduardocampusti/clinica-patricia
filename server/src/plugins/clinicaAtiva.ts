@@ -26,6 +26,7 @@ export async function resolveClinicaAtiva(request: FastifyRequest, reply: Fastif
     .from('clinicas')
     .select('id, nome')
     .eq('id', clinicaId)
+    .eq('ativo', true)
     .single()
 
   if (error || !data) {

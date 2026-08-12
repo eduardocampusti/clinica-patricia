@@ -67,7 +67,19 @@ begin
   end loop;
 end $funcoes$;
 
--- 5. Constraints críticas.
+-- 5. Invariante de clínica ativa e constraints críticas.
+select pg_temp.assert_true(
+  position('from public.clinicas c' in lower(pg_get_functiondef(
+    'financeiro_privado.preparar_comando(text,text,text,boolean)'::regprocedure
+  ))) > 0
+  and position('c.ativo is true' in lower(pg_get_functiondef(
+    'financeiro_privado.preparar_comando(text,text,text,boolean)'::regprocedure
+  ))) > 0
+  and position('for share' in lower(pg_get_functiondef(
+    'financeiro_privado.preparar_comando(text,text,text,boolean)'::regprocedure
+  ))) > 0,
+  'preparar_comando não exige clínica ativa'
+);
 select pg_temp.assert_true(exists(select 1 from pg_indexes where schemaname='public' and indexname='cobrancas_agendamento_unica'), 'unicidade por agendamento ausente');
 select pg_temp.assert_true(exists(select 1 from pg_indexes where schemaname='public' and indexname='sessoes_caixa_aberta_unica'), 'caixa aberto único ausente');
 select pg_temp.assert_true(exists(select 1 from pg_constraint where conrelid='public.pagamentos_repasse'::regclass and contype='u'), 'pagamento integral único ausente');
@@ -87,5 +99,8 @@ select pg_temp.assert_true(exists(select 1 from pg_constraint where conrelid='pu
 --    l) pagamento de repasse grava exatamente valor_a_pagar e rejeita repetição;
 --    m) Clínica A não referencia nem altera objetos da Clínica B;
 --    n) ausência/rotação incorreta do segredo Vault falha fechada e não grava nada.
+
+--    o) chamada direta à RPC com vínculo ativo e clínica inativa/inexistente ->
+--       42501, sem criar registro de idempotência nem qualquer lançamento.
 
 rollback;

@@ -152,6 +152,13 @@ begin
   v_usuario := (v_a->>'sub')::uuid;
   v_clinica := (v_a->>'clinica_id')::uuid;
 
+  perform 1
+  from public.clinicas c
+  where c.id = v_clinica and c.ativo is true
+  for share;
+  if not found then
+    raise exception 'FINANCEIRO_SEM_PERMISSAO: clínica inexistente ou inativa' using errcode = '42501';
+  end if;
   if not exists (select 1 from public.usuarios u where u.id = v_usuario and u.ativo) then
     raise exception 'FINANCEIRO_SEM_PERMISSAO: usuário inativo' using errcode = '42501';
   end if;
