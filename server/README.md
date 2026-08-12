@@ -1,10 +1,10 @@
 # Servidor (Node.js + Fastify)
 
-Fundação mínima da camada de backend, pré-requisito para o módulo Financeiro
+Camada de backend obrigatória para comandos do módulo Financeiro
 (ver `10-PLANO-DIRETOR.md` e `11-PERFIL-PROPRIETARIA.md` na raiz do projeto).
-Nesta etapa **não há lógica financeira nenhuma** — só prova que dá para
-validar identidade e resolver a clínica ativa num servidor próprio, separado
-do frontend.
+O código da nova fronteira Fastify → PostgreSQL está preparado, mas depende de
+`financeiro_fundacao.sql`, `financeiro_api_privada.sql` e do Vault em um
+ambiente local/staging. **Nenhum desses SQLs foi executado.**
 
 ## Como rodar localmente
 
@@ -27,19 +27,22 @@ Outros scripts:
 |---|---|
 | `SUPABASE_URL` | URL do projeto Supabase (mesmo projeto do frontend). |
 | `SUPABASE_ANON_KEY` | Chave pública `anon` — mesma natureza da usada no frontend, protegida por RLS. **Não é uma chave privilegiada.** |
+| `FINANCEIRO_DATABASE_URL` | Conexão exclusiva do papel técnico `financeiro_api`. Nunca usar `postgres` ou `service_role`. |
+| `FINANCEIRO_ASSERTION_HMAC_KEY` | Cópia da chave HMAC mantida somente no ambiente do servidor. Não versionar. |
+| `FINANCEIRO_ASSERTION_KEY_ID` | Identificador da versão da chave (`financeiro-hmac-v1`). |
+| `FINANCEIRO_DB_SSL` | `disable` somente no Supabase local; staging/produção exigem TLS. |
+| `FINANCEIRO_DB_POOL_MAX` | Limite do pool PostgreSQL do Fastify. |
 | `PORT` | Porta do servidor Fastify (padrão `3333`). |
 | `CORS_ORIGIN` | Origem do frontend permitida por CORS (padrão `http://localhost:5173`). |
 
-**Este servidor NÃO usa `service_role` (chave privilegiada) nesta etapa.**
-Toda consulta ao banco é feita com um client Supabase escopado ao próprio
-token JWT de quem fez a requisição (`src/supabase.ts`) — ou seja, a mesma RLS
-que já protege o frontend também protege o servidor, sem bypass nenhum.
-**Quando introduzir `service_role`:** só quando um módulo futuro precisar de
-verdade ignorar RLS de propósito (ex.: o Financeiro, ao processar uma
-transação de caixa que grava em várias tabelas atomicamente e não deve
-depender do vínculo de clínica do usuário logado para cada escrita
-individual). Quando isso acontecer: variável nova `SUPABASE_SERVICE_ROLE_KEY`
-só neste `.env`, nunca no `.env` do frontend nem versionada.
+**Este servidor não usa e não prevê `service_role` no Financeiro.** O token do
+usuário é validado pelo Supabase Auth. O Fastify assina uma asserção interna e
+chama RPCs privadas por uma conexão PostgreSQL de privilégio mínimo. O banco
+revalida vínculo, clínica e papel antes de escrever.
+
+A chave HMAC fica cifrada no Supabase Vault e é lida somente pela função de
+verificação. Não existe tabela própria de segredos e o valor não aparece em
+migration, código, log ou documentação.
 
 ## Contrato de autenticação + clínica ativa
 
@@ -83,7 +86,7 @@ Respostas:
 - `403` — clínica informada não pertence ao usuário autenticado.
 - `200` — `{ "usuario": { "id", "email" }, "clinica": { "id", "nome" } }`.
 
-## Como o frontend vai chamar isso (futuro — ainda não implementado no frontend)
+## Como o frontend chama comandos financeiros
 
 ```ts
 const { data: { session } } = await supabase.auth.getSession()
@@ -91,6 +94,7 @@ const resp = await fetch('http://localhost:3333/api/algum-endpoint', {
   headers: {
     Authorization: `Bearer ${session?.access_token}`,
     'X-Clinica-Id': clinicaAtivaId, // já disponível via useClinicaAtiva
+    'Idempotency-Key': crypto.randomUUID(),
   },
 })
 ```
@@ -101,11 +105,18 @@ const resp = await fetch('http://localhost:3333/api/algum-endpoint', {
 server/
   src/
     env.ts                  # lê/valida variáveis de ambiente
+    database.ts             # pool PostgreSQL do papel financeiro_api
+    financeiro/             # contratos, canonicalização, HMAC e cliente RPC
     supabase.ts              # factory: client Supabase escopado ao token da requisição
     plugins/
       auth.ts                # preHandler requireAuth
       clinicaAtiva.ts         # preHandler resolveClinicaAtiva
     routes/
       ping.ts                 # GET /api/ping
+      caixa.ts                # abertura, sangria, suprimento e fechamento
+      entradaCaixa.ts         # cobranças e recebimentos
+      despesas.ts             # despesas
+      estornos.ts             # estornos compensatórios
+      repasses.ts             # pagamento integral
     index.ts                  # bootstrap Fastify (cors + rotas + listen)
 ```
