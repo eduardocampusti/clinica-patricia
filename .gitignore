@@ -30,3 +30,6 @@ dist-ssr
 
 # Configuracao local do Claude Code (especifica desta maquina)
 .claude/
+
+# Estado efemero da CLI Supabase (nunca versionar)
+.supabase/
