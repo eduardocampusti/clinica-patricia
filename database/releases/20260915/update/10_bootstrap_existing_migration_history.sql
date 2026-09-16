@@ -1,39 +1,26 @@
--- Preflight sem escrita para instalação nova ou banco existente.
--- Em banco existente, o fingerprint de funções conta apenas funções de domínio:
--- membros de btree_gist no schema public são excluídos por dependência de
--- extensão. A contagem bruta permanece evidência operacional no runbook.
+\set ON_ERROR_STOP on
+
+-- Uso exclusivo em banco existente já comparado com a baseline.
+-- Cria o histórico que a CLI Supabase espera e registra 00, 01 e 02 somente
+-- depois da execução manual controlada de 00/01, do fingerprint de domínio e
+-- da confirmação de que 02 não foi executada. Não cria objetos da baseline.
+
+begin;
 
 do $$
 declare
   v_fingerprint text;
-  v_superuser boolean;
 begin
-  if current_setting('server_version_num')::integer < 170000 then
-    raise exception 'PostgreSQL 17 ou superior é obrigatório; versão atual: %',
-      current_setting('server_version');
-  end if;
-
-  select rolsuper into v_superuser from pg_roles where rolname = current_user;
-  if not exists (select 1 from pg_roles where rolname = 'postgres') then
-    raise exception 'A baseline exige o papel postgres.';
-  end if;
-
-  if not coalesce(v_superuser, false)
-     and not pg_has_role(current_user, 'postgres', 'member') then
-    raise exception
-      'Executor % precisa ser superusuário ou membro de postgres para criar os objetos e ajustar seus defaults.',
-      current_user;
-  end if;
-
-  if to_regclass('auth.users') is null
-     or to_regclass('vault.decrypted_secrets') is null
-     or not exists (select 1 from pg_namespace where nspname = 'extensions') then
-    raise exception 'Dependências Supabase ausentes: auth.users, vault.decrypted_secrets e schema extensions são obrigatórios.';
+  if exists (
+    select 1
+    from pg_namespace n
+    where n.nspname = 'supabase_migrations'
+  ) then
+    raise exception 'Bootstrap abortado: schema supabase_migrations já existe; não sobrescreva histórico existente.';
   end if;
 
   if to_regclass('public.agendamentos') is null then
-    raise notice 'Instalação nova detectada. Execute 01 antes de 02; btree_gist e pgcrypto serão validados em 01/02.';
-    return;
+    raise exception 'Bootstrap abortado: public.agendamentos ausente; este procedimento é exclusivo de banco existente.';
   end if;
 
   select concat_ws('|',
@@ -63,10 +50,41 @@ begin
   ) into v_fingerprint;
 
   if v_fingerprint <> '19|10|188|16|13|47|19|88|29|3' then
-    raise exception 'Fingerprint incompatível com a baseline: esperado %, encontrado %.',
+    raise exception 'Bootstrap abortado: fingerprint de domínio esperado %, encontrado %.',
       '19|10|188|16|13|47|19|88|29|3', v_fingerprint;
   end if;
 
-  raise notice 'Banco existente compatível com a baseline; não execute 02_baseline_instalacao_nova.sql.';
+  if not exists (select 1 from pg_extension where extname = 'pgcrypto')
+     or not exists (select 1 from pg_extension where extname = 'btree_gist') then
+    raise exception 'Bootstrap abortado: pgcrypto e btree_gist precisam estar instaladas após 01.';
+  end if;
 end;
 $$;
+
+create schema supabase_migrations;
+
+create table supabase_migrations.schema_migrations (
+  version text primary key,
+  statements text[],
+  name text
+);
+
+insert into supabase_migrations.schema_migrations (version, name, statements)
+values
+  (
+    '20260915010000',
+    'preflight_executor',
+    array['executada manualmente antes do bootstrap; sem escrita']::text[]
+  ),
+  (
+    '20260915010001',
+    'btree_gist',
+    array['executada manualmente antes do bootstrap; extensões validadas']::text[]
+  ),
+  (
+    '20260915010002',
+    'baseline_instalacao_nova',
+    array['baseline existente validada por fingerprint; SQL 02 não executado']::text[]
+  );
+
+commit;

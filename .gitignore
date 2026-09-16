@@ -38,3 +38,4 @@ dist-ssr
 # containers, volumes, logs e segredos gerados localmente; nunca versionar.
 /database/migration_validation_clone/
 /database/migration_update_clone/
+/database/production_compatibility_clone/

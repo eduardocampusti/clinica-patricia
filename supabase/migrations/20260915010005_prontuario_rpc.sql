@@ -20,7 +20,20 @@ begin
     (select count(*) from pg_class c join pg_namespace n on n.oid = c.relnamespace where n.nspname = 'public' and c.relkind = 'r'),
     (select count(*) from pg_type t join pg_namespace n on n.oid = t.typnamespace where n.nspname = 'public' and t.typtype = 'e'),
     (select count(*) from information_schema.columns where table_schema = 'public'),
-    (select count(*) from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public'),
+    (select count(*)
+       from pg_proc p
+       join pg_namespace n on n.oid = p.pronamespace
+      where n.nspname = 'public'
+        and not exists (
+          select 1
+          from pg_depend d
+          join pg_extension e on e.oid = d.refobjid
+          where d.classid = 'pg_proc'::regclass
+            and d.objid = p.oid
+            and d.refclassid = 'pg_extension'::regclass
+            and d.deptype = 'e'
+            and e.extname = 'btree_gist'
+        )),
     (select count(*) from pg_trigger t join pg_class c on c.oid = t.tgrelid join pg_namespace n on n.oid = c.relnamespace where n.nspname = 'public' and not t.tgisinternal),
     (select count(*) from pg_policy p join pg_class c on c.oid = p.polrelid join pg_namespace n on n.oid = c.relnamespace where n.nspname = 'public'),
     (select count(*) from pg_class c join pg_namespace n on n.oid = c.relnamespace where n.nspname = 'public' and c.relkind = 'r' and c.relrowsecurity),
@@ -866,4 +879,3 @@ grant execute on function public.pode_ler_auditoria_atendimento(uuid) to authent
 -- Fim do hardening do Prontuário incorporado.
 
 commit;
-
