@@ -33,3 +33,8 @@ dist-ssr
 
 # Estado efemero da CLI Supabase (nunca versionar)
 .supabase/
+
+# Clones descartáveis usados na validação local de migrations. Podem conter
+# containers, volumes, logs e segredos gerados localmente; nunca versionar.
+/database/migration_validation_clone/
+/database/migration_update_clone/
