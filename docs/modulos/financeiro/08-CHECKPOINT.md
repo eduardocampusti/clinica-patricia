@@ -932,3 +932,12 @@ Testes transacionais preparados em `database/tests/financeiro/20260922_fase10c_r
 - O detalhe usa limite explícito e contagem exata, bloqueando confirmação visual se a composição exceder o limite da tela; relatório paginado continua sendo a via para composição muito extensa. Recepção não recebe esta aba; médico acompanha apenas seus repasses no próprio painel.
 - Playwright com HTTP sintético interceptado: 2/2 desktop/mobile para composição, referência externa e payload idempotente. Build/typecheck passou. Captura local `scratch/financeiro-repasses-mobile.png` revisada. Nenhum teste autenticado remoto ou pagamento real foi realizado.
 - Nenhuma migration, SQL remoto, fixture persistente, `supabase db push` ou Git push neste incremento. Fiscal interno, relatórios visuais, divergência da permissão de estorno e E2E remoto permanecem pendentes.
+
+## 37. FASE 10 — Fiscal interno (incremento local)
+
+**Estado:** interface interna integrada para proprietária/recepção; validação sintética de emissão solicitada aprovada; integração externa não implementada.
+
+- `FinanceiroFiscal` lista documentos da clínica sob RLS, por estado e em páginas de 30, com paciente e datas. Proprietária/recepção podem solicitar emissão de documentos `pendente`/`erro_emissao` e cancelamento de `emitida`/`erro_cancelamento` com motivo. A interface chama somente as RPCs homologadas e reutiliza chave idempotente em retry.
+- A confirmação deixa explícito que a operação registra apenas solicitação interna. Não chama prefeitura/provedor, não gera nota real e não trata `emissao_solicitada` como `emitida`. O provedor fiscal permanece indefinido.
+- Playwright com HTTP sintético interceptado: 2/2 desktop/mobile para pedido de emissão, aviso e payload idempotente. Build/typecheck, lint e 13 testes unitários/contratuais passaram. Nenhum teste autenticado remoto ou documento real foi criado.
+- Nenhuma migration, SQL remoto, fixture persistente, `supabase db push` ou Git push nesta etapa. Relatórios visuais, divergência da permissão de estorno e E2E remoto permanecem pendentes.

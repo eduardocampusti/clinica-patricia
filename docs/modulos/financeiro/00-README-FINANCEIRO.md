@@ -1,6 +1,6 @@
 # CLÍNICA PATRÍCIA — MÓDULO FINANCEIRO
 
-**Status do produto:** FASES 1–9 aplicadas e homologadas; FASES 10A/10B concluídas e aprovadas pelo usuário. **FASE 10 — Migração frontend: EM EXECUÇÃO.** FASE 10C: **RPC DE LEITURA DO CAIXA APLICADA E VALIDADA** no projeto `xftnkusbyqzyvzrovroj`. Caixa, Estornos, repasses e painéis da proprietária/médico estão integrados localmente e validados com testes sintéticos. Estornos ainda têm divergência de permissão para solicitação pela proprietária; E2E autenticado remoto, fiscal interno e relatórios visuais permanecem pendentes. Evidências nas seções 14–17 de `11-MIGRACAO-FRONTEND.md` e nos checkpoints 33–36 de `08-CHECKPOINT.md`.
+**Status do produto:** FASES 1–9 aplicadas e homologadas; FASES 10A/10B concluídas e aprovadas pelo usuário. **FASE 10 — Migração frontend: EM EXECUÇÃO.** FASE 10C: **RPC DE LEITURA DO CAIXA APLICADA E VALIDADA** no projeto `xftnkusbyqzyvzrovroj`. Caixa, Estornos, repasses, fiscal interno e painéis da proprietária/médico estão integrados localmente e validados com testes sintéticos. Estornos ainda têm divergência de permissão para solicitação pela proprietária; E2E autenticado remoto, relatórios visuais e integração fiscal externa permanecem pendentes. Evidências nas seções 14–18 de `11-MIGRACAO-FRONTEND.md` e nos checkpoints 33–37 de `08-CHECKPOINT.md`.
 
 ## Objetivo do módulo
 
