@@ -923,3 +923,12 @@ Testes transacionais preparados em `database/tests/financeiro/20260922_fase10c_r
 - `FinanceiroModulo` organiza Caixa/Estornos/Painel por papel. Nenhum UUID técnico é digitado. O Financeiro antigo e dados legados não foram removidos ou alterados.
 - `npm run test:financeiro`: 13/13; Playwright Estornos: 6/6 e Painel: 4/4 em desktop/mobile com HTTP sintético interceptado; `npm run build` e `npm run lint` passaram (warning preexistente de tema e aviso de tamanho de bundle). Capturas em `scratch/financeiro-estornos-{desktop,mobile}.png` e `scratch/financeiro-painel-{proprietaria,medico}-{desktop,mobile}.png` foram revisadas; não são artefatos de produção.
 - Nenhuma migration, SQL remoto, fixture no Supabase, `supabase db push` ou Git push neste incremento. Permanecem pendentes: correção aditiva da autorização de solicitação pela proprietária, repasses, fiscal interno, relatórios visuais e E2E autenticado remoto.
+
+## 36. FASE 10 — Repasses (incremento local)
+
+**Estado:** tela integrada para a proprietária; confirmação com RPC homologada; teste sintético aprovado; E2E autenticado remoto pendente.
+
+- `FinanceiroRepasses` lê repasses da clínica em páginas de 30, filtra estado, apresenta profissional e valores oficiais, e abre a composição de itens e ajustes sob RLS. A proprietária registra a confirmação somente após pagamento externo via PIX/transferência, com referência, revisão e chave idempotente. O banco valida estado/autoridade e audita; o frontend não movimenta caixa, não recalcula o repasse e não altera linha terminal.
+- O detalhe usa limite explícito e contagem exata, bloqueando confirmação visual se a composição exceder o limite da tela; relatório paginado continua sendo a via para composição muito extensa. Recepção não recebe esta aba; médico acompanha apenas seus repasses no próprio painel.
+- Playwright com HTTP sintético interceptado: 2/2 desktop/mobile para composição, referência externa e payload idempotente. Build/typecheck passou. Captura local `scratch/financeiro-repasses-mobile.png` revisada. Nenhum teste autenticado remoto ou pagamento real foi realizado.
+- Nenhuma migration, SQL remoto, fixture persistente, `supabase db push` ou Git push neste incremento. Fiscal interno, relatórios visuais, divergência da permissão de estorno e E2E remoto permanecem pendentes.
