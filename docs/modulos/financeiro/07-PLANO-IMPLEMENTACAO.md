@@ -281,3 +281,7 @@ Naquele momento, a migration `20260922181438_financeiro_fase10c_resumo_caixa.sql
 ### Estado atual após autorização específica
 
 A migration 10C foi aplicada e validada no projeto `xftnkusbyqzyvzrovroj`. O roteiro integrado passou com `ROLLBACK`, e a RPC `public.financeiro_resumo_caixa(uuid)` está disponível. A interface operacional do caixa foi integrada localmente à navegação e validada em navegador sintético; ainda faltam E2E autenticado remoto e os demais fluxos visuais da FASE 10. Evidências em `08-CHECKPOINT.md`, seções 33–34, e `11-MIGRACAO-FRONTEND.md`, seções 14–15. Os parágrafos anteriores registram a sequência histórica de auditoria e preparação.
+
+## 42. FASE 10 — Continuação da migração visual
+
+Estornos e dashboards proprietária/médico foram integrados localmente, além do caixa. Testes sintéticos e de contrato passaram; E2E autenticado remoto permanece pendente. A FASE 5 aplicada restringe `financeiro_solicitar_estorno` à recepção, apesar de a matriz aprovada também permitir solicitação pela proprietária. A correção deverá ser aditiva e validada antes de habilitar essa ação. Seguir com repasses, fiscal interno e relatórios sem modificar migrations aplicadas; preservar o legado até cumprir os critérios da desativação planejada. Evidências no checkpoint 35 e no documento 11, seção 16.

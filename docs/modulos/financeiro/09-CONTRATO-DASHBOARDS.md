@@ -1,6 +1,6 @@
 # 09 — Contrato de dados dos dashboards — FASE 8
 
-**Status:** EM VALIDAÇÃO. Implementação local para revisão; não aplicada. Sem frontend.
+**Status atual (22/09/2026):** FASE 8 aplicada e homologada no Supabase; interface dos painéis da proprietária e do médico integrada localmente na FASE 10, com testes sintéticos aprovados. E2E autenticado remoto do frontend ainda pendente. As seções de preparação abaixo preservam o histórico anterior à aplicação.
 **Migration:** `20260922015417_financeiro_fase8_dashboards.sql`, timestamp do CLI em UTC.
 **Fontes funcionais:** documentos 01, 02, 04 e pedido autorizado da FASE 8.
 

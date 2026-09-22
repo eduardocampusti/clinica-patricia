@@ -5,6 +5,7 @@ import test from 'node:test'
 import { carregarDashboardProfissional } from './financeiro.dashboard'
 import { consultarResumoCaixa } from './financeiro.caixa-leitura'
 import { mapearErroFinanceiro } from './financeiro.errors'
+import { saldoDisponivelPorForma } from './financeiro.estornos-leitura'
 import { GerenciadorIdempotencia, type ArmazenamentoChaves } from './financeiro.idempotency'
 import {
   centavosParaDecimal,
@@ -13,7 +14,7 @@ import {
 } from './financeiro.money'
 import { registrarRecebimento } from './financeiro.recebimentos'
 import { PARAMETROS_RPC_FINANCEIRO, validarParametrosRpc, type ExecutorRpcFinanceiro } from './financeiro.rpc'
-import { pertenceAoIntervalo, validarIntervaloFinanceiro } from './financeiro.date'
+import { inicioDiaFinanceiro, intervaloPorDias, pertenceAoIntervalo, validarIntervaloFinanceiro } from './financeiro.date'
 import { coletarRelatorioCompleto, type ExecutorRelatorio } from '../financeiroRelatoriosRpc'
 
 class Memoria implements ArmazenamentoChaves {
@@ -43,6 +44,13 @@ test('intervalo financeiro respeita [inicio, fim) e exige offset', () => {
   assert.equal(pertenceAoIntervalo(intervalo.inicio, intervalo), true)
   assert.equal(pertenceAoIntervalo(intervalo.fim, intervalo), false)
   assert.throws(() => validarIntervaloFinanceiro({ ...intervalo, inicio: '2026-09-22T00:00:00' }))
+})
+
+test('datas locais usam offset histórico de Bahia e fim exclusivo', () => {
+  assert.equal(inicioDiaFinanceiro('2000-02-01'), '2000-02-01T02:00:00.000Z')
+  assert.equal(inicioDiaFinanceiro('2026-09-22'), '2026-09-22T03:00:00.000Z')
+  const periodo = intervaloPorDias('2026-09-22', '2026-09-22')
+  assert.equal(periodo.fim, '2026-09-23T03:00:00.000Z')
 })
 
 test('erro RPC é sanitizado sem SQLSTATE, constraint ou UUID', () => {
@@ -139,6 +147,21 @@ test('resumo do caixa usa somente o identificador da sessão na RPC oficial', as
   const resultado = await consultarResumoCaixa('sessao', executor)
   assert.deepEqual(chamada, { nome: 'financeiro_resumo_caixa', parametros: { p_sessao_caixa_id: 'sessao' } })
   assert.equal(resultado.resumo.valor_esperado, 350.5)
+})
+
+test('saldo visual de estorno reserva solicitações pendentes por forma', () => {
+  const saldo = saldoDisponivelPorForma({
+    id: 'r', paciente: 'Paciente', profissional: 'Profissional', registrado_em: '2026-09-22T10:00:00Z',
+    valor_bruto: '500.00', status: 'confirmado',
+    pagamentos: [{ forma_pagamento: 'dinheiro', valor: '200.00' }, { forma_pagamento: 'pix', valor: '300.00' }],
+    estornos: [
+      { id: 'e1', recebimento_id: 'r', status: 'solicitado', valor_total: '75.00', motivo: 'Teste',
+        solicitado_em: '2026-09-22T11:00:00Z', pagamentos: [{ forma_pagamento: 'dinheiro', valor: '75.00' }] },
+      { id: 'e2', recebimento_id: 'r', status: 'rejeitado', valor_total: '50.00', motivo: 'Teste',
+        solicitado_em: '2026-09-22T12:00:00Z', pagamentos: [{ forma_pagamento: 'pix', valor: '50.00' }] },
+    ],
+  })
+  assert.deepEqual(saldo, { dinheiro: 12500n, pix: 30000n, cartao_credito: 0n })
 })
 
 test('allowlist de RPC rejeita parâmetro inexistente', () => {

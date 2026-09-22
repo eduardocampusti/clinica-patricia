@@ -4,7 +4,7 @@ import { supabase } from './lib/supabase'
 import Login from './pages/Login'
 import Pacientes from './pages/Pacientes'
 import Cadastros from './pages/cadastros/Cadastros'
-import FinanceiroCaixa from './pages/FinanceiroCaixa'
+import FinanceiroModulo from './pages/FinanceiroModulo'
 import Dashboard from './pages/Dashboard'
 import Agenda from './pages/Agenda'
 import Prontuario from './pages/Prontuario'
@@ -122,7 +122,7 @@ function App() {
         />
       )}
       {tela === 'financeiro' && (
-        <FinanceiroCaixa clinicaAtivaId={clinicaAtivaId} carregandoClinica={carregandoClinica}
+        <FinanceiroModulo clinicaAtivaId={clinicaAtivaId} carregandoClinica={carregandoClinica}
           usuarioId={session.user.id} papel={papel} carregandoPapel={carregandoPapel} />
       )}
       {tela !== 'dashboard' &&
