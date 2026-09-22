@@ -1,7 +1,7 @@
 # 11 — Migração do frontend financeiro
 
 **Status:** EM VALIDAÇÃO
-**Subfase:** FASE 10B — Agenda → Recebimento (FASE 10A concluída e aprovada)
+**Subfase:** FASE 10 — interface operacional do caixa integrada localmente; migração frontend em execução
 **Data:** 22/09/2026 — America/Bahia
 
 ## 1. Escopo executado
@@ -308,4 +308,14 @@ Em 22/09/2026, após autorização específica do usuário, o SHA-256 foi reconf
 
 A RPC retorna `jsonb`, é `STABLE`, `SECURITY DEFINER`, `search_path=pg_catalog` e concede `EXECUTE` apenas a `authenticated`; `PUBLIC` e `anon` não executam. O helper `private.financeiro_calcular_caixa(uuid)` permaneceu sem `EXECUTE` para clientes. O roteiro `database/tests/financeiro/20260922_fase10c_resumo_caixa.sql` passou no remoto com código 0, incluindo a assertion da fórmula `abertura + dinheiro + suprimentos - sangrias - estornos em dinheiro`, papéis, estados, split, estorno e ausência de efeitos de leitura. Fixtures sintéticas foram revertidas pelo `ROLLBACK` do roteiro.
 
-Após o teste, as 16 tabelas operacionais verificadas permaneceram vazias, as três configurações financeiras-base foram preservadas e nenhuma identidade, clínica ou paciente sintético permaneceu. A única sessão legada continuou `aberto`, com abertura de R$ 150,50, duas entradas e total de R$ 1.000,00. O cache local opcional da CLI em Docker falhou após a aplicação; o comando terminou com código 0 e a aplicação foi confirmada diretamente no histórico e catálogo. Na etapa de aplicação não houve Git push, commit, seed global, reset ou alteração no frontend. A FASE 10C de banco está validada; a interface do caixa ainda não foi implementada.
+Após o teste, as 16 tabelas operacionais verificadas permaneceram vazias, as três configurações financeiras-base foram preservadas e nenhuma identidade, clínica ou paciente sintético permaneceu. A única sessão legada continuou `aberto`, com abertura de R$ 150,50, duas entradas e total de R$ 1.000,00. O cache local opcional da CLI em Docker falhou após a aplicação; o comando terminou com código 0 e a aplicação foi confirmada diretamente no histórico e catálogo. Na etapa de aplicação não houve Git push, commit, seed global, reset ou alteração no frontend. A FASE 10C de banco está validada; a interface do caixa ainda não foi implementada naquela etapa.
+
+## 15. FASE 10 — Interface operacional do caixa (execução local posterior à RPC 10C)
+
+A rota Financeiro em `App.tsx` aponta agora para `FinanceiroCaixa.tsx`; a tela anterior continua no repositório, fora da navegação. O fluxo novo lê a sessão ativa via Data API sob RLS, separa a sessão histórica pela ausência da chave de idempotência e consulta a RPC 10C por ID de sessão. A RPC ainda rejeita qualquer sessão que contenha `entradas_caixa`. Não há hardcode do UUID legado nem cálculo de saldo oficial no React.
+
+Para proprietária/recepção, a tela apresenta os onze valores do resumo oficial, status, responsável e horário da sessão, sangrias e última tentativa de fechamento. A revisão devolvida apresenta sua orientação. Médico não aciona as leituras administrativas. Abertura, suprimento, sangria (solicitar, revisar e efetivar) e fechamento (iniciar, enviar e revisar) chamam somente os wrappers da FASE 10A. Valor contado é comparado ao esperado da RPC para exigir justificativa visual, mas o banco recalcula e valida no envio. Os controles seguem os estados reais; encerramento com sangria pendente é bloqueado também no banco.
+
+As ações com chave idempotente preservam valores e chave após erro de rede; retry usa a mesma tentativa. Cancelamento explícito abandona a tentativa local. Não há sucesso otimista. Erros de consulta são visíveis e podem ser repetidos. A antiga soma de `entradas_caixa` e o Fastify não são usados pela nova rota. A sessão legada segue aberta e inacessível para operações novas; não foi migrada ou encerrada.
+
+Validação: 11 testes unitários/contratuais, 8 testes Playwright com HTTP sintético interceptado em desktop/mobile, build e lint aprovados. O teste de navegador cobre legado, médico sem acesso, abertura, leitura do resumo e suprimento. Capturas `scratch/financeiro-caixa-{desktop,mobile}.png` foram revisadas; o contraste do botão principal foi corrigido. Nenhum teste autenticado contra o Supabase real foi executado nesta etapa; portanto, a migração integral da FASE 10 não está homologada. Próximos trabalhos independentes: ampliar testes dos demais estados/ações, concluir as interfaces de estornos, repasses, fiscal interno, dashboards e relatórios, depois validar E2E e planejar a desativação do legado conforme as dependências da FASE 11.

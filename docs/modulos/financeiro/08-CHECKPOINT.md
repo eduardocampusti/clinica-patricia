@@ -1,7 +1,7 @@
 # CLÍNICA PATRÍCIA
 # CHECKPOINT — MÓDULO FINANCEIRO
 
-**Fase atual:** FASE 10C — RPC de leitura do caixa aplicada e validada; interface pendente
+**Fase atual:** FASE 10 — interface operacional do caixa integrada localmente; demais fluxos pendentes
 **Status atual:** EM EXECUÇÃO
 **Data do estado atual:** 22/09/2026 — America/Bahia
 
@@ -901,3 +901,15 @@ Testes transacionais preparados em `database/tests/financeiro/20260922_fase10c_r
 - Roteiro integrado `database/tests/financeiro/20260922_fase10c_resumo_caixa.sql` passou com código 0 e `ROLLBACK`, incluindo a assertion da fórmula oficial e cenários de autorização, estados, zeros, split, sangrias, estornos e leitura sem efeitos.
 - Pós-teste: 16 tabelas operacionais verificadas em zero; três configurações-base preservadas; nenhuma identidade, clínica ou paciente sintético permaneceu. A única sessão legada segue aberta, abertura R$ 150,50, duas entradas, total R$ 1.000,00.
 - O cache local opcional da CLI falhou por Docker indisponível depois da aplicação; o comando terminou com código 0. Na etapa de aplicação não houve seed global, reset, Git push, commit, alteração de frontend ou dado legado.
+
+## 34. FASE 10 — Interface operacional do caixa (incremento local)
+
+**Estado:** integrada ao aplicativo; validação automatizada sintética aprovada; E2E autenticado remoto pendente. Esta entrega não reaplica nem modifica a migration 10C.
+
+- `FinanceiroCaixa.tsx` substitui a tela Fastify/`entradas_caixa` na navegação principal. `Financeiro.tsx` e componentes antigos permanecem fora dessa rota para comparação e remoção controlada posterior.
+- `financeiro.caixa-leitura.ts` seleciona a sessão ativa sob RLS, distingue sessão legada por chave de idempotência ausente e consulta `public.financeiro_resumo_caixa(uuid)` somente para sessão operacional. A RPC conserva o bloqueio adicional por `entradas_caixa`; a UI não calcula o resumo oficial.
+- Proprietária/recepção veem abertura, recebimentos por forma, suprimentos, sangrias, estornos em dinheiro, dinheiro esperado e parcelas retornados pela RPC. Médico não consulta nem opera o caixa geral.
+- Abertura, suprimento, solicitação/revisão/efetivação de sangria e início/envio/revisão de fechamento usam os wrappers RPC homologados, com confirmações e invalidação da leitura. Dados do legado não são convertidos, fechados ou alterados.
+- A mesma chave de idempotência é preservada para retry; formulários ficam bloqueados para edição após envio até conclusão ou cancelamento explícito. Erros não são convertidos em valores zero; a consulta pode ser repetida.
+- `npm run test:financeiro`: 11/11; Playwright sintético da tela real: 8/8 em desktop/mobile, com bloqueio de toda conexão externa; `npm run build` e `npm run lint` aprovados. O warning de Fast Refresh do tema e os avisos de divisão de bundle continuam não bloqueantes. Capturas sintéticas em `scratch/financeiro-caixa-{desktop,mobile}.png` foram inspecionadas; contraste do CTA foi corrigido após a inspeção.
+- Nenhuma migration, SQL remoto, fixture no Supabase, `supabase db push`, reset ou Git push nesta etapa. O E2E autenticado real, a revisão de todos os estados de fechamento e as demais interfaces financeiras da FASE 10 continuam pendentes.

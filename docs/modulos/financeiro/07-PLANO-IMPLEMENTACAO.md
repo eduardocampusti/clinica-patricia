@@ -280,4 +280,4 @@ Naquele momento, a migration `20260922181438_financeiro_fase10c_resumo_caixa.sql
 
 ### Estado atual após autorização específica
 
-A migration 10C foi aplicada e validada no projeto `xftnkusbyqzyvzrovroj`. O roteiro integrado passou com `ROLLBACK`, e a RPC `public.financeiro_resumo_caixa(uuid)` está disponível. A etapa de interface do caixa permanece pendente. Evidências em `08-CHECKPOINT.md`, seção 33, e `11-MIGRACAO-FRONTEND.md`, seção 14.2. Os parágrafos anteriores registram a sequência histórica de auditoria e preparação.
+A migration 10C foi aplicada e validada no projeto `xftnkusbyqzyvzrovroj`. O roteiro integrado passou com `ROLLBACK`, e a RPC `public.financeiro_resumo_caixa(uuid)` está disponível. A interface operacional do caixa foi integrada localmente à navegação e validada em navegador sintético; ainda faltam E2E autenticado remoto e os demais fluxos visuais da FASE 10. Evidências em `08-CHECKPOINT.md`, seções 33–34, e `11-MIGRACAO-FRONTEND.md`, seções 14–15. Os parágrafos anteriores registram a sequência histórica de auditoria e preparação.
