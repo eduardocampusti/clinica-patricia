@@ -7,7 +7,8 @@ set local statement_timeout = '120s';
 create temporary table f10c_ids(nome text primary key, id uuid not null default gen_random_uuid()) on commit drop;
 insert into f10c_ids(nome) select unnest(array[
   'owner','recepcao','medico','outra','inativo','sem_vinculo','vinculo_inativo',
-  'ca','cb','sessao','sessao_b','legado','prof','pac','ag','recebimento','sangria','estorno'
+  'ca','cb','sessao','sessao_b','legado','prof','pac','ag','recebimento','sangria','estorno',
+  'ag2','sessao_nova','sessao_diff','sangria_nova','fechamento_novo','fechamento_diff_1','fechamento_diff_2'
 ]);
 create function pg_temp.f10c_id(p_nome text) returns uuid language sql stable as
   'select id from pg_temp.f10c_ids where nome=p_nome';
@@ -210,5 +211,119 @@ select pg_temp.f10c_assert(
   and movimentos=(select count(*) from public.movimentos_caixa)
   and fechamentos=(select count(*) from public.fechamentos_caixa)
   and auditorias=(select count(*) from public.eventos_auditoria_financeira),'leitura sem efeitos persistentes') from f10c_antes;
+
+-- Homologacao adicional: ciclos completos via RPC oficial, sempre na mesma transacao.
+set local role authenticated;
+select pg_temp.f10c_login('recepcao');
+select pg_temp.f10c_erro('select public.financeiro_revisar_fechamento(gen_random_uuid(),''aprovar'',null)','P0002');
+do $$
+declare r jsonb;
+begin
+  r:=public.financeiro_enviar_fechamento(pg_temp.f10c_id('sessao'),550,null,'f10c-fechamento-inicial');
+  perform pg_temp.f10c_assert((r->>'diferenca')::numeric=0,'fechamento inicial sem diferenca');
+  update pg_temp.f10c_ids set id=(r->>'fechamento_id')::uuid where nome='fechamento_novo';
+  perform pg_temp.f10c_erro('select public.financeiro_revisar_fechamento(pg_temp.f10c_id(''fechamento_novo''),''aprovar'',null)','42501');
+end;
+$$;
+select pg_temp.f10c_login('owner');
+select pg_temp.f10c_assert(public.financeiro_revisar_fechamento(pg_temp.f10c_id('fechamento_novo'),'aprovar',null)->>'status'='aprovado','proprietaria aprova fechamento inicial');
+select pg_temp.f10c_assert((select status='aprovado' from public.sessoes_caixa where id=pg_temp.f10c_id('sessao')),'sessao inicial aprovada');
+reset role;
+
+update public.profissionais_clinicas set valor_consulta=500
+where profissional_id=pg_temp.f10c_id('prof') and clinica_id=pg_temp.f10c_id('ca');
+insert into public.agendamentos(id,clinica_id,paciente_id,profissional_id,data,hora_inicio,hora_fim,status,created_by)
+values(pg_temp.f10c_id('ag2'),pg_temp.f10c_id('ca'),pg_temp.f10c_id('pac'),pg_temp.f10c_id('prof'),
+  current_date,'09:00','09:30','confirmado',pg_temp.f10c_id('owner'));
+set local role authenticated;
+select pg_temp.f10c_login('medico');
+select pg_temp.f10c_erro('select public.financeiro_abrir_caixa(pg_temp.f10c_id(''ca''),100,''f10c-neg-med'')','42501');
+select pg_temp.f10c_erro('select public.financeiro_registrar_suprimento(pg_temp.f10c_id(''sessao''),1,''teste'',''f10c-neg-sup'')','42501');
+select pg_temp.f10c_erro('select public.financeiro_solicitar_sangria(pg_temp.f10c_id(''sessao''),1,''teste'',''f10c-neg-san'')','42501');
+select pg_temp.f10c_erro('select public.financeiro_iniciar_fechamento(pg_temp.f10c_id(''sessao''))','42501');
+select pg_temp.f10c_erro('select public.financeiro_resumo_caixa(pg_temp.f10c_id(''sessao''))','42501');
+select pg_temp.f10c_login('outra');
+select pg_temp.f10c_erro('select public.financeiro_abrir_caixa(pg_temp.f10c_id(''ca''),100,''f10c-neg-outra'')','42501');
+select pg_temp.f10c_erro('select public.financeiro_resumo_caixa(pg_temp.f10c_id(''sessao''))','42501');
+select pg_temp.f10c_login('recepcao');
+do $$
+declare r jsonb; j jsonb;
+begin
+  r:=public.financeiro_abrir_caixa(pg_temp.f10c_id('ca'),100,'f10c-abertura-nova');
+  update pg_temp.f10c_ids set id=(r->>'sessao_caixa_id')::uuid where nome='sessao_nova';
+  perform pg_temp.f10c_assert(r->>'nova_operacao'='true','abertura nova');
+  perform pg_temp.f10c_assert(public.financeiro_abrir_caixa(pg_temp.f10c_id('ca'),100,'f10c-abertura-nova')->>'nova_operacao'='false','abertura idempotente');
+  perform pg_temp.f10c_erro('select public.financeiro_abrir_caixa(pg_temp.f10c_id(''ca''),101,''f10c-abertura-nova'')','23505');
+  j:=public.financeiro_resumo_caixa(pg_temp.f10c_id('sessao_nova'))->'resumo';
+  perform pg_temp.f10c_assert(j @> '{"valor_abertura":100,"total_dinheiro":0,"total_pix":0,"total_cartao_credito":0,"total_suprimentos":0,"total_sangrias":0,"total_estornos_dinheiro":0,"valor_esperado":100}','abertura 100 e resumo vazio');
+  r:=public.financeiro_registrar_recebimento(pg_temp.f10c_id('ag2'),
+    '[{"forma_pagamento":"dinheiro","valor":200},{"forma_pagamento":"pix","valor":200},{"forma_pagamento":"cartao_credito","valor":100}]',
+    'f10c-recebimento-novo');
+  j:=public.financeiro_resumo_caixa(pg_temp.f10c_id('sessao_nova'))->'resumo';
+  perform pg_temp.f10c_assert(j @> '{"valor_abertura":100,"total_dinheiro":200,"total_pix":200,"total_cartao_credito":100,"total_recebimentos_brutos":500,"valor_esperado":300}','split 500 sem somar PIX/cartao ao dinheiro');
+  r:=public.financeiro_registrar_suprimento(pg_temp.f10c_id('sessao_nova'),50,'Troco sintetico','f10c-suprimento-novo');
+  perform pg_temp.f10c_assert(r->>'nova_operacao'='true','suprimento novo');
+  perform pg_temp.f10c_assert(public.financeiro_registrar_suprimento(pg_temp.f10c_id('sessao_nova'),50,'Troco sintetico','f10c-suprimento-novo')->>'nova_operacao'='false','suprimento idempotente');
+  perform pg_temp.f10c_erro('select public.financeiro_registrar_suprimento(pg_temp.f10c_id(''sessao_nova''),51,''Troco sintetico'',''f10c-suprimento-novo'')','23505');
+  j:=public.financeiro_resumo_caixa(pg_temp.f10c_id('sessao_nova'))->'resumo';
+  perform pg_temp.f10c_assert(j @> '{"total_suprimentos":50,"valor_esperado":350}','suprimento soma uma vez');
+  r:=public.financeiro_solicitar_sangria(pg_temp.f10c_id('sessao_nova'),25,'Retirada sintetica','f10c-sangria-nova');
+  update pg_temp.f10c_ids set id=(r->>'sangria_id')::uuid where nome='sangria_nova';
+  perform pg_temp.f10c_assert(public.financeiro_solicitar_sangria(pg_temp.f10c_id('sessao_nova'),25,'Retirada sintetica','f10c-sangria-nova')->>'nova_operacao'='false','sangria idempotente');
+  perform pg_temp.f10c_erro('select public.financeiro_solicitar_sangria(pg_temp.f10c_id(''sessao_nova''),26,''Retirada sintetica'',''f10c-sangria-nova'')','23505');
+  perform pg_temp.f10c_assert((public.financeiro_resumo_caixa(pg_temp.f10c_id('sessao_nova'))#>>'{resumo,valor_esperado}')::numeric=350,'sangria solicitada nao retira');
+end;
+$$;
+select pg_temp.f10c_login('owner');
+select pg_temp.f10c_assert(public.financeiro_revisar_sangria(pg_temp.f10c_id('sangria_nova'),'aprovar',null)->>'status'='aprovada','proprietaria aprova sangria');
+select pg_temp.f10c_login('recepcao');
+select pg_temp.f10c_assert(public.financeiro_efetivar_sangria(pg_temp.f10c_id('sangria_nova'))->>'status'='efetivada','recepcao efetiva sangria');
+do $$
+declare j jsonb; r jsonb;
+begin
+  j:=public.financeiro_resumo_caixa(pg_temp.f10c_id('sessao_nova'))->'resumo';
+  perform pg_temp.f10c_assert(j @> '{"total_sangrias":25,"valor_esperado":325}','sangria reduz esperado');
+  perform pg_temp.f10c_assert((j->>'valor_esperado')::numeric=(j->>'valor_abertura')::numeric+(j->>'total_dinheiro')::numeric+(j->>'total_suprimentos')::numeric-(j->>'total_sangrias')::numeric-(j->>'total_estornos_dinheiro')::numeric,'formula oficial cenario novo');
+  perform public.financeiro_iniciar_fechamento(pg_temp.f10c_id('sessao_nova'));
+  r:=public.financeiro_enviar_fechamento(pg_temp.f10c_id('sessao_nova'),325,null,'f10c-envio-novo');
+  update pg_temp.f10c_ids set id=(r->>'fechamento_id')::uuid where nome='fechamento_novo';
+  perform pg_temp.f10c_assert((r->>'diferenca')::numeric=0,'fechamento novo sem diferenca');
+  perform pg_temp.f10c_assert(public.financeiro_enviar_fechamento(pg_temp.f10c_id('sessao_nova'),325,null,'f10c-envio-novo')->>'nova_operacao'='false','envio idempotente');
+  perform pg_temp.f10c_erro('select public.financeiro_enviar_fechamento(pg_temp.f10c_id(''sessao_nova''),326,''teste'',''f10c-envio-novo'')','23505');
+  perform pg_temp.f10c_erro('select public.financeiro_revisar_fechamento(pg_temp.f10c_id(''fechamento_novo''),''aprovar'',null)','42501');
+end;
+$$;
+select pg_temp.f10c_login('owner');
+select pg_temp.f10c_assert(public.financeiro_revisar_fechamento(pg_temp.f10c_id('fechamento_novo'),'aprovar',null)->>'status'='aprovado','proprietaria aprova fechamento sem diferenca');
+select pg_temp.f10c_assert((select status='aprovado' and diferenca=0 from public.sessoes_caixa where id=pg_temp.f10c_id('sessao_nova')),'sessao nova aprovada sem diferenca');
+select pg_temp.f10c_login('recepcao');
+do $$
+declare r jsonb;
+begin
+  r:=public.financeiro_abrir_caixa(pg_temp.f10c_id('ca'),100,'f10c-abertura-diff');
+  update pg_temp.f10c_ids set id=(r->>'sessao_caixa_id')::uuid where nome='sessao_diff';
+  perform public.financeiro_iniciar_fechamento(pg_temp.f10c_id('sessao_diff'));
+  perform pg_temp.f10c_erro('select public.financeiro_enviar_fechamento(pg_temp.f10c_id(''sessao_diff''),90,null,''f10c-envio-diff-1'')','22023');
+  r:=public.financeiro_enviar_fechamento(pg_temp.f10c_id('sessao_diff'),90,'Diferenca sintetica','f10c-envio-diff-1');
+  update pg_temp.f10c_ids set id=(r->>'fechamento_id')::uuid where nome='fechamento_diff_1';
+  perform pg_temp.f10c_assert((r->>'diferenca')::numeric=-10 and (r->>'tentativa')::int=1,'primeira tentativa com diferenca');
+end;
+$$;
+select pg_temp.f10c_login('owner');
+select pg_temp.f10c_assert(public.financeiro_revisar_fechamento(pg_temp.f10c_id('fechamento_diff_1'),'devolver','Recontar valores')->>'status'='devolvido','proprietaria devolve');
+select pg_temp.f10c_login('recepcao');
+do $$
+declare r jsonb;
+begin
+  r:=public.financeiro_enviar_fechamento(pg_temp.f10c_id('sessao_diff'),100,null,'f10c-envio-diff-2');
+  update pg_temp.f10c_ids set id=(r->>'fechamento_id')::uuid where nome='fechamento_diff_2';
+  perform pg_temp.f10c_assert((r->>'diferenca')::numeric=0 and (r->>'tentativa')::int=2,'correcao cria tentativa 2');
+end;
+$$;
+select pg_temp.f10c_login('owner');
+select pg_temp.f10c_assert(public.financeiro_revisar_fechamento(pg_temp.f10c_id('fechamento_diff_2'),'aprovar',null)->>'status'='aprovado','proprietaria aprova tentativa vigente');
+select pg_temp.f10c_assert((select status='aprovado' and diferenca=0 from public.sessoes_caixa where id=pg_temp.f10c_id('sessao_diff')),'sessao corrigida aprovada');
+select pg_temp.f10c_assert((select count(*)=2 and max(tentativa)=2 from public.fechamentos_caixa where sessao_caixa_id=pg_temp.f10c_id('sessao_diff')),'tentativas preservadas na transacao');
+reset role;
 set constraints all immediate;
 rollback;

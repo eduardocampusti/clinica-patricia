@@ -1,7 +1,7 @@
 import { defineConfig } from '@playwright/test'
 
 export default defineConfig({
-  testDir: '.', testMatch: 'caixa.spec.ts', fullyParallel: false, workers: 1,
+  testDir: '.', testMatch: ['caixa.spec.ts', 'abas.spec.ts'], fullyParallel: false, workers: 1,
   reporter: 'list', outputDir: '../../scratch/financeiro-caixa-resultados',
   use: { baseURL: 'http://127.0.0.1:4179', browserName: 'chromium', channel: 'chrome' },
   projects: [
