@@ -1,6 +1,15 @@
 # CLÍNICA PATRÍCIA
 # CHECKPOINT — MÓDULO FINANCEIRO
 
+## Atualização FASE 13 — 23/09/2026
+
+- Backup lógico completo/aplicação criado com PostgreSQL 17.11 portátil, hashes registrados e restore local realmente ensaiado; contagens financeiras origem/restore coincidiram.
+- Smoke autenticado real passou para proprietária, recepção e médico; contas/vínculos efêmeros foram removidos e a verificação final encontrou zero resíduos.
+- `20260923143456_fase13_hardening_security_definer.sql` fixou `search_path` histórico e retirou execução anônima de `cadastrar_profissional` e execução direta de clientes sobre `fn_auditoria`; migration aplicada uma vez, lint sem erros.
+- Security Advisor: 0 erros/54 warnings. Performance Advisor: 0 erros/5 warnings/70 sugestões.
+- Caixa legado de Brotas e fixtures ligadas a ele continuam preservados. Ipupiara é a melhor candidata técnica, mas escolha e cadastros reais permanecem humanos.
+- Fonte de verdade operacional: `../../14-REMEDIACAO-PRE-CUTOVER.md`.
+
 **Fase atual:** FASE 10 — interface operacional do caixa integrada localmente; demais fluxos pendentes
 **Status atual:** EM EXECUÇÃO
 **Data do estado atual:** 22/09/2026 — America/Bahia

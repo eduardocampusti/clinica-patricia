@@ -1,5 +1,7 @@
 # CLÍNICA PATRÍCIA — FASE 12 — PREPARAÇÃO PARA ENTRADA EM OPERAÇÃO
 
+> Estado histórico. Os bloqueadores técnicos tratáveis foram remediados na FASE 13; consultar `14-REMEDIACAO-PRE-CUTOVER.md` para o estado vigente.
+
 **Estado:** CONCLUÍDA EM 23/09/2026 — NO-GO
 
 **Branch auditada:** `codex/checkpoint-local-2026-08-14`
