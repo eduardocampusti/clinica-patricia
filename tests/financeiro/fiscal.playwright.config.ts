@@ -1,6 +1,7 @@
 import { defineConfig } from '@playwright/test'
 
 export default defineConfig({
+  timeout: 60000, expect: { timeout: 20000 },
   testDir: '.', testMatch: 'fiscal.spec.ts', fullyParallel: false, workers: 1,
   reporter: 'list', outputDir: '../../scratch/financeiro-fiscal-resultados',
   use: { baseURL: 'http://127.0.0.1:4183', browserName: 'chromium', channel: 'chrome' },

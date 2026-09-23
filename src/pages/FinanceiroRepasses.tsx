@@ -10,9 +10,9 @@ import { detalharRepasse, listarRepasses, type RepasseOperacional } from '../lib
 import { confirmarRepasse } from '../lib/financeiro/financeiro.repasses'
 import type { StatusRepasse } from '../lib/financeiro/financeiro.types'
 
-const card = 'rounded-[18px] border border-[var(--borda)] bg-[var(--fundo-card)] p-5 shadow-[var(--sombra-baixa)] sm:p-6'
-const botao = 'min-h-11 rounded-lg border border-[var(--borda)] px-4 py-2 text-sm font-semibold focus-visible:outline-2 disabled:opacity-50'
-const primario = 'min-h-11 rounded-lg bg-[var(--texto-principal)] px-4 py-2 text-sm font-semibold text-white focus-visible:outline-2 disabled:opacity-50'
+const card = 'finance-surface'
+const botao = 'finance-button'
+const primario = 'finance-button finance-button-primary'
 const campo = 'min-h-11 w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 text-[var(--texto-principal)] focus-visible:outline-2'
 const moeda = (valor: string | number) => formatarCentavos(decimalBancoParaCentavos(valor))
 const nuncaVazio = () => false
@@ -99,21 +99,24 @@ export default function FinanceiroRepasses({ clinicaId, usuarioId }: { clinicaId
     { clinicaId, leitura: 'repasses' })
   const dados = consulta.resultado.estado === 'sucesso' ? consulta.resultado.dados : null
   return <div className="space-y-6">
-    <header><h1 className="texto-titulo-tela">Repasses</h1><p className="mt-1 text-sm text-[var(--texto-secundario)]">O pagamento ao médico ocorre fora do sistema; confirme aqui somente após realizá-lo.</p></header>
-    <div className={`${card} flex flex-wrap items-end gap-3`}><label className="text-sm font-medium">Situação
+    <header><h1 className="texto-titulo-tela">Repasses</h1><p className="mt-1 text-sm text-[var(--texto-secundario)]">Acompanhe os valores devidos e confirme pagamentos já realizados fora do sistema.</p></header>
+    <div className={`${card} finance-toolbar`}><label>Situação
       <select className={`${campo} mt-1 block`} value={status} onChange={(e) => { setStatus(e.target.value as typeof status); setPagina(0) }}>
         <option value="pendente">Pendentes</option><option value="pago">Pagos</option><option value="ajustado">Ajustados a zero</option><option value="todos">Todos</option>
       </select></label><button type="button" className={botao} onClick={() => void consulta.recarregar()}>Atualizar</button></div>
     {sucesso && <p role="status" className="rounded-lg bg-[var(--cor-sucesso-suave)] p-3 text-sm">{sucesso}</p>}
-    {consulta.resultado.estado === 'carregando' && <p role="status" className={card}>Carregando repasses…</p>}
+    {consulta.resultado.estado === 'carregando' && <div role="status" aria-label="Carregando repasses" className={`${card} finance-skeleton`} />}
     {consulta.resultado.estado === 'erro' && <div role="alert" className={card}><p>{consulta.resultado.erro.message}</p><button type="button" className={`${botao} mt-3`} onClick={() => void consulta.recarregar()}>Tentar novamente</button></div>}
     {dados && <section className={card}><h2 className="texto-titulo-secao">{status === 'pendente' ? 'Aguardando pagamento' : 'Histórico de repasses'}</h2>
-      {!dados.itens.length ? <p className="mt-3 text-sm text-[var(--texto-secundario)]">Nenhum repasse nesta seleção.</p> :
+      {!dados.itens.length ? <div className="finance-empty"><strong>{status === 'pendente' ? 'Nenhum repasse pendente' : 'Nenhum repasse nesta seleção'}</strong><p>Quando houver valores nesta situação, eles aparecerão aqui.</p></div> :
         <ul className="mt-3 divide-y divide-[var(--borda)]">{dados.itens.map((repasse) => <li key={repasse.id} className="flex flex-wrap items-center justify-between gap-3 py-4">
-          <div><p className="font-medium">{repasse.profissional} · {moeda(repasse.valor_liquido)}</p>
-            <p className="text-sm text-[var(--texto-secundario)]">Gerado {formatarDataFinanceira(repasse.gerado_em)} · {repasse.status}</p>
+          <div className="min-w-0 flex-1"><div className="flex flex-wrap items-center gap-2"><p className="font-semibold">{repasse.profissional}</p>
+            <span className="finance-status" data-tone={repasse.status === 'pago' ? 'success' : 'warning'}>{repasse.status === 'pendente' ? 'Pendente' : repasse.status === 'pago' ? 'Pago' : 'Ajustado'}</span></div>
+            <p className="mt-1 text-xs text-[var(--texto-secundario)]">Gerado {formatarDataFinanceira(repasse.gerado_em)}</p>
+            <p className="mt-1 text-xs text-[var(--texto-secundario)]">Bruto {moeda(repasse.valor_bruto_profissional)} · Estornos {moeda(repasse.valor_estornos_antes_pagamento)} · Ajustes {moeda(repasse.valor_ajustes_aplicados)}</p>
             {repasse.confirmado_em && <p className="text-xs text-[var(--texto-secundario)]">Confirmado {formatarDataFinanceira(repasse.confirmado_em)} · {repasse.meio_pagamento}</p>}</div>
-          {repasse.status === 'pendente' && <button type="button" className={primario} onClick={() => setSelecionado(repasse)}>Ver e confirmar</button>}
+          <div className="flex flex-wrap items-center gap-3"><div><p className="text-xs text-[var(--texto-secundario)]">Líquido</p><p className="numero-tabular text-xl font-semibold">{moeda(repasse.valor_liquido)}</p></div>
+            {repasse.status === 'pendente' && <button type="button" className={primario} onClick={() => setSelecionado(repasse)}>Confirmar pagamento</button>}</div>
         </li>)}</ul>}
       <div className="mt-4 flex items-center justify-between gap-2"><button className={botao} type="button" disabled={pagina === 0} onClick={() => setPagina((p) => p - 1)}>Anterior</button>
         <span className="text-sm text-[var(--texto-secundario)]">Página {pagina + 1}</span>

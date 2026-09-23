@@ -12,9 +12,9 @@ import { idempotenciaFinanceira, type TentativaIdempotente } from '../lib/financ
 import { decimalBancoParaCentavos, formatarCentavos, textoMonetarioParaCentavos } from '../lib/financeiro/financeiro.money'
 import { FORMAS_PAGAMENTO, type FormaPagamento, type PagamentoCentavos } from '../lib/financeiro/financeiro.types'
 
-const botao = 'min-h-11 rounded-lg border border-[var(--borda)] px-4 py-2 text-sm font-semibold text-[var(--texto-principal)] focus-visible:outline-2 disabled:cursor-not-allowed disabled:opacity-50'
-const primario = 'min-h-11 rounded-lg bg-[var(--texto-principal)] px-4 py-2 text-sm font-semibold text-white focus-visible:outline-2 disabled:cursor-not-allowed disabled:opacity-50'
-const card = 'rounded-[18px] border border-[var(--borda)] bg-[var(--fundo-card)] p-5 shadow-[var(--sombra-baixa)] sm:p-6'
+const botao = 'finance-button'
+const primario = 'finance-button finance-button-primary'
+const card = 'finance-surface'
 const campo = 'min-h-12 w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 text-[var(--texto-principal)] focus-visible:outline-2 disabled:opacity-50'
 const rotulos: Record<FormaPagamento, string> = { dinheiro: 'Dinheiro', pix: 'PIX', cartao_credito: 'Cartão de crédito' }
 const moeda = (valor: string | number) => formatarCentavos(decimalBancoParaCentavos(valor))
@@ -160,18 +160,19 @@ export default function FinanceiroEstornos({ clinicaId, usuarioId, papel }: { cl
     ...item.pagamentos.map((pagamento) => rotulos[pagamento.forma_pagamento]),
   ].some((campoBusca) => campoBusca.toLocaleLowerCase('pt-BR').includes(termo))) ?? []
   return <div className="space-y-6">
-    <header className="flex flex-wrap items-start justify-between gap-3"><div><h1 className="texto-titulo-tela">Estornos</h1>
-      <p className="mt-1 text-sm text-[var(--texto-secundario)]">Solicitações preservam o pagamento original e aguardam decisão da proprietária.</p></div>
+    <header className="finance-page-intro"><div><h1 className="texto-titulo-tela">Estornos</h1>
+      <p>Solicite, revise e acompanhe estornos sem perder o histórico do recebimento.</p></div>
       <button type="button" className={botao} onClick={() => void consulta.recarregar()}>Atualizar</button></header>
     {sucesso && <p role="status" className="rounded-lg bg-[var(--cor-sucesso-suave)] p-3 text-sm">{sucesso}</p>}
-    {consulta.resultado.estado === 'carregando' && <p role="status" className={card}>Carregando recebimentos e solicitações…</p>}
+    {consulta.resultado.estado === 'carregando' && <div role="status" aria-label="Carregando estornos" className={`${card} finance-skeleton`} />}
     {consulta.resultado.estado === 'erro' && <div className={card} role="alert"><p>{consulta.resultado.erro.message}</p>
       <button type="button" className={`${botao} mt-3`} onClick={() => void consulta.recarregar()}>Tentar novamente</button></div>}
     {papel === 'proprietaria' && dados && <section className={card}>
       <h2 className="texto-titulo-secao">Aguardando sua revisão</h2>
-      {!dados.pendentes.length ? <p className="mt-3 text-sm text-[var(--texto-secundario)]">Nenhuma solicitação pendente nesta clínica.</p> :
+      {!dados.pendentes.length ? <div className="finance-empty"><strong>Nenhum estorno aguardando revisão</strong><p>Novas solicitações da recepção aparecerão aqui.</p></div> :
         <ul className="mt-3 divide-y divide-[var(--borda)]">{dados.pendentes.map((estorno) => <li key={estorno.id} className="flex flex-wrap justify-between gap-3 py-4">
-          <div><p className="font-medium">{estorno.paciente} · {moeda(estorno.valor_total)}</p>
+          <div><p className="font-medium">{estorno.paciente}</p>
+            <p className="numero-tabular mt-1 text-lg font-semibold">{moeda(estorno.valor_total)}</p>
             <p className="text-sm text-[var(--texto-secundario)]">{estorno.profissional} · {estorno.motivo}</p></div>
           <div className="flex gap-2"><button type="button" className={botao} onClick={() => setRevisao({ estorno, decisao: 'rejeitar' })}>Rejeitar</button>
             <button type="button" className={primario} onClick={() => setRevisao({ estorno, decisao: 'aprovar' })}>Revisar</button></div>
@@ -180,15 +181,15 @@ export default function FinanceiroEstornos({ clinicaId, usuarioId, papel }: { cl
     {dados && <section className={card}>
       <h2 className="texto-titulo-secao">Recebimentos disponíveis</h2>
       <p className="mt-1 text-xs text-[var(--texto-secundario)]">Clínica selecionada · até 50 recebimentos por página, do mais recente ao mais antigo.</p>
-      <label className="mt-4 block max-w-md text-sm font-medium">Filtrar nesta página por paciente, profissional, data, valor ou forma
+      <label className="mt-4 block max-w-md text-sm font-medium">Buscar nesta página
         <input className={`${campo} mt-1`} type="search" value={filtro} onChange={(e) => setFiltro(e.target.value)} />
       </label>
-      {!recebimentosVisiveis.length ? <p className="mt-4 text-sm text-[var(--texto-secundario)]">{termo ? 'Nenhum recebimento corresponde ao filtro nesta página.' : 'Nenhum recebimento elegível nesta página.'}</p> :
+      {!recebimentosVisiveis.length ? <div className="finance-empty"><strong>{termo ? 'Nada encontrado nesta página' : 'Nenhum recebimento disponível'}</strong><p>{termo ? 'Tente outro termo ou consulte a próxima página.' : 'Os recebimentos elegíveis para estorno aparecerão aqui.'}</p></div> :
         <ul className="mt-3 divide-y divide-[var(--borda)]">{recebimentosVisiveis.map((item) => {
           const saldo = saldoDisponivelPorForma(item)
           const disponivel = saldo.dinheiro + saldo.pix + saldo.cartao_credito
           return <li key={item.id} className="flex flex-wrap items-center justify-between gap-3 py-4">
-            <div><p className="font-medium">{item.paciente} · {moeda(item.valor_bruto)}</p>
+            <div><p className="font-medium">{item.paciente}</p><p className="numero-tabular mt-1 text-lg font-semibold">{moeda(item.valor_bruto)}</p>
               <p className="text-sm text-[var(--texto-secundario)]">{item.profissional} · {formatarDataFinanceira(item.registrado_em)}</p>
               <p className="text-xs text-[var(--texto-secundario)]">{item.pagamentos.map((pagamento) => `${rotulos[pagamento.forma_pagamento]} ${moeda(pagamento.valor)}`).join(' · ')}</p>
               <p className="text-xs text-[var(--texto-secundario)]">Disponível para solicitar: {formatarCentavos(disponivel)}</p></div>

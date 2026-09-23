@@ -9,9 +9,9 @@ import { solicitarCancelamentoFiscal, solicitarEmissaoFiscal } from '../lib/fina
 import { idempotenciaFinanceira, type TentativaIdempotente } from '../lib/financeiro/financeiro.idempotency'
 import type { StatusFiscal } from '../lib/financeiro/financeiro.types'
 
-const card = 'rounded-[18px] border border-[var(--borda)] bg-[var(--fundo-card)] p-5 shadow-[var(--sombra-baixa)] sm:p-6'
-const botao = 'min-h-11 rounded-lg border border-[var(--borda)] px-4 py-2 text-sm font-semibold focus-visible:outline-2 disabled:opacity-50'
-const primario = 'min-h-11 rounded-lg bg-[var(--texto-principal)] px-4 py-2 text-sm font-semibold text-white focus-visible:outline-2 disabled:opacity-50'
+const card = 'finance-surface'
+const botao = 'finance-button'
+const primario = 'finance-button finance-button-primary'
 const campo = 'min-h-11 w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 text-[var(--texto-principal)] focus-visible:outline-2'
 const nuncaVazio = () => false
 
@@ -78,18 +78,19 @@ export default function FinanceiroFiscal({ clinicaId, usuarioId }: { clinicaId: 
   const consulta = useFinanceiroConsulta(`${clinicaId}:${pagina}:${status}`, carregar, nuncaVazio, { clinicaId, leitura: 'fiscal' })
   const dados = consulta.resultado.estado === 'sucesso' ? consulta.resultado.dados : null
   return <div className="space-y-6">
-    <header><h1 className="texto-titulo-tela">Fiscal interno</h1><p className="mt-1 text-sm text-[var(--texto-secundario)]">Acompanhe documentos e registre solicitações. Integração com emissor externo ainda não está configurada.</p></header>
-    <div className={`${card} flex flex-wrap items-end gap-3`}><label className="text-sm font-medium">Situação
+    <header><h1 className="texto-titulo-tela">Fiscal interno</h1><p className="mt-1 text-sm text-[var(--texto-secundario)]">Acompanhe solicitações e documentos. A emissão externa ainda não está configurada.</p></header>
+    <div className={`${card} finance-toolbar`}><label>Situação
       <select className={`${campo} mt-1 block`} value={status} onChange={(e) => { setStatus(e.target.value as typeof status); setPagina(0) }}>
         <option value="todos">Todas</option>{Object.entries(rotulos).map(([valor, rotulo]) => <option key={valor} value={valor}>{rotulo}</option>)}
       </select></label><button type="button" className={botao} onClick={() => void consulta.recarregar()}>Atualizar</button></div>
     {sucesso && <p role="status" className="rounded-lg bg-[var(--cor-sucesso-suave)] p-3 text-sm">{sucesso}</p>}
-    {consulta.resultado.estado === 'carregando' && <p role="status" className={card}>Carregando documentos fiscais…</p>}
+    {consulta.resultado.estado === 'carregando' && <div role="status" aria-label="Carregando documentos fiscais" className={`${card} finance-skeleton`} />}
     {consulta.resultado.estado === 'erro' && <div role="alert" className={card}><p>{consulta.resultado.erro.message}</p><button type="button" className={`${botao} mt-3`} onClick={() => void consulta.recarregar()}>Tentar novamente</button></div>}
     {dados && <section className={card}><h2 className="texto-titulo-secao">Documentos da clínica</h2>
-      {!dados.itens.length ? <p className="mt-3 text-sm text-[var(--texto-secundario)]">Nenhum documento nesta seleção.</p> :
+      {!dados.itens.length ? <div className="finance-empty"><strong>Nenhum documento nesta seleção</strong><p>Solicitações fiscais da clínica aparecerão aqui.</p></div> :
         <ul className="mt-3 divide-y divide-[var(--borda)]">{dados.itens.map((documento) => <li key={documento.id} className="flex flex-wrap items-center justify-between gap-3 py-4">
-          <div><p className="font-medium">{documento.paciente} · {rotulos[documento.status]}</p>
+          <div><div className="flex flex-wrap items-center gap-2"><p className="font-medium">{documento.paciente}</p>
+            <span className="finance-status" data-tone={documento.status === 'emitida' ? 'success' : documento.status.startsWith('erro') ? 'danger' : documento.status.includes('solicitada') ? 'info' : 'warning'}>{rotulos[documento.status]}</span></div>
             <p className="text-sm text-[var(--texto-secundario)]">Atualizado {formatarDataFinanceira(documento.updated_at)}</p>
             {documento.ultima_tentativa && <p className="text-xs text-[var(--texto-secundario)]">Última tentativa de {documento.ultima_tentativa.tipo === 'emissao' ? 'emissão' : 'cancelamento'}: {rotulosTentativa[documento.ultima_tentativa.status]} · {formatarDataFinanceira(documento.ultima_tentativa.finalizado_em ?? documento.ultima_tentativa.created_at)}</p>}
             {(documento.status === 'erro_emissao' || documento.status === 'erro_cancelamento') && <p className="text-xs text-[var(--cor-erro)]">Falha interna registrada. Consulte a equipe responsável antes de repetir.</p>}

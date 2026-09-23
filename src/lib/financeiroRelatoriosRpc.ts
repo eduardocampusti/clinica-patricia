@@ -116,6 +116,27 @@ function totalInformado(totais: Record<string, unknown>): number | null {
   return null
 }
 
+export async function consultarPaginaRelatorio<T extends Record<string, unknown>>(
+  rpc: RpcRelatorio,
+  parametros: Record<string, unknown>,
+  cursor: CursorRelatorio | null = null,
+  sinal?: AbortSignal,
+): Promise<PaginaRelatorio<T>> {
+  const resposta = await executarRelatorioSupabase(rpc, {
+    ...parametros,
+    p_limite: 20,
+    p_cursor_data: cursor?.data ?? null,
+    p_cursor_id: cursor?.id ?? null,
+    p_cursor_contexto: cursor?.contexto ?? null,
+  }, sinal)
+  if (resposta.error) throw mapearErroFinanceiro(resposta.error)
+  const pagina = paginaValida<T>(resposta.data)
+  if (cursor && pagina.contexto !== cursor.contexto) {
+    throw new Error('Os dados do relatório mudaram. Aplique os filtros novamente.')
+  }
+  return pagina
+}
+
 export async function coletarRelatorioCompleto<T extends Record<string, unknown>>(
   rpc: RpcRelatorio,
   parametros: Record<string, unknown>,

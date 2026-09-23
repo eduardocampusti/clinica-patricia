@@ -24,11 +24,10 @@ type Acao =
 interface EstadoTela { atual: EstadoCaixaAtual; detalhes: DetalhesCaixa | null }
 
 const moeda = (valor: string | number) => formatarCentavos(decimalBancoParaCentavos(valor))
-const baseBotao = 'min-h-11 rounded-lg border px-4 py-2 text-sm font-semibold focus-visible:outline-2 disabled:cursor-not-allowed disabled:opacity-50'
-const botao = `${baseBotao} border-[var(--borda)] text-[var(--texto-principal)]`
-const primario = `${baseBotao} border-transparent bg-[var(--texto-principal)] text-white`
+const botao = 'finance-button'
+const primario = 'finance-button finance-button-primary'
 const campo = 'min-h-12 w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 text-[var(--texto-principal)] focus-visible:outline-2 disabled:opacity-50'
-const card = 'rounded-[18px] border border-[var(--borda)] bg-[var(--fundo-card)] p-5 shadow-[var(--sombra-baixa)] sm:p-6'
+const card = 'finance-surface'
 const nuncaVazio = () => false
 
 function rotuloAcao(acao: Acao): string {
@@ -146,9 +145,9 @@ function OperacaoCaixa({ acao, caixa, clinicaId, usuarioId, onFechar, onConcluid
         Dinheiro esperado agora: <strong className="text-[var(--texto-principal)]">{moeda(caixa.resumo.valor_esperado)}</strong>. O valor será conferido novamente pelo banco ao enviar.
       </p>}
       {formularioMonetario(acao) && <label className="block text-sm font-medium text-[var(--texto-principal)]">
-        {acao.tipo === 'enviar_fechamento' ? 'Dinheiro contado' : acao.tipo === 'abrir' ? 'Valor inicial em dinheiro' : 'Valor'}
+        {acao.tipo === 'enviar_fechamento' ? 'Dinheiro contado' : acao.tipo === 'abrir' ? 'Valor disponível para troco' : 'Valor'}
         <input className={`${campo} mt-1.5`} inputMode="decimal" placeholder="0,00" value={valor}
-          onChange={(e) => setValor(e.target.value)} disabled={ocupado || enviado} required aria-label="Valor em reais" />
+          onChange={(e) => setValor(e.target.value)} disabled={ocupado || enviado} required />
       </label>}
       {(precisaMotivo || exigeJustificativa || observacao) && <label className="block text-sm font-medium text-[var(--texto-principal)]">
         {exigeJustificativa ? 'Justificativa da diferença' : observacao ? 'Observação' : 'Motivo'}
@@ -194,49 +193,49 @@ export default function FinanceiroCaixa({ clinicaAtivaId, carregandoClinica, usu
   const podeMovimentar = caixa?.status === 'aberto'
 
   return <div className="space-y-6">
-    <header className="flex flex-wrap items-start justify-between gap-3">
-      <div><h1 className="texto-titulo-tela text-[var(--texto-principal)]">Caixa financeiro</h1>
-        <p className="mt-1 text-sm text-[var(--texto-secundario)]">Posição oficial da sessão, calculada pelo banco.</p></div>
+    <header className="finance-page-intro">
+      <div><h1 className="texto-titulo-tela text-[var(--texto-principal)]">Caixa</h1>
+        <p>Dinheiro disponível, movimentações e fechamento da clínica.</p></div>
       {autorizado && <button type="button" className={botao} onClick={() => void consulta.recarregar()} disabled={consulta.resultado.estado === 'carregando'}>Atualizar</button>}
     </header>
     {sucesso && <p role="status" className="rounded-lg border border-[var(--cor-sucesso-borda)] bg-[var(--cor-sucesso-suave)] p-3 text-sm text-[var(--texto-principal)]">{sucesso}</p>}
-    {(carregandoClinica || carregandoPapel || consulta.resultado.estado === 'carregando') && <p role="status" className={card}>Carregando caixa…</p>}
+    {(carregandoClinica || carregandoPapel || consulta.resultado.estado === 'carregando') && <div role="status" aria-label="Carregando caixa" className={`${card} finance-skeleton`} />}
     {!carregandoClinica && !clinicaAtivaId && <p className={card}>Selecione uma clínica para consultar o caixa.</p>}
     {!carregandoPapel && clinicaAtivaId && !autorizado && <p className={card}>O caixa operacional é restrito à proprietária e à recepção.</p>}
     {consulta.resultado.estado === 'erro' && <div className={card} role="alert">
       <p>{consulta.resultado.erro.message}</p><button type="button" className={`${botao} mt-3`} onClick={() => void consulta.recarregar()}>Tentar novamente</button>
     </div>}
     {atual?.tipo === 'legado' && <section className={card} role="status">
-      <h2 className="texto-titulo-secao">Sessão legada em aberto</h2>
-      <p className="mt-2 text-sm text-[var(--texto-secundario)]">Abertura {moeda(atual.valorAbertura)}. Esta sessão histórica não pode receber operações do novo Financeiro. A transição exige procedimento controlado; nenhum dado será convertido aqui.</p>
+      <h2 className="texto-titulo-secao">Caixa antigo em aberto</h2>
+      <p className="mt-2 text-sm text-[var(--texto-secundario)]">Valor inicial {moeda(atual.valorAbertura)}. Este caixa histórico precisa de uma transição acompanhada antes de usar as novas operações financeiras.</p>
     </section>}
     {atual?.tipo === 'sem_caixa' && <section className={card}>
-      <h2 className="texto-titulo-secao">Nenhum caixa ativo</h2>
-      <p className="mt-2 text-sm text-[var(--texto-secundario)]">Abra uma sessão para registrar recebimentos nesta clínica.</p>
+      <h2 className="texto-titulo-secao">Caixa fechado</h2>
+      <p className="mt-2 text-sm text-[var(--texto-secundario)]">Abra o caixa para registrar recebimentos nesta clínica.</p>
       <button type="button" className={`${primario} mt-4`} onClick={() => { setSucesso(null); setAcao({ tipo: 'abrir' }) }}>Abrir caixa</button>
     </section>}
     {caixa && <>
       <section className={card}>
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div><h2 className="texto-titulo-secao">{caixa.clinica_nome}</h2><p className="text-sm text-[var(--texto-secundario)]">Aberto em {new Date(caixa.aberto_em).toLocaleString('pt-BR')} por {caixa.aberto_por_nome ?? 'usuário autorizado'}</p></div>
-          <span className="rounded-full bg-[var(--cor-info-suave)] px-3 py-1.5 text-xs font-semibold text-[var(--cor-info)]">{caixa.status.replaceAll('_', ' ')}</span>
+          <span className="finance-status" data-tone={caixa.status === 'aberto' ? 'success' : caixa.status === 'devolvido_para_correcao' ? 'warning' : 'info'}>{caixa.status === 'aberto' ? 'Aberto' : caixa.status === 'em_fechamento' ? 'Em fechamento' : caixa.status === 'aguardando_aprovacao' ? 'Aguardando revisão' : caixa.status === 'devolvido_para_correcao' ? 'Correção solicitada' : caixa.status.replaceAll('_', ' ')}</span>
         </div>
-        <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="finance-kpi-grid mt-5">
           {([
-            ['Dinheiro esperado', caixa.resumo.valor_esperado], ['Abertura', caixa.resumo.valor_abertura],
-            ['Recebimentos em dinheiro', caixa.resumo.total_dinheiro], ['PIX', caixa.resumo.total_pix],
-            ['Cartão de crédito', caixa.resumo.total_cartao_credito], ['Recebimentos brutos', caixa.resumo.total_recebimentos_brutos],
-            ['Suprimentos', caixa.resumo.total_suprimentos], ['Sangrias efetivadas', caixa.resumo.total_sangrias],
+            ['Dinheiro esperado', caixa.resumo.valor_esperado], ['Recebimentos em dinheiro', caixa.resumo.total_dinheiro],
+            ['Valor inicial', caixa.resumo.valor_abertura], ['Suprimentos', caixa.resumo.total_suprimentos],
+            ['Sangrias efetivadas', caixa.resumo.total_sangrias], ['Recebimentos brutos', caixa.resumo.total_recebimentos_brutos],
+            ['PIX', caixa.resumo.total_pix], ['Cartão de crédito', caixa.resumo.total_cartao_credito],
             ['Estornos em dinheiro', caixa.resumo.total_estornos_dinheiro], ['Parcela da clínica', caixa.resumo.total_clinica],
             ['Parcela dos profissionais', caixa.resumo.total_profissionais],
-          ] as const).map(([rotulo, valor]) => <div key={rotulo} className="rounded-xl bg-[var(--fundo-pagina)] p-4">
-            <p className="text-xs text-[var(--texto-secundario)]">{rotulo}</p><p className="numero-tabular mt-1 text-lg font-semibold text-[var(--texto-principal)]">{moeda(valor)}</p>
+          ] as const).map(([rotulo, valor]) => <div key={rotulo}>
+            <p>{rotulo}</p><p>{moeda(valor)}</p>
           </div>)}
         </div>
-        <p className="mt-4 text-xs text-[var(--texto-terciario)]">Resumo corrente, não substitui o snapshot histórico do fechamento. PIX e cartão não entram no dinheiro físico esperado.</p>
+        <p className="mt-4 text-xs text-[var(--texto-secundario)]">PIX e cartão não entram no dinheiro físico esperado. O fechamento preserva os valores confirmados naquele momento.</p>
       </section>
       <section className={card}>
-        <h2 className="texto-titulo-secao">Operações da sessão</h2>
+        <h2 className="texto-titulo-secao">Próximo passo</h2>
         <div className="mt-4 flex flex-wrap gap-2">
           {podeMovimentar && <>
             <button type="button" className={botao} onClick={() => setAcao({ tipo: 'suprimento' })}>Adicionar suprimento</button>
@@ -251,7 +250,7 @@ export default function FinanceiroCaixa({ clinicaAtivaId, carregandoClinica, usu
       </section>
       <section className={card}>
         <h2 className="texto-titulo-secao">Sangrias</h2>
-        {!detalhes?.sangrias.length ? <p className="mt-3 text-sm text-[var(--texto-secundario)]">Nenhuma sangria nesta sessão.</p> :
+        {!detalhes?.sangrias.length ? <div className="finance-empty"><strong>Nenhuma sangria registrada</strong><p>Solicitações e revisões aparecerão aqui.</p></div> :
           <ul className="mt-3 divide-y divide-[var(--borda)]">{detalhes.sangrias.map((sangria) => <li key={sangria.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
             <div><p className="font-medium">{moeda(sangria.valor)} · {sangria.status}</p><p className="text-sm text-[var(--texto-secundario)]">{sangria.motivo}</p>
               {sangria.observacao_revisao && <p className="text-xs text-[var(--texto-secundario)]">Revisão: {sangria.observacao_revisao}</p>}</div>

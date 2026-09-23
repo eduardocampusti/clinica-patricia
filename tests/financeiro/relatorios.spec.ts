@@ -43,7 +43,7 @@ async function preparar(page: Page, drift = false) {
   await page.goto('/tests/financeiro/relatorios.html')
   await page.getByRole('button', { name: 'Relatórios' }).click()
   await expect(page.getByRole('heading', { name: 'Relatórios financeiros' })).toBeVisible()
-  await page.getByLabel('Relatório').selectOption('recebimentos')
+  await page.getByRole('combobox', { name: 'Relatório', exact: true }).selectOption('recebimentos')
   return chamadas
 }
 
@@ -76,6 +76,7 @@ test('drift bloqueia geração do arquivo e orienta repetir', async ({ page }) =
 
 test('filtros por pessoa, forma e estado seguem para a RPC sem nomes na auditoria', async ({ page }) => {
   const chamadas = await preparar(page)
+  if ((page.viewportSize()?.width ?? 1440) <= 600) await page.getByRole('button', { name: /Filtros avançados/ }).click()
   await page.getByRole('combobox', { name: 'Profissional', exact: true }).selectOption('prof-sintetico')
   await page.getByRole('combobox', { name: 'Paciente', exact: true }).selectOption('pac-sintetico')
   await page.getByLabel('Forma').selectOption('pix')
@@ -113,7 +114,7 @@ test('médico exporta XLSX vazio do próprio universo sem enviar profissional_id
   })
   await page.goto('/tests/financeiro/relatorios.html?papel=medico')
   await page.getByRole('button', { name: 'Relatórios' }).click()
-  await page.getByLabel('Relatório').selectOption('repasses')
+  await page.getByRole('combobox', { name: 'Relatório', exact: true }).selectOption('repasses')
   await expect(page.getByRole('option', { name: 'Fiscal interno' })).toHaveCount(0)
   const download = page.waitForEvent('download')
   await page.getByRole('button', { name: 'Gerar Excel' }).click()
@@ -124,4 +125,38 @@ test('médico exporta XLSX vazio do próprio universo sem enviar profissional_id
     expect(chamada.parametros).not.toHaveProperty('p_profissional_id')
   }
   await page.screenshot({ path: `scratch/financeiro-relatorios-medico-${info.project.name}.png`, fullPage: true })
+})
+
+test('prévia pagina dados oficiais sem expor identificadores nem registrar exportação', async ({ page }) => {
+  const chamadas: Array<{ nome: string; parametros: Record<string, unknown> }> = []
+  await page.route('**/*', async (route) => {
+    const url = new URL(route.request().url())
+    if (url.hostname === '127.0.0.1') return route.continue()
+    if (url.hostname !== 'financeiro.synthetic.invalid') return route.abort()
+    const nome = url.pathname.split('/').pop()!
+    const parametros = route.request().method() === 'POST' ? route.request().postDataJSON() as Record<string, unknown> : {}
+    chamadas.push({ nome, parametros })
+    if (nome === 'financeiro_relatorio_recebimentos_proprietaria') {
+      const segunda = parametros.p_cursor_id === 'cursor-sintetico'
+      const data = { versao: 1, dataset: 'recebimentos', publico: 'proprietaria', inicio: '2026-09-01T03:00:00Z',
+        fim: '2026-09-24T03:00:00Z', timezone: 'America/Bahia', contexto: 'contexto-sintetico', marcador: 'marcador-sintetico',
+        itens: [{ data: '2026-09-22T12:00:00Z', paciente: segunda ? 'Paciente Dois' : 'Paciente Um',
+          profissional: 'Dra. Exemplo', valor_bruto: segunda ? '75.00' : '50.00', id: 'uuid-secreto', cpf: '12345678900' }],
+        totais: { quantidade: 2 }, pagina: { limite: 20, quantidade: 1, tem_mais: !segunda,
+          proximo_cursor: segunda ? null : { data: '2026-09-22T12:00:00Z', id: 'cursor-sintetico', contexto: 'contexto-sintetico' } } }
+      return route.fulfill({ contentType: 'application/json', body: JSON.stringify(data) })
+    }
+    return route.fulfill({ contentType: 'application/json', body: '[]' })
+  })
+  await page.goto('/tests/financeiro/relatorios.html')
+  await page.getByRole('button', { name: 'Relatórios' }).click()
+  await page.getByRole('button', { name: 'Aplicar filtros' }).click()
+  const resultado = page.getByRole('region', { name: 'Resultado do relatório' })
+  await expect((page.viewportSize()?.width ?? 1440) <= 600 ? resultado.getByText('Paciente Um').last() : resultado.getByText('Paciente Um').first()).toBeVisible()
+  await expect(resultado).not.toContainText('uuid-secreto')
+  await expect(resultado).not.toContainText('12345678900')
+  await resultado.getByRole('button', { name: 'Próxima' }).click()
+  await expect((page.viewportSize()?.width ?? 1440) <= 600 ? resultado.getByText('Paciente Dois').last() : resultado.getByText('Paciente Dois').first()).toBeVisible()
+  expect(chamadas.filter((item) => item.nome === 'financeiro_relatorio_recebimentos_proprietaria')).toHaveLength(2)
+  expect(chamadas.some((item) => item.nome === 'financeiro_registrar_solicitacao_exportacao')).toBe(false)
 })

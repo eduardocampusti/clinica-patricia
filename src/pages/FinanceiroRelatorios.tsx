@@ -2,7 +2,10 @@ import { useEffect, useRef, useState, type SyntheticEvent } from 'react'
 import type { Papel } from '../hooks/usePapelNaClinica'
 import { carregarDashboardProfissional, carregarDashboardProprietaria } from '../lib/financeiro/financeiro.dashboard'
 import { intervaloPorDias, TIMEZONE_FINANCEIRO_PADRAO } from '../lib/financeiro/financeiro.date'
+import { formatarDataFinanceira } from '../lib/financeiro/financeiro.date'
 import { mensagemErroFinanceiro } from '../lib/financeiro/financeiro.errors'
+import { decimalBancoParaCentavos, formatarCentavos } from '../lib/financeiro/financeiro.money'
+import { consultarPaginaRelatorio, type CursorRelatorio, type PaginaRelatorio, type RpcRelatorio } from '../lib/financeiroRelatoriosRpc'
 import { montarRelatorioFinanceiro, type RelatoriosColetados } from '../lib/financeiro/financeiro.relatorios-apresentacao'
 import {
   coletarFiscalProprietaria, coletarRecebimentosProfissional, coletarRecebimentosProprietaria,
@@ -16,10 +19,11 @@ import { FORMAS_PAGAMENTO, STATUS_FISCAL, STATUS_RECEBIMENTO, STATUS_REPASSE,
 type PapelRelatorio = Extract<Papel, 'proprietaria' | 'medico'>
 type Dataset = 'consolidado' | 'recebimentos' | 'repasses' | 'fiscal'
 type FiltroNome = { id: string; nome: string }
-const card = 'rounded-[18px] border border-[var(--borda)] bg-[var(--fundo-card)] p-5 shadow-[var(--sombra-baixa)] sm:p-6'
+type ConsultaPrevia = { rpc: RpcRelatorio; parametros: Record<string, unknown>; pagina: PaginaRelatorio<Record<string, unknown>>; numero: number; cursores: Array<CursorRelatorio | null> }
+const card = 'finance-surface'
 const campo = 'min-h-11 w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 text-[var(--texto-principal)] focus-visible:outline-2'
-const botao = 'min-h-11 rounded-lg border border-[var(--borda)] px-4 py-2 text-sm font-semibold focus-visible:outline-2 disabled:opacity-50'
-const principal = 'min-h-11 rounded-lg bg-[var(--texto-principal)] px-4 py-2 text-sm font-semibold text-white focus-visible:outline-2 disabled:opacity-50'
+const botao = 'finance-button'
+const principal = 'finance-button finance-button-primary'
 const rotulo = (valor: string) => valor.replaceAll('_', ' ')
 
 function hojeBahia(): string {
@@ -62,12 +66,20 @@ export default function FinanceiroRelatorios({ clinicaId, papel }: { clinicaId: 
   const [statusRepasse, setStatusRepasse] = useState<'' | StatusRepasse>('')
   const [statusFiscal, setStatusFiscal] = useState<'' | StatusFiscal>('')
   const [modoRepasse, setModoRepasse] = useState<ModoRelatorioRepasse>('gerados_periodo')
+  const [filtrosAbertos, setFiltrosAbertos] = useState(() => typeof window !== 'undefined' && window.innerWidth > 600)
   const [ocupado, setOcupado] = useState(false)
   const [progresso, setProgresso] = useState('')
   const [erro, setErro] = useState<string | null>(null)
   const [sucesso, setSucesso] = useState<string | null>(null)
   const [erroOpcoes, setErroOpcoes] = useState<string | null>(null)
+  const [previa, setPrevia] = useState<ConsultaPrevia | null>(null)
+  const [carregandoPrevia, setCarregandoPrevia] = useState(false)
+  const [erroPrevia, setErroPrevia] = useState<string | null>(null)
   const controle = useRef<AbortController | null>(null)
+  const versaoPrevia = useRef(0)
+
+  useEffect(() => { versaoPrevia.current += 1; setPrevia(null); setErroPrevia(null); setCarregandoPrevia(false) }, [dataset, inicio, fim, todasClinicas, profissionalId,
+    pacienteId, forma, statusRecebimento, statusRepasse, statusFiscal, modoRepasse, clinicaId])
 
   useEffect(() => {
     if (!proprietaria || todasClinicas) { setProfissionais([]); setPacientes([]); return }
@@ -98,6 +110,89 @@ export default function FinanceiroRelatorios({ clinicaId, papel }: { clinicaId: 
     setTodasClinicas(ativo)
     if (ativo) { setProfissionalId(''); setPacienteId(''); setBuscaProfissional(''); setBuscaPaciente('') }
   }
+
+  function limpar() {
+    versaoPrevia.current += 1; setCarregandoPrevia(false)
+    setDataset('consolidado'); setInicio(haTrintaDias()); setFim(hojeBahia()); setTodasClinicas(false)
+    setBuscaProfissional(''); setBuscaPaciente(''); setProfissionalId(''); setPacienteId('')
+    setForma(''); setStatusRecebimento(''); setStatusRepasse(''); setStatusFiscal(''); setModoRepasse('gerados_periodo')
+    setErro(null); setSucesso(null); setPrevia(null); setErroPrevia(null)
+  }
+
+  const filtrosAtivos = [todasClinicas, !!profissionalId, !!pacienteId, !!forma, !!statusRecebimento,
+    !!statusRepasse, !!statusFiscal, modoRepasse !== 'gerados_periodo'].filter(Boolean).length
+
+  function parametrosPrevia(): { rpc: RpcRelatorio; parametros: Record<string, unknown> } {
+    const intervalo = intervaloPorDias(inicio, fim)
+    const parametros: Record<string, unknown> = {
+      p_inicio: intervalo.inicio, p_fim: intervalo.fim, p_timezone: intervalo.timezone,
+      p_clinica_id: todasClinicas ? null : clinicaId,
+    }
+    if (dataset === 'repasses') {
+      parametros.p_status_repasse = modoRepasse === 'gerados_periodo' ? statusRepasse || null : null
+      parametros.p_evento = modoRepasse
+      if (proprietaria) parametros.p_profissional_id = !todasClinicas ? profissionalId || null : null
+      return { rpc: proprietaria ? 'financeiro_relatorio_repasses_proprietaria' : 'financeiro_relatorio_repasses_profissional', parametros }
+    }
+    parametros.p_forma_pagamento = forma || null
+    parametros.p_status_recebimento = statusRecebimento || null
+    if (proprietaria) {
+      parametros.p_profissional_id = !todasClinicas ? profissionalId || null : null
+      parametros.p_paciente_id = !todasClinicas ? pacienteId || null : null
+      parametros.p_status_fiscal = statusFiscal || null
+    }
+    return { rpc: dataset === 'fiscal' && proprietaria ? 'financeiro_relatorio_fiscal_proprietaria'
+      : proprietaria ? 'financeiro_relatorio_recebimentos_proprietaria' : 'financeiro_relatorio_recebimentos_profissional', parametros }
+  }
+
+  async function aplicarPrevia() {
+    if (carregandoPrevia) return
+    const versao = ++versaoPrevia.current
+    setCarregandoPrevia(true); setErroPrevia(null); setPrevia(null)
+    try {
+      const { rpc, parametros } = parametrosPrevia()
+      const pagina = await consultarPaginaRelatorio<Record<string, unknown>>(rpc, parametros)
+      if (versaoPrevia.current === versao) setPrevia({ rpc, parametros, pagina, numero: 1, cursores: [null] })
+    } catch (falha) { if (versaoPrevia.current === versao) setErroPrevia(mensagemErroFinanceiro(falha)) }
+    finally { if (versaoPrevia.current === versao) setCarregandoPrevia(false) }
+  }
+
+  async function mudarPagina(direcao: 'anterior' | 'proxima') {
+    if (!previa || carregandoPrevia) return
+    const versao = ++versaoPrevia.current
+    const numero = previa.numero + (direcao === 'proxima' ? 1 : -1)
+    if (numero < 1) return
+    const cursores = direcao === 'proxima'
+      ? [...previa.cursores.slice(0, previa.numero), previa.pagina.pagina.proximo_cursor]
+      : previa.cursores
+    const cursor = cursores[numero - 1]
+    if (direcao === 'proxima' && !cursor) return
+    setCarregandoPrevia(true); setErroPrevia(null)
+    try {
+      const pagina = await consultarPaginaRelatorio<Record<string, unknown>>(previa.rpc, previa.parametros, cursor)
+      if (pagina.contexto !== previa.pagina.contexto || pagina.marcador !== previa.pagina.marcador) {
+        throw new Error('Os dados mudaram. Aplique os filtros novamente.')
+      }
+      if (versaoPrevia.current === versao) setPrevia({ ...previa, pagina, numero, cursores })
+    } catch (falha) { if (versaoPrevia.current === versao) setErroPrevia(mensagemErroFinanceiro(falha)) }
+    finally { if (versaoPrevia.current === versao) setCarregandoPrevia(false) }
+  }
+
+  const textoPrevia = (item: Record<string, unknown>, chave: string): string => {
+    const valor = item[chave]
+    if (typeof valor !== 'string' && typeof valor !== 'number') return '—'
+    if (chave === 'data') return formatarDataFinanceira(String(valor))
+    if (chave === 'status') return String(valor).replaceAll('_', ' ')
+    if (chave.startsWith('valor_')) {
+      try { return formatarCentavos(decimalBancoParaCentavos(valor)) } catch { return '—' }
+    }
+    return String(valor)
+  }
+  const colunasPrevia = dataset === 'repasses'
+    ? [['data', 'Data'], ['profissional', 'Profissional'], ['status', 'Situação'], ['valor_liquido', 'Líquido']]
+    : dataset === 'fiscal'
+      ? [['data', 'Data'], ['paciente', 'Paciente'], ['status', 'Situação'], ['valor_bruto', 'Valor']]
+      : [['data', 'Data'], ['paciente', 'Paciente'], ['profissional', 'Profissional'], ['valor_bruto', 'Recebido']]
 
   async function gerar(evento: SyntheticEvent, formato: 'pdf' | 'xlsx') {
     evento.preventDefault()
@@ -181,7 +276,7 @@ export default function FinanceiroRelatorios({ clinicaId, papel }: { clinicaId: 
 
   return <div className="space-y-6">
     <header><h1 className="texto-titulo-tela">Relatórios financeiros</h1>
-      <p className="mt-1 text-sm text-[var(--texto-secundario)]">Dados oficiais paginados, revalidados e reconciliados antes do arquivo. O download ocorre somente neste navegador.</p></header>
+      <p className="mt-1 text-sm text-[var(--texto-secundario)]">Escolha o período e os filtros para preparar um arquivo com dados oficiais.</p></header>
     <form className={`${card} space-y-5`} onSubmit={(e) => void gerar(e, 'pdf')}>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <label className="text-sm font-medium">Relatório<select className={`${campo} mt-1`} value={dataset} disabled={ocupado}
@@ -194,6 +289,10 @@ export default function FinanceiroRelatorios({ clinicaId, papel }: { clinicaId: 
         <label className="text-sm font-medium">Até<input type="date" className={`${campo} mt-1`} value={fim} onChange={(e) => setFim(e.target.value)} required disabled={ocupado} /></label>
         <label className="flex min-h-11 items-end gap-2 pb-2 text-sm"><input type="checkbox" checked={todasClinicas} onChange={(e) => mudarTodas(e.target.checked)} disabled={ocupado} />Todas as minhas clínicas</label>
       </div>
+      <button type="button" className={botao} aria-expanded={filtrosAbertos} onClick={() => setFiltrosAbertos((aberto) => !aberto)}>
+        {filtrosAbertos ? 'Ocultar filtros avançados' : 'Filtros avançados'}{filtrosAtivos > 0 ? ` · ${filtrosAtivos} ativo${filtrosAtivos === 1 ? '' : 's'}` : ''}
+      </button>
+      <div className={`finance-advanced space-y-4${filtrosAbertos ? ' is-open' : ''}`}>
       {proprietaria && !todasClinicas && <div className="grid gap-3 sm:grid-cols-2">
         <div><label className="text-sm font-medium">Buscar profissional<input className={`${campo} mt-1`} value={buscaProfissional} onChange={(e) => setBuscaProfissional(e.target.value)} disabled={ocupado} /></label>
           <label className="mt-2 block text-sm font-medium">Profissional<select className={`${campo} mt-1`} value={profissionalId} onChange={(e) => setProfissionalId(e.target.value)} disabled={ocupado}>
@@ -227,12 +326,38 @@ export default function FinanceiroRelatorios({ clinicaId, papel }: { clinicaId: 
           </select></label>}
         </>}
       </div>
+      </div>
+      {filtrosAtivos > 0 && <p className="text-xs text-[var(--texto-secundario)]">{filtrosAtivos} filtro{filtrosAtivos === 1 ? '' : 's'} adicional{filtrosAtivos === 1 ? '' : 'is'} selecionado{filtrosAtivos === 1 ? '' : 's'}.</p>}
       <p className="text-xs text-[var(--texto-terciario)]">Período inclusivo em Bahia; o banco recebe o começo do dia seguinte como limite exclusivo. “Pendentes agora” é posição atual, sem filtro pela data de geração.</p>
-      <div className="flex flex-wrap gap-2"><button type="submit" className={principal} disabled={ocupado}>Gerar PDF</button>
+      <div className="flex flex-wrap gap-2"><button type="button" className={principal} disabled={ocupado || carregandoPrevia} onClick={() => void aplicarPrevia()}>{carregandoPrevia ? 'Consultando…' : 'Aplicar filtros'}</button>
+        <button type="submit" className={botao} disabled={ocupado}>Gerar PDF</button>
         <button type="button" className={botao} disabled={ocupado} onClick={(e) => void gerar(e, 'xlsx')}>Gerar Excel</button>
+        <button type="button" className={botao} disabled={ocupado} onClick={limpar}>Limpar filtros</button>
         {ocupado && <button type="button" className={botao} onClick={() => controle.current?.abort()}>Cancelar exportação</button>}
       </div>
     </form>
+    <section className={card} aria-label="Resultado do relatório">
+      <div className="flex flex-wrap items-center justify-between gap-2"><div><h2 className="texto-titulo-secao">Resultado</h2>
+        <p className="mt-1 text-xs text-[var(--texto-secundario)]">{dataset === 'consolidado' ? 'A prévia mostra recebimentos; PDF e Excel incluem todos os conjuntos selecionados.' : 'Prévia dos dados oficiais para os filtros aplicados.'}</p></div>
+        {previa && <span className="text-xs text-[var(--texto-secundario)]">{String(previa.pagina.totais.quantidade ?? previa.pagina.itens.length)} registro(s)</span>}
+      </div>
+      {carregandoPrevia && <div role="status" aria-label="Consultando resultado" className="finance-skeleton mt-4" />}
+      {erroPrevia && <p role="alert" className="mt-4 text-sm text-[var(--cor-erro)]">{erroPrevia}</p>}
+      {!previa && !carregandoPrevia && !erroPrevia && <div className="finance-empty"><strong>Pronto para consultar</strong><p>Escolha os filtros e selecione “Aplicar filtros” para ver os primeiros resultados.</p></div>}
+      {previa && !carregandoPrevia && !previa.pagina.itens.length && <div className="finance-empty"><strong>Nenhum registro encontrado</strong><p>Revise o período ou os filtros. Você ainda pode gerar um arquivo vazio para auditoria.</p></div>}
+      {previa && !carregandoPrevia && previa.pagina.itens.length > 0 && <>
+        <div className="finance-table-wrap mt-4 hidden sm:block"><table className="finance-table"><thead><tr>{colunasPrevia.map(([chave, titulo]) => <th key={chave}>{titulo}</th>)}</tr></thead>
+          <tbody>{previa.pagina.itens.map((item, indice) => <tr key={indice}>{colunasPrevia.map(([chave]) => <td key={chave}>{textoPrevia(item, chave)}</td>)}</tr>)}</tbody></table></div>
+        <ul className="finance-divider-list mt-4 sm:hidden">{previa.pagina.itens.map((item, indice) => <li key={indice} className="py-3">
+          <p className="font-medium">{textoPrevia(item, colunasPrevia[1][0])}</p>
+          <div className="mt-1 flex justify-between gap-3 text-xs text-[var(--texto-secundario)]"><span>{textoPrevia(item, 'data')}</span><span className="numero-tabular font-semibold text-[var(--texto-principal)]">{textoPrevia(item, colunasPrevia.at(-1)![0])}</span></div>
+          <p className="mt-1 text-xs text-[var(--texto-secundario)]">{textoPrevia(item, colunasPrevia[2][0])}</p>
+        </li>)}</ul>
+      </>}
+      {previa && <div className="mt-4 flex items-center justify-between gap-2"><button type="button" className={botao} disabled={carregandoPrevia || previa.numero === 1} onClick={() => void mudarPagina('anterior')}>Anterior</button>
+        <span className="text-xs text-[var(--texto-secundario)]">Página {previa.numero}</span>
+        <button type="button" className={botao} disabled={carregandoPrevia || !previa.pagina.pagina.tem_mais} onClick={() => void mudarPagina('proxima')}>Próxima</button></div>}
+    </section>
     {progresso && <p role="status" className={card}>{progresso}</p>}
     {erro && <p role="alert" className={`${card} text-[var(--cor-erro)]`}>{erro}</p>}
     {sucesso && <p role="status" className={`${card} text-[var(--cor-sucesso)]`}>{sucesso}</p>}

@@ -50,9 +50,9 @@ test('recepção seleciona recebimento sem UUID e solicita estorno parcial pela 
 
 test('recepção filtra pelas formas e solicita total disponível em split', async ({ page }) => {
   const chamadas = await preparar(page, 'recepcao')
-  const busca = page.getByRole('searchbox', { name: /Filtrar nesta página/ })
+  const busca = page.getByRole('searchbox', { name: 'Buscar nesta página' })
   await busca.fill('inexistente')
-  await expect(page.getByText('Nenhum recebimento corresponde ao filtro nesta página.')).toBeVisible()
+  await expect(page.getByText('Nada encontrado nesta página')).toBeVisible()
   await busca.fill('Cartão')
   await expect(page.getByText('Cartão de crédito R$ 100,00')).toBeVisible()
   await page.getByRole('button', { name: 'Solicitar estorno' }).click()
@@ -86,7 +86,7 @@ test('proprietária revisa pendência com contexto do recebimento original', asy
   await page.getByRole('button', { name: 'Revisar' }).click()
   await expect(page.getByText('Pagamento original R$ 500,00')).toBeVisible()
   await page.getByRole('button', { name: 'Confirmar decisão' }).click()
-  await expect(page.getByText('Nenhuma solicitação pendente nesta clínica.')).toBeVisible()
+  await expect(page.getByText('Nenhum estorno aguardando revisão')).toBeVisible()
   expect(chamadas).toHaveLength(1)
   expect(chamadas[0].nome).toBe('financeiro_revisar_estorno')
   expect(chamadas[0].parametros.p_acao).toBe('aprovar')

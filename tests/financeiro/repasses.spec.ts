@@ -34,7 +34,7 @@ async function preparar(page: Page) {
 test('proprietária revisa composição e confirma pagamento externo com chave idempotente', async ({ page }, info) => {
   const chamadas = await preparar(page)
   await expect(page.getByText('Profissional Exemplo')).toBeVisible()
-  await page.getByRole('button', { name: 'Ver e confirmar' }).click()
+  await page.getByRole('button', { name: 'Confirmar pagamento', exact: true }).click()
   await expect(page.getByText('Paciente Exemplo')).toBeVisible()
   await expect(page.getByText('Líquido oficial: R$ 325,00')).toBeVisible()
   await page.getByLabel('Referência do comprovante externo').fill('PIX-EXEMPLO')

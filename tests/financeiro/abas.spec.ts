@@ -28,7 +28,7 @@ test('proprietária em Repasses passa à recepção sem manter conteúdo restrit
 
 test('proprietária em Painel passa a médico sem carregar painel da proprietária', async ({ page }) => {
   const chamadas = await preparar(page)
-  await page.getByRole('navigation', { name: 'Áreas do Financeiro' }).getByRole('button', { name: 'Painel' }).click()
+  await page.getByRole('navigation', { name: 'Áreas do Financeiro' }).getByRole('button', { name: 'Visão geral' }).click()
   await expect(page.getByRole('heading', { name: 'Painel financeiro' })).toBeVisible()
   const antesTroca = chamadas.length
   await page.getByRole('button', { name: 'Simular médico' }).click()
