@@ -7,6 +7,10 @@ import FinanceiroPainel from './FinanceiroPainel'
 import FinanceiroRepasses from './FinanceiroRepasses'
 
 const FinanceiroRelatorios = lazy(() => import('./FinanceiroRelatorios'))
+type Aba = 'painel' | 'caixa' | 'estornos' | 'repasses' | 'fiscal' | 'relatorios'
+const rotulos: Record<Aba, string> = {
+  painel: 'Visão geral', caixa: 'Caixa', estornos: 'Estornos', repasses: 'Repasses', fiscal: 'Fiscal', relatorios: 'Relatórios',
+}
 
 export default function FinanceiroModulo({ clinicaAtivaId, carregandoClinica, usuarioId, papel, carregandoPapel }: {
   clinicaAtivaId: string | null
@@ -15,46 +19,37 @@ export default function FinanceiroModulo({ clinicaAtivaId, carregandoClinica, us
   papel: Papel | null
   carregandoPapel: boolean
 }) {
-  const [aba, setAba] = useState<'caixa' | 'estornos' | 'repasses' | 'fiscal' | 'painel' | 'relatorios'>('caixa')
+  const [aba, setAba] = useState<Aba>('painel')
   const administrativo = papel === 'proprietaria' || papel === 'recepcao'
-  const abasPermitidas = papel === 'proprietaria'
-    ? ['caixa', 'estornos', 'repasses', 'fiscal', 'painel', 'relatorios'] as const
-    : papel === 'recepcao' ? ['caixa', 'estornos', 'fiscal'] as const
-      : papel === 'medico' ? ['painel', 'relatorios'] as const : ['caixa'] as const
-  const abaAtiva = (abasPermitidas as readonly string[]).includes(aba) ? aba : abasPermitidas[0]
-  useEffect(() => {
-    if (aba !== abaAtiva) setAba(abaAtiva)
-  }, [aba, abaAtiva])
-  if (papel === 'medico' && clinicaAtivaId && !carregandoClinica && !carregandoPapel) {
-    return <div className="space-y-6"><nav aria-label="Áreas do Financeiro" className="flex flex-wrap gap-2 border-b border-[var(--borda)] pb-3">
-      {(['painel', 'relatorios'] as const).map((opcao) => <button key={opcao} type="button" aria-current={abaAtiva === opcao ? 'page' : undefined}
-        onClick={() => setAba(opcao)} className={`min-h-11 rounded-lg px-4 py-2 text-sm font-semibold focus-visible:outline-2 ${abaAtiva === opcao
-          ? 'bg-[var(--texto-principal)] text-white' : 'border border-[var(--borda)] text-[var(--texto-principal)]'}`}>
-        {opcao === 'painel' ? 'Painel' : 'Relatórios'}</button>)}
-    </nav>{abaAtiva === 'relatorios' ? <Suspense fallback={<p role="status">Carregando relatórios…</p>}>
-      <FinanceiroRelatorios clinicaId={clinicaAtivaId} papel="medico" /></Suspense>
-      : <FinanceiroPainel clinicaId={clinicaAtivaId} papel="medico" />}</div>
+  const abasPermitidas: readonly Aba[] = papel === 'proprietaria'
+    ? ['painel', 'caixa', 'estornos', 'repasses', 'fiscal', 'relatorios']
+    : papel === 'recepcao' ? ['caixa', 'estornos', 'fiscal']
+      : papel === 'medico' ? ['painel', 'relatorios'] : ['caixa']
+  const abaAtiva = abasPermitidas.includes(aba) ? aba : abasPermitidas[0]
+  useEffect(() => { if (aba !== abaAtiva) setAba(abaAtiva) }, [aba, abaAtiva])
+
+  if ((!administrativo && papel !== 'medico') || !clinicaAtivaId || carregandoClinica || carregandoPapel) {
+    return <div className="financeiro-ui"><FinanceiroCaixa clinicaAtivaId={clinicaAtivaId} carregandoClinica={carregandoClinica}
+      usuarioId={usuarioId} papel={papel} carregandoPapel={carregandoPapel} /></div>
   }
-  if (!administrativo || !clinicaAtivaId || carregandoClinica || carregandoPapel) {
-    return <FinanceiroCaixa clinicaAtivaId={clinicaAtivaId} carregandoClinica={carregandoClinica}
-      usuarioId={usuarioId} papel={papel} carregandoPapel={carregandoPapel} />
-  }
-  return <div className="space-y-6">
-    <nav aria-label="Áreas do Financeiro" className="flex flex-wrap gap-2 border-b border-[var(--borda)] pb-3">
-      {(['caixa', 'estornos', ...(papel === 'proprietaria' ? ['repasses'] as const : []), 'fiscal', ...(papel === 'proprietaria' ? ['painel', 'relatorios'] as const : [])] as const).map((opcao) => <button key={opcao} type="button"
-        aria-current={abaAtiva === opcao ? 'page' : undefined} onClick={() => setAba(opcao)}
-        className={`min-h-11 rounded-lg px-4 py-2 text-sm font-semibold focus-visible:outline-2 ${abaAtiva === opcao
-          ? 'bg-[var(--texto-principal)] text-white'
-          : 'border border-[var(--borda)] text-[var(--texto-principal)]'}`}>
-        {opcao === 'caixa' ? 'Caixa' : opcao === 'estornos' ? 'Estornos' : opcao === 'repasses' ? 'Repasses' : opcao === 'fiscal' ? 'Fiscal' : opcao === 'painel' ? 'Painel' : 'Relatórios'}
-      </button>)}
+
+  return <div className="financeiro-ui space-y-5">
+    <div className="finance-page-intro">
+      <div><h1 className="texto-titulo-tela">Financeiro</h1>
+        <p>{papel === 'medico' ? 'Sua produção e seus repasses, em um só lugar.' : 'Acompanhe a operação e os resultados da clínica.'}</p></div>
+    </div>
+    <nav aria-label="Áreas do Financeiro" className="finance-nav">
+      {abasPermitidas.map((opcao) => <button key={opcao} type="button" aria-current={abaAtiva === opcao ? 'page' : undefined}
+        onClick={() => setAba(opcao)}>{rotulos[opcao]}</button>)}
     </nav>
     {abaAtiva === 'caixa' ? <FinanceiroCaixa clinicaAtivaId={clinicaAtivaId} carregandoClinica={false}
       usuarioId={usuarioId} papel={papel} carregandoPapel={false} />
       : abaAtiva === 'estornos' ? <FinanceiroEstornos clinicaId={clinicaAtivaId} usuarioId={usuarioId} papel={papel} />
         : abaAtiva === 'repasses' ? <FinanceiroRepasses clinicaId={clinicaAtivaId} usuarioId={usuarioId} />
         : abaAtiva === 'fiscal' ? <FinanceiroFiscal clinicaId={clinicaAtivaId} usuarioId={usuarioId} />
-        : abaAtiva === 'painel' ? <FinanceiroPainel clinicaId={clinicaAtivaId} papel="proprietaria" />
-          : <Suspense fallback={<p role="status">Carregando relatórios…</p>}><FinanceiroRelatorios clinicaId={clinicaAtivaId} papel="proprietaria" /></Suspense>}
+        : abaAtiva === 'painel' ? <FinanceiroPainel clinicaId={clinicaAtivaId} papel={papel === 'medico' ? 'medico' : 'proprietaria'} />
+          : <Suspense fallback={<div role="status" aria-label="Carregando relatórios" className="finance-skeleton" />}>
+            <FinanceiroRelatorios clinicaId={clinicaAtivaId} papel={papel === 'medico' ? 'medico' : 'proprietaria'} />
+          </Suspense>}
   </div>
 }

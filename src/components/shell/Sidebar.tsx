@@ -25,9 +25,7 @@ function SeloClinica({ nome, corLetra, tamanho }: { nome: string; corLetra: stri
       style={{
         width: tamanho,
         height: tamanho,
-        border: '1.5px solid var(--dourado)',
-        backgroundColor: 'var(--dourado-fundo)',
-        boxShadow: '0 2px 6px rgba(184, 135, 61, 0.3)',
+        backgroundColor: 'var(--menu-avatar-bg)',
       }}
     >
       <span className="fonte-selo" style={{ color: corLetra, fontSize: Math.round(tamanho * 0.45) }}>
@@ -66,6 +64,7 @@ interface SidebarProps {
   onSelecionarClinica: (id: string) => void
   papel: Papel | null
   aberta: boolean
+  compacto: boolean
   onFechar: () => void
   onSair: () => void
 }
@@ -78,6 +77,7 @@ function Sidebar({
   onSelecionarClinica,
   papel,
   aberta,
+  compacto,
   onFechar,
   onSair,
 }: SidebarProps) {
@@ -98,14 +98,23 @@ function Sidebar({
 
   return (
     <aside
-      className={`fixed inset-y-0 left-0 z-40 flex w-60 flex-none flex-col overflow-y-auto bg-[var(--cor-menu)] px-4 py-7 transition-transform duration-200 lg:static lg:translate-x-0 ${
+      id="app-sidebar"
+      role={compacto && aberta ? 'dialog' : undefined}
+      aria-modal={compacto && aberta ? true : undefined}
+      aria-label={compacto && aberta ? 'Menu principal' : undefined}
+      inert={compacto && !aberta}
+      className={`fixed inset-y-0 left-0 z-40 flex w-[248px] flex-none flex-col overflow-y-auto bg-[var(--cor-menu)] px-3 py-5 transition-transform duration-200 lg:static lg:translate-x-0 ${
         aberta ? 'translate-x-0' : '-translate-x-full'
       }`}
     >
-      <div className="relative mb-2 border-b border-[var(--menu-borda)] pb-4">
-        <div className="flex items-center gap-1.5 px-2 pb-1.5 text-[10px] font-semibold tracking-wider text-[var(--menu-texto-terciario)] uppercase">
-          <IconeCadeado />
-          {papel ? ROTULO_PAPEL[papel] : 'Validando acesso'}
+      <div className="mb-7 flex items-center gap-3 px-2">
+        <div className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-[var(--menu-avatar-bg)] text-sm font-bold text-[var(--menu-texto)]" aria-hidden="true">P</div>
+        <div className="min-w-0"><p className="truncate text-[14px] font-semibold text-[var(--menu-texto)]">Clínica Patrícia</p>
+          <p className="text-[11px] text-[var(--menu-texto-secundario)]">Gestão clínica</p></div>
+      </div>
+      <div className="relative mb-4 rounded-[11px] bg-[var(--menu-hover-bg)] p-2">
+        <div className="flex items-center gap-1.5 px-2 pb-1 text-[11px] text-[var(--menu-texto-secundario)]">
+          <IconeCadeado /> {papel ? ROTULO_PAPEL[papel] : 'Validando acesso'}
         </div>
 
         {podeTrocarClinica ? (
@@ -114,21 +123,18 @@ function Sidebar({
             onClick={() => setDropdownAberto((v) => !v)}
             aria-expanded={dropdownAberto}
             aria-haspopup="listbox"
-            className="flex w-full items-center gap-2.5 rounded-xl p-2 text-left transition hover:bg-[var(--menu-hover-bg)]"
+            className="flex min-h-11 w-full items-center gap-2.5 rounded-lg p-2 text-left transition hover:bg-[var(--menu-hover-bg)] focus-visible:outline-2 focus-visible:outline-white"
           >
             {clinicaAtiva ? (
               <SeloClinica nome={clinicaAtiva.nome} corLetra="var(--cor-primaria)" tamanho={34} />
             ) : (
-              <div className="flex h-[34px] w-[34px] flex-none items-center justify-center rounded-full border-[1.5px] border-[var(--dourado)] bg-[var(--dourado-fundo)] text-[var(--dourado-texto)]">
+              <div className="flex h-[34px] w-[34px] flex-none items-center justify-center rounded-full bg-[var(--menu-avatar-bg)] text-[var(--menu-texto)]">
                 —
               </div>
             )}
             <div className="min-w-0 flex-1">
               <div className="truncate text-sm font-semibold text-[var(--menu-texto)]">
                 {clinicaAtiva?.nome ?? 'Sem clínica'}
-              </div>
-              <div className="text-[11.5px] text-[var(--menu-texto-secundario)]">
-                Multiespecialidade
               </div>
             </div>
             <IconeChevron
@@ -142,7 +148,7 @@ function Sidebar({
             {clinicaAtiva ? (
               <SeloClinica nome={clinicaAtiva.nome} corLetra="var(--cor-primaria)" tamanho={34} />
             ) : (
-              <div className="flex h-[34px] w-[34px] flex-none items-center justify-center rounded-full border-[1.5px] border-[var(--dourado)] bg-[var(--dourado-fundo)] text-[var(--dourado-texto)]">
+              <div className="flex h-[34px] w-[34px] flex-none items-center justify-center rounded-full bg-[var(--menu-avatar-bg)] text-[var(--menu-texto)]">
                 —
               </div>
             )}
@@ -150,15 +156,12 @@ function Sidebar({
               <div className="truncate text-sm font-semibold text-[var(--menu-texto)]">
                 {clinicaAtiva?.nome ?? 'Sem clínica'}
               </div>
-              <div className="text-[11.5px] text-[var(--menu-texto-secundario)]">
-                Multiespecialidade
-              </div>
             </div>
           </div>
         )}
 
         {podeTrocarClinica && dropdownAberto && (
-          <div className="absolute left-0 right-0 top-[calc(100%-8px)] z-20 flex flex-col gap-0.5 rounded-xl border border-[var(--menu-borda)] bg-[var(--cor-menu)] p-1.5 shadow-[0_10px_28px_rgba(0,0,0,0.35)]">
+          <div className="absolute left-0 right-0 top-[calc(100%-8px)] z-20 flex flex-col gap-0.5 rounded-xl border border-[var(--menu-borda)] bg-[var(--cor-menu)] p-1.5">
             {clinicasDoUsuario.map((c) => {
               const ativa = c.id === clinicaAtiva?.id
               return (
@@ -191,7 +194,7 @@ function Sidebar({
         <button
           type="button"
           onClick={() => selecionarTela('agenda')}
-          className="mx-1 mb-4 flex min-h-11 w-[calc(100%-8px)] items-center justify-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-semibold shadow-sm transition hover:shadow-md"
+          className="mx-1 mb-6 flex min-h-11 w-[calc(100%-8px)] items-center justify-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-semibold transition hover:opacity-90 focus-visible:outline-2 focus-visible:outline-white"
           style={{ color: 'var(--cor-primaria)' }}
         >
           <IconeMais className="h-4 w-4" />
@@ -199,7 +202,8 @@ function Sidebar({
         </button>
       )}
 
-      <nav aria-label="Navegação principal" className="mt-3 flex flex-col gap-0.5">
+      <nav aria-label="Navegação principal" className="flex flex-col gap-0.5">
+        <p className="px-3 pb-2 text-[11px] font-medium text-[var(--menu-texto-secundario)]">Navegação</p>
         {itensVisiveis.map(({ chave, Icone }) => {
           const ativo = tela === chave
           return (
@@ -208,14 +212,10 @@ function Sidebar({
               type="button"
               onClick={() => selecionarTela(chave)}
               aria-current={ativo ? 'page' : undefined}
-              className={`relative flex items-center gap-3 rounded-[10px] py-2.5 pl-3.5 pr-3 text-sm font-medium transition hover:bg-[var(--menu-hover-bg)] ${
+              className={`relative flex min-h-11 items-center gap-3 rounded-[9px] py-2.5 pl-3.5 pr-3 text-sm font-medium transition hover:bg-[var(--menu-hover-bg)] focus-visible:outline-2 focus-visible:outline-white ${
                 ativo ? 'bg-[var(--menu-ativo-bg)]' : ''
               }`}
             >
-              <span
-                className="absolute left-0 top-2 bottom-2 w-[3px] rounded-full bg-[var(--menu-avatar-bg)]"
-                style={{ opacity: ativo ? 1 : 0 }}
-              />
               <Icone
                 className={ativo ? 'text-[var(--menu-texto)]' : 'text-[var(--menu-texto-secundario)]'}
               />
