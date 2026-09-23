@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "test:operacional:real": "playwright test --config tests/operacional/playwright.real.config.ts",
     "test:financeiro:10b": "playwright test --config tests/financeiro/playwright.config.ts",
     "dev": "vite",
     "build": "tsc -b && vite build",
