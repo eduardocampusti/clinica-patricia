@@ -181,6 +181,10 @@ function Agenda({ clinicaAtiva, carregandoClinica, usuarioId, onAtendimentoInici
   const [pacientes, setPacientes] = useState<PacienteOpcao[]>([])
   const [listaEspera, setListaEspera] = useState<EntradaListaEspera[]>([])
   const [carregandoGrade, setCarregandoGrade] = useState(true)
+  const [erroCarregamento, setErroCarregamento] = useState<string | null>(null)
+  const clinicaAtivaIdRef = useRef(clinicaAtivaId)
+  const requisicaoGradeAtual = useRef(0)
+  clinicaAtivaIdRef.current = clinicaAtivaId
 
   const [menuStatusId, setMenuStatusId] = useState<string | null>(null)
   const [modalAberto, setModalAberto] = useState<'agendamento' | 'excecao' | 'espera' | null>(null)
@@ -200,11 +204,18 @@ function Agenda({ clinicaAtiva, carregandoClinica, usuarioId, onAtendimentoInici
   const [erroIniciarAtendimento, setErroIniciarAtendimento] = useState<string | null>(null)
 
   const carregarProfissionais = useCallback(async (clinicaId: string) => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('profissionais_clinicas')
       .select('profissionais(id, nome_completo, duracao_consulta_minutos, valor_consulta, especialidades(nome))')
       .eq('clinica_id', clinicaId)
       .eq('ativo', true)
+
+    if (clinicaAtivaIdRef.current !== clinicaId) return
+    if (error) {
+      setProfissionais([])
+      setErroCarregamento('Não foi possível carregar os profissionais da Agenda.')
+      return
+    }
 
     type Linha = {
       profissionais:
@@ -245,22 +256,35 @@ function Agenda({ clinicaAtiva, carregandoClinica, usuarioId, onAtendimentoInici
   }, [])
 
   const carregarPacientes = useCallback(async (clinicaId: string) => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('pacientes')
       .select('id, nome_completo')
       .eq('clinica_id', clinicaId)
       .eq('ativo', true)
       .order('nome_completo', { ascending: true })
+    if (clinicaAtivaIdRef.current !== clinicaId) return
+    if (error) {
+      setPacientes([])
+      setErroCarregamento('Não foi possível carregar os pacientes da Agenda.')
+      return
+    }
     setPacientes(data ?? [])
   }, [])
 
   const carregarListaEspera = useCallback(async (clinicaId: string) => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('lista_espera')
       .select('id, paciente_id, profissional_id, observacoes, created_at, pacientes(nome_completo), profissionais(nome_completo)')
       .eq('clinica_id', clinicaId)
       .eq('status', 'aguardando')
       .order('created_at', { ascending: true })
+
+    if (clinicaAtivaIdRef.current !== clinicaId) return
+    if (error) {
+      setListaEspera([])
+      setErroCarregamento('Não foi possível carregar a lista de espera.')
+      return
+    }
 
     type Linha = {
       id: string
@@ -290,6 +314,7 @@ function Agenda({ clinicaAtiva, carregandoClinica, usuarioId, onAtendimentoInici
   }, [])
 
   const carregarGradeDoDia = useCallback(async (clinicaId: string, data: Date) => {
+    const requisicao = ++requisicaoGradeAtual.current
     setCarregandoGrade(true)
     const diaSemana = data.getDay()
     const dataISO = paraISODate(data)
@@ -312,6 +337,16 @@ function Agenda({ clinicaAtiva, carregandoClinica, usuarioId, onAtendimentoInici
         .eq('clinica_id', clinicaId)
         .eq('data', dataISO),
     ])
+
+    if (clinicaAtivaIdRef.current !== clinicaId || requisicao !== requisicaoGradeAtual.current) return
+    if (respDisponibilidade.error || respExcecoes.error || respAgendamentos.error) {
+      setDisponibilidades([])
+      setExcecoes([])
+      setAgendamentos([])
+      setErroCarregamento('Não foi possível carregar a Agenda. Tente novamente.')
+      setCarregandoGrade(false)
+      return
+    }
 
     setDisponibilidades(respDisponibilidade.data ?? [])
     setExcecoes((respExcecoes.data ?? []) as Excecao[])
@@ -352,6 +387,7 @@ function Agenda({ clinicaAtiva, carregandoClinica, usuarioId, onAtendimentoInici
       setListaEspera([])
       return
     }
+    setErroCarregamento(null)
     carregarProfissionais(clinicaAtivaId)
     carregarPacientes(clinicaAtivaId)
     carregarListaEspera(clinicaAtivaId)
@@ -359,12 +395,14 @@ function Agenda({ clinicaAtiva, carregandoClinica, usuarioId, onAtendimentoInici
 
   useEffect(() => {
     if (!clinicaAtivaId) {
+      requisicaoGradeAtual.current += 1
       setDisponibilidades([])
       setExcecoes([])
       setAgendamentos([])
       setCarregandoGrade(false)
       return
     }
+    setErroCarregamento(null)
     carregarGradeDoDia(clinicaAtivaId, dataSelecionada)
   }, [clinicaAtivaId, dataSelecionada, carregarGradeDoDia])
 
@@ -386,6 +424,15 @@ function Agenda({ clinicaAtiva, carregandoClinica, usuarioId, onAtendimentoInici
       cancelado = true
     }
   }, [souMedico, usuarioId])
+
+  useEffect(() => {
+    setMenuStatusId(null)
+    setModalAberto(null)
+    setConsultaReceber(null)
+    setPrefillAgendamento(null)
+    setProfissionalParaExcecao(null)
+    setErroIniciarAtendimento(null)
+  }, [clinicaAtivaId])
 
   async function iniciarAtendimento(ag: Agendamento) {
     if (!clinicaAtivaId || !meuProfissionalId) return
@@ -410,7 +457,13 @@ function Agenda({ clinicaAtiva, carregandoClinica, usuarioId, onAtendimentoInici
 
   async function recarregarTudo() {
     if (!clinicaAtivaId) return
-    await Promise.all([carregarGradeDoDia(clinicaAtivaId, dataSelecionada), carregarListaEspera(clinicaAtivaId)])
+    setErroCarregamento(null)
+    await Promise.all([
+      carregarProfissionais(clinicaAtivaId),
+      carregarPacientes(clinicaAtivaId),
+      carregarGradeDoDia(clinicaAtivaId, dataSelecionada),
+      carregarListaEspera(clinicaAtivaId),
+    ])
   }
 
   useEffect(() => {
@@ -577,6 +630,14 @@ function Agenda({ clinicaAtiva, carregandoClinica, usuarioId, onAtendimentoInici
       {carregando ? (
         <div className="rounded-[18px] bg-[var(--fundo-card)] p-8 text-center text-sm text-[var(--texto-secundario)]" style={{ boxShadow: 'var(--sombra-neutra)' }}>
           Carregando...
+        </div>
+      ) : erroCarregamento ? (
+        <div role="alert" className="rounded-[18px] border border-[var(--cor-erro-borda)] bg-[var(--cor-erro-suave)] p-8 text-center text-sm text-[var(--cor-erro)]">
+          <p>{erroCarregamento}</p>
+          <button type="button" onClick={() => void recarregarTudo()}
+            className="mt-3 min-h-11 rounded-lg border border-[var(--cor-erro-borda)] px-4 py-2 font-semibold">
+            Tentar novamente
+          </button>
         </div>
       ) : !clinicaAtivaId ? (
         <div className="rounded-[18px] bg-[var(--fundo-card)] p-8 text-center text-sm text-[var(--texto-secundario)]" style={{ boxShadow: 'var(--sombra-neutra)' }}>

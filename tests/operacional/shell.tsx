@@ -12,7 +12,7 @@ const clinicas = [
   { id: 'clinica-b', nome: 'Clínica Segunda Unidade', cor_primaria: '#0f766e', cor_secundaria: '#14b8a6', cor_menu: '#134e4a' },
 ]
 
-function Exemplo() {
+export function Exemplo() {
   const [tela, setTela] = useState<Tela>('dashboard')
   const [clinica, setClinica] = useState(clinicas[0])
   return <AppShell tela={tela} onNavegar={setTela} clinicaAtiva={clinica} clinicasDoUsuario={clinicas}
