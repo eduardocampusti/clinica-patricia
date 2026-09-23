@@ -89,3 +89,7 @@ A validação automatizável foi concluída sem reabrir a migração frontend. R
 ## FASE 12 — Preparação controlada
 
 O Financeiro novo permanece limpo e tecnicamente homologado. A FASE 13 comprovou backup/restore e smoke autenticado, fechou signup público e aplicou hardening específico. O cutover real não foi executado: Brotas mantém caixa legado aberto, e clínica piloto, usuários reais e deploy/HTTPS continuam decisões externas. Estado vigente e runbooks: `../../14-REMEDIACAO-PRE-CUTOVER.md`.
+
+## FASE 14 — Redesign visual
+
+Shell e seis áreas do Financeiro foram redesenhados com a identidade e os dados oficiais preservados. A prévia paginada de Relatórios é leitura; exportação auditada permanece separada. Decisões, capturas e validações: `../../15-REDESIGN-FINANCEIRO.md`. Nenhuma migration ou cutover.

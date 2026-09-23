@@ -1038,3 +1038,7 @@ Testes transacionais preparados em `database/tests/financeiro/20260922_fase10c_r
 - Fiscal interno está pronto; emissão externa e despesas administrativas permanecem domínios futuros.
 - Backup lógico não foi gerado: projeto Free sem backup automático/PITR e ambiente sem Docker/`pg_dump`. Restore foi documentado, não ensaiado.
 - O inventário, matriz de corte, plano de limpeza não executado e decisão GO/NO-GO estão em `docs/13-PREPARACAO-ENTRADA-OPERACAO.md`.
+
+## 47. FASE 14 — redesign premium do frontend
+
+Shell compartilhado, Caixa, Estornos, Repasses, Fiscal, Painel por papel e Relatórios receberam nova composição responsiva. Prévia de relatório usa página oficial por cursor e não registra exportação; PDF/XLSX continuam sob demanda. Testes financeiros 15/15, Playwright afetado e build aprovados nos cenários registrados em `docs/15-REDESIGN-FINANCEIRO.md`; lint sem erros. Capturas sintéticas antes/depois ficam em `scratch/fase14-*` fora do Git. Nenhuma regra financeira, migration ou dado remoto foi alterado. Cutover permanece pendente das decisões da FASE 13.

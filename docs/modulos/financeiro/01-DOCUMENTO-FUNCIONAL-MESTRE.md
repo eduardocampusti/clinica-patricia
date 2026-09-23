@@ -704,3 +704,7 @@ O parágrafo anterior registra a divergência histórica daquele checkpoint. A d
 ### FASE 10E — Repasses homologados (22/09/2026)
 
 A decisão vigente é pagar o médico fora do sistema por PIX/transferência e somente então registrar referência e confirmação pela proprietária em `financeiro_confirmar_repasse`. A UI não realiza transferência nem cria movimento de caixa. O médico consulta apenas seus próprios repasses, inclusive bruto, estornos anteriores, ajustes, líquido e estado; a recepção não consulta nem confirma repasses. Estorno anterior ao pagamento reduz o item pendente; estorno posterior gera ajuste negativo compensável em repasses futuros, sem valor líquido negativo e sem reescrever repasse pago. A homologação transacional da FASE 10E confirmou essas regras no banco remoto com `ROLLBACK`, sem mudar o contrato aplicado.
+
+### FASE 14 — Apresentação operacional aprovada (23/09/2026)
+
+O Financeiro usa navegação por papel: proprietária em Visão geral, recepção em Caixa e médico na própria Visão geral. Métricas e status exibem rótulos humanos; nenhum cálculo ou autorização financeira migra para a interface. Caixa e estornos mantêm as transições já homologadas. Repasses deixam claro que a transferência é externa; Fiscal registra somente solicitações internas. Relatórios permitem prévia de leitura por página com colunas permitidas, enquanto PDF/XLSX continuam com auditoria e reconciliação completas. A prévia do consolidado mostra recebimentos; o arquivo contempla todos os conjuntos selecionados.
