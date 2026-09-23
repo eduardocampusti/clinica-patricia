@@ -14,6 +14,7 @@ export interface DocumentoFiscalOperacional {
   cancelado_em: string | null
   numero_documento: string | null
   serie: string | null
+  ultima_tentativa: { tipo: 'emissao' | 'cancelamento'; status: 'solicitada' | 'processando' | 'sucesso' | 'erro'; created_at: string; finalizado_em: string | null } | null
 }
 
 const TAMANHO_PAGINA = 30
@@ -41,8 +42,21 @@ export async function listarDocumentosFiscais(clinicaId: UUID, pagina: number, s
       : { data: [], error: null }
     if (pacientes.error) throw pacientes.error
     const nomes = new Map((pacientes.data ?? []).map((linha) => [linha.id, linha.nome_completo]))
+    const tentativas = exibidas.length ? await supabase.from('tentativas_documento_fiscal')
+      .select('id, documento_fiscal_id, tipo, status, created_at, finalizado_em')
+      .in('documento_fiscal_id', exibidas.map((linha) => linha.id))
+      .order('created_at', { ascending: false }).order('id', { ascending: false })
+      : { data: [], error: null }
+    if (tentativas.error) throw tentativas.error
+    const ultimaTentativa = new Map<string, NonNullable<DocumentoFiscalOperacional['ultima_tentativa']>>()
+    for (const tentativa of tentativas.data ?? []) {
+      if (!ultimaTentativa.has(tentativa.documento_fiscal_id)) ultimaTentativa.set(tentativa.documento_fiscal_id,
+        { tipo: tentativa.tipo as 'emissao' | 'cancelamento', status: tentativa.status as 'solicitada' | 'processando' | 'sucesso' | 'erro',
+          created_at: tentativa.created_at, finalizado_em: tentativa.finalizado_em })
+    }
     return { itens: exibidas.map((linha) => ({ ...linha,
-      paciente: nomes.get(pacientePorRecebimento.get(linha.recebimento_id) ?? '') ?? 'Paciente indisponível' })) as DocumentoFiscalOperacional[],
+      paciente: nomes.get(pacientePorRecebimento.get(linha.recebimento_id) ?? '') ?? 'Paciente indisponível',
+      ultima_tentativa: ultimaTentativa.get(linha.id) ?? null })) as DocumentoFiscalOperacional[],
     haMais: linhas.length > TAMANHO_PAGINA }
   } catch (erro) { throw mapearErroFinanceiro(erro) }
 }

@@ -19,6 +19,7 @@ const rotulos: Record<StatusFiscal, string> = {
   pendente: 'Pendente', emissao_solicitada: 'Emissão solicitada', emitida: 'Emitida', erro_emissao: 'Erro na emissão',
   cancelamento_solicitado: 'Cancelamento solicitado', cancelada: 'Cancelada', erro_cancelamento: 'Erro no cancelamento',
 }
+const rotulosTentativa = { solicitada: 'Solicitada', processando: 'Em processamento', sucesso: 'Concluída', erro: 'Erro interno' } as const
 
 function DialogoFiscal({ documento, acao, clinicaId, usuarioId, onFechar, onConcluido }: {
   documento: DocumentoFiscalOperacional; acao: 'emissao' | 'cancelamento'; clinicaId: string; usuarioId: string;
@@ -90,6 +91,8 @@ export default function FinanceiroFiscal({ clinicaId, usuarioId }: { clinicaId: 
         <ul className="mt-3 divide-y divide-[var(--borda)]">{dados.itens.map((documento) => <li key={documento.id} className="flex flex-wrap items-center justify-between gap-3 py-4">
           <div><p className="font-medium">{documento.paciente} · {rotulos[documento.status]}</p>
             <p className="text-sm text-[var(--texto-secundario)]">Atualizado {formatarDataFinanceira(documento.updated_at)}</p>
+            {documento.ultima_tentativa && <p className="text-xs text-[var(--texto-secundario)]">Última tentativa de {documento.ultima_tentativa.tipo === 'emissao' ? 'emissão' : 'cancelamento'}: {rotulosTentativa[documento.ultima_tentativa.status]} · {formatarDataFinanceira(documento.ultima_tentativa.finalizado_em ?? documento.ultima_tentativa.created_at)}</p>}
+            {(documento.status === 'erro_emissao' || documento.status === 'erro_cancelamento') && <p className="text-xs text-[var(--cor-erro)]">Falha interna registrada. Consulte a equipe responsável antes de repetir.</p>}
             {documento.numero_documento && <p className="text-xs text-[var(--texto-secundario)]">Número {documento.numero_documento}{documento.serie ? ` · série ${documento.serie}` : ''}</p>}</div>
           {(documento.status === 'pendente' || documento.status === 'erro_emissao') &&
             <button type="button" className={botao} onClick={() => setSelecionado({ documento, acao: 'emissao' })}>Solicitar emissão</button>}

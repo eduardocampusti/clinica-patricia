@@ -297,3 +297,7 @@ Homologação transacional real aprovada para geração após fechamento, RLS/au
 ## 45. FASE 10F — Painéis por papel e Dashboard inicial
 
 Roteiro bancário da FASE 8 reexecutado com `ROLLBACK`: dashboard administrativo/médico, coorte, formas, repasses, ajustes, fiscal, caixa, alertas, série, autorização e isolamento. Interface médica não envia `profissional_id`; proprietária vê também breakdown por profissional. O Dashboard inicial deixou de mostrar saldos, entradas, saídas, briefing de caixa e repasses fictícios; preservou a consulta real ao próximo paciente. Testes visuais locais passaram, mas sessão visual autenticada real segue pendente. Evidências no checkpoint 41 e documento 11, seção 21. Próxima subfase: 10G Fiscal interno.
+
+## 46. FASE 10G — Fiscal interno
+
+Workflow interno homologado com fixtures sintéticas em `ROLLBACK`: sete estados, tentativas, erro/retry, idempotência, papéis e isolamento. Resultados de provider no roteiro são simulações internas transacionais, não integração externa. A UI expõe estado e última tentativa sem payload/erro bruto do provider, e distingue solicitação de conclusão externa. Testes locais passaram; smoke visual autenticado permanece pendente. Evidências no checkpoint 42 e documento 11, seção 22. Próxima subfase: 10H Relatórios na interface.

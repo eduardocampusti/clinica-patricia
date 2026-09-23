@@ -359,3 +359,9 @@ O roteiro `database/tests/financeiro/20260922_fase10e_repasses.sql` passou remot
 Os painéis oficiais continuam separados por RPC e por papel. A proprietária vê também breakdown por profissional da resposta oficial, com total/limite quando houver truncamento. O médico não envia `profissional_id`, não vê caixa/fiscal administrativo e recebe somente seus repasses. A recepção não ganhou painel gerencial.
 
 O Dashboard inicial antigo expunha saldos, entradas, saídas, repasses e situação de caixa fictícios como dados do dia. Esses blocos foram retirados; a consulta existente ao próximo paciente real foi preservada. A tela agora encaminha textualmente aos indicadores oficiais do módulo Financeiro, sem valores financeiros locais. O roteiro remoto da FASE 8 passou novamente com `ROLLBACK`; Playwright Painel 4/4 e início 2/2, testes financeiros 13/13, build e lint aprovados. Smoke visual com sessão real ainda está pendente. Nenhum dado remoto persistiu.
+
+## 22. FASE 10G — Fiscal interno homologado
+
+`FinanceiroFiscal` continua nas sete situações homologadas. A lista agora consulta, sob RLS, o estado/data da última tentativa interna e informa erro genérico quando aplicável; não renderiza payload nem mensagem bruta do provedor. Proprietária/recepção podem solicitar emissão/cancelamento dentro dos estados próprios. A confirmação permanece explicitamente interna. Provedor, credencial, emissão e cancelamento externos não foram implementados.
+
+O roteiro `database/tests/financeiro/20260922_fase10g_fiscal_interno.sql` passou remotamente com `ROLLBACK`: sete estados, papéis, clínica isolada, erro/retry, idempotência e transições inválidas; resultados externos foram somente simulados na transação. Depois: recebimentos/documentos/tentativas/auditorias 0, sessão legada 1. Playwright fiscal 6/6 em desktop/mobile, testes financeiros 13/13, build e lint aprovados. Os testes de navegador usam HTTP sintético; smoke autenticado ainda pendente.
