@@ -111,6 +111,13 @@ function DetalhesProprietaria({ dados }: { dados: DashboardProprietaria }) {
         </li>)}</ul>}
       {dados.clinicas_total > dados.por_clinica.length && <p className="mt-2 text-xs text-[var(--cor-alerta)]">Exibindo {dados.por_clinica.length} de {dados.clinicas_total} clínicas.</p>}
     </section>
+    <section className={card}><h2 className="texto-titulo-secao">Por profissional</h2>
+      {!dados.por_profissional.length ? <p className="mt-3 text-sm text-[var(--texto-secundario)]">Nenhum profissional com movimento no escopo atual.</p> :
+        <ul className="mt-3 divide-y divide-[var(--borda)]">{dados.por_profissional.map((item) => <li key={item.profissional_id} className="flex flex-wrap justify-between gap-2 py-3">
+          <span className="font-medium">{item.nome}</span><span className="numero-tabular">Produção líquida {moeda(item.resumo.producao.liquido_atual_coorte)}</span>
+        </li>)}</ul>}
+      {dados.profissionais_total > dados.por_profissional.length && <p className="mt-2 text-xs text-[var(--cor-alerta)]">Exibindo {dados.por_profissional.length} de {dados.profissionais_total} profissionais.</p>}
+    </section>
   </>
 }
 

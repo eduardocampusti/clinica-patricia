@@ -39,7 +39,7 @@ async function preparar(page: Page, papel: 'medico' | 'proprietaria') {
         status: 'pago', confirmado_em: '2026-09-22T13:00:00Z', meio_pagamento: 'pix' }], lista_repasses_total: 1, lista_repasses_limite: 100 },
       ...(proprietaria ? { por_clinica: [{ clinica_id: 'clinica-sintetica', nome: 'Clínica demonstração', resumo: { ...comum,
         fiscal: { pendente: 1 }, caixa: { situacao_operacional_atual: { aberto: 1 }, aprovados_periodo: { diferenca_total: '0.00' } } } }],
-        clinicas_total: 1, por_profissional: [], profissionais_total: 0, breakdown_limite: 100,
+        clinicas_total: 1, por_profissional: [{ profissional_id: 'profissional-sintetico', nome: 'Médica demonstração', resumo: comum }], profissionais_total: 1, breakdown_limite: 100,
         alertas: [], alertas_total: 0, alertas_limite: 100 } : {}),
     }
     return route.fulfill({ contentType: 'application/json', body: JSON.stringify(data) })
@@ -66,6 +66,9 @@ test('proprietária vê fiscal, caixa e escopo de todas as clínicas autorizadas
   const chamadas = await preparar(page, 'proprietaria')
   await expect(page.getByRole('heading', { name: 'Painel financeiro' })).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Fiscal e caixa' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Por profissional' })).toBeVisible()
+  await expect(page.getByText('Médica demonstração')).toBeVisible()
+  await expect(page.getByText('Produção líquida R$ 450,00')).toBeVisible()
   await page.getByLabel('Todas as minhas clínicas').check()
   await page.getByRole('button', { name: 'Aplicar' }).click()
   await expect.poll(() => chamadas.length).toBeGreaterThan(1)

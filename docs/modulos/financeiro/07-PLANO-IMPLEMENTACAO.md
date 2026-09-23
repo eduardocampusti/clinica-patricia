@@ -292,4 +292,8 @@ O parágrafo da seção 42 é histórico: a decisão vigente substituiu a permis
 
 ## 44. FASE 10E — Repasses
 
-Homologação transacional real aprovada para geração após fechamento, RLS/autoridade, confirmação externa idempotente, ajuste de estorno pré/pós-pagamento e compensação futura sem líquido negativo. Fixtures foram revertidas. Interface da proprietária e detalhamento do painel médico passaram em navegador com HTTP sintético; smoke visual autenticado permanece pendente. Não houve migration nova nem alteração persistente. Evidências no checkpoint 40 e no documento 11, seção 20. Próxima subfase: 10F Fiscal interno.
+Homologação transacional real aprovada para geração após fechamento, RLS/autoridade, confirmação externa idempotente, ajuste de estorno pré/pós-pagamento e compensação futura sem líquido negativo. Fixtures foram revertidas. Interface da proprietária e detalhamento do painel médico passaram em navegador com HTTP sintético; smoke visual autenticado permanece pendente. Não houve migration nova nem alteração persistente. Evidências no checkpoint 40 e no documento 11, seção 20. Próxima subfase: 10F Painéis por papel.
+
+## 45. FASE 10F — Painéis por papel e Dashboard inicial
+
+Roteiro bancário da FASE 8 reexecutado com `ROLLBACK`: dashboard administrativo/médico, coorte, formas, repasses, ajustes, fiscal, caixa, alertas, série, autorização e isolamento. Interface médica não envia `profissional_id`; proprietária vê também breakdown por profissional. O Dashboard inicial deixou de mostrar saldos, entradas, saídas, briefing de caixa e repasses fictícios; preservou a consulta real ao próximo paciente. Testes visuais locais passaram, mas sessão visual autenticada real segue pendente. Evidências no checkpoint 41 e documento 11, seção 21. Próxima subfase: 10G Fiscal interno.
