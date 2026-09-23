@@ -4,22 +4,16 @@ import type { Papel } from '../../hooks/usePapelNaClinica'
 import { iniciais } from '../../lib/texto'
 import { TITULOS_TELA, type Tela } from './types'
 import {
-  IconeAjuda,
-  IconeAtendimentos,
   IconeCadeado,
   IconeCalendario,
   IconeCheck,
   IconeChevron,
   IconeDinheiro,
   IconeArquivo,
-  IconeEngrenagem,
   IconeEquipe,
-  IconeEspecialidades,
   IconeFechar,
-  IconeGrafico,
   IconeGrid,
   IconeMais,
-  IconePerfil,
   IconePessoas,
 } from './icons'
 
@@ -46,15 +40,23 @@ function SeloClinica({ nome, corLetra, tamanho }: { nome: string; corLetra: stri
 const ITENS_MENU: { chave: Tela; Icone: typeof IconeGrid }[] = [
   { chave: 'dashboard', Icone: IconeGrid },
   { chave: 'agenda', Icone: IconeCalendario },
-  { chave: 'atendimentos', Icone: IconeAtendimentos },
   { chave: 'pacientes', Icone: IconePessoas },
   { chave: 'prontuario', Icone: IconeArquivo },
   { chave: 'financeiro', Icone: IconeDinheiro },
-  { chave: 'relatorios', Icone: IconeGrafico },
   { chave: 'equipe', Icone: IconeEquipe },
-  { chave: 'especialidades', Icone: IconeEspecialidades },
-  { chave: 'configuracoes', Icone: IconeEngrenagem },
 ]
+
+const TELAS_POR_PAPEL: Record<Papel, readonly Tela[]> = {
+  proprietaria: ['dashboard', 'agenda', 'pacientes', 'prontuario', 'financeiro', 'equipe'],
+  recepcao: ['dashboard', 'agenda', 'pacientes', 'financeiro', 'equipe'],
+  medico: ['dashboard', 'agenda', 'prontuario', 'financeiro'],
+}
+
+const ROTULO_PAPEL: Record<Papel, string> = {
+  proprietaria: 'Visão proprietária',
+  recepcao: 'Visão da recepção',
+  medico: 'Visão do profissional',
+}
 
 interface SidebarProps {
   tela: Tela
@@ -80,7 +82,8 @@ function Sidebar({
   onSair,
 }: SidebarProps) {
   const [dropdownAberto, setDropdownAberto] = useState(false)
-  const itensVisiveis = ITENS_MENU.filter((item) => item.chave !== 'prontuario' || papel === 'medico')
+  const telasPermitidas: readonly Tela[] = papel ? TELAS_POR_PAPEL[papel] : ['dashboard']
+  const itensVisiveis = ITENS_MENU.filter((item) => telasPermitidas.includes(item.chave))
   const podeTrocarClinica = clinicasDoUsuario.length > 1
 
   function selecionarTela(chave: Tela) {
@@ -102,13 +105,15 @@ function Sidebar({
       <div className="relative mb-2 border-b border-[var(--menu-borda)] pb-4">
         <div className="flex items-center gap-1.5 px-2 pb-1.5 text-[10px] font-semibold tracking-wider text-[var(--menu-texto-terciario)] uppercase">
           <IconeCadeado />
-          Visão proprietária
+          {papel ? ROTULO_PAPEL[papel] : 'Validando acesso'}
         </div>
 
         {podeTrocarClinica ? (
           <button
             type="button"
             onClick={() => setDropdownAberto((v) => !v)}
+            aria-expanded={dropdownAberto}
+            aria-haspopup="listbox"
             className="flex w-full items-center gap-2.5 rounded-xl p-2 text-left transition hover:bg-[var(--menu-hover-bg)]"
           >
             {clinicaAtiva ? (
@@ -182,17 +187,19 @@ function Sidebar({
         )}
       </div>
 
-      <button
-        type="button"
-        onClick={() => selecionarTela('agenda')}
-        className="mx-1 mb-4 flex w-[calc(100%-8px)] items-center justify-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-semibold shadow-sm transition hover:shadow-md"
-        style={{ color: 'var(--cor-primaria)' }}
-      >
-        <IconeMais className="h-4 w-4" />
-        Novo Agendamento
-      </button>
+      {(papel === 'proprietaria' || papel === 'recepcao') && (
+        <button
+          type="button"
+          onClick={() => selecionarTela('agenda')}
+          className="mx-1 mb-4 flex min-h-11 w-[calc(100%-8px)] items-center justify-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-semibold shadow-sm transition hover:shadow-md"
+          style={{ color: 'var(--cor-primaria)' }}
+        >
+          <IconeMais className="h-4 w-4" />
+          Novo agendamento
+        </button>
+      )}
 
-      <nav className="mt-3 flex flex-col gap-0.5">
+      <nav aria-label="Navegação principal" className="mt-3 flex flex-col gap-0.5">
         {itensVisiveis.map(({ chave, Icone }) => {
           const ativo = tela === chave
           return (
@@ -200,6 +207,7 @@ function Sidebar({
               key={chave}
               type="button"
               onClick={() => selecionarTela(chave)}
+              aria-current={ativo ? 'page' : undefined}
               className={`relative flex items-center gap-3 rounded-[10px] py-2.5 pl-3.5 pr-3 text-sm font-medium transition hover:bg-[var(--menu-hover-bg)] ${
                 ativo ? 'bg-[var(--menu-ativo-bg)]' : ''
               }`}
@@ -227,22 +235,8 @@ function Sidebar({
         <div className="flex flex-col gap-0.5">
           <button
             type="button"
-            className="flex items-center gap-3 rounded-[10px] py-2 pl-3.5 pr-3 text-sm text-[var(--menu-texto-secundario)] transition hover:bg-[var(--menu-hover-bg)]"
-          >
-            <IconeAjuda className="h-[18px] w-[18px]" />
-            <span>Ajuda</span>
-          </button>
-          <button
-            type="button"
-            className="flex items-center gap-3 rounded-[10px] py-2 pl-3.5 pr-3 text-sm text-[var(--menu-texto-secundario)] transition hover:bg-[var(--menu-hover-bg)]"
-          >
-            <IconePerfil className="h-[18px] w-[18px]" />
-            <span>Perfil</span>
-          </button>
-          <button
-            type="button"
             onClick={onSair}
-            className="flex items-center gap-3 rounded-[10px] py-2 pl-3.5 pr-3 text-sm text-[var(--menu-texto-secundario)] transition hover:bg-[var(--menu-hover-bg)]"
+            className="flex min-h-11 items-center gap-3 rounded-[10px] py-2 pl-3.5 pr-3 text-sm text-[var(--menu-texto-secundario)] transition hover:bg-[var(--menu-hover-bg)]"
           >
             <IconeFechar className="h-[18px] w-[18px]" />
             <span>Sair</span>

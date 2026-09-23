@@ -4,7 +4,7 @@ import type { Papel } from '../../hooks/usePapelNaClinica'
 import { ThemeToggle } from '../../theme/ThemeToggle'
 import Sidebar from './Sidebar'
 import type { Tela } from './types'
-import { IconeFechar, IconeLupa, IconeMenuHamburguer, IconeSino } from './icons'
+import { IconeFechar, IconeMenuHamburguer } from './icons'
 
 interface AppShellProps {
   tela: Tela
@@ -61,14 +61,14 @@ function AppShell({
             type="button"
             onClick={() => setDrawerAberto((v) => !v)}
             aria-label={drawerAberto ? 'Fechar menu' : 'Abrir menu'}
-            className="flex h-9 w-9 items-center justify-center rounded-lg text-[var(--texto-principal)] transition hover:bg-[var(--fundo-pagina)] lg:hidden"
+            className="flex h-11 w-11 items-center justify-center rounded-lg text-[var(--texto-principal)] transition hover:bg-[var(--fundo-pagina)] lg:hidden"
           >
             {drawerAberto ? <IconeFechar /> : <IconeMenuHamburguer />}
           </button>
 
           {/* Abas de clínica — só proprietária (desktop) */}
           {clinicasDoUsuario.length > 1 && (
-            <nav className="hidden items-center gap-1 lg:flex">
+            <nav aria-label="Selecionar clínica" className="hidden items-center gap-1 lg:flex">
               {clinicasDoUsuario.map((c) => {
                 const ativa = c.id === clinicaAtiva?.id
                 return (
@@ -76,6 +76,7 @@ function AppShell({
                     key={c.id}
                     type="button"
                     onClick={() => onSelecionarClinica(c.id)}
+                    aria-current={ativa ? 'true' : undefined}
                     className={`relative px-3 py-2 text-sm font-medium transition ${
                       ativa
                         ? 'text-[var(--cor-primaria)]'
@@ -102,41 +103,24 @@ function AppShell({
           {/* Espaçador */}
           <div className="flex-1" />
 
-          {/* Busca (desktop) */}
-          <div className="hidden items-center gap-2 rounded-lg border border-[var(--borda)] bg-[var(--fundo-pagina)] px-3 py-1.5 text-sm text-[var(--texto-terciario)] lg:flex">
-            <IconeLupa className="h-4 w-4" />
-            <span>Buscar paciente ou agenda...</span>
-            <kbd className="ml-4 rounded border border-[var(--borda)] bg-[var(--fundo-card)] px-1.5 py-0.5 text-[11px] font-medium text-[var(--texto-terciario)]">
-              Ctrl+K
-            </kbd>
-          </div>
-
           {/* Ícones de ação */}
           <div className="flex items-center gap-2">
-            {/* Sino de notificações */}
-            <button
-              type="button"
-              className="relative flex h-9 w-9 items-center justify-center rounded-lg text-[var(--texto-secundario)] transition hover:bg-[var(--fundo-pagina)]"
-            >
-              <IconeSino className="h-5 w-5" />
-              <span className="absolute right-1.5 top-1.5 flex h-2 w-2 rounded-full bg-[var(--cor-erro)]" />
-            </button>
-
             {/* Toggle claro/escuro */}
             <ThemeToggle />
 
-            {/* CTA — Novo Atendimento (desktop) */}
-            <button
-              type="button"
-              onClick={() => onNavegar('atendimentos')}
-              className="hidden items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90 lg:flex"
-              style={{ backgroundColor: 'var(--cor-primaria)' }}
-            >
-              Novo Atendimento
-            </button>
+            {(papel === 'proprietaria' || papel === 'recepcao') && (
+              <button
+                type="button"
+                onClick={() => onNavegar('agenda')}
+                className="hidden min-h-11 items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90 lg:flex"
+                style={{ backgroundColor: 'var(--cor-primaria)' }}
+              >
+                Novo agendamento
+              </button>
+            )}
 
             {/* Avatar do usuário */}
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--fundo-pagina)] text-xs font-bold text-[var(--texto-principal)]">
+            <div aria-label={`Usuário ${emailUsuario}`} title={emailUsuario} className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--fundo-pagina)] text-xs font-bold text-[var(--texto-principal)]">
               {emailUsuario.slice(0, 2).toUpperCase()}
             </div>
           </div>

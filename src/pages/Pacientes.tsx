@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import { supabase } from '../lib/supabase'
 import { apenasDigitos, cpfValido, formatarCpf } from '../lib/cpf'
 import { criptografarCpf, descriptografarCpf, gerarHashCpf } from '../lib/cpfCripto'
@@ -45,6 +45,11 @@ function formatarData(data: string | null): string {
   return `${dia}/${mes}/${ano}`
 }
 
+function mascararCpf(cpf: string): string {
+  const digitos = apenasDigitos(cpf)
+  return digitos.length === 11 ? `***.***.***-${digitos.slice(-2)}` : '—'
+}
+
 interface PacientesProps {
   clinicaAtivaId: string | null
   carregandoClinica: boolean
@@ -53,8 +58,10 @@ interface PacientesProps {
 
 function Pacientes({ clinicaAtivaId, carregandoClinica, usuarioId }: PacientesProps) {
   const [pacientes, setPacientes] = useState<PacienteListado[]>([])
+  const [busca, setBusca] = useState('')
   const [carregandoLista, setCarregandoLista] = useState(true)
   const [erroLista, setErroLista] = useState<string | null>(null)
+  const requisicaoAtual = useRef(0)
 
   const [mostrarFormulario, setMostrarFormulario] = useState(false)
   const [form, setForm] = useState(FORM_INICIAL)
@@ -63,6 +70,7 @@ function Pacientes({ clinicaAtivaId, carregandoClinica, usuarioId }: PacientesPr
   const [mensagemSucesso, setMensagemSucesso] = useState<string | null>(null)
 
   const carregarPacientes = useCallback(async (clinicaId: string) => {
+    const requisicao = ++requisicaoAtual.current
     setCarregandoLista(true)
     setErroLista(null)
 
@@ -74,6 +82,7 @@ function Pacientes({ clinicaAtivaId, carregandoClinica, usuarioId }: PacientesPr
       .order('nome_completo', { ascending: true })
 
     if (error) {
+      if (requisicao !== requisicaoAtual.current) return
       setErroLista('Não foi possível carregar os pacientes.')
       setCarregandoLista(false)
       return
@@ -84,7 +93,7 @@ function Pacientes({ clinicaAtivaId, carregandoClinica, usuarioId }: PacientesPr
       linhas.map(async (linha) => {
         let cpf = '—'
         try {
-          cpf = formatarCpf(await descriptografarCpf(linha.cpf_encrypted))
+          cpf = mascararCpf(await descriptografarCpf(linha.cpf_encrypted))
         } catch {
           cpf = '—'
         }
@@ -98,13 +107,16 @@ function Pacientes({ clinicaAtivaId, carregandoClinica, usuarioId }: PacientesPr
       }),
     )
 
+    if (requisicao !== requisicaoAtual.current) return
     setPacientes(comCpfDecifrado)
     setCarregandoLista(false)
   }, [])
 
   useEffect(() => {
     if (!clinicaAtivaId) {
+      requisicaoAtual.current += 1
       setPacientes([])
+      setBusca('')
       setCarregandoLista(false)
       return
     }
@@ -117,6 +129,14 @@ function Pacientes({ clinicaAtivaId, carregandoClinica, usuarioId }: PacientesPr
     const timeout = setTimeout(() => setMensagemSucesso(null), 5000)
     return () => clearTimeout(timeout)
   }, [mensagemSucesso])
+
+  const pacientesFiltrados = useMemo(() => {
+    const termo = busca.trim().toLocaleLowerCase('pt-BR')
+    if (!termo) return pacientes
+    const digitos = apenasDigitos(termo)
+    return pacientes.filter((paciente) => paciente.nome_completo.toLocaleLowerCase('pt-BR').includes(termo)
+      || (digitos.length > 0 && apenasDigitos(paciente.cpf).endsWith(digitos)))
+  }, [busca, pacientes])
 
   function abrirFormulario() {
     setForm(FORM_INICIAL)
@@ -420,7 +440,18 @@ function Pacientes({ clinicaAtivaId, carregandoClinica, usuarioId }: PacientesPr
       )}
 
       {!mostrarFormulario && (
-        <div className="rounded-[18px] bg-[var(--fundo-card)]" style={{ boxShadow: 'var(--sombra-neutra)' }}>
+        <div className="space-y-3">
+          <label className="block max-w-md text-sm font-medium text-[var(--texto-principal)]">
+            Buscar paciente
+            <input
+              type="search"
+              value={busca}
+              onChange={(event) => setBusca(event.target.value)}
+              placeholder="Digite o nome ou os últimos dígitos do CPF"
+              className="mt-1.5 min-h-11 w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 py-2.5 text-[var(--texto-principal)] outline-none transition placeholder:text-[var(--texto-terciario)] focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)]"
+            />
+          </label>
+          <div className="rounded-[18px] bg-[var(--fundo-card)]" style={{ boxShadow: 'var(--sombra-neutra)' }}>
           {carregandoClinica || carregandoLista ? (
             <p className="p-8 text-center text-sm text-[var(--texto-secundario)]">Carregando...</p>
           ) : !clinicaAtivaId ? (
@@ -432,6 +463,10 @@ function Pacientes({ clinicaAtivaId, carregandoClinica, usuarioId }: PacientesPr
           ) : pacientes.length === 0 ? (
             <p className="p-8 text-center text-sm text-[var(--texto-secundario)]">
               Nenhum paciente cadastrado ainda.
+            </p>
+          ) : pacientesFiltrados.length === 0 ? (
+            <p className="p-8 text-center text-sm text-[var(--texto-secundario)]">
+              Nenhum paciente corresponde à busca.
             </p>
           ) : (
             <>
@@ -446,7 +481,7 @@ function Pacientes({ clinicaAtivaId, carregandoClinica, usuarioId }: PacientesPr
                   </tr>
                 </thead>
                 <tbody>
-                  {pacientes.map((paciente) => (
+                  {pacientesFiltrados.map((paciente) => (
                     <tr
                       key={paciente.id}
                       className="border-b border-[var(--borda)] text-[var(--texto-principal)] last:border-0"
@@ -466,7 +501,7 @@ function Pacientes({ clinicaAtivaId, carregandoClinica, usuarioId }: PacientesPr
 
               {/* Cards — mobile */}
               <ul className="divide-y divide-[var(--borda)] sm:hidden">
-                {pacientes.map((paciente) => (
+                {pacientesFiltrados.map((paciente) => (
                   <li key={paciente.id} className="space-y-1 p-4">
                     <p className="font-medium text-[var(--texto-principal)]">
                       {paciente.nome_completo}
@@ -483,6 +518,7 @@ function Pacientes({ clinicaAtivaId, carregandoClinica, usuarioId }: PacientesPr
               </ul>
             </>
           )}
+          </div>
         </div>
       )}
     </div>
