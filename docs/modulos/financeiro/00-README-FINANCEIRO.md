@@ -81,3 +81,7 @@ A nova fronteira local está em `src/lib/financeiro/` e consome exclusivamente a
 ## FASE 10B — Agenda → Recebimento
 
 A Agenda oferece “Receber pagamento” à proprietária/recepção em agendamentos elegíveis, com preço do vínculo profissional–clínica, split em centavos, revisão, idempotência e confirmação pelos valores da RPC. Pagamento não muda status clínico. O diálogo compartilhado foi extraído e tornado acessível; o Financeiro antigo permanece separado. Leia a seção FASE 10B de `11-MIGRACAO-FRONTEND.md` para arquivos, testes, screenshots e limitações. Nenhuma outra tela financeira deve ser iniciada antes da revisão desta etapa.
+
+## FASE 11 — Validação operacional
+
+A validação automatizável foi concluída sem reabrir a migração frontend. Recebimento, Caixa e Estornos foram reexercitados nos viewports operacionais; o roteiro integrado passou novamente com `ROLLBACK` e sem alteração das contagens persistentes. O registro consolidado, as ressalvas e o checklist de prontidão estão em `../../12-VALIDACAO-OPERACIONAL.md`. A recomendação autoriza apenas preparar um piloto controlado, não iniciar produção automaticamente.

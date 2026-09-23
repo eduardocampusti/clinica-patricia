@@ -1010,3 +1010,13 @@ Testes transacionais preparados em `database/tests/financeiro/20260922_fase10c_r
 - O frontend operacional importa `FinanceiroModulo` e a nova camada Supabase; `Financeiro.tsx`, componentes antigos e `src/lib/api.ts` não participam da navegação. O Fastify preserva ping e despesas, mas deixou de registrar as rotas antigas de caixa, entrada/recebimento, estornos e repasses. Os arquivos antigos permanecem para histórico/rollback, sem uso pelo caminho operacional.
 - `supabase db lint --linked`: zero erros; três warnings conhecidos em `financeiro_dashboard_proprietaria` e um warning de variável não lida em `financeiro_registrar_solicitacao_exportacao`. Último Advisor executado após a FASE 8: Security 0 erros/54 avisos; Performance 0 erros/5 avisos/77 sugestões. Não há CLI equivalente para reexecutar os Advisors; nenhuma mudança de banco ocorreu depois da 10C.
 - Auditoria local de dependências: `npm audit` retornou uma vulnerabilidade raiz alta em `nanoid <3.3.18`, transitiva da cadeia de desenvolvimento `PostCSS → Vite`; o relatório propaga o achado por cinco nós e não oferece correção automática para a árvore instalada. `npm explain nanoid` confirmou a versão 3.3.16. A dependência não foi alterada neste fechamento para evitar atualização ampla sem validação. Nenhum segredo, `service_role`, DB URL ou HMAC foi introduzido no browser.
+
+## 45. FASE 11 — validação operacional
+
+**Estado:** validação automatizável concluída; preparação de piloto recomendada com ressalvas.
+
+- Revalidação operacional: recebimento 48/48, Caixa 18/18, Estornos 10/10 e testes unitários/contratuais 15/15. Build aprovado e lint sem erros.
+- O roteiro integrado final foi reexecutado no projeto remoto em transação com `ROLLBACK`; contagens antes/depois permaneceram idênticas e a sessão legada ficou intacta.
+- `nanoid` transitivo foi atualizado para 3.3.19 dentro da faixa compatível; `npm audit --omit=dev` passou com zero vulnerabilidades.
+- Não houve migration, alteração persistente no banco nem reabertura da FASE 10. Provider fiscal, smoke autenticado e transição controlada do caixa legado permanecem ressalvas anteriores à operação real.
+- Registro mestre: `docs/12-VALIDACAO-OPERACIONAL.md`.
