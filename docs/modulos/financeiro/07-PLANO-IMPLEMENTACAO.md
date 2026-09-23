@@ -285,3 +285,7 @@ A migration 10C foi aplicada e validada no projeto `xftnkusbyqzyvzrovroj`. O rot
 ## 42. FASE 10 — Continuação da migração visual
 
 Estornos, repasses, fiscal interno e dashboards proprietária/médico foram integrados localmente, além do caixa. Testes sintéticos e de contrato passaram; E2E autenticado remoto permanece pendente. A FASE 5 aplicada restringe `financeiro_solicitar_estorno` à recepção, apesar de a matriz aprovada também permitir solicitação pela proprietária. A correção deverá ser aditiva e validada antes de habilitar essa ação. Seguir com relatórios sem modificar migrations aplicadas; preservar o legado até cumprir os critérios da desativação planejada. A integração fiscal externa continua dependente de decisão de provedor/API. Evidências nos checkpoints 35–37 e no documento 11, seções 16–18.
+
+## 43. Decisão posterior e homologação da FASE 10D — Estornos
+
+O parágrafo da seção 42 é histórico: a decisão vigente substituiu a permissão de solicitação pela proprietária. Recepção solicita; proprietária revisa/aprova/rejeita e a aprovação efetiva. Nenhuma migration de ampliação é necessária. A UI e a RPC seguem esta separação. Teste transacional real com `ROLLBACK` aprovado; smoke visual autenticado permanece pendente. Evidências no checkpoint 39 e no documento 11, seção 19. Próxima subfase: 10E Repasses.

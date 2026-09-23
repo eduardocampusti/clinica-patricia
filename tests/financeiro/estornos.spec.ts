@@ -12,7 +12,8 @@ async function preparar(page: Page, papel: 'recepcao' | 'proprietaria' | 'medico
     if (nome === 'recebimentos') data = [{ id: 'recebimento-sintetico', paciente_id: 'paciente-sintetico',
       profissional_id: 'profissional-sintetico', registrado_em: '2026-09-22T12:00:00Z',
       valor_bruto: '500.00', status: 'confirmado', recebimentos_pagamentos: [
-        { forma_pagamento: 'dinheiro', valor: '200.00' }, { forma_pagamento: 'pix', valor: '300.00' },
+        { forma_pagamento: 'dinheiro', valor: '200.00' }, { forma_pagamento: 'pix', valor: '200.00' },
+        { forma_pagamento: 'cartao_credito', valor: '100.00' },
       ] }]
     else if (nome === 'pacientes') data = [{ id: 'paciente-sintetico', nome_completo: 'Paciente Exemplo' }]
     else if (nome === 'profissionais') data = [{ id: 'profissional-sintetico', nome_completo: 'Profissional Exemplo' }]
@@ -35,7 +36,7 @@ test('recepção seleciona recebimento sem UUID e solicita estorno parcial pela 
   const chamadas = await preparar(page, 'recepcao')
   await expect(page.getByText('Paciente Exemplo').first()).toBeVisible()
   await page.getByRole('button', { name: 'Solicitar estorno' }).click()
-  await expect(page.getByText('Disponível R$ 200,00')).toBeVisible()
+  await expect(page.getByText('Disponível R$ 200,00').first()).toBeVisible()
   await page.getByLabel('Dinheiro').fill('50,00')
   await page.getByLabel('Motivo').fill('Correção do pagamento')
   await page.getByRole('button', { name: 'Solicitar', exact: true }).click()
@@ -45,6 +46,38 @@ test('recepção seleciona recebimento sem UUID e solicita estorno parcial pela 
   expect(chamadas[0].nome).toBe('financeiro_solicitar_estorno')
   expect(chamadas[0].parametros.p_recebimento_id).toBe('recebimento-sintetico')
   expect(chamadas[0].parametros.p_pagamentos).toEqual([{ forma_pagamento: 'dinheiro', valor: 50 }])
+})
+
+test('recepção filtra pelas formas e solicita total disponível em split', async ({ page }) => {
+  const chamadas = await preparar(page, 'recepcao')
+  const busca = page.getByRole('searchbox', { name: /Filtrar nesta página/ })
+  await busca.fill('inexistente')
+  await expect(page.getByText('Nenhum recebimento corresponde ao filtro nesta página.')).toBeVisible()
+  await busca.fill('Cartão')
+  await expect(page.getByText('Cartão de crédito R$ 100,00')).toBeVisible()
+  await page.getByRole('button', { name: 'Solicitar estorno' }).click()
+  await page.getByRole('button', { name: 'Preencher total disponível' }).click()
+  await expect(page.getByLabel('Dinheiro')).toHaveValue('200,00')
+  await expect(page.getByLabel('PIX')).toHaveValue('200,00')
+  await expect(page.getByLabel('Cartão de crédito')).toHaveValue('100,00')
+  await page.getByLabel('Motivo').fill('Estorno total solicitado')
+  await page.getByRole('button', { name: 'Solicitar', exact: true }).click()
+  await expect(page.getByRole('status').filter({ hasText: 'Solicitação de estorno registrada' })).toBeVisible()
+  expect(chamadas).toHaveLength(1)
+  expect(chamadas[0].parametros.p_pagamentos).toEqual([
+    { forma_pagamento: 'dinheiro', valor: 200 }, { forma_pagamento: 'pix', valor: 200 },
+    { forma_pagamento: 'cartao_credito', valor: 100 },
+  ])
+})
+
+test('valor excedente é bloqueado antes da RPC', async ({ page }) => {
+  const chamadas = await preparar(page, 'recepcao')
+  await page.getByRole('button', { name: 'Solicitar estorno' }).click()
+  await page.getByLabel('Dinheiro').fill('200,01')
+  await page.getByLabel('Motivo').fill('Valor excedente')
+  await page.getByRole('button', { name: 'Solicitar', exact: true }).click()
+  await expect(page.getByRole('alert')).toContainText('excede o disponível')
+  expect(chamadas).toHaveLength(0)
 })
 
 test('proprietária revisa pendência com contexto do recebimento original', async ({ page }) => {

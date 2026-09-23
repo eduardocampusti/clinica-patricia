@@ -74,6 +74,12 @@ function DialogoSolicitar({ recebimento, clinicaId, usuarioId, onFechar, onConcl
     <form onSubmit={enviar} className="space-y-4">
       <p className="text-sm text-[var(--texto-secundario)]">{recebimento.paciente} · {recebimento.profissional} · pagamento de {moeda(recebimento.valor_bruto)}</p>
       <p className="text-xs text-[var(--texto-secundario)]">Informe somente as formas originais. Solicitações pendentes já reduzem o disponível visual; o banco valida novamente antes de registrar.</p>
+      <button type="button" className={botao} disabled={ocupado || enviado}
+        onClick={() => setValores({
+          dinheiro: saldo.dinheiro > 0n ? formatarCentavos(saldo.dinheiro).replace(/^R\$\s?/, '') : '',
+          pix: saldo.pix > 0n ? formatarCentavos(saldo.pix).replace(/^R\$\s?/, '') : '',
+          cartao_credito: saldo.cartao_credito > 0n ? formatarCentavos(saldo.cartao_credito).replace(/^R\$\s?/, '') : '',
+        })}>Preencher total disponível</button>
       <div className="grid gap-3 sm:grid-cols-3">{FORMAS_PAGAMENTO.map((forma) => <label key={forma} className="text-sm font-medium">
         {rotulos[forma]} <span className="block text-xs font-normal text-[var(--texto-secundario)]">Disponível {formatarCentavos(saldo[forma])}</span>
         <input className={`${campo} mt-1`} inputMode="decimal" placeholder="0,00" value={valores[forma]}
@@ -135,6 +141,7 @@ function DialogoRevisar({ estorno, clinicaId, decisao, onFechar, onConcluido }: 
 
 export default function FinanceiroEstornos({ clinicaId, usuarioId, papel }: { clinicaId: string; usuarioId: string; papel: Papel }) {
   const [pagina, setPagina] = useState(0)
+  const [filtro, setFiltro] = useState('')
   const [selecionado, setSelecionado] = useState<RecebimentoParaEstorno | null>(null)
   const [revisao, setRevisao] = useState<{ estorno: EstornoPendente; decisao: 'aprovar' | 'rejeitar' } | null>(null)
   const [sucesso, setSucesso] = useState<string | null>(null)
@@ -147,6 +154,11 @@ export default function FinanceiroEstornos({ clinicaId, usuarioId, papel }: { cl
   }, [clinicaId, pagina, papel])
   const consulta = useFinanceiroConsulta(`${clinicaId}:${pagina}:${papel}`, carregar, naoVazio, { clinicaId, leitura: 'estornos' })
   const dados = consulta.resultado.estado === 'sucesso' ? consulta.resultado.dados : null
+  const termo = filtro.trim().toLocaleLowerCase('pt-BR')
+  const recebimentosVisiveis = dados?.recebimentos.itens.filter((item) => !termo || [
+    item.paciente, item.profissional, formatarDataFinanceira(item.registrado_em), moeda(item.valor_bruto),
+    ...item.pagamentos.map((pagamento) => rotulos[pagamento.forma_pagamento]),
+  ].some((campoBusca) => campoBusca.toLocaleLowerCase('pt-BR').includes(termo))) ?? []
   return <div className="space-y-6">
     <header className="flex flex-wrap items-start justify-between gap-3"><div><h1 className="texto-titulo-tela">Estornos</h1>
       <p className="mt-1 text-sm text-[var(--texto-secundario)]">Solicitações preservam o pagamento original e aguardam decisão da proprietária.</p></div>
@@ -167,14 +179,18 @@ export default function FinanceiroEstornos({ clinicaId, usuarioId, papel }: { cl
     </section>}
     {dados && <section className={card}>
       <h2 className="texto-titulo-secao">Recebimentos disponíveis</h2>
-      <p className="mt-1 text-xs text-[var(--texto-secundario)]">Mostrando até 50 por página, do mais recente ao mais antigo.</p>
-      {!dados.recebimentos.itens.length ? <p className="mt-4 text-sm text-[var(--texto-secundario)]">Nenhum recebimento elegível nesta página.</p> :
-        <ul className="mt-3 divide-y divide-[var(--borda)]">{dados.recebimentos.itens.map((item) => {
+      <p className="mt-1 text-xs text-[var(--texto-secundario)]">Clínica selecionada · até 50 recebimentos por página, do mais recente ao mais antigo.</p>
+      <label className="mt-4 block max-w-md text-sm font-medium">Filtrar nesta página por paciente, profissional, data, valor ou forma
+        <input className={`${campo} mt-1`} type="search" value={filtro} onChange={(e) => setFiltro(e.target.value)} />
+      </label>
+      {!recebimentosVisiveis.length ? <p className="mt-4 text-sm text-[var(--texto-secundario)]">{termo ? 'Nenhum recebimento corresponde ao filtro nesta página.' : 'Nenhum recebimento elegível nesta página.'}</p> :
+        <ul className="mt-3 divide-y divide-[var(--borda)]">{recebimentosVisiveis.map((item) => {
           const saldo = saldoDisponivelPorForma(item)
           const disponivel = saldo.dinheiro + saldo.pix + saldo.cartao_credito
           return <li key={item.id} className="flex flex-wrap items-center justify-between gap-3 py-4">
             <div><p className="font-medium">{item.paciente} · {moeda(item.valor_bruto)}</p>
               <p className="text-sm text-[var(--texto-secundario)]">{item.profissional} · {formatarDataFinanceira(item.registrado_em)}</p>
+              <p className="text-xs text-[var(--texto-secundario)]">{item.pagamentos.map((pagamento) => `${rotulos[pagamento.forma_pagamento]} ${moeda(pagamento.valor)}`).join(' · ')}</p>
               <p className="text-xs text-[var(--texto-secundario)]">Disponível para solicitar: {formatarCentavos(disponivel)}</p></div>
             {papel === 'recepcao' && disponivel > 0n && <button type="button" className={botao} onClick={() => setSelecionado(item)}>Solicitar estorno</button>}
           </li>

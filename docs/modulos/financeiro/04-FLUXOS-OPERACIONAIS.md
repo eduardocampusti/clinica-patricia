@@ -132,7 +132,8 @@ Recepção não efetiva sangria sem aprovação.
 # 9. SOLICITAÇÃO DE ESTORNO
 ## Quem solicita
 - Recepção
-- Proprietária
+
+**Decisão vigente da FASE 10D:** a proprietária não solicita; ela revisa e decide. Registros históricos anteriores também a listavam como solicitante, regra substituída nesta execução para separar operação e aprovação.
 
 1. Usuário localiza visualmente o recebimento.
 2. Seleciona `Solicitar estorno`.

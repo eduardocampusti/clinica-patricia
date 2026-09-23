@@ -287,14 +287,16 @@ Pode:
 
 | Ação | Proprietária | Recepção | Médico |
 |---|---:|---:|---:|
-| Solicitar estorno | SIM | SIM | NÃO |
-| Escolher valor parcial | SIM | SIM, na solicitação | NÃO |
-| Escolher estorno total | SIM | SIM, na solicitação | NÃO |
+| Solicitar estorno | NÃO | SIM | NÃO |
+| Escolher valor parcial | NÃO | SIM, na solicitação | NÃO |
+| Escolher estorno total | NÃO | SIM, na solicitação | NÃO |
 | Aprovar estorno | SIM | NÃO | NÃO |
 | Rejeitar estorno | SIM | NÃO | NÃO |
 | Efetivar estorno | SIM | NÃO | NÃO |
 | Ver estorno relacionado à própria consulta | SIM | SIM, operacional | SIM |
 | Ver estornos gerais | SIM | LIMITADO | NÃO |
+
+**Decisão vigente da FASE 10D (22/09/2026):** solicitante operacional ≠ autoridade de aprovação. A recepção solicita; a proprietária revisa, aprova ou rejeita, e a aprovação efetiva pela RPC. A versão histórica da tabela permitia solicitação também pela proprietária; essa permissão foi substituída expressamente nesta execução, sem ampliar `financeiro_solicitar_estorno`.
 
 ## 16. Cancelamento de consulta paga
 
