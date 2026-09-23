@@ -46,17 +46,24 @@ export interface OpcoesColeta {
   limiteSeguranca?: number
   aoProgredir?: (carregados: number, totalInformado: number | null) => void
   executorRpc?: ExecutorRelatorio
+  sinal?: AbortSignal
 }
 
 export type ExecutorRelatorio = (
   rpc: RpcRelatorio,
   parametros: Record<string, unknown>,
+  sinal?: AbortSignal,
 ) => Promise<{ data: unknown; error: { message: string } | null }>
 
-const executarRelatorioSupabase: ExecutorRelatorio = async (rpc, parametros) => {
+const executarRelatorioSupabase: ExecutorRelatorio = async (rpc, parametros, sinal) => {
   const { supabase } = await import('./supabase')
-  const resposta = await supabase.rpc(rpc, parametros)
+  const chamada = supabase.rpc(rpc, parametros)
+  const resposta = await (sinal ? chamada.abortSignal(sinal) : chamada)
   return { data: resposta.data as unknown, error: resposta.error }
+}
+
+function conferirCancelamento(sinal?: AbortSignal): void {
+  if (sinal?.aborted) throw new Error('Exportação cancelada. Nenhum arquivo foi gerado.')
 }
 
 function objeto(valor: unknown): Record<string, unknown> {
@@ -134,13 +141,15 @@ export async function coletarRelatorioCompleto<T extends Record<string, unknown>
   let marcador: string | null = null
 
   do {
+    conferirCancelamento(opcoes.sinal)
     const respostaRpc = await executorRpc(rpc, {
       ...parametros,
       p_limite: limitePagina,
       p_cursor_data: cursor?.data ?? null,
       p_cursor_id: cursor?.id ?? null,
       p_cursor_contexto: cursor?.contexto ?? null,
-    })
+    }, opcoes.sinal)
+    conferirCancelamento(opcoes.sinal)
     if (respostaRpc.error) {
       throw mapearErroFinanceiro(respostaRpc.error)
     }
@@ -184,13 +193,15 @@ export async function coletarRelatorioCompleto<T extends Record<string, unknown>
     throw new Error(`Exportação incompleta: banco informou ${esperado} registros e foram carregados ${itens.length}.`)
   }
 
+  conferirCancelamento(opcoes.sinal)
   const verificacaoFinalRpc = await executorRpc(rpc, {
     ...parametros,
     p_limite: 1,
     p_cursor_data: null,
     p_cursor_id: null,
     p_cursor_contexto: null,
-  })
+  }, opcoes.sinal)
+  conferirCancelamento(opcoes.sinal)
   if (verificacaoFinalRpc.error) {
     throw mapearErroFinanceiro(verificacaoFinalRpc.error)
   }

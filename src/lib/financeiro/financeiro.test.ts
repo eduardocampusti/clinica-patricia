@@ -16,6 +16,7 @@ import { registrarRecebimento } from './financeiro.recebimentos'
 import { PARAMETROS_RPC_FINANCEIRO, validarParametrosRpc, type ExecutorRpcFinanceiro } from './financeiro.rpc'
 import { inicioDiaFinanceiro, intervaloPorDias, pertenceAoIntervalo, validarIntervaloFinanceiro } from './financeiro.date'
 import { coletarRelatorioCompleto, type ExecutorRelatorio } from '../financeiroRelatoriosRpc'
+import { montarRelatorioFinanceiro } from './financeiro.relatorios-apresentacao'
 
 class Memoria implements ArmazenamentoChaves {
   readonly dados = new Map<string, string>()
@@ -248,4 +249,38 @@ test('drift de marcador cancela coleta paginada', async () => {
     }),
     /dados financeiros mudaram/i,
   )
+})
+
+test('cancelamento interrompe coleta antes da próxima página e não gera relatório', async () => {
+  const controle = new AbortController()
+  let chamadas = 0
+  const executor: ExecutorRelatorio = async () => {
+    chamadas += 1
+    return { data: pagina([itemRecebimentoZero], true, { data: 'd', id: 'i', contexto: 'contexto-1' }), error: null }
+  }
+  await assert.rejects(coletarRelatorioCompleto('financeiro_relatorio_recebimentos_proprietaria', {}, {
+    limitePagina: 1, executorRpc: executor, sinal: controle.signal,
+    aoProgredir: () => controle.abort(),
+  }), /Exportação cancelada/)
+  assert.equal(chamadas, 1)
+})
+
+test('apresentação do relatório usa allowlist de colunas e preserva texto hostil como texto', () => {
+  const relatorio = montarRelatorioFinanceiro({
+    titulo: 'Recebimentos', publico: 'proprietaria', inicio: '2026-09-01T03:00:00Z',
+    fim: '2026-09-23T03:00:00Z', timezone: 'America/Bahia', clinicas: ['Clínica autorizada'], filtros: [],
+    coletados: { recebimentos: {
+      versao: 1, dataset: 'recebimentos', publico: 'proprietaria', inicio: '2026-09-01T03:00:00Z',
+      fim: '2026-09-23T03:00:00Z', timezone: 'America/Bahia', contexto: 'contexto', marcador: 'marcador',
+      itens: [{ ...itemRecebimentoZero, data: '2026-09-22T12:00:00Z', paciente: '=1+1',
+        formas_pagamento: [{ forma: 'dinheiro', valor: '12.34' }, { forma: 'pix', valor: '87.66' }],
+        id: 'uuid-interno', cpf: 'segredo', payload_provider: 'segredo' }],
+      totais: { quantidade: 1, bruto: '0.00', liquido_atual: '0.00' }, paginasCarregadas: 1,
+    } },
+  })
+  assert.equal(relatorio.secoes[0].linhas[0].paciente, '=1+1')
+  assert.equal(relatorio.secoes[0].linhas[0].formas, 'Dinheiro: R$\u00a012,34 + PIX: R$\u00a087,66')
+  assert.equal(JSON.stringify(relatorio).includes('uuid-interno'), false)
+  assert.equal(JSON.stringify(relatorio).includes('payload_provider'), false)
+  assert.equal(relatorio.secoes[0].colunas.some((coluna) => /cpf|uuid/i.test(coluna.titulo)), false)
 })

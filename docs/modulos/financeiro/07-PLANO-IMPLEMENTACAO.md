@@ -301,3 +301,7 @@ Roteiro bancário da FASE 8 reexecutado com `ROLLBACK`: dashboard administrativo
 ## 46. FASE 10G — Fiscal interno
 
 Workflow interno homologado com fixtures sintéticas em `ROLLBACK`: sete estados, tentativas, erro/retry, idempotência, papéis e isolamento. Resultados de provider no roteiro são simulações internas transacionais, não integração externa. A UI expõe estado e última tentativa sem payload/erro bruto do provider, e distingue solicitação de conclusão externa. Testes locais passaram; smoke visual autenticado permanece pendente. Evidências no checkpoint 42 e documento 11, seção 22. Próxima subfase: 10H Relatórios na interface.
+
+## 47. FASE 10H — Relatórios na interface
+
+Interface local integrada para proprietária e médico sobre a infraestrutura aplicada da FASE 9. Proprietária exporta consolidado, recebimentos, repasses e fiscal dentro das clínicas autorizadas; médico exporta somente recebimentos e repasses próprios, sem `profissional_id`. A coleta pagina por cursor, compara contexto/marcador/totais, revalida a população, reconcilia centavos antes do arquivo e permite cancelamento. PDF/XLSX são carregados sob demanda; a solicitação é auditada antes da coleta e não afirma conclusão do download. Playwright sintético desktop/mobile, testes contratuais, build e lint aprovados; smoke visual autenticado remoto permanece pendente. Evidências no checkpoint 43 e documento 11, seção 23. Próximo passo: auditoria do legado e validação integrada final.

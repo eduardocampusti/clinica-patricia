@@ -1,6 +1,6 @@
 # 10 — Contrato de relatórios financeiros — FASE 9
 
-**Status:** APROVADO. Migration aplicada e camada de dados homologada; sem interface final.
+**Status:** APROVADO. Migration aplicada e camada de dados homologada; interface da FASE 10H integrada localmente, com smoke autenticado remoto pendente.
 **Migration:** `20260922034925_financeiro_fase9_relatorios.sql`, criada pelo Supabase CLI.
 **SHA-256:** `80559457C4C00CA66F5C91EBB269D13FE5994ED45B4C73D333E73F2DF10B056C`. O SHA anterior `CD1C04A7671FAE8BA8C4081736397A73DA969BAC2334F3925AE7DB21C148D8E4` não é válido para aplicação.
 **Base:** FASES 1–9 homologadas, especialmente `09-CONTRATO-DASHBOARDS.md`.
@@ -112,6 +112,6 @@ A auditoria registra somente a **solicitação**. Como a geração ocorre no cli
 
 Nenhum dado real do Supabase foi usado nos arquivos.
 
-## 14. Limites desta entrega
+## 14. Limites da entrega original da FASE 9
 
-Migration aplicada sem seed, roles ou repair. Permanecem fora desta entrega: frontend final, botão de exportação, storage, PDF/Excel com dados reais, commit e FASE 10. A integração visual futura deverá carregar os geradores sob demanda e chamar a auditoria imediatamente antes da coleta.
+Migration aplicada sem seed, roles ou repair. Na entrega original permaneceram fora do escopo o frontend final, botão de exportação, storage, PDF/Excel com dados reais, commit e FASE 10. Esse registro histórico foi sucedido pela FASE 10H, que integrou a interface local, carregou geradores sob demanda e chama a auditoria imediatamente antes da coleta. Storage e geração com dados reais continuam ausentes; smoke autenticado remoto permanece pendente.
