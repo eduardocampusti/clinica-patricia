@@ -305,3 +305,9 @@ Workflow interno homologado com fixtures sintéticas em `ROLLBACK`: sete estados
 ## 47. FASE 10H — Relatórios na interface
 
 Interface local integrada para proprietária e médico sobre a infraestrutura aplicada da FASE 9. Proprietária exporta consolidado, recebimentos, repasses e fiscal dentro das clínicas autorizadas; médico exporta somente recebimentos e repasses próprios, sem `profissional_id`. A coleta pagina por cursor, compara contexto/marcador/totais, revalida a população, reconcilia centavos antes do arquivo e permite cancelamento. PDF/XLSX são carregados sob demanda; a solicitação é auditada antes da coleta e não afirma conclusão do download. Playwright sintético desktop/mobile, testes contratuais, build e lint aprovados; smoke visual autenticado remoto permanece pendente. Evidências no checkpoint 43 e documento 11, seção 23. Próximo passo: auditoria do legado e validação integrada final.
+
+## 48. Fechamento definitivo da FASE 10
+
+O roteiro `20260923_fase10_integrado_final.sql` validou no Supabase real, em uma única transação revertida, Agenda → recebimento split → caixa → estorno → fechamento → repasse → fiscal interno → dashboards → relatórios. Papéis, clínica alheia, anon, idempotência e estados inválidos foram incluídos. Contagens antes/depois permaneceram idênticas e o caixa legado foi preservado.
+
+A navegação oficial já não importa a tela/Fastify financeiro antigo. No servidor legado foram desregistradas somente as rotas com substituto comprovado: caixa, entrada/recebimento, estornos e repasses. A rota de despesas foi preservada porque despesas administrativas não pertencem ao modelo homologado; removê-la exigiria decisão funcional futura. **FASE 10 — MIGRAÇÃO FRONTEND CONCLUÍDA.** Smoke visual autenticado e fiscal externo permanecem como evoluções externas, dependentes respectivamente de sessão segura e fornecedor/API.

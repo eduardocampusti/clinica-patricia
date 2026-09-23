@@ -375,3 +375,11 @@ A solicitação de exportação é auditada antes da coleta. Os detalhes usam pa
 A montagem do arquivo possui allowlist explícita de colunas. Campos extras como UUID, CPF e payload fiscal são ignorados. As formas estruturadas retornadas pelo banco são apresentadas somente para dinheiro, PIX e cartão de crédito, com seus valores originais; não há cálculo de regra financeira no React. PDF/XLSX e suas bibliotecas são importados sob demanda. O XLSX preserva qualquer texto hostil como `String`, sem fórmulas.
 
 Validação local: `npm run test:financeiro` 15/15; Playwright de relatórios 8/8 em desktop/mobile, com HTTP sintético bloqueando rede externa; build e lint aprovados. O runner reteve o Vite após concluir os oito testes no Windows e foi interrompido no teardown. Screenshots de proprietária e médico em desktop/mobile foram inspecionados. Build: tela de relatórios 23,76 kB (gzip 6,93 kB), geradores sob demanda 501,15 kB (gzip 157,64 kB), principal 624,30 kB (gzip 156,65 kB). Smoke visual autenticado real segue pendente; não houve alteração no Supabase, migration nova ou Git push.
+
+## 24. Legado e validação integrada final
+
+A rota operacional do aplicativo importa `FinanceiroModulo`; nenhuma tela nova importa `src/lib/api.ts`, `Financeiro.tsx`, `FormRegistrarEntrada`, `AcoesFinanceiras`, `useSessaoCaixaAberta` ou `useEntradasCaixa`. O caminho comprovado é `React → src/lib/financeiro → Supabase RPC/Data API → PostgreSQL`.
+
+No Fastify foram desregistradas as rotas antigas de caixa, entrada/recebimento, estornos e repasses, pois todas possuem substituto homologado. Seus arquivos permanecem como histórico/rollback e não são registrados no bootstrap. Ping/autenticação do servidor foram preservados. Despesas continuaram registradas: esse domínio está fora das FASES 1–10 e não tem substituto aprovado, portanto não foi inventado nem removido silenciosamente.
+
+O roteiro integrado final passou remotamente com `ROLLBACK`, cobrindo do agendamento aos relatórios e as negações por papel/escopo. Contagens e caixa legado ficaram idênticos antes/depois. O smoke visual autenticado foi registrado como pendência externa, sem pedir senha. **FASE 10 — MIGRAÇÃO FRONTEND CONCLUÍDA.** Fiscal externo e despesas são evoluções futuras dependentes de decisões próprias e não bloqueiam este encerramento.

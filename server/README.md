@@ -1,10 +1,13 @@
-# Servidor (Node.js + Fastify)
+# Servidor legado (Node.js + Fastify)
 
-Camada de backend obrigatória para comandos do módulo Financeiro
-(ver `10-PLANO-DIRETOR.md` e `11-PERFIL-PROPRIETARIA.md` na raiz do projeto).
-O código da nova fronteira Fastify → PostgreSQL está preparado, mas depende de
-`financeiro_fundacao.sql`, `financeiro_api_privada.sql` e do Vault em um
-ambiente local/staging. **Nenhum desses SQLs foi executado.**
+O Financeiro operacional não depende mais deste servidor. O caminho oficial é
+`React → src/lib/financeiro → Supabase RPC/Data API → PostgreSQL`.
+
+As rotas antigas de caixa, entrada/recebimento, estornos e repasses permanecem
+no repositório apenas como histórico/rollback de código e não são registradas
+no bootstrap. A rota de despesas foi preservada porque despesas administrativas
+não integram o domínio homologado das FASES 1–10 e não possuem substituto
+aprovado. A rota de diagnóstico autenticado também foi preservada.
 
 ## Como rodar localmente
 
@@ -86,7 +89,7 @@ Respostas:
 - `403` — clínica informada não pertence ao usuário autenticado.
 - `200` — `{ "usuario": { "id", "email" }, "clinica": { "id", "nome" } }`.
 
-## Como o frontend chama comandos financeiros
+## Contrato histórico do frontend antigo
 
 ```ts
 const { data: { session } } = await supabase.auth.getSession()
@@ -113,10 +116,10 @@ server/
       clinicaAtiva.ts         # preHandler resolveClinicaAtiva
     routes/
       ping.ts                 # GET /api/ping
-      caixa.ts                # abertura, sangria, suprimento e fechamento
-      entradaCaixa.ts         # cobranças e recebimentos
+      caixa.ts                # legado não registrado
+      entradaCaixa.ts         # legado não registrado
       despesas.ts             # despesas
-      estornos.ts             # estornos compensatórios
-      repasses.ts             # pagamento integral
+      estornos.ts             # legado não registrado
+      repasses.ts             # legado não registrado
     index.ts                  # bootstrap Fastify (cors + rotas + listen)
 ```
