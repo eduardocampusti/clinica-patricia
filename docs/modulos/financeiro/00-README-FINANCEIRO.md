@@ -85,3 +85,7 @@ A Agenda oferece “Receber pagamento” à proprietária/recepção em agendame
 ## FASE 11 — Validação operacional
 
 A validação automatizável foi concluída sem reabrir a migração frontend. Recebimento, Caixa e Estornos foram reexercitados nos viewports operacionais; o roteiro integrado passou novamente com `ROLLBACK` e sem alteração das contagens persistentes. O registro consolidado, as ressalvas e o checklist de prontidão estão em `../../12-VALIDACAO-OPERACIONAL.md`. A recomendação autoriza apenas preparar um piloto controlado, não iniciar produção automaticamente.
+
+## FASE 12 — Preparação controlada
+
+O Financeiro novo permanece limpo e tecnicamente homologado. O cutover não foi autorizado: a Clínica Brotas ainda possui caixa legado aberto, e backup/restore, deploy, Auth e usuários reais precisam ser resolvidos antes da operação. A matriz e os runbooks estão em `../../13-PREPARACAO-ENTRADA-OPERACAO.md`.

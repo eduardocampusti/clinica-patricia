@@ -1020,3 +1020,12 @@ Testes transacionais preparados em `database/tests/financeiro/20260922_fase10c_r
 - `nanoid` transitivo foi atualizado para 3.3.19 dentro da faixa compatível; `npm audit --omit=dev` passou com zero vulnerabilidades.
 - Não houve migration, alteração persistente no banco nem reabertura da FASE 10. Provider fiscal, smoke autenticado e transição controlada do caixa legado permanecem ressalvas anteriores à operação real.
 - Registro mestre: `docs/12-VALIDACAO-OPERACIONAL.md`.
+
+## 46. FASE 12 — preparação controlada para operação
+
+**Estado:** Financeiro novo pronto com ressalvas; cutover geral em NO-GO por dependências operacionais externas.
+
+- O domínio novo permanece sem dados financeiros persistentes. O caixa legado aberto da Clínica Brotas foi preservado e continua impedindo o uso do novo Caixa nessa clínica até decisão humana auditada.
+- Fiscal interno está pronto; emissão externa e despesas administrativas permanecem domínios futuros.
+- Backup lógico não foi gerado: projeto Free sem backup automático/PITR e ambiente sem Docker/`pg_dump`. Restore foi documentado, não ensaiado.
+- O inventário, matriz de corte, plano de limpeza não executado e decisão GO/NO-GO estão em `docs/13-PREPARACAO-ENTRADA-OPERACAO.md`.
