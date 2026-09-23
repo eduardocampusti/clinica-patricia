@@ -289,3 +289,7 @@ Estornos, repasses, fiscal interno e dashboards proprietária/médico foram inte
 ## 43. Decisão posterior e homologação da FASE 10D — Estornos
 
 O parágrafo da seção 42 é histórico: a decisão vigente substituiu a permissão de solicitação pela proprietária. Recepção solicita; proprietária revisa/aprova/rejeita e a aprovação efetiva. Nenhuma migration de ampliação é necessária. A UI e a RPC seguem esta separação. Teste transacional real com `ROLLBACK` aprovado; smoke visual autenticado permanece pendente. Evidências no checkpoint 39 e no documento 11, seção 19. Próxima subfase: 10E Repasses.
+
+## 44. FASE 10E — Repasses
+
+Homologação transacional real aprovada para geração após fechamento, RLS/autoridade, confirmação externa idempotente, ajuste de estorno pré/pós-pagamento e compensação futura sem líquido negativo. Fixtures foram revertidas. Interface da proprietária e detalhamento do painel médico passaram em navegador com HTTP sintético; smoke visual autenticado permanece pendente. Não houve migration nova nem alteração persistente. Evidências no checkpoint 40 e no documento 11, seção 20. Próxima subfase: 10F Fiscal interno.

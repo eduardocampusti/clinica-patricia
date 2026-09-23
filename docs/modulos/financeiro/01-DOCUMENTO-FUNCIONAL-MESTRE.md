@@ -700,3 +700,7 @@ Caixa, Estornos, repasses, fiscal interno e painéis da proprietária/médico fo
 ### Decisão funcional posterior — FASE 10D Estornos (22/09/2026)
 
 O parágrafo anterior registra a divergência histórica daquele checkpoint. A decisão vigente a substitui: **somente a recepção solicita estorno; somente a proprietária revisa, aprova ou rejeita; aprovação efetiva o estorno pela RPC**. Solicitante operacional e autoridade de aprovação são papéis distintos. Não ampliar `financeiro_solicitar_estorno` e não criar migration para permitir solicitação pela proprietária nesta execução. Permanecem as regras de estorno total/parcial por forma original e preservação do recebimento.
+
+### FASE 10E — Repasses homologados (22/09/2026)
+
+A decisão vigente é pagar o médico fora do sistema por PIX/transferência e somente então registrar referência e confirmação pela proprietária em `financeiro_confirmar_repasse`. A UI não realiza transferência nem cria movimento de caixa. O médico consulta apenas seus próprios repasses, inclusive bruto, estornos anteriores, ajustes, líquido e estado; a recepção não consulta nem confirma repasses. Estorno anterior ao pagamento reduz o item pendente; estorno posterior gera ajuste negativo compensável em repasses futuros, sem valor líquido negativo e sem reescrever repasse pago. A homologação transacional da FASE 10E confirmou essas regras no banco remoto com `ROLLBACK`, sem mudar o contrato aplicado.

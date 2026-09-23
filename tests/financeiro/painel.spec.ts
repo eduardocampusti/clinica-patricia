@@ -52,6 +52,8 @@ test('médico vê exclusivamente próprio painel sem parâmetro profissional nem
   const chamadas = await preparar(page, 'medico')
   await expect(page.getByRole('heading', { name: 'Meu financeiro' })).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Meus repasses' })).toBeVisible()
+  await expect(page.getByText('Bruto R$ 400,00 · Estornos antes do pagamento R$ 40,00 · Ajustes R$ 0,00')).toBeVisible()
+  await expect(page.getByText('Líquido R$ 360,00')).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Fiscal e caixa' })).toHaveCount(0)
   await expect(page.getByText('R$ 450,00', { exact: true }).first()).toBeVisible()
   await page.screenshot({ path: `scratch/financeiro-painel-medico-${info.project.name}.png`, fullPage: true })

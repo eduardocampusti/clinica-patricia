@@ -117,9 +117,11 @@ function DetalhesProprietaria({ dados }: { dados: DashboardProprietaria }) {
 function DetalhesProfissional({ dados }: { dados: DashboardProfissional }) {
   return <section className={card}><h2 className="texto-titulo-secao">Meus repasses</h2>
     {!dados.resumo.lista_repasses?.length ? <p className="mt-3 text-sm text-[var(--texto-secundario)]">Nenhum repasse listado neste período.</p> :
-      <ul className="mt-3 divide-y divide-[var(--borda)]">{dados.resumo.lista_repasses.map((item) => <li key={item.id} className="flex flex-wrap justify-between gap-2 py-3">
-        <div><p className="font-medium">{item.clinica_nome} · {item.status}</p><p className="text-xs text-[var(--texto-secundario)]">{formatarDataFinanceira(item.data)}</p></div>
-        <span className="numero-tabular font-semibold">{moeda(item.valor_liquido)}</span>
+      <ul className="mt-3 divide-y divide-[var(--borda)]">{dados.resumo.lista_repasses.map((item) => <li key={item.id} className="py-3">
+        <div className="flex flex-wrap justify-between gap-2"><div><p className="font-medium">{item.clinica_nome} · {item.status}</p>
+          <p className="text-xs text-[var(--texto-secundario)]">{formatarDataFinanceira(item.data)}</p></div>
+          <span className="numero-tabular font-semibold">Líquido {moeda(item.valor_liquido)}</span></div>
+        <p className="mt-1 text-xs text-[var(--texto-secundario)]">Bruto {moeda(item.valor_bruto_profissional)} · Estornos antes do pagamento {moeda(item.valor_estornos_antes_pagamento)} · Ajustes {moeda(item.valor_ajustes_aplicados)}</p>
       </li>)}</ul>}
     {(dados.resumo.lista_repasses_total ?? 0) > (dados.resumo.lista_repasses?.length ?? 0) &&
       <p className="mt-2 text-xs text-[var(--cor-alerta)]">Lista limitada: exibindo {dados.resumo.lista_repasses?.length ?? 0} de {dados.resumo.lista_repasses_total} repasses.</p>}
