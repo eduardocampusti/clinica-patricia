@@ -29,11 +29,11 @@ test('proprietária em Repasses passa à recepção sem manter conteúdo restrit
 test('proprietária em Painel passa a médico sem carregar painel da proprietária', async ({ page }) => {
   const chamadas = await preparar(page)
   await page.getByRole('navigation', { name: 'Áreas do Financeiro' }).getByRole('button', { name: 'Visão geral' }).click()
-  await expect(page.getByRole('heading', { name: 'Painel financeiro' })).toBeVisible()
+  await expect.poll(() => chamadas.filter((nome) => nome.includes('financeiro_dashboard_proprietaria')).length).toBe(1)
   const antesTroca = chamadas.length
   await page.getByRole('button', { name: 'Simular médico' }).click()
   await expect(page.getByRole('heading', { name: 'Meu financeiro' })).toBeVisible()
-  await expect(page.getByRole('heading', { name: 'Painel financeiro' })).toHaveCount(0)
+  await expect(page.getByRole('heading', { name: 'Visão geral' })).toHaveCount(0)
   await page.waitForTimeout(100)
   expect(chamadas.slice(antesTroca).some((nome) => nome.includes('financeiro_dashboard_proprietaria'))).toBe(false)
 })

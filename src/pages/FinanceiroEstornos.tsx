@@ -168,7 +168,7 @@ export default function FinanceiroEstornos({ clinicaId, usuarioId, papel }: { cl
     {consulta.resultado.estado === 'erro' && <div className={card} role="alert"><p>{consulta.resultado.erro.message}</p>
       <button type="button" className={`${botao} mt-3`} onClick={() => void consulta.recarregar()}>Tentar novamente</button></div>}
     {papel === 'proprietaria' && dados && <section className={card}>
-      <h2 className="texto-titulo-secao">Aguardando sua revisão</h2>
+      <div className="finance-card-heading"><h2 className="texto-titulo-secao">Aguardando sua revisão</h2><span className="finance-status" data-tone={dados.pendentes.length ? 'warning' : 'success'}>{dados.pendentes.length} solicitações</span></div>
       {!dados.pendentes.length ? <div className="finance-empty"><strong>Nenhum estorno aguardando revisão</strong><p>Novas solicitações da recepção aparecerão aqui.</p></div> :
         <ul className="mt-3 divide-y divide-[var(--borda)]">{dados.pendentes.map((estorno) => <li key={estorno.id} className="flex flex-wrap justify-between gap-3 py-4">
           <div><p className="font-medium">{estorno.paciente}</p>
@@ -185,14 +185,15 @@ export default function FinanceiroEstornos({ clinicaId, usuarioId, papel }: { cl
         <input className={`${campo} mt-1`} type="search" value={filtro} onChange={(e) => setFiltro(e.target.value)} />
       </label>
       {!recebimentosVisiveis.length ? <div className="finance-empty"><strong>{termo ? 'Nada encontrado nesta página' : 'Nenhum recebimento disponível'}</strong><p>{termo ? 'Tente outro termo ou consulte a próxima página.' : 'Os recebimentos elegíveis para estorno aparecerão aqui.'}</p></div> :
-        <ul className="mt-3 divide-y divide-[var(--borda)]">{recebimentosVisiveis.map((item) => {
+        <ul className="finance-operational-list mt-3 divide-y divide-[var(--borda)]">{recebimentosVisiveis.map((item) => {
           const saldo = saldoDisponivelPorForma(item)
           const disponivel = saldo.dinheiro + saldo.pix + saldo.cartao_credito
           return <li key={item.id} className="flex flex-wrap items-center justify-between gap-3 py-4">
             <div><p className="font-medium">{item.paciente}</p><p className="numero-tabular mt-1 text-lg font-semibold">{moeda(item.valor_bruto)}</p>
               <p className="text-sm text-[var(--texto-secundario)]">{item.profissional} · {formatarDataFinanceira(item.registrado_em)}</p>
               <p className="text-xs text-[var(--texto-secundario)]">{item.pagamentos.map((pagamento) => `${rotulos[pagamento.forma_pagamento]} ${moeda(pagamento.valor)}`).join(' · ')}</p>
-              <p className="text-xs text-[var(--texto-secundario)]">Disponível para solicitar: {formatarCentavos(disponivel)}</p></div>
+              <p className="text-xs text-[var(--texto-secundario)]">Disponível para solicitar: {formatarCentavos(disponivel)}</p>
+              {item.estornos.length > 0 && <details className="finance-refund-history"><summary>Histórico de estornos ({item.estornos.length})</summary><ul>{item.estornos.map((estorno) => <li key={estorno.id}><span className="finance-status" data-tone={estorno.status === 'rejeitado' ? 'danger' : estorno.status === 'efetivado' ? 'success' : 'info'}>{({ solicitado: 'Aguardando revisão', aprovado: 'Aprovado', rejeitado: 'Rejeitado', efetivado: 'Efetivado' })[estorno.status]}</span><strong>{moeda(estorno.valor_total)}</strong><span>{estorno.motivo}</span><small>{formatarDataFinanceira(estorno.solicitado_em)}</small></li>)}</ul></details>}</div>
             {papel === 'recepcao' && disponivel > 0n && <button type="button" className={botao} onClick={() => setSelecionado(item)}>Solicitar estorno</button>}
           </li>
         })}</ul>}

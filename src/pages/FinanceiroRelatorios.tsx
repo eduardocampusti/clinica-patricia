@@ -66,7 +66,7 @@ export default function FinanceiroRelatorios({ clinicaId, papel }: { clinicaId: 
   const [statusRepasse, setStatusRepasse] = useState<'' | StatusRepasse>('')
   const [statusFiscal, setStatusFiscal] = useState<'' | StatusFiscal>('')
   const [modoRepasse, setModoRepasse] = useState<ModoRelatorioRepasse>('gerados_periodo')
-  const [filtrosAbertos, setFiltrosAbertos] = useState(() => typeof window !== 'undefined' && window.innerWidth > 600)
+  const [filtrosAbertos, setFiltrosAbertos] = useState(false)
   const [ocupado, setOcupado] = useState(false)
   const [progresso, setProgresso] = useState('')
   const [erro, setErro] = useState<string | null>(null)
@@ -277,7 +277,7 @@ export default function FinanceiroRelatorios({ clinicaId, papel }: { clinicaId: 
   return <div className="space-y-6">
     <header><h1 className="texto-titulo-tela">Relatórios financeiros</h1>
       <p className="mt-1 text-sm text-[var(--texto-secundario)]">Escolha o período e os filtros para preparar um arquivo com dados oficiais.</p></header>
-    <form className={`${card} space-y-5`} onSubmit={(e) => void gerar(e, 'pdf')}>
+    <form className={`${card} finance-report-filters space-y-4`} onSubmit={(e) => void gerar(e, 'pdf')}>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <label className="text-sm font-medium">Relatório<select className={`${campo} mt-1`} value={dataset} disabled={ocupado}
           onChange={(e) => setDataset(e.target.value as Dataset)}>
@@ -289,9 +289,6 @@ export default function FinanceiroRelatorios({ clinicaId, papel }: { clinicaId: 
         <label className="text-sm font-medium">Até<input type="date" className={`${campo} mt-1`} value={fim} onChange={(e) => setFim(e.target.value)} required disabled={ocupado} /></label>
         <label className="flex min-h-11 items-end gap-2 pb-2 text-sm"><input type="checkbox" checked={todasClinicas} onChange={(e) => mudarTodas(e.target.checked)} disabled={ocupado} />Todas as minhas clínicas</label>
       </div>
-      <button type="button" className={botao} aria-expanded={filtrosAbertos} onClick={() => setFiltrosAbertos((aberto) => !aberto)}>
-        {filtrosAbertos ? 'Ocultar filtros avançados' : 'Filtros avançados'}{filtrosAtivos > 0 ? ` · ${filtrosAtivos} ativo${filtrosAtivos === 1 ? '' : 's'}` : ''}
-      </button>
       <div className={`finance-advanced space-y-4${filtrosAbertos ? ' is-open' : ''}`}>
       {proprietaria && !todasClinicas && <div className="grid gap-3 sm:grid-cols-2">
         <div><label className="text-sm font-medium">Buscar profissional<input className={`${campo} mt-1`} value={buscaProfissional} onChange={(e) => setBuscaProfissional(e.target.value)} disabled={ocupado} /></label>
@@ -328,11 +325,14 @@ export default function FinanceiroRelatorios({ clinicaId, papel }: { clinicaId: 
       </div>
       </div>
       {filtrosAtivos > 0 && <p className="text-xs text-[var(--texto-secundario)]">{filtrosAtivos} filtro{filtrosAtivos === 1 ? '' : 's'} adicional{filtrosAtivos === 1 ? '' : 'is'} selecionado{filtrosAtivos === 1 ? '' : 's'}.</p>}
-      <p className="text-xs text-[var(--texto-terciario)]">Período inclusivo em Bahia; o banco recebe o começo do dia seguinte como limite exclusivo. “Pendentes agora” é posição atual, sem filtro pela data de geração.</p>
-      <div className="flex flex-wrap gap-2"><button type="button" className={principal} disabled={ocupado || carregandoPrevia} onClick={() => void aplicarPrevia()}>{carregandoPrevia ? 'Consultando…' : 'Aplicar filtros'}</button>
-        <button type="submit" className={botao} disabled={ocupado}>Gerar PDF</button>
-        <button type="button" className={botao} disabled={ocupado} onClick={(e) => void gerar(e, 'xlsx')}>Gerar Excel</button>
-        <button type="button" className={botao} disabled={ocupado} onClick={limpar}>Limpar filtros</button>
+      <p className="text-xs text-[var(--texto-terciario)]">Período inclui o primeiro e o último dia, no horário da Bahia. “Pendentes agora” mostra a posição atual.</p>
+      <div className="flex flex-wrap gap-2"><button type="button" className={principal} aria-label={carregandoPrevia ? 'Consultando' : 'Aplicar filtros'} disabled={ocupado || carregandoPrevia} onClick={() => void aplicarPrevia()}>{carregandoPrevia ? 'Consultando…' : 'Aplicar'}</button>
+        <button type="button" className={botao} aria-label="Limpar filtros" disabled={ocupado} onClick={limpar}>Limpar</button>
+        <button type="submit" className={botao} aria-label="Gerar PDF" disabled={ocupado}>PDF</button>
+        <button type="button" className={botao} aria-label="Gerar Excel" disabled={ocupado} onClick={(e) => void gerar(e, 'xlsx')}>Excel</button>
+        <button type="button" className={`${botao} sm:ml-auto`} aria-expanded={filtrosAbertos} onClick={() => setFiltrosAbertos((aberto) => !aberto)}>
+          {filtrosAbertos ? 'Ocultar filtros avançados' : 'Filtros avançados'}{filtrosAtivos > 0 ? ` · ${filtrosAtivos} ativo${filtrosAtivos === 1 ? '' : 's'}` : ''}
+        </button>
         {ocupado && <button type="button" className={botao} onClick={() => controle.current?.abort()}>Cancelar exportação</button>}
       </div>
     </form>
@@ -343,7 +343,7 @@ export default function FinanceiroRelatorios({ clinicaId, papel }: { clinicaId: 
       </div>
       {carregandoPrevia && <div role="status" aria-label="Consultando resultado" className="finance-skeleton mt-4" />}
       {erroPrevia && <p role="alert" className="mt-4 text-sm text-[var(--cor-erro)]">{erroPrevia}</p>}
-      {!previa && !carregandoPrevia && !erroPrevia && <div className="finance-empty"><strong>Pronto para consultar</strong><p>Escolha os filtros e selecione “Aplicar filtros” para ver os primeiros resultados.</p></div>}
+      {!previa && !carregandoPrevia && !erroPrevia && <div className="finance-empty"><strong>Pronto para consultar</strong><p>Escolha os filtros e selecione “Aplicar” para ver os primeiros resultados.</p></div>}
       {previa && !carregandoPrevia && !previa.pagina.itens.length && <div className="finance-empty"><strong>Nenhum registro encontrado</strong><p>Revise o período ou os filtros. Você ainda pode gerar um arquivo vazio para auditoria.</p></div>}
       {previa && !carregandoPrevia && previa.pagina.itens.length > 0 && <>
         <div className="finance-table-wrap mt-4 hidden sm:block"><table className="finance-table"><thead><tr>{colunasPrevia.map(([chave, titulo]) => <th key={chave}>{titulo}</th>)}</tr></thead>

@@ -59,7 +59,7 @@ test('proprietária solicita cancelamento com motivo, sem alegar conclusão exte
 test('erro interno fica visível e retry conserva chave idempotente', async ({ page }) => {
   const chamadas = await preparar(page, 'erro_emissao', true)
   await expect(page.getByText('Falha interna registrada.')).toBeVisible()
-  await expect(page.getByText('Última tentativa de emissão: Erro interno')).toBeVisible()
+  await expect(page.getByText('Erro interno', { exact: true })).toBeVisible()
   await page.getByRole('button', { name: 'Solicitar emissão' }).click()
   await page.getByRole('button', { name: 'Confirmar solicitação' }).click()
   await expect(page.getByRole('button', { name: 'Tentar novamente' })).toBeVisible()

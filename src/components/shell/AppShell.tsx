@@ -65,7 +65,7 @@ function AppShell({
   }, [drawerAberto, compacto])
 
   return (
-    <div className="flex min-h-screen bg-[var(--fundo-pagina)]">
+    <div className={`app-shell flex min-h-screen bg-[var(--fundo-pagina)]${tela === 'financeiro' ? ' app-shell-finance' : ''}`}>
       <Sidebar
         tela={tela}
         onNavegar={onNavegar}
@@ -73,6 +73,7 @@ function AppShell({
         clinicasDoUsuario={clinicasDoUsuario}
         onSelecionarClinica={onSelecionarClinica}
         papel={papel}
+        emailUsuario={emailUsuario}
         aberta={drawerAberto}
         compacto={compacto}
         onFechar={() => setDrawerAberto(false)}
@@ -89,7 +90,7 @@ function AppShell({
       )}
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex min-h-16 flex-none items-center gap-3 border-b border-[var(--borda)] bg-[var(--fundo-card)] px-4 sm:px-6 lg:px-8">
+        <header className="app-shell-header flex min-h-16 flex-none items-center gap-3 border-b border-[var(--borda)] bg-[var(--fundo-card)] px-4 sm:px-6 lg:px-8">
           {/* Botão hambúrguer — só mobile */}
           <button
             type="button"
@@ -105,7 +106,7 @@ function AppShell({
 
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold text-[var(--texto-principal)]">{TITULOS_TELA[tela]}</p>
-            <p className="hidden text-xs text-[var(--texto-secundario)] sm:block">Área de trabalho</p>
+            <p className="hidden text-xs text-[var(--texto-secundario)] sm:block">Gestão clínica</p>
           </div>
 
           {/* Espaçador */}
@@ -123,6 +124,7 @@ function AppShell({
             <div aria-label={`Usuário ${emailUsuario}`} title={emailUsuario} className="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-[var(--cor-primaria-suave)] text-xs font-bold text-[var(--cor-primaria)]">
               {emailUsuario.slice(0, 2).toUpperCase()}
             </div>
+            <div className="hidden max-w-40 lg:block"><p className="truncate text-xs font-semibold text-[var(--texto-principal)]" title={emailUsuario}>{emailUsuario.split('@')[0]}</p><p className="text-xs text-[var(--texto-secundario)]">{papel === 'proprietaria' ? 'Proprietária' : papel === 'medico' ? 'Médico' : papel === 'recepcao' ? 'Recepção' : 'Usuário'}</p></div>
           </div>
         </header>
 

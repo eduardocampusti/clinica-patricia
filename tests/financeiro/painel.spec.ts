@@ -23,6 +23,7 @@ async function preparar(page: Page, papel: 'medico' | 'proprietaria') {
     if (url.hostname === '127.0.0.1') return route.continue()
     if (url.hostname !== 'financeiro.synthetic.invalid') return route.abort()
     const nome = url.pathname.split('/').pop()!
+    if (route.request().method() === 'GET') return route.fulfill({ contentType: 'application/json', body: nome === 'sessoes_caixa' ? 'null' : '[]' })
     chamadas.push({ nome, parametros: route.request().postDataJSON() })
     const proprietaria = nome === 'financeiro_dashboard_proprietaria'
     const data = { versao: 1, inicio: '2026-09-01T03:00:00Z', fim: '2026-10-01T03:00:00Z',
@@ -55,7 +56,7 @@ test('médico vê exclusivamente próprio painel sem parâmetro profissional nem
   await expect(page.getByText('Bruto R$ 400,00 · Estornos antes do pagamento R$ 40,00 · Ajustes R$ 0,00')).toBeVisible()
   await expect(page.getByText('Líquido R$ 360,00')).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Fiscal e caixa' })).toHaveCount(0)
-  await expect(page.getByText('R$ 450,00', { exact: true }).first()).toBeVisible()
+  await expect(page.locator('.finance-secondary-stats').getByText('R$ 450,00', { exact: true })).toBeVisible()
   await page.screenshot({ path: `scratch/financeiro-painel-medico-${info.project.name}.png`, fullPage: true })
   expect(chamadas[0].nome).toBe('financeiro_dashboard_profissional')
   expect(chamadas[0].parametros.p_clinica_id).toBe('clinica-sintetica')
@@ -64,7 +65,8 @@ test('médico vê exclusivamente próprio painel sem parâmetro profissional nem
 
 test('proprietária vê fiscal, caixa e escopo de todas as clínicas autorizadas', async ({ page }, info) => {
   const chamadas = await preparar(page, 'proprietaria')
-  await expect(page.getByRole('heading', { name: 'Painel financeiro' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Visão geral' })).toBeVisible()
+  await page.getByText('Detalhamento por clínica, profissional e situação operacional', { exact: true }).click()
   await expect(page.getByRole('heading', { name: 'Fiscal e caixa' })).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Por profissional' })).toBeVisible()
   await expect(page.getByText('Médica demonstração')).toBeVisible()

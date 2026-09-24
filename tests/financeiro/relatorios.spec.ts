@@ -76,7 +76,7 @@ test('drift bloqueia geração do arquivo e orienta repetir', async ({ page }) =
 
 test('filtros por pessoa, forma e estado seguem para a RPC sem nomes na auditoria', async ({ page }) => {
   const chamadas = await preparar(page)
-  if ((page.viewportSize()?.width ?? 1440) <= 600) await page.getByRole('button', { name: /Filtros avançados/ }).click()
+  await page.getByRole('button', { name: /Filtros avançados/ }).click()
   await page.getByRole('combobox', { name: 'Profissional', exact: true }).selectOption('prof-sintetico')
   await page.getByRole('combobox', { name: 'Paciente', exact: true }).selectOption('pac-sintetico')
   await page.getByLabel('Forma').selectOption('pix')

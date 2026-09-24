@@ -215,7 +215,7 @@ export default function FinanceiroCaixa({ clinicaAtivaId, carregandoClinica, usu
       <button type="button" className={`${primario} mt-4`} onClick={() => { setSucesso(null); setAcao({ tipo: 'abrir' }) }}>Abrir caixa</button>
     </section>}
     {caixa && <>
-      <section className={card}>
+      <section className={`${card} finance-cash-summary`}>
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div><h2 className="texto-titulo-secao">{caixa.clinica_nome}</h2><p className="text-sm text-[var(--texto-secundario)]">Aberto em {new Date(caixa.aberto_em).toLocaleString('pt-BR')} por {caixa.aberto_por_nome ?? 'usuário autorizado'}</p></div>
           <span className="finance-status" data-tone={caixa.status === 'aberto' ? 'success' : caixa.status === 'devolvido_para_correcao' ? 'warning' : 'info'}>{caixa.status === 'aberto' ? 'Aberto' : caixa.status === 'em_fechamento' ? 'Em fechamento' : caixa.status === 'aguardando_aprovacao' ? 'Aguardando revisão' : caixa.status === 'devolvido_para_correcao' ? 'Correção solicitada' : caixa.status.replaceAll('_', ' ')}</span>

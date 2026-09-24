@@ -109,11 +109,11 @@ export default function FinanceiroRepasses({ clinicaId, usuarioId }: { clinicaId
     {consulta.resultado.estado === 'erro' && <div role="alert" className={card}><p>{consulta.resultado.erro.message}</p><button type="button" className={`${botao} mt-3`} onClick={() => void consulta.recarregar()}>Tentar novamente</button></div>}
     {dados && <section className={card}><h2 className="texto-titulo-secao">{status === 'pendente' ? 'Aguardando pagamento' : 'Histórico de repasses'}</h2>
       {!dados.itens.length ? <div className="finance-empty"><strong>{status === 'pendente' ? 'Nenhum repasse pendente' : 'Nenhum repasse nesta seleção'}</strong><p>Quando houver valores nesta situação, eles aparecerão aqui.</p></div> :
-        <ul className="mt-3 divide-y divide-[var(--borda)]">{dados.itens.map((repasse) => <li key={repasse.id} className="flex flex-wrap items-center justify-between gap-3 py-4">
+        <ul className="finance-operational-list mt-3 divide-y divide-[var(--borda)]">{dados.itens.map((repasse) => <li key={repasse.id} className="flex flex-wrap items-center justify-between gap-3 py-4">
           <div className="min-w-0 flex-1"><div className="flex flex-wrap items-center gap-2"><p className="font-semibold">{repasse.profissional}</p>
             <span className="finance-status" data-tone={repasse.status === 'pago' ? 'success' : 'warning'}>{repasse.status === 'pendente' ? 'Pendente' : repasse.status === 'pago' ? 'Pago' : 'Ajustado'}</span></div>
             <p className="mt-1 text-xs text-[var(--texto-secundario)]">Gerado {formatarDataFinanceira(repasse.gerado_em)}</p>
-            <p className="mt-1 text-xs text-[var(--texto-secundario)]">Bruto {moeda(repasse.valor_bruto_profissional)} · Estornos {moeda(repasse.valor_estornos_antes_pagamento)} · Ajustes {moeda(repasse.valor_ajustes_aplicados)}</p>
+            <dl className="finance-payout-breakdown"><div><dt>Bruto</dt><dd>{moeda(repasse.valor_bruto_profissional)}</dd></div><div><dt>Estornos</dt><dd>{moeda(repasse.valor_estornos_antes_pagamento)}</dd></div><div><dt>Ajustes</dt><dd>{moeda(repasse.valor_ajustes_aplicados)}</dd></div></dl>
             {repasse.confirmado_em && <p className="text-xs text-[var(--texto-secundario)]">Confirmado {formatarDataFinanceira(repasse.confirmado_em)} · {repasse.meio_pagamento}</p>}</div>
           <div className="flex flex-wrap items-center gap-3"><div><p className="text-xs text-[var(--texto-secundario)]">Líquido</p><p className="numero-tabular text-xl font-semibold">{moeda(repasse.valor_liquido)}</p></div>
             {repasse.status === 'pendente' && <button type="button" className={primario} onClick={() => setSelecionado(repasse)}>Confirmar pagamento</button>}</div>

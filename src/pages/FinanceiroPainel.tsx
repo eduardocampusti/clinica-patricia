@@ -1,188 +1,134 @@
 import { useCallback, useState, type FormEvent } from 'react'
+import { createPortal } from 'react-dom'
 import { useFinanceiroConsulta } from '../hooks/useFinanceiroConsulta'
 import type { Papel } from '../hooks/usePapelNaClinica'
 import { carregarDashboardProfissional, carregarDashboardProprietaria } from '../lib/financeiro/financeiro.dashboard'
+import { consultarCaixaAtual, type EstadoCaixaAtual } from '../lib/financeiro/financeiro.caixa-leitura'
+import { listarEstornosPendentes, listarRecebimentosParaEstorno } from '../lib/financeiro/financeiro.estornos-leitura'
 import { formatarDataFinanceira, intervaloPorDias, TIMEZONE_FINANCEIRO_PADRAO } from '../lib/financeiro/financeiro.date'
-import { decimalBancoParaCentavos, formatarCentavos } from '../lib/financeiro/financeiro.money'
-import type { DashboardProfissional, DashboardProprietaria, DecimalBanco, ResumoDashboardComum, ResumoDashboardProprietaria } from '../lib/financeiro/financeiro.types'
+import type { DashboardProfissional, DashboardProprietaria, EstadoCarregamento, ResumoDashboardProprietaria } from '../lib/financeiro/financeiro.types'
+import { FinanceCard, FinanceEmptyState, FinanceIcon, FinanceMetric, FinancePaymentsChart, FinancePendingItem, FinanceReceiptsChart, MoneyValue } from '../components/financeiro/FinanceVisual'
 
-const card = 'finance-surface'
-const campo = 'min-h-11 rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 text-[var(--texto-principal)] focus-visible:outline-2'
-const botao = 'finance-button'
-const moeda = (valor: DecimalBanco) => formatarCentavos(decimalBancoParaCentavos(valor))
+type Destino = 'caixa' | 'estornos' | 'repasses' | 'fiscal' | 'relatorios'
 const nuncaVazio = () => false
-
+const rotulosCaixa = { aberto: 'Aberto', em_fechamento: 'Em fechamento', aguardando_aprovacao: 'Aguardando revisão', devolvido_para_correcao: 'Correção solicitada', aprovado: 'Fechado' }
 function hojeBahia(): string {
-  const partes = new Intl.DateTimeFormat('en-US', { timeZone: TIMEZONE_FINANCEIRO_PADRAO,
-    year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(new Date())
+  const partes = new Intl.DateTimeFormat('en-US', { timeZone: TIMEZONE_FINANCEIRO_PADRAO, year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(new Date())
   const campo = (tipo: string) => partes.find((parte) => parte.type === tipo)?.value ?? ''
   return `${campo('year')}-${campo('month')}-${campo('day')}`
 }
-
 function haTrintaDias(): string {
-  const hoje = hojeBahia()
-  const [ano, mes, dia] = hoje.split('-').map(Number)
+  const [ano, mes, dia] = hojeBahia().split('-').map(Number)
   return new Date(Date.UTC(ano, mes - 1, dia - 29)).toISOString().slice(0, 10)
 }
-
-function Metrica({ rotulo, valor, nota, destaque = false }: { rotulo: string; valor: string; nota?: string; destaque?: boolean }) {
-  return <div className={`finance-metric${destaque ? ' finance-metric-featured' : ''}`}>
-    <p className="finance-metric-label">{rotulo}</p>
-    <p className="finance-metric-value">{valor}</p>
-    {nota && <p className="finance-metric-note">{nota}</p>}
+function CaixaValor({ resultado }: { resultado: EstadoCarregamento<EstadoCaixaAtual> }) {
+  if (resultado.estado === 'erro') return <>Indisponível</>
+  if (resultado.estado !== 'sucesso') return <>Consultando…</>
+  if (resultado.dados.tipo === 'operacional') return <MoneyValue value={resultado.dados.caixa.resumo.valor_esperado} />
+  return <>{resultado.dados.tipo === 'legado' ? 'Em transição' : 'Fechado'}</>
+}
+function CaixaCard({ resultado, onNavegar, recarregar }: { resultado: EstadoCarregamento<EstadoCaixaAtual>; onNavegar?: (destino: Destino) => void; recarregar: () => void }) {
+  const atual = resultado.estado === 'sucesso' ? resultado.dados : null
+  const caixa = atual?.tipo === 'operacional' ? atual.caixa : null
+  const status = caixa ? rotulosCaixa[caixa.status] : atual?.tipo === 'legado' ? 'Em transição' : atual?.tipo === 'sem_caixa' ? 'Fechado' : 'Consultando'
+  const acao = atual?.tipo === 'sem_caixa' ? 'Abrir caixa' : caixa?.status === 'aberto' ? 'Iniciar fechamento' : caixa?.status === 'em_fechamento' || caixa?.status === 'devolvido_para_correcao' ? 'Conferir fechamento' : caixa?.status === 'aguardando_aprovacao' ? 'Revisar fechamento' : 'Ver caixa'
+  return <FinanceCard title="Caixa" action={resultado.estado !== 'erro' && <span className="finance-status" data-tone={caixa?.status === 'aberto' ? 'success' : 'info'}>{status}</span>}>
+    {resultado.estado === 'erro' ? <div role="alert" className="finance-empty"><strong>Não foi possível consultar o caixa</strong><p>{resultado.erro.message}</p><button type="button" className="finance-link" onClick={recarregar}>Tentar novamente</button></div> : <>
+      <div className="finance-cash-balance"><span className="finance-icon-tile" data-tone="blue"><FinanceIcon name="cash" /></span><div><strong><CaixaValor resultado={resultado} /></strong><p>{caixa ? 'Dinheiro esperado na clínica ativa' : atual?.tipo === 'legado' ? 'Caixa anterior aguardando transição' : 'Operação da clínica ativa'}</p></div></div>
+      <p className="finance-caption">{caixa ? `Aberto em ${formatarDataFinanceira(caixa.aberto_em)}` : atual?.tipo === 'legado' ? 'A transição deste caixa precisa ser acompanhada.' : 'Consulte os detalhes para iniciar ou acompanhar a operação.'}</p>
+      {onNavegar && <button type="button" className="finance-button finance-button-primary finance-full-button" disabled={!atual} onClick={() => onNavegar('caixa')}><FinanceIcon name="cash" />{acao}<FinanceIcon name="arrow" /></button>}
+    </>}
+  </FinanceCard>
+}
+function OperacaoAtual({ clinicaId, resumo, caixa, recarregarCaixa, onNavegar }: { clinicaId: string; resumo: ResumoDashboardProprietaria; caixa: EstadoCarregamento<EstadoCaixaAtual>; recarregarCaixa: () => void; onNavegar?: (destino: Destino) => void }) {
+  const carregarPendentes = useCallback(() => listarEstornosPendentes(clinicaId), [clinicaId])
+  const carregarRecentes = useCallback(() => listarRecebimentosParaEstorno(clinicaId), [clinicaId])
+  const pendentes = useFinanceiroConsulta(clinicaId, carregarPendentes, nuncaVazio, { clinicaId, leitura: 'estornos' })
+  const recentes = useFinanceiroConsulta(clinicaId, carregarRecentes, nuncaVazio, { clinicaId, leitura: 'recebimentos' })
+  const lista = recentes.resultado.estado === 'sucesso' ? recentes.resultado.dados.itens.slice(0, 4) : null
+  const quantidade = pendentes.resultado.estado === 'sucesso' ? pendentes.resultado.dados.length : null
+  return <div className="finance-operation-grid">
+    <CaixaCard resultado={caixa} recarregar={recarregarCaixa} onNavegar={onNavegar} />
+    <FinanceCard title="Pendências">
+      <p className="finance-caption">Estornos e repasses atuais · Fiscal do período.</p>
+      {quantidade === null ? <p role={pendentes.resultado.estado === 'erro' ? 'alert' : 'status'} className="finance-caption">{pendentes.resultado.estado === 'erro' ? 'Estornos indisponíveis no momento.' : 'Consultando estornos…'}</p> : quantidade > 0 && <FinancePendingItem title="Estornos aguardando revisão" note={`${quantidade} ${quantidade === 1 ? 'solicitação' : 'solicitações'}`} icon="refund" tone="rose" onClick={onNavegar && (() => onNavegar('estornos'))} />}
+      {resumo.repasses.repasses_pendentes_atual > 0 && <FinancePendingItem title="Repasses pendentes" note={`${resumo.repasses.repasses_pendentes_atual} repasses`} icon="people" tone="purple" onClick={onNavegar && (() => onNavegar('repasses'))} />}
+      {resumo.fiscal.pendente > 0 && <FinancePendingItem title="Documentos fiscais pendentes" note={`${resumo.fiscal.pendente} ${resumo.fiscal.pendente === 1 ? 'documento' : 'documentos'} no período`} icon="document" tone="orange" onClick={onNavegar && (() => onNavegar('fiscal'))} />}
+      {quantidade === 0 && resumo.repasses.repasses_pendentes_atual === 0 && resumo.fiscal.pendente === 0 && <FinanceEmptyState title="Tudo em dia" icon="document">Nenhuma pendência nesta seleção.</FinanceEmptyState>}
+      {pendentes.resultado.estado === 'erro' && <button type="button" className="finance-link" onClick={() => void pendentes.recarregar()}>Tentar novamente</button>}
+    </FinanceCard>
+    <FinanceCard title="Últimas movimentações" action={onNavegar && <button type="button" className="finance-link" onClick={() => onNavegar('relatorios')}>Relatórios <FinanceIcon name="arrow" /></button>}>
+      <p className="finance-caption">Recebimentos confirmados ou parcialmente estornados da clínica ativa, sem filtro de período.</p>
+      {recentes.resultado.estado === 'erro' ? <div role="alert" className="finance-empty"><strong>Movimentações indisponíveis</strong><button type="button" className="finance-link" onClick={() => void recentes.recarregar()}>Tentar novamente</button></div> : !lista ? <div role="status" aria-label="Carregando movimentações" className="finance-skeleton mt-3" /> : !lista.length ? <FinanceEmptyState title="Nenhum recebimento disponível" icon="down">Os recebimentos elegíveis aparecerão aqui.</FinanceEmptyState> : <ul className="finance-activity-list">{lista.map((item) => <li key={item.id}><span className="finance-icon-tile finance-icon-small" data-tone="green"><FinanceIcon name="down" /></span><div className="finance-list-copy"><strong>Recebimento</strong><small>{item.paciente}</small></div><div className="finance-activity-value"><strong><MoneyValue value={item.valor_bruto} /></strong><small>{formatarDataFinanceira(item.registrado_em)}</small></div></li>)}</ul>}
+    </FinanceCard>
   </div>
 }
-
-function ResumoPrincipal({ resumo, proprietaria }: { resumo: ResumoDashboardComum; proprietaria: boolean }) {
-  return <section className={card}>
-    <h2 className="texto-titulo-secao">Resultado do período</h2>
-    <div className="finance-metrics finance-primary-metrics mt-3">
-      <Metrica rotulo="Recebido no período" valor={moeda(resumo.producao.bruto)} destaque />
-      <Metrica rotulo={proprietaria ? 'Parcela líquida da clínica' : 'Parcela da clínica nos seus atendimentos'} valor={moeda(resumo.producao.clinica_liquida)} />
-      <Metrica rotulo={proprietaria ? 'Parcela líquida dos profissionais' : 'Sua parcela líquida'} valor={moeda(resumo.producao.profissional_liquida)} />
-      <Metrica rotulo="Líquido atual dos recebimentos" valor={moeda(resumo.producao.liquido_atual_coorte)} nota="Inclui estornos posteriores do mesmo recebimento" />
-      <Metrica rotulo="Recebimentos no período" valor={String(resumo.producao.quantidade)} />
-      <Metrica rotulo="Estornos efetivados no período" valor={moeda(resumo.estornos_periodo.total)} nota="Eventos por data de efetivação; não subtrair do bruto acima" />
-      <Metrica rotulo="Repasses pagos no período" valor={moeda(resumo.repasses.valor_repasses_pagos_periodo)} nota="Confirmados por data de pagamento" />
-      <Metrica rotulo="Repasses pendentes agora" valor={moeda(resumo.repasses.valor_repasses_pendentes_atual)} nota="Estoque atual, sem filtro de data" />
-    </div>
-  </section>
-}
-
-function PagamentosERepasses({ resumo }: { resumo: ResumoDashboardComum }) {
-  return <section className={card}>
-    <h2 className="texto-titulo-secao">Formas de pagamento e ajustes</h2>
-    <div className="finance-metrics finance-payment-metrics mt-3">
-      <Metrica rotulo="Dinheiro bruto" valor={moeda(resumo.pagamentos.dinheiro)} />
-      <Metrica rotulo="PIX bruto" valor={moeda(resumo.pagamentos.pix)} />
-      <Metrica rotulo="Cartão bruto" valor={moeda(resumo.pagamentos.cartao_credito)} />
-      <Metrica rotulo="Ajustes pendentes" valor={moeda(resumo.ajustes.valor_pendente_atual)} nota="Estoque a compensar; não descontar novamente da produção" />
-    </div>
-    <p className="mt-4 text-xs text-[var(--texto-terciario)]">Os componentes de pagamento são brutos. Estornos preservam o pagamento original e aparecem separadamente.</p>
-  </section>
-}
-
-function Serie({ resumo }: { resumo: ResumoDashboardComum }) {
-  return <section className={card}>
-    <h2 className="texto-titulo-secao">Série diária</h2>
-    {!resumo.series.length ? <div className="finance-empty"><strong>Sem movimento neste período</strong><p>Quando houver recebimentos ou estornos, a evolução diária aparecerá aqui.</p></div> :
-      <><div className="finance-table-wrap mt-4 hidden sm:block"><table className="finance-table min-w-[620px]">
-        <thead><tr className="border-b border-[var(--borda)] text-[var(--texto-secundario)]">
-          <th className="py-2 font-medium">Dia</th><th className="py-2 font-medium">Bruto</th>
-          <th className="py-2 font-medium">Líquido atual da coorte</th><th className="py-2 font-medium">Estornos efetivados no dia</th>
-        </tr></thead><tbody>{resumo.series.map((item) => <tr key={item.dia} className="border-b border-[var(--borda-sutil)]">
-          <td className="py-2">{item.dia}</td><td className="numero-tabular py-2">{moeda(item.bruto)}</td>
-          <td className="numero-tabular py-2">{moeda(item.liquido_atual_coorte)}</td>
-          <td className="numero-tabular py-2">{moeda(item.estornos_eventos)}</td>
-        </tr>)}</tbody></table></div>
-      <ul className="mt-4 divide-y divide-[var(--borda-sutil)] sm:hidden">{resumo.series.map((item) => <li key={item.dia} className="space-y-2 py-3 first:pt-0">
-        <p className="font-medium">{item.dia}</p>
-        <dl className="grid grid-cols-2 gap-x-3 gap-y-2 text-sm">
-          <div><dt className="text-[var(--texto-secundario)]">Bruto</dt><dd className="numero-tabular">{moeda(item.bruto)}</dd></div>
-          <div><dt className="text-[var(--texto-secundario)]">Líquido atual</dt><dd className="numero-tabular">{moeda(item.liquido_atual_coorte)}</dd></div>
-          <div className="col-span-2"><dt className="text-[var(--texto-secundario)]">Estornos efetivados no dia</dt><dd className="numero-tabular">{moeda(item.estornos_eventos)}</dd></div>
-        </dl>
-      </li>)}</ul></>}
-  </section>
-}
-
-function ResumoProprietaria({ resumo }: { resumo: ResumoDashboardProprietaria }) {
-  const caixa = resumo.caixa.situacao_operacional_atual
-  return <section className={card}>
-    <h2 className="texto-titulo-secao">Fiscal e caixa</h2>
-    <div className="finance-metrics finance-summary-metrics mt-3">
-      <Metrica rotulo="Notas pendentes" valor={String(resumo.fiscal.pendente)} />
-      <Metrica rotulo="Emissão solicitada" valor={String(resumo.fiscal.emissao_solicitada)} nota="Solicitação não significa nota emitida" />
-      <Metrica rotulo="Erros fiscais" valor={String(resumo.fiscal.erro_emissao + resumo.fiscal.erro_cancelamento)} />
-      <Metrica rotulo="Caixas aguardando aprovação" valor={String(caixa.aguardando_aprovacao)} />
-      <Metrica rotulo="Caixas devolvidos" valor={String(caixa.devolvido_para_correcao)} />
-      <Metrica rotulo="Diferenças em caixas aprovados" valor={moeda(resumo.caixa.aprovados_periodo.diferenca_total)} />
-    </div>
-  </section>
-}
-
 function DetalhesProprietaria({ dados }: { dados: DashboardProprietaria }) {
-  return <>
-    <ResumoProprietaria resumo={dados.resumo} />
-    <section className={card}><h2 className="texto-titulo-secao">Alertas operacionais</h2>
-      {!dados.alertas.length ? <div className="finance-empty"><strong>Nenhum alerta no momento</strong><p>As situações que precisam de atenção aparecerão aqui.</p></div> :
-        <ul className="mt-3 divide-y divide-[var(--borda)]">{dados.alertas.map((alerta) => <li key={`${alerta.tipo}:${alerta.entidade_id}`} className="py-3">
-          <p className="font-medium">{alerta.tipo.replaceAll('_', ' ')} · {alerta.prioridade}</p>
-          <p className="text-xs text-[var(--texto-secundario)]">{formatarDataFinanceira(alerta.data)}</p>
-        </li>)}</ul>}
-      {dados.alertas_total > dados.alertas.length && <p className="mt-2 text-xs text-[var(--cor-alerta)]">Exibindo {dados.alertas.length} de {dados.alertas_total} alertas. Consulte o detalhe completo em relatório apropriado.</p>}
-    </section>
-    <section className={card}><h2 className="texto-titulo-secao">Por clínica</h2>
-      {!dados.por_clinica.length ? <div className="finance-empty"><strong>Sem movimento por clínica</strong><p>Os resultados aparecem quando há atividade no período.</p></div> :
-        <ul className="mt-3 divide-y divide-[var(--borda)]">{dados.por_clinica.map((item) => <li key={item.clinica_id} className="flex flex-wrap justify-between gap-2 py-3">
-          <span className="font-medium">{item.nome}</span><span className="numero-tabular">{moeda(item.resumo.producao.liquido_atual_coorte)}</span>
-        </li>)}</ul>}
-      {dados.clinicas_total > dados.por_clinica.length && <p className="mt-2 text-xs text-[var(--cor-alerta)]">Exibindo {dados.por_clinica.length} de {dados.clinicas_total} clínicas.</p>}
-    </section>
-    <section className={card}><h2 className="texto-titulo-secao">Por profissional</h2>
-      {!dados.por_profissional.length ? <div className="finance-empty"><strong>Sem produção profissional</strong><p>Os valores aparecerão após os primeiros recebimentos.</p></div> :
-        <ul className="mt-3 divide-y divide-[var(--borda)]">{dados.por_profissional.map((item) => <li key={item.profissional_id} className="flex flex-wrap justify-between gap-2 py-3">
-          <span className="font-medium">{item.nome}</span><span className="numero-tabular">Produção líquida {moeda(item.resumo.producao.liquido_atual_coorte)}</span>
-        </li>)}</ul>}
-      {dados.profissionais_total > dados.por_profissional.length && <p className="mt-2 text-xs text-[var(--cor-alerta)]">Exibindo {dados.por_profissional.length} de {dados.profissionais_total} profissionais.</p>}
-    </section>
-  </>
+  const resumo = dados.resumo
+  return <details className="finance-detail-disclosure"><summary>Detalhamento por clínica, profissional e situação operacional</summary><div className="finance-detail-grid">
+    <FinanceCard title="Fiscal e caixa"><dl className="finance-detail-list">
+      <div><dt>Emissão solicitada</dt><dd>{resumo.fiscal.emissao_solicitada}</dd></div><div><dt>Erros na emissão</dt><dd>{resumo.fiscal.erro_emissao}</dd></div><div><dt>Erros no cancelamento</dt><dd>{resumo.fiscal.erro_cancelamento}</dd></div>
+      <div><dt>Caixas aguardando aprovação</dt><dd>{resumo.caixa.situacao_operacional_atual.aguardando_aprovacao}</dd></div><div><dt>Caixas devolvidos</dt><dd>{resumo.caixa.situacao_operacional_atual.devolvido_para_correcao}</dd></div>
+      <div><dt>Diferenças em caixas aprovados</dt><dd><MoneyValue value={resumo.caixa.aprovados_periodo.diferenca_total} /></dd></div><div><dt>Parcela líquida dos profissionais</dt><dd><MoneyValue value={resumo.producao.profissional_liquida} /></dd></div><div><dt>Ajustes pendentes agora</dt><dd><MoneyValue value={resumo.ajustes.valor_pendente_atual} /></dd></div>
+    </dl><p className="finance-caption">Solicitação fiscal não significa nota emitida. Ajustes pendentes não são descontados novamente da produção.</p></FinanceCard>
+    <FinanceCard title="Por clínica">{!dados.por_clinica.length ? <FinanceEmptyState title="Sem movimento por clínica">Os resultados aparecerão após os recebimentos.</FinanceEmptyState> : <ul className="finance-detail-list">{dados.por_clinica.map((item) => <li key={item.clinica_id}><span>{item.nome}</span><strong><MoneyValue value={item.resumo.producao.liquido_atual_coorte} /></strong></li>)}</ul>}{dados.clinicas_total > dados.por_clinica.length && <p className="finance-caption">Exibindo {dados.por_clinica.length} de {dados.clinicas_total} clínicas.</p>}</FinanceCard>
+    <FinanceCard title="Por profissional">{!dados.por_profissional.length ? <FinanceEmptyState title="Sem produção profissional">Os resultados aparecerão após os recebimentos.</FinanceEmptyState> : <ul className="finance-detail-list">{dados.por_profissional.map((item) => <li key={item.profissional_id}><span>{item.nome}</span><strong>Produção líquida <MoneyValue value={item.resumo.producao.liquido_atual_coorte} /></strong></li>)}</ul>}{dados.profissionais_total > dados.por_profissional.length && <p className="finance-caption">Exibindo {dados.por_profissional.length} de {dados.profissionais_total} profissionais.</p>}</FinanceCard>
+    <FinanceCard title="Alertas operacionais">{!dados.alertas.length ? <FinanceEmptyState title="Nenhum alerta no momento">Situações que precisam de atenção aparecerão aqui.</FinanceEmptyState> : <ul className="finance-detail-list">{dados.alertas.map((item) => <li key={`${item.tipo}:${item.entidade_id}`}><span>{item.tipo.replaceAll('_', ' ')} · {item.prioridade}</span><small>{formatarDataFinanceira(item.data)}</small></li>)}</ul>}{dados.alertas_total > dados.alertas.length && <p className="finance-caption">Exibindo {dados.alertas.length} de {dados.alertas_total} alertas.</p>}</FinanceCard>
+  </div></details>
 }
-
 function DetalhesProfissional({ dados }: { dados: DashboardProfissional }) {
-  return <section className={card}><h2 className="texto-titulo-secao">Meus repasses</h2>
-    {!dados.resumo.lista_repasses?.length ? <div className="finance-empty"><strong>Nenhum repasse no período</strong><p>Seu histórico de repasses aparecerá aqui.</p></div> :
-      <ul className="mt-3 divide-y divide-[var(--borda)]">{dados.resumo.lista_repasses.map((item) => <li key={item.id} className="py-3">
-        <div className="flex flex-wrap justify-between gap-2"><div><p className="font-medium">{item.clinica_nome} · {item.status}</p>
-          <p className="text-xs text-[var(--texto-secundario)]">{formatarDataFinanceira(item.data)}</p></div>
-          <span className="numero-tabular font-semibold">Líquido {moeda(item.valor_liquido)}</span></div>
-        <p className="mt-1 text-xs text-[var(--texto-secundario)]">Bruto {moeda(item.valor_bruto_profissional)} · Estornos antes do pagamento {moeda(item.valor_estornos_antes_pagamento)} · Ajustes {moeda(item.valor_ajustes_aplicados)}</p>
-      </li>)}</ul>}
-    {(dados.resumo.lista_repasses_total ?? 0) > (dados.resumo.lista_repasses?.length ?? 0) &&
-      <p className="mt-2 text-xs text-[var(--cor-alerta)]">Lista limitada: exibindo {dados.resumo.lista_repasses?.length ?? 0} de {dados.resumo.lista_repasses_total} repasses.</p>}
-  </section>
+  return <FinanceCard title="Meus repasses">{!dados.resumo.lista_repasses?.length ? <FinanceEmptyState title="Nenhum repasse no período" icon="wallet">Seu histórico de repasses aparecerá aqui.</FinanceEmptyState> :
+    <ul className="finance-doctor-payouts">{dados.resumo.lista_repasses.map((item) => <li key={item.id}><div><strong>{item.clinica_nome}</strong><p className="finance-caption">{formatarDataFinanceira(item.data)} · {item.status === 'pago' ? 'Pago' : item.status === 'ajustado' ? 'Ajustado' : 'Pendente'}</p><p className="finance-caption">Bruto <MoneyValue value={item.valor_bruto_profissional} /> · Estornos antes do pagamento <MoneyValue value={item.valor_estornos_antes_pagamento} /> · Ajustes <MoneyValue value={item.valor_ajustes_aplicados} /></p></div><strong>Líquido <MoneyValue value={item.valor_liquido} /></strong></li>)}</ul>}
+    {(dados.resumo.lista_repasses_total ?? 0) > (dados.resumo.lista_repasses?.length ?? 0) && <p className="finance-caption">Exibindo {dados.resumo.lista_repasses?.length ?? 0} de {dados.resumo.lista_repasses_total} repasses.</p>}
+  </FinanceCard>
 }
-
-export default function FinanceiroPainel({ clinicaId, papel }: { clinicaId: string; papel: Extract<Papel, 'proprietaria' | 'medico'> }) {
+export default function FinanceiroPainel({ clinicaId, papel, onNavegar, periodHost }: { clinicaId: string; papel: Extract<Papel, 'proprietaria' | 'medico'>; onNavegar?: (destino: Destino) => void; periodHost?: HTMLDivElement | null }) {
   const [inicio, setInicio] = useState(haTrintaDias)
   const [fim, setFim] = useState(hojeBahia)
   const [todos, setTodos] = useState(false)
   const [aplicado, setAplicado] = useState(() => ({ inicio: haTrintaDias(), fim: hojeBahia(), todos: false }))
   const [erroFiltro, setErroFiltro] = useState<string | null>(null)
+  const proprietaria = papel === 'proprietaria'
   const carregar = useCallback(async (): Promise<DashboardProprietaria | DashboardProfissional> => {
     const periodo = intervaloPorDias(aplicado.inicio, aplicado.fim)
-    return papel === 'proprietaria'
-      ? carregarDashboardProprietaria(periodo, { clinicaId: aplicado.todos ? null : clinicaId })
-      : carregarDashboardProfissional(periodo, aplicado.todos ? null : clinicaId)
+    return papel === 'proprietaria' ? carregarDashboardProprietaria(periodo, { clinicaId: aplicado.todos ? null : clinicaId }) : carregarDashboardProfissional(periodo, aplicado.todos ? null : clinicaId)
   }, [aplicado, clinicaId, papel])
-  const consulta = useFinanceiroConsulta(`${papel}:${clinicaId}:${aplicado.inicio}:${aplicado.fim}:${aplicado.todos}`, carregar,
-    nuncaVazio, { clinicaId, leitura: papel === 'proprietaria' ? 'dashboard_proprietaria' : 'dashboard_profissional' })
+  const consulta = useFinanceiroConsulta(`${papel}:${clinicaId}:${aplicado.inicio}:${aplicado.fim}:${aplicado.todos}`, carregar, nuncaVazio, { clinicaId, leitura: proprietaria ? 'dashboard_proprietaria' : 'dashboard_profissional' })
+  const carregarCaixa = useCallback(() => consultarCaixaAtual(clinicaId), [clinicaId])
+  const caixa = useFinanceiroConsulta(proprietaria && !aplicado.todos ? clinicaId : null, carregarCaixa, nuncaVazio, { clinicaId, leitura: 'caixa' })
   function aplicar(evento: FormEvent) {
     evento.preventDefault()
     try { intervaloPorDias(inicio, fim); setErroFiltro(null); setAplicado({ inicio, fim, todos }) }
     catch (erro) { setErroFiltro(erro instanceof Error ? erro.message : 'Período inválido.') }
   }
   const dados = consulta.resultado.estado === 'sucesso' ? consulta.resultado.dados : null
-  return <div className="space-y-6">
-    <header><h1 className="texto-titulo-tela">{papel === 'medico' ? 'Meu financeiro' : 'Painel financeiro'}</h1>
-      <p className="mt-1 text-sm text-[var(--texto-secundario)]">Produção, repasses e posição atual com dados oficiais.</p></header>
-    <form onSubmit={aplicar} className={`${card} finance-toolbar`}>
-      <label className="text-sm font-medium">De <input type="date" className={`${campo} mt-1 block`} value={inicio} onChange={(e) => setInicio(e.target.value)} required /></label>
-      <label className="text-sm font-medium">Até <input type="date" className={`${campo} mt-1 block`} value={fim} onChange={(e) => setFim(e.target.value)} required /></label>
-      <label className="flex min-h-11 items-center gap-2 text-sm"><input type="checkbox" checked={todos} onChange={(e) => setTodos(e.target.checked)} />Todas as minhas clínicas</label>
-      <button type="submit" className={`${botao} finance-button-primary`}>Aplicar</button>
-      <button type="button" className={botao} onClick={() => void consulta.recarregar()}>Atualizar</button>
-      {erroFiltro && <p role="alert" className="w-full text-sm text-[var(--cor-erro)]">{erroFiltro}</p>}
+  const resumo = dados?.resumo
+  const periodo = <form onSubmit={aplicar} className="finance-period-form" aria-label="Período dos indicadores">
+      <label>De<input type="date" value={inicio} onChange={(e) => setInicio(e.target.value)} required /></label><label>Até<input type="date" value={fim} onChange={(e) => setFim(e.target.value)} required /></label>
+      <label className="finance-scope-check"><input type="checkbox" checked={todos} onChange={(e) => setTodos(e.target.checked)} />Todas as minhas clínicas</label>
+      <button type="submit" className="finance-button finance-button-primary">Aplicar</button><button type="button" className="finance-button finance-icon-button" aria-label="Atualizar indicadores" onClick={() => { void consulta.recarregar(); void caixa.recarregar() }}><FinanceIcon name="refresh" /></button>
     </form>
-    {consulta.resultado.estado === 'carregando' && <div role="status" aria-label="Carregando indicadores" className={`${card} finance-skeleton`} />}
-    {consulta.resultado.estado === 'erro' && <div role="alert" className={card}><p>{consulta.resultado.erro.message}</p>
-      <button type="button" className={`${botao} mt-3`} onClick={() => void consulta.recarregar()}>Tentar novamente</button></div>}
-    {dados && <>
-      <p className="text-xs text-[var(--texto-secundario)]">Período de {aplicado.inicio} a {aplicado.fim}, incluindo ambos os dias; a consulta usa o início do dia seguinte como limite exclusivo. Atualizado em {formatarDataFinanceira(dados.consultado_em)}. Estoques indicados são posições atuais.</p>
-      <ResumoPrincipal resumo={dados.resumo} proprietaria={papel === 'proprietaria'} />
-      <PagamentosERepasses resumo={dados.resumo} />
-      {papel === 'proprietaria' ? <DetalhesProprietaria dados={dados as DashboardProprietaria} /> : <DetalhesProfissional dados={dados as DashboardProfissional} />}
-      <Serie resumo={dados.resumo} />
+  return <div className="finance-overview">
+    {periodHost ? <>{createPortal(periodo, periodHost)}{!proprietaria && <h2 className="finance-overview-title">Meu financeiro</h2>}</> : <div className="finance-overview-toolbar"><h2>{proprietaria ? 'Visão geral' : 'Meu financeiro'}</h2>{periodo}</div>}
+    {erroFiltro && <p role="alert" className="text-sm text-[var(--cor-erro)]">{erroFiltro}</p>}
+    {consulta.resultado.estado === 'carregando' && <div role="status" aria-label="Carregando indicadores" className="finance-stat-grid">{[0, 1, 2, 3].map((i) => <div key={i} className="finance-skeleton" />)}</div>}
+    {consulta.resultado.estado === 'erro' && <div role="alert" className="finance-surface"><p>{consulta.resultado.erro.message}</p><button type="button" className="finance-button mt-3" onClick={() => void consulta.recarregar()}>Tentar novamente</button></div>}
+    {dados && resumo && <>
+      <div className="finance-stat-grid">
+        <FinanceMetric label="Recebido no período" value={<MoneyValue value={resumo.producao.bruto} />} note={`${resumo.producao.quantidade} recebimentos`} icon="money" tone="green" />
+        <FinanceMetric label={proprietaria ? 'Parcela líquida da clínica' : 'Sua parcela líquida'} value={<MoneyValue value={proprietaria ? resumo.producao.clinica_liquida : resumo.producao.profissional_liquida} />} note={proprietaria ? 'Participação nos recebimentos' : 'Referente à sua produção'} icon={proprietaria ? 'clinic' : 'people'} tone="blue" />
+        <FinanceMetric label="Repasses pendentes" value={<MoneyValue value={resumo.repasses.valor_repasses_pendentes_atual} />} note={`${resumo.repasses.repasses_pendentes_atual} repasses · posição atual`} icon="people" tone="purple" />
+        {proprietaria ? <FinanceMetric label="Caixa" value={aplicado.todos ? 'Por clínica' : <CaixaValor resultado={caixa.resultado} />} note={aplicado.todos ? 'Selecione uma clínica para operar' : caixa.resultado.estado === 'sucesso' && caixa.resultado.dados.tipo === 'operacional' ? rotulosCaixa[caixa.resultado.dados.caixa.status] : 'Operação da clínica ativa'} icon="cash" tone="orange" /> : <FinanceMetric label="Parcela da clínica" value={<MoneyValue value={resumo.producao.clinica_liquida} />} note="Nos seus atendimentos" icon="clinic" tone="orange" />}
+      </div>
+      <div className="finance-chart-grid"><FinanceReceiptsChart resumo={resumo} /><FinancePaymentsChart resumo={resumo} /></div>
+      <div className="finance-stat-grid finance-secondary-stats">
+        <FinanceMetric label="Recebimentos (líquido atual)" value={<MoneyValue value={resumo.producao.liquido_atual_coorte} />} note="Considera estornos dos recebimentos, inclusive posteriores" icon="down" tone="green" />
+        <FinanceMetric label="Estornos" value={<MoneyValue value={resumo.estornos_periodo.total} />} note={`${resumo.estornos_periodo.quantidade} efetivados no período`} icon="refund" tone="rose" />
+        <FinanceMetric label="Repasses pagos" value={<MoneyValue value={resumo.repasses.valor_repasses_pagos_periodo} />} note={`${resumo.repasses.repasses_pagos_periodo} pagamentos no período`} icon="wallet" tone="purple" />
+        <FinanceMetric label="Repasses pendentes" value={<MoneyValue value={resumo.repasses.valor_repasses_pendentes_atual} />} note="Posição atual, independente do período" icon="clock" tone="orange" />
+      </div>
+      {proprietaria ? <>{!aplicado.todos && <OperacaoAtual key={clinicaId} clinicaId={clinicaId} resumo={(dados as DashboardProprietaria).resumo} caixa={caixa.resultado} recarregarCaixa={() => void caixa.recarregar()} onNavegar={onNavegar} />}<DetalhesProprietaria dados={dados as DashboardProprietaria} /></> : <DetalhesProfissional dados={dados as DashboardProfissional} />}
+      <p className="finance-updated">{aplicado.todos ? 'Todas as clínicas autorizadas' : 'Clínica selecionada'} · {aplicado.inicio.split('-').reverse().join('/')} a {aplicado.fim.split('-').reverse().join('/')} · Atualizado em {formatarDataFinanceira(dados.consultado_em)}</p>
     </>}
   </div>
 }

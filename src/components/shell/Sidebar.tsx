@@ -63,6 +63,7 @@ interface SidebarProps {
   clinicasDoUsuario: ClinicaAtiva[]
   onSelecionarClinica: (id: string) => void
   papel: Papel | null
+  emailUsuario: string
   aberta: boolean
   compacto: boolean
   onFechar: () => void
@@ -76,6 +77,7 @@ function Sidebar({
   clinicasDoUsuario,
   onSelecionarClinica,
   papel,
+  emailUsuario,
   aberta,
   compacto,
   onFechar,
@@ -103,7 +105,7 @@ function Sidebar({
       aria-modal={compacto && aberta ? true : undefined}
       aria-label={compacto && aberta ? 'Menu principal' : undefined}
       inert={compacto && !aberta}
-      className={`fixed inset-y-0 left-0 z-40 flex w-[248px] flex-none flex-col overflow-y-auto bg-[var(--cor-menu)] px-3 py-5 transition-transform duration-200 lg:static lg:translate-x-0 ${
+      className={`app-sidebar fixed inset-y-0 left-0 z-40 flex w-[240px] flex-none flex-col overflow-y-auto bg-[var(--cor-menu)] px-3 py-5 transition-transform duration-200 lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 ${
         aberta ? 'translate-x-0' : '-translate-x-full'
       }`}
     >
@@ -232,6 +234,7 @@ function Sidebar({
       </nav>
 
       <div className="mt-auto border-t border-[var(--menu-borda)] pt-3">
+        <div className="mb-3 flex items-center gap-3 px-3 pt-2"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--menu-avatar-bg)] text-xs font-semibold text-[var(--menu-texto)]">{emailUsuario.slice(0, 2).toUpperCase()}</span><div className="min-w-0"><p className="truncate text-xs font-semibold text-[var(--menu-texto)]" title={emailUsuario}>{emailUsuario.split('@')[0]}</p><p className="text-xs text-[var(--menu-texto-secundario)]">{papel === 'proprietaria' ? 'Proprietária' : papel === 'medico' ? 'Médico' : papel === 'recepcao' ? 'Recepção' : 'Usuário'}</p></div></div>
         <div className="flex flex-col gap-0.5">
           <button
             type="button"
