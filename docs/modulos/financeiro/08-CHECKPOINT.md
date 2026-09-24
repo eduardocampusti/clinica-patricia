@@ -1042,3 +1042,9 @@ Testes transacionais preparados em `database/tests/financeiro/20260922_fase10c_r
 ## 47. FASE 14 — redesign premium do frontend
 
 Shell compartilhado, Caixa, Estornos, Repasses, Fiscal, Painel por papel e Relatórios receberam nova composição responsiva. Prévia de relatório usa página oficial por cursor e não registra exportação; PDF/XLSX continuam sob demanda. Testes financeiros 15/15, Playwright afetado e build aprovados nos cenários registrados em `docs/15-REDESIGN-FINANCEIRO.md`; lint sem erros. Capturas sintéticas antes/depois ficam em `scratch/fase14-*` fora do Git. Nenhuma regra financeira, migration ou dado remoto foi alterado. Cutover permanece pendente das decisões da FASE 13.
+
+## 48. FASE 14 — conceito visual aprovado aplicado
+
+Execução concluída em 24/09/2026: seis telas financeiras alinhadas à referência aprovada, sidebar escura preservando tokens da clínica, indicadores com ícones, gráficos com leitura textual, cartões operacionais e filtros compactos. Fontes oficiais e restrições por papel preservadas; nenhuma categoria, tendência ou total financeiro fictício foi acrescentado. Médico e consolidado não montam os cartões operacionais da clínica.
+
+Validação: testes financeiros 15/15, Playwright 59/59 e revalidação final direcionada 13/13; build aprovado; lint sem erros, com warning histórico de Fast Refresh. Avisos de bundle/importação permanecem. As 24 capturas sintéticas locais estão em `scratch/fase14-approved-concept/`, sem persistência no banco. Detalhes e limites em `docs/15-REDESIGN-FINANCEIRO.md`; README e Documento Funcional Mestre sincronizados. Nenhuma alteração de backend, RPC, RLS, migration ou Supabase. O cutover operacional e o smoke autenticado real não fazem parte desta entrega visual.

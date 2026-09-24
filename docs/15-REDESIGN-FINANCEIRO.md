@@ -1,5 +1,19 @@
 # FASE 14 — Redesign do Financeiro
 
+## Complemento — conceito visual aprovado aplicado (24/09/2026)
+
+A referência aprovada em 23/09 foi aplicada à Visão geral, Caixa, Estornos, Repasses, Fiscal e Relatórios. A composição usa quatro indicadores principais, curva diária, distribuição por pagamento, indicadores secundários e cartões operacionais. O shell mantém a sidebar escura e os tokens de marca de cada clínica; não altera permissões. Relatórios tem barra compacta e filtros avançados recolhidos em todas as larguras.
+
+`FinanceVisual.tsx` centraliza ícones, métricas, cartões e gráficos. Os dados continuam vindo dos wrappers oficiais existentes. Não foram adicionados percentuais de crescimento, comparação anterior, séries semanais/mensais, débito ou outras categorias sem contrato. O gráfico apresenta valores brutos e separa estornos; valores líquidos seguem os campos oficiais. Pendências de estornos/repasses são atuais; fiscal respeita o período. Últimas movimentações mostra somente os recebimentos elegíveis retornados pela consulta existente da clínica, sem filtro de período, não um extrato completo. Cartões operacionais não aparecem no consolidado nem para médico. O CTA de fechamento apenas abre o fluxo de Caixa existente.
+
+Validação desta aplicação:
+
+- Unitários/contratuais: 15/15. Suíte Playwright afetada: 59/59; após o último ajuste da barra de Relatórios, revalidação direcionada: 13/13.
+- Build aprovado; lint sem erros. Persistem os avisos anteriores de chunk acima de 500 kB, importação estática/dinâmica de Supabase e Fast Refresh em `ThemeProvider`.
+- 24 capturas sintéticas em `scratch/fase14-approved-concept/`: seis telas, médico e vazio em desktop 1440×1000, tablet 820×1180 e celular 390×844. Capturas locais não versionadas; nenhum dado sintético persistido.
+- Sem overflow horizontal estrutural nos cenários testados. Gráfico ajusta largura e oferece valores diários em texto. Contraste dos principais pares verificado; navegação por teclado, Escape/retorno de foco do menu e isolamento do médico exercitados. Isso não substitui auditoria integral WCAG nem smoke autenticado real.
+- Nenhuma alteração de backend, RPC, RLS, migration ou escrita no Supabase nesta aplicação. O histórico abaixo descreve a primeira implementação da FASE 14 e permanece preservado.
+
 **Estado:** implementação visual concluída em 23/09/2026. **Escopo:** shell compartilhado e interface financeira; nenhuma regra, RPC de mutação, permissão, migration ou dado remoto foi alterado.
 
 ## Direção e decisões

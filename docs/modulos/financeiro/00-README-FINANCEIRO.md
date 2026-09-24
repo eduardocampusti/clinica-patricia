@@ -93,3 +93,5 @@ O Financeiro novo permanece limpo e tecnicamente homologado. A FASE 13 comprovou
 ## FASE 14 — Redesign visual
 
 Shell e seis áreas do Financeiro foram redesenhados com a identidade e os dados oficiais preservados. A prévia paginada de Relatórios é leitura; exportação auditada permanece separada. Decisões, capturas e validações: `../../15-REDESIGN-FINANCEIRO.md`. Nenhuma migration ou cutover.
+
+O conceito visual aprovado posteriormente foi aplicado à Visão geral e às áreas operacionais: indicadores com ícones, gráfico diário, donut dos três meios homologados, caixa oficial, pendências e recebimentos recentes. Sidebar continua escura com a cor da clínica. O detalhamento gerencial permanece recolhível, e a visão médica mantém consultas próprias. Capturas específicas: `scratch/fase14-approved-concept/`.
