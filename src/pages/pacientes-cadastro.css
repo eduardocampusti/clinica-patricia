@@ -1,0 +1,196 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+.paciente-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 3.2vh 2rem;
+  background: rgb(11 28 48 / 55%);
+  backdrop-filter: blur(7px);
+}
+
+.paciente-modal {
+  --cadastro-azul: #006194;
+  --cadastro-verde: #006947;
+  --cadastro-fundo: #f8f9ff;
+  --cadastro-texto: #0b1c30;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  width: min(1280px, calc(100vw - 4rem));
+  height: auto;
+  max-height: min(1180px, calc(100dvh - 6.4vh));
+  overflow: hidden;
+  color: var(--cadastro-texto);
+  font-family: 'Plus Jakarta Sans', Inter, ui-sans-serif, system-ui, sans-serif;
+  background: var(--cadastro-fundo);
+  border: 1px solid #dfe5ef;
+  border-radius: 22px;
+  box-shadow: 0 30px 80px rgb(11 28 48 / 30%);
+}
+.paciente-modal *, .paciente-modal *::before, .paciente-modal *::after { box-sizing: border-box; }
+
+.paciente-modal-cabecalho {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  min-height: 74px;
+  padding: 12px 30px;
+  background: #fff;
+  border-bottom: 1px solid #e6eaf1;
+}
+
+.paciente-modal-icone {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  flex: 0 0 auto;
+  color: var(--cadastro-azul);
+  font-size: 23px;
+  font-weight: 700;
+  background: #e3f1ff;
+  border: 1px solid #a8cdef;
+  border-radius: 15px;
+}
+
+.paciente-modal-titulo { margin: 0; font-size: clamp(1.18rem, 2vw, 1.55rem); font-weight: 700; letter-spacing: -.035em; }
+.paciente-modal-subtitulo { margin: 2px 0 0; color: #526174; font-size: .86rem; }
+.paciente-rascunho { flex: 0 0 auto; padding: 7px 12px; color: #44556b; font-size: .75rem; font-weight: 600; background: #f1f5fb; border: 1px solid #d8e1ec; border-radius: 999px; }
+.paciente-modal-fechar { width: 42px; height: 42px; flex: 0 0 42px; border: 0; border-radius: 12px; color: #253548; font-size: 2rem; line-height: 1; background: transparent; }
+.paciente-modal-fechar:hover, .paciente-modal-fechar:focus-visible { background: #edf2f8; outline: 2px solid #79b9df; outline-offset: 1px; }
+
+.paciente-etapas {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  padding: 16px 30px;
+  overflow-x: auto;
+  background: #eef3ff;
+  border-bottom: 1px solid #dfe6f1;
+}
+.paciente-etapas > button, .paciente-etapas > span {
+  display: flex;
+  min-width: 210px;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  color: #34465b;
+  text-align: left;
+  background: rgb(255 255 255 / 55%);
+  border: 1px solid transparent;
+  border-radius: 15px;
+}
+.paciente-etapas > button { cursor: pointer; }
+.paciente-etapas > button.ativa { color: #005b90; background: #fff; border-color: #8cc1df; box-shadow: 0 3px 12px rgb(0 97 148 / 8%); }
+.paciente-etapas > button.concluida { color: var(--cadastro-verde); }
+.paciente-etapas .indisponivel { opacity: .56; }
+.paciente-etapa-numero { display: grid; width: 34px; height: 34px; place-items: center; flex: 0 0 auto; color: #17658f; font-weight: 700; background: #e5eefc; border-radius: 11px; }
+.paciente-etapas .ativa .paciente-etapa-numero { color: #fff; background: var(--cadastro-azul); }
+.paciente-etapas .concluida .paciente-etapa-numero { color: #fff; background: var(--cadastro-verde); }
+.paciente-etapas strong, .paciente-etapas small { display: block; line-height: 1.25; }
+.paciente-etapas strong { font-size: .86rem; font-weight: 700; }
+.paciente-etapas small { margin-top: 3px; font-size: .75rem; }
+
+.paciente-modal-scroll { min-width: 0; min-height: 0; padding: 30px; overflow: auto; overscroll-behavior: contain; }
+.paciente-aviso-real { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 28px; padding: 18px 22px; color: #173b64; background: #ebf1ff; border: 1px solid #d4e2f7; border-radius: 14px; }
+.paciente-aviso-real > span { color: var(--cadastro-azul); font-size: 1.25rem; }
+.paciente-aviso-real p { margin: 0; font-size: .9rem; line-height: 1.55; }
+.paciente-secao { min-width: 0; padding: 24px 26px; background: #fff; border: 1px solid #dfe4eb; border-radius: 17px; box-shadow: 0 2px 5px rgb(11 28 48 / 4%); }
+.paciente-secao + .paciente-secao { margin-top: 24px; }
+.paciente-secao-titulo-linha { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-bottom: 14px; border-bottom: 1px solid #e6eaf0; }
+.paciente-secao-titulo-linha h3 { margin: 0; font-size: 1.35rem; font-weight: 700; letter-spacing: -.025em; }
+.paciente-secao-titulo-linha span { color: #5d6878; font-size: .75rem; }
+.paciente-form-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 22px 20px; padding-top: 20px; }
+.paciente-form-grid > div { min-width: 0; grid-column: span 4; }
+.paciente-form-grid label { color: #0b1c30; }
+.paciente-form-grid input, .paciente-form-grid select, .paciente-form-grid textarea { width: 100%; min-width: 0; min-height: 48px; background: #f8faff; border-color: #cfd8e5; border-radius: 10px; }
+.paciente-form-grid input:focus, .paciente-form-grid select:focus, .paciente-form-grid textarea:focus { border-color: var(--cadastro-azul); box-shadow: 0 0 0 3px rgb(0 97 148 / 12%); }
+.paciente-foto-reserva { grid-column: span 3 !important; grid-row: span 2; display: flex; min-height: 244px; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; background: #eff4ff; border: 1px dashed #b8c8dc; border-radius: 15px; }
+.paciente-foto-reserva p { margin: 5px 0 14px; color: #667384; font-size: .75rem; }
+.paciente-foto-reserva button { width: 100%; padding: 10px; color: #526174; background: #fff; border: 1px solid #d2d9e3; border-radius: 9px; }
+.paciente-avatar { display: grid; width: 86px; height: 86px; margin-bottom: 12px; place-items: center; color: #236a94; font-size: 1.5rem; font-weight: 700; background: #d9ebf8; border: 4px solid #b5d8ef; border-radius: 50%; }
+.paciente-avatar-neutro { width: 34px; height: 34px; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; }
+.paciente-campo-nome { grid-column: span 9 !important; }
+.paciente-campo-cpf { grid-column: span 4 !important; }
+.paciente-campo-data { grid-column: span 3 !important; }
+.paciente-campo-sexo { grid-column: span 2 !important; }
+.paciente-endereco-grid { display: grid; min-width: 0; grid-column: 1 / -1; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 22px 20px; order: 1; }
+.paciente-legenda-visualmente-oculta {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  white-space: nowrap;
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+}
+.paciente-endereco-grid > div { grid-column: span 4; }
+.paciente-endereco-grid > div:nth-of-type(1) { grid-column: span 3; }
+.paciente-endereco-grid > div:nth-of-type(2) { grid-column: span 5; }
+.paciente-endereco-grid > div:nth-of-type(3), .paciente-endereco-grid > div:nth-of-type(4) { grid-column: span 2; }
+.paciente-endereco-grid > div:nth-of-type(5) { grid-column: span 4; }
+.paciente-endereco-grid > div:nth-of-type(6) { grid-column: span 8; }
+.paciente-cidade-uf { display: grid; grid-template-columns: minmax(0, 5fr) minmax(7rem, 3fr); gap: 20px; }
+.paciente-subsecao-titulo { display: flex; grid-column: 1 / -1 !important; align-items: center; gap: 9px; padding-top: 2px; color: #173b64; order: 2; }
+.paciente-subsecao-titulo > span { color: var(--cadastro-azul); font-size: 1rem; }
+.paciente-subsecao-titulo > strong { font-size: .95rem; }
+.paciente-contato-card { grid-column: span 6 !important; padding: 18px; border: 1px solid #e0e5ec; border-radius: 14px; order: 3; }
+.paciente-observacoes { grid-column: 1 / -1 !important; order: 4; }
+.paciente-privacidade-pendente { margin: 22px 0 0; padding: 14px 16px; color: #44556b; font-size: .8rem; line-height: 1.5; background: #f4f6fa; border: 1px solid #d8e0eb; border-radius: 12px; }
+.paciente-secao-reservada { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+  .paciente-secao-reservada h3 { margin: 0 0 4px; font-size: 1.25rem; }
+.paciente-secao-reservada p { margin: 0; color: #647184; font-size: .82rem; }
+.paciente-secao-reservada > span { flex: 0 0 auto; padding: 7px 11px; color: #5c6777; font-size: .72rem; font-weight: 700; background: #eef1f5; border-radius: 999px; }
+.paciente-oculto { display: none !important; }
+
+.paciente-modal-rodape { display: flex; align-items: center; justify-content: flex-end; gap: 14px; min-height: 84px; padding: 14px 30px; background: #eef3ff; border-top: 1px solid #d9e1ed; }
+.paciente-botao-secundario, .paciente-botao-primario { min-height: 50px; padding: 0 22px; font-weight: 600; border-radius: 13px; transition: .18s ease; }
+.paciente-botao-secundario { color: #18324d; background: #fff; border: 1px solid #cfd8e5; }
+.paciente-botao-primario { color: #fff; background: var(--cadastro-azul); border: 1px solid var(--cadastro-azul); box-shadow: 0 5px 12px rgb(0 97 148 / 20%); }
+.paciente-botao-secundario:hover { background: #f5f7fb; }
+.paciente-botao-primario:hover { background: #004f7a; }
+.paciente-botao-secundario:focus-visible, .paciente-botao-primario:focus-visible { outline: 3px solid #79b9df; outline-offset: 2px; }
+.paciente-cancelar { margin-right: auto; }
+
+@media (max-width: 900px) {
+  .paciente-modal-backdrop { padding: 12px; }
+  .paciente-modal { width: calc(100vw - 24px); max-height: calc(100dvh - 24px); }
+  .paciente-modal-cabecalho, .paciente-modal-scroll, .paciente-modal-rodape { padding-right: 20px; padding-left: 20px; }
+  .paciente-etapas { grid-template-columns: repeat(4, 230px); padding-right: 20px; padding-left: 20px; }
+  .paciente-form-grid > div { grid-column: span 6; }
+  .paciente-foto-reserva { grid-column: span 4 !important; }
+  .paciente-campo-nome { grid-column: span 8 !important; }
+  .paciente-campo-cpf, .paciente-campo-data, .paciente-campo-sexo { grid-column: span 4 !important; }
+  .paciente-endereco-grid > div, .paciente-endereco-grid > div:nth-of-type(1), .paciente-endereco-grid > div:nth-of-type(2), .paciente-endereco-grid > div:nth-of-type(3), .paciente-endereco-grid > div:nth-of-type(4), .paciente-endereco-grid > div:nth-of-type(5), .paciente-endereco-grid > div:nth-of-type(6) { grid-column: span 6; }
+  .paciente-cidade-uf { grid-template-columns: minmax(0, 1fr) 5rem; gap: 12px; }
+}
+
+@media (max-width: 620px) {
+  .paciente-modal-backdrop { padding: 0; }
+  .paciente-modal { width: 100vw; height: 100dvh; max-height: none; border: 0; border-radius: 0; }
+  .paciente-modal-cabecalho { min-height: 68px; padding: 10px 14px; }
+  .paciente-modal-icone { width: 42px; height: 42px; border-radius: 12px; }
+  .paciente-modal-subtitulo { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .paciente-modal-titulo { font-size: 1.05rem; }
+  .paciente-rascunho { display: none; }
+  .paciente-etapas { grid-template-columns: repeat(4, 205px); padding: 10px 14px; }
+  .paciente-modal-scroll { padding: 16px 14px; }
+  .paciente-aviso-real { margin-bottom: 16px; padding: 14px; }
+  .paciente-secao { padding: 18px 14px; }
+  .paciente-secao-titulo-linha { align-items: flex-start; flex-direction: column; gap: 5px; }
+  .paciente-secao-titulo-linha h3 { font-size: 1.08rem; }
+  .paciente-form-grid { display: flex; flex-direction: column; gap: 0; }
+  .paciente-form-grid > div, .paciente-endereco-grid > div { margin-bottom: 16px; }
+  .paciente-foto-reserva { min-height: 190px; }
+  .paciente-endereco-grid { display: block; }
+  .paciente-secao-reservada { align-items: flex-start; flex-direction: column; }
+  .paciente-secao-reservada > span { align-self: flex-start; }
+  .paciente-modal-rodape { min-height: 76px; flex-wrap: wrap; gap: 8px; padding: 10px 14px; }
+  .paciente-botao-secundario, .paciente-botao-primario { min-height: 44px; padding: 0 13px; font-size: .78rem; }
+  .paciente-cancelar { display: none; }
+  .paciente-botao-primario { flex: 1 1 180px; }
+}
