@@ -79,7 +79,7 @@ test('pacientes não baixa CPFs e faz busca exata segura na clínica ativa', asy
   await page.screenshot({ path: `scratch/fase11-operacional/pacientes-${info.project.name}.png`, fullPage: true })
 })
 
-test('cadastro de paciente formata dados, aceita CPF vazio e protege endereço manual', async ({ page }, info) => {
+test('cadastro de paciente valida antes de gravar, aceita CPF vazio e protege endereço manual', async ({ page }, info) => {
   let chamadasCpf = 0
   let pacienteInserido: Record<string, unknown> | null = null
 
@@ -192,6 +192,13 @@ test('cadastro de paciente formata dados, aceita CPF vazio e protege endereço m
 
   await page.getByLabel('Número').fill('100')
   await page.getByLabel('Complemento').fill('SALA VIP')
+  const email = page.getByLabel('E-mail')
+  await email.fill('email-invalido')
+  await page.getByRole('button', { name: 'Salvar paciente' }).click()
+
+  expect(await email.evaluate((campo) => (campo as HTMLInputElement).checkValidity())).toBe(false)
+  expect(pacienteInserido).toBeNull()
+  await email.fill('')
   await page.getByRole('button', { name: 'Salvar paciente' }).click()
 
   await expect(page.getByText('Paciente cadastrado com sucesso.')).toBeVisible()

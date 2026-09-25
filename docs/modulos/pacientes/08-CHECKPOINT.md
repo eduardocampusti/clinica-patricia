@@ -22,7 +22,15 @@
 - O fluxo “Novo paciente” da Agenda preserva clínica, profissional, data, horário e observações. Cancelar retorna sem criar paciente; salvar retorna com o paciente da mesma clínica selecionado.
 - A troca de clínica suspende superfícies sensíveis, associa respostas à clínica que originou a carga e limpa o formulário de paciente em transição.
 - Capturas sintéticas de identificação e endereço foram geradas para desktop, tablet e celular e permanecem fora dos arquivos candidatos à PR.
-- A suíte operacional passou em 27 cenários; os testes unitários de preenchimento passaram em 7 cenários; build e verificação de tipos passaram. O lint mantém somente advertências preexistentes fora do módulo.
+- A suíte operacional passou em 27 cenários e inclui regressão que impede `INSERT` quando o e-mail não satisfaz a validação nativa do formulário. Os testes unitários de preenchimento permanecem em 7 cenários; build e verificação de tipos passaram. O lint mantém somente advertências preexistentes fora do módulo.
+
+## Lacuna obrigatória antes do fluxo completo de menores
+
+- A regra aprovada determina que todo cadastro concluído de paciente menor possua ao menos um responsável legal vinculado na mesma clínica.
+- Esta versão ainda não possui formulário, persistência nem vínculo de responsável legal. Por isso, não implementa e não pode ser publicada ou descrita como fluxo completo de cadastro de menor.
+- A lacuna não inventa responsável e não cria bloqueio de agendamento ou atendimento. O tratamento operacional de menores já existentes e de data de nascimento ausente continua dependendo das decisões registradas no Documento Funcional Mestre.
+- Caminho técnico proposto para etapa posterior, sem migration pronta nesta revisão: definir o modelo de responsável e vínculo por `clinica_id`; garantir por chaves e autorização que paciente e responsável pertençam à mesma clínica; implementar gravação transacional do paciente menor com ao menos um vínculo; exigir no frontend nome, vínculo e “Telefone / WhatsApp” do responsável, mantendo CPF e e-mail opcionais; e cobrir RLS, duas clínicas, papéis, múltiplos vínculos e exceções aprovadas com testes sintéticos.
+- A escolha entre entidade própria de responsáveis, vínculo com pessoa já cadastrada ou outro modelo permanece para o desenho técnico. Não há identidade global nem compartilhamento automático entre Brotas e Ipupiara.
 
 ## Pendente
 

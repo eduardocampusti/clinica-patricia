@@ -456,8 +456,14 @@ function Pacientes({
     setEtapaCadastro(3)
   }
 
-  async function handleSubmit(event?: FormEvent<HTMLFormElement>) {
-    event?.preventDefault()
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    const formulario = event.currentTarget
+    if (!formulario.checkValidity()) {
+      formulario.reportValidity()
+      return
+    }
+
     setErroFormulario(null)
     const dados = normalizarFormulario(form)
     setForm(dados)
@@ -973,7 +979,7 @@ function Pacientes({
                 Avançar para Endereço &amp; Contatos →
               </button>
             ) : (
-              <button type="button" onClick={() => void handleSubmit()} disabled={salvando} className="paciente-botao-primario">
+              <button type="button" onClick={() => modalCadastroRef.current?.requestSubmit()} disabled={salvando} className="paciente-botao-primario">
                 {salvando ? 'Salvando...' : 'Salvar paciente'}
               </button>
             )}

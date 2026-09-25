@@ -226,6 +226,8 @@ CPF, telefone e CEP possuem máscaras de apresentação. O CPF aceita colagem co
 
 O avatar ilustrativo do cadastro acompanha, durante a digitação, as iniciais do primeiro e do último nome informado. Enquanto o nome estiver vazio, a interface apresenta um símbolo neutro; esse recurso não captura nem persiste fotografia.
 
+O formulário desta versão ainda não oferece cadastro nem vínculo de responsável legal. Portanto, ele não implementa o fluxo completo aprovado para pacientes menores e não deve ser publicado ou apresentado como cadastro completo de menor até que o vínculo clínico-administrativo exigido na seção 9-A seja implementado. Essa lacuna não cria bloqueio de agendamento ou atendimento e não autoriza inventar um responsável.
+
 Ao completar o CEP, o frontend consulta `https://viacep.com.br/ws/{CEP}/json/` enviando somente o CEP. O retorno pode preencher rua, bairro, cidade e UF; campos corrigidos manualmente não são sobrescritos. A implementação cancela a solicitação anterior e também compara a identidade da requisição para ignorar respostas atrasadas. CEP não encontrado e falha de rede são informados sem impedir preenchimento manual.
 
 O banco continua possuindo apenas a coluna textual `endereco`. Antes do `INSERT`, os campos estruturados da interface são compostos em uma string legível. Número e complemento permanecem manuais. Como os componentes estruturados não são armazenados separadamente e ainda não existe edição na página, uma edição estruturada futura não poderá reconstruí-los com total confiabilidade a partir do texto existente; resolver essa limitação exigirá decisão técnica posterior.
@@ -240,6 +242,7 @@ As validações atuais exigem:
 - nome preenchido;
 - CPF válido, quando informado;
 - telefone com DDD e dez ou onze dígitos, quando informado;
+- e-mail em formato válido, quando informado, antes de iniciar a gravação;
 - CEP com oito dígitos, quando informado.
 
 O cadastro atual:
