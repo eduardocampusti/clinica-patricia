@@ -10,10 +10,14 @@ export type Papel = 'proprietaria' | 'medico' | 'recepcao'
 export function usePapelNaClinica(usuarioId: string, clinicaId: string | null) {
   const [papel, setPapel] = useState<Papel | null>(null)
   const [carregando, setCarregando] = useState(true)
+  const [clinicaConsultadaId, setClinicaConsultadaId] = useState<string | null>(null)
+  const [usuarioConsultadoId, setUsuarioConsultadoId] = useState<string | null>(null)
 
   useEffect(() => {
     if (!clinicaId) {
       setPapel(null)
+      setClinicaConsultadaId(null)
+      setUsuarioConsultadoId(null)
       setCarregando(false)
       return
     }
@@ -31,6 +35,8 @@ export function usePapelNaClinica(usuarioId: string, clinicaId: string | null) {
       .then(({ data }) => {
         if (cancelado) return
         setPapel((data?.papel as Papel) ?? null)
+        setClinicaConsultadaId(clinicaId)
+        setUsuarioConsultadoId(usuarioId)
         setCarregando(false)
       })
 
@@ -39,5 +45,7 @@ export function usePapelNaClinica(usuarioId: string, clinicaId: string | null) {
     }
   }, [usuarioId, clinicaId])
 
-  return { papel, souProprietaria: papel === 'proprietaria', carregando }
+  const contextoAtual = clinicaConsultadaId === clinicaId && usuarioConsultadoId === usuarioId
+  const papelAtual = contextoAtual ? papel : null
+  return { papel: papelAtual, souProprietaria: papelAtual === 'proprietaria', carregando: carregando || (!!clinicaId && !contextoAtual) }
 }

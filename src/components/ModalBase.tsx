@@ -1,11 +1,12 @@
 import { useEffect, useId, useRef, type ReactNode } from 'react'
 
-export function ModalBase({ titulo, onFechar, children, largura = 'md', ocupado = false }: {
+export function ModalBase({ titulo, onFechar, children, largura = 'md', ocupado = false, suspenso = false }: {
   titulo: string
   onFechar: () => void
   children: ReactNode
   largura?: 'md' | 'lg'
   ocupado?: boolean
+  suspenso?: boolean
 }) {
   const dialog = useRef<HTMLDialogElement>(null)
   const heading = useRef<HTMLHeadingElement>(null)
@@ -13,10 +14,17 @@ export function ModalBase({ titulo, onFechar, children, largura = 'md', ocupado 
   useEffect(() => {
     const anterior = document.activeElement as HTMLElement | null
     const elemento = dialog.current!
-    elemento.showModal()
-    heading.current?.focus()
-    return () => { elemento.close(); anterior?.focus() }
+    return () => { if (elemento.open) elemento.close(); anterior?.focus() }
   }, [])
+  useEffect(() => {
+    const elemento = dialog.current!
+    if (suspenso) {
+      if (elemento.open) elemento.close()
+      return
+    }
+    if (!elemento.open) elemento.showModal()
+    heading.current?.focus()
+  }, [suspenso])
   useEffect(() => { heading.current?.focus() }, [titulo])
   useEffect(() => {
     if (!ocupado) return

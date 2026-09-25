@@ -6,7 +6,7 @@ import Pacientes from './pages/Pacientes'
 import Cadastros from './pages/cadastros/Cadastros'
 import FinanceiroModulo from './pages/FinanceiroModulo'
 import Dashboard from './pages/Dashboard'
-import Agenda from './pages/Agenda'
+import Agenda, { type PacienteCriadoAgenda } from './pages/Agenda'
 import Prontuario from './pages/Prontuario'
 import { useTheme } from './theme/ThemeProvider'
 import { useClinicaAtiva } from './hooks/useClinicaAtiva'
@@ -24,6 +24,8 @@ function App() {
   // pra tela do Prontuário já com esse id, que abre o editor direto (sem
   // passar pela RPC de leitura — acabou de ser criado nesta mesma ação).
   const [atendimentoParaAbrir, setAtendimentoParaAbrir] = useState<string | null>(null)
+  const [cadastroPacienteAgendaAberto, setCadastroPacienteAgendaAberto] = useState(false)
+  const [pacienteCriadoAgenda, setPacienteCriadoAgenda] = useState<PacienteCriadoAgenda | null>(null)
   const { aplicarCoresClinica } = useTheme()
   const { clinicas: clinicasDoUsuario, carregando: carregandoClinicas } = useClinicasDoUsuario(!!session)
   const {
@@ -58,6 +60,15 @@ function App() {
     })
   }, [clinicaAtiva, aplicarCoresClinica])
 
+  useEffect(() => {
+    setCadastroPacienteAgendaAberto(false)
+    setPacienteCriadoAgenda(null)
+  }, [clinicaAtivaId])
+
+  useEffect(() => {
+    if (tela !== 'agenda') setCadastroPacienteAgendaAberto(false)
+  }, [tela])
+
   async function handleSignOut() {
     await supabase.auth.signOut()
     setTela('dashboard')
@@ -88,20 +99,42 @@ function App() {
     >
       {tela === 'dashboard' && <Dashboard clinicaAtivaId={clinicaAtivaId} />}
       {tela === 'agenda' && (
-        <Agenda
-          clinicaAtiva={clinicaAtiva}
-          carregandoClinica={carregandoClinica}
-          usuarioId={session.user.id}
-          onAtendimentoIniciado={(atendimentoId) => {
-            setAtendimentoParaAbrir(atendimentoId)
-            setTela('prontuario')
-          }}
-        />
+        <>
+          <Agenda
+            clinicaAtiva={clinicaAtiva}
+            carregandoClinica={carregandoClinica}
+            usuarioId={session.user.id}
+            pacienteCriadoExternamente={pacienteCriadoAgenda}
+            cadastroPacienteAberto={cadastroPacienteAgendaAberto}
+            onNovoPaciente={() => setCadastroPacienteAgendaAberto(true)}
+            onAtendimentoIniciado={(atendimentoId) => {
+              setAtendimentoParaAbrir(atendimentoId)
+              setTela('prontuario')
+            }}
+          />
+          {cadastroPacienteAgendaAberto && (
+            <Pacientes
+              clinicaAtivaId={clinicaAtivaId}
+              carregandoClinica={carregandoClinica}
+              papel={papel}
+              carregandoPapel={carregandoPapel}
+              usuarioId={session.user.id}
+              iniciarComCadastroAberto
+              onCancelarCadastro={() => setCadastroPacienteAgendaAberto(false)}
+              onPacienteCriado={(paciente) => {
+                setPacienteCriadoAgenda({ ...paciente, revisao: Date.now() })
+                setCadastroPacienteAgendaAberto(false)
+              }}
+            />
+          )}
+        </>
       )}
       {tela === 'pacientes' && (
         <Pacientes
           clinicaAtivaId={clinicaAtivaId}
           carregandoClinica={carregandoClinica}
+          papel={papel}
+          carregandoPapel={carregandoPapel}
           usuarioId={session.user.id}
         />
       )}
