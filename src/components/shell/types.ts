@@ -9,6 +9,7 @@ export type Tela =
   | 'equipe'
   | 'especialidades'
   | 'configuracoes'
+  | 'sobre'
 
 export const TITULOS_TELA: Record<Tela, string> = {
   dashboard: 'Dashboard',
@@ -21,4 +22,5 @@ export const TITULOS_TELA: Record<Tela, string> = {
   equipe: 'Equipe',
   especialidades: 'Especialidades',
   configuracoes: 'Configurações',
+  sobre: 'Sobre o sistema',
 }

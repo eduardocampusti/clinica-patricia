@@ -1,16 +1,18 @@
 {
   "name": "clinica-patricia",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "test:operacional:real": "playwright test --config tests/operacional/playwright.real.config.ts",
+    "test:operacional": "node scripts/run-operacional.mjs",
     "test:financeiro:10b": "playwright test --config tests/financeiro/playwright.config.ts",
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "node scripts/check-release-notes.mjs && tsc -b && vite build",
     "lint": "oxlint",
-    "test:pacientes": "node --test src/lib/pacienteFormulario.test.ts",
-    "test:financeiro": "server\\node_modules\\.bin\\tsx.cmd --test src/lib/financeiro/financeiro.test.ts",
+    "test:pacientes": "tsx --test src/lib/pacienteFormulario.test.ts src/lib/pacienteFoto.test.ts src/lib/pacienteIdade.test.ts",
+    "test:financeiro": "tsx --test src/lib/financeiro/financeiro.test.ts",
+    "test:release-notes": "node --test scripts/release-notes.test.mjs",
     "preview": "vite preview",
     "supabase:version": "node scripts/supabase-local.mjs version",
     "supabase:validate": "node scripts/supabase-local.mjs validate",
@@ -37,6 +39,7 @@
     "oxlint": "^1.75.0",
     "supabase": "2.110.0",
     "tailwindcss": "^4.3.3",
+    "tsx": "^4.23.15",
     "typescript": "~6.0.2",
     "vite": "^8.2.0"
   }

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 import type { ClinicaAtiva } from '../../hooks/useClinicaAtiva'
 import type { Papel } from '../../hooks/usePapelNaClinica'
 import { ThemeToggle } from '../../theme/ThemeToggle'
+import { rotuloPapel } from '../../lib/papelApresentacao'
 import Sidebar from './Sidebar'
 import { TITULOS_TELA, type Tela } from './types'
 import { IconeFechar, IconeMenuHamburguer } from './icons'
@@ -124,7 +125,7 @@ function AppShell({
             <div aria-label={`Usuário ${emailUsuario}`} title={emailUsuario} className="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-[var(--cor-primaria-suave)] text-xs font-bold text-[var(--cor-primaria)]">
               {emailUsuario.slice(0, 2).toUpperCase()}
             </div>
-            <div className="hidden max-w-40 lg:block"><p className="truncate text-xs font-semibold text-[var(--texto-principal)]" title={emailUsuario}>{emailUsuario.split('@')[0]}</p><p className="text-xs text-[var(--texto-secundario)]">{papel === 'proprietaria' ? 'Proprietária' : papel === 'medico' ? 'Médico' : papel === 'recepcao' ? 'Recepção' : 'Usuário'}</p></div>
+            <div className="hidden max-w-40 lg:block"><p className="truncate text-xs font-semibold text-[var(--texto-principal)]" title={emailUsuario}>{emailUsuario.split('@')[0]}</p><p className="text-xs text-[var(--texto-secundario)]">{rotuloPapel(papel)}</p></div>
           </div>
         </header>
 
