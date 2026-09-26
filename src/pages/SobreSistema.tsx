@@ -1,6 +1,6 @@
 import type { ClinicaAtiva } from '../hooks/useClinicaAtiva'
 import { CREDITOS_SOFTWARE, dadosDaClinicaAtiva } from '../config/instituicao'
-import { NOTAS_NAO_LANCADAS, VERSAO_EM_DESENVOLVIMENTO, VERSOES_LANCADAS, type CategoriasNotas } from '../config/notasEvolucao'
+import { NOTAS_NAO_LANCADAS, VERSAO_EM_DESENVOLVIMENTO, VERSOES_PREPARADAS, VERSOES_LANCADAS, type CategoriasNotas } from '../config/notasEvolucao'
 import './sobre-sistema.css'
 
 function ambienteAtual(): string {
@@ -26,12 +26,14 @@ export default function SobreSistema({ clinicaAtiva }: { clinicaAtiva: ClinicaAt
   const build = __APP_BUILD_INFO__
   const dadosClinica = dadosDaClinicaAtiva(clinicaAtiva)
   const lancamentoAtual = VERSOES_LANCADAS.find(item => item.versao === build.version)
-  const emDesenvolvimento = !lancamentoAtual && build.version === VERSAO_EM_DESENVOLVIMENTO
+  const preparacaoAtual = VERSOES_PREPARADAS.find(item => item.versao === build.version)
+  const haNotasNovas = Object.values(NOTAS_NAO_LANCADAS).some(lista => lista.length > 0)
+  const emDesenvolvimento = !preparacaoAtual && (!lancamentoAtual || haNotasNovas) && (build.version === VERSAO_EM_DESENVOLVIMENTO || haNotasNovas)
 
   return <div className="sobre-pagina">
     <header className="sobre-intro">
       <div><h1>Sobre o sistema</h1><p>Informações sobre a versão em uso, a clínica selecionada e o desenvolvimento da plataforma.</p></div>
-      {emDesenvolvimento && <span className="sobre-versao">Em desenvolvimento</span>}
+      {(emDesenvolvimento || preparacaoAtual) && <span className="sobre-versao">{preparacaoAtual ? 'Em preparação' : 'Em desenvolvimento'}</span>}
     </header>
 
     <section className="sobre-destaque" aria-label="Versão em execução">
@@ -58,12 +60,12 @@ export default function SobreSistema({ clinicaAtiva }: { clinicaAtiva: ClinicaAt
       </section>
     </div>
 
-    <section className="sobre-secao" aria-labelledby="sobre-novidades"><div className="sobre-titulo-linha"><h2 id="sobre-novidades">Evolução da versão</h2><span>{emDesenvolvimento ? 'Melhorias em desenvolvimento' : `v${build.version}`}</span></div>
-      {emDesenvolvimento ? <Notas notas={NOTAS_NAO_LANCADAS} /> : lancamentoAtual ? <Notas notas={lancamentoAtual.notas} /> : <p className="sobre-muted">Não há notas vinculadas à versão em execução.</p>}
+    <section className="sobre-secao" aria-labelledby="sobre-novidades"><div className="sobre-titulo-linha"><h2 id="sobre-novidades">Evolução da versão</h2><span>{preparacaoAtual ? `v${build.version} em preparação` : emDesenvolvimento ? 'Melhorias em desenvolvimento' : `v${build.version}`}</span></div>
+      {preparacaoAtual ? <Notas notas={preparacaoAtual.notas} /> : emDesenvolvimento ? <Notas notas={NOTAS_NAO_LANCADAS} /> : lancamentoAtual ? <Notas notas={lancamentoAtual.notas} /> : <p className="sobre-muted">Não há notas vinculadas à versão em execução.</p>}
     </section>
 
     <section className="sobre-secao" aria-labelledby="sobre-historico"><h2 id="sobre-historico">Histórico de versões publicadas</h2>
-      {VERSOES_LANCADAS.length ? <ol className="sobre-historico">{VERSOES_LANCADAS.map(versao => <li key={versao.versao}><details><summary><strong>Versão {versao.versao}</strong><span>{versao.lancadaEm ? new Date(`${versao.lancadaEm}T12:00:00`).toLocaleDateString('pt-BR') : 'Data não confirmada'}</span></summary><p>{versao.resumo}</p><Notas notas={versao.notas} /></details></li>)}</ol>
+      {VERSOES_LANCADAS.length ? <ol className="sobre-historico">{VERSOES_LANCADAS.map(versao => <li key={versao.versao}><details><summary><strong>Versão {versao.versao}</strong><span>{versao.lancadaEm ? new Date(`${versao.lancadaEm}T12:00:00`).toLocaleDateString('pt-BR') : 'Data não confirmada'}</span></summary>{versao.resumo && <p>{versao.resumo}</p>}<Notas notas={versao.notas} /></details></li>)}</ol>
         : <p className="sobre-muted">O histórico será atualizado a partir do primeiro lançamento.</p>}
     </section>
 

@@ -12,8 +12,69 @@ jobs:
   release-please:
     runs-on: ubuntu-latest
     steps:
-      - uses: googleapis/release-please-action@v4
+      - id: release
+        uses: googleapis/release-please-action@v4
         with:
           target-branch: main
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
+      - name: Abrir branch da proposta de versão
+        if: steps.release.outputs.prs_created == 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ fromJSON(steps.release.outputs.pr).headBranchName }}
+          fetch-depth: 0
+      - name: Preparar Node da proposta
+        if: steps.release.outputs.prs_created == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Associar notas aprovadas à versão proposta
+        if: steps.release.outputs.prs_created == 'true'
+        env:
+          RELEASE_BRANCH: ${{ fromJSON(steps.release.outputs.pr).headBranchName }}
+        run: |
+          node scripts/sync-release-notes.mjs prepare --from-main
+          node scripts/check-release-notes.mjs
+          npm ci
+          npm run test:release-notes
+          npm run build
+          if ! git diff --quiet -- src/config/notasEvolucao.json; then
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git add src/config/notasEvolucao.json
+            git commit -m 'chore(release): associa notas aprovadas à versão proposta'
+            git push origin "HEAD:${RELEASE_BRANCH}"
+          fi
+      - name: Abrir base após release publicada
+        if: steps.release.outputs.release_created == 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Preparar atualização automática do histórico publicado
+        if: steps.release.outputs.release_created == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          branch="codex/notas-release-${RELEASE_VERSION}"
+          if git ls-remote --exit-code --heads origin "$branch" >/dev/null; then
+            git fetch origin "$branch"
+            git switch -c "$branch" FETCH_HEAD
+          else
+            git switch -c "$branch"
+          fi
+          node scripts/sync-release-notes.mjs publish "$RELEASE_VERSION" "$(date -u +%F)"
+          node scripts/check-release-notes.mjs
+          if ! git diff --quiet -- src/config/notasEvolucao.json; then
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git add src/config/notasEvolucao.json
+            git commit -m "docs(release): registra notas da versão ${RELEASE_VERSION} publicada"
+            git push -u origin "$branch"
+          fi
+          if ! gh pr view "$branch" --json number >/dev/null 2>&1; then
+            gh pr create --draft --base main --head "$branch" --title "docs(release): registrar ${RELEASE_VERSION} publicada" --body "Release Please confirmou a publicação de ${RELEASE_VERSION}. Revisar o registro automático das notas antes de incorporar; este PR não publica o frontend."
+          fi
