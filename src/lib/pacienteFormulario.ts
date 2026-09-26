@@ -1,4 +1,4 @@
-import { apenasDigitos } from './cpf.ts'
+import { apenasDigitos } from './cpf'
 
 const PARTICULAS = new Set(['de', 'da', 'do', 'dos', 'das', 'e'])
 const SEPARADOR_PALAVRA = /([-’'])/u
@@ -42,20 +42,42 @@ function capitalizar(parte: string): string {
   return primeiro ? primeiro.toLocaleUpperCase('pt-BR') + caracteres.join('') : ''
 }
 
+function formatarPalavraPortuguesa(palavra: string, indicePalavra: number): string {
+  let primeiraParteTextual = true
+  return palavra.split(SEPARADOR_PALAVRA).map((parte) => {
+    if (!parte || SEPARADOR_PALAVRA.test(parte)) return parte
+    const minuscula = parte.toLocaleLowerCase('pt-BR')
+    const primeiraDoCampo = indicePalavra === 0 && primeiraParteTextual
+    primeiraParteTextual = false
+    return !primeiraDoCampo && PARTICULAS.has(minuscula) ? minuscula : capitalizar(parte)
+  }).join('')
+}
+
 export function formatarTextoPortugues(valor: string): string {
   const limpo = normalizarEspacos(valor)
   if (!limpo) return ''
 
-  return limpo.split(' ').map((palavra, indicePalavra) => {
-    let primeiraParteTextual = true
-    return palavra.split(SEPARADOR_PALAVRA).map((parte) => {
-      if (!parte || SEPARADOR_PALAVRA.test(parte)) return parte
-      const minuscula = parte.toLocaleLowerCase('pt-BR')
-      const primeiraDoCampo = indicePalavra === 0 && primeiraParteTextual
-      primeiraParteTextual = false
-      return !primeiraDoCampo && PARTICULAS.has(minuscula) ? minuscula : capitalizar(parte)
-    }).join('')
-  }).join(' ')
+  return limpo.split(' ').map(formatarPalavraPortuguesa).join(' ')
+}
+
+/**
+ * Formata durante a edição sem remover espaços nem alterar o comprimento do
+ * texto. Índices preservados representam palavras cuja grafia foi corrigida
+ * deliberadamente pela pessoa usuária (por exemplo, "McDonald").
+ */
+export function formatarTextoPortuguesAoDigitar(
+  valor: string,
+  grafiasPreservadas: ReadonlySet<string> = new Set<string>(),
+): string {
+  let indicePalavra = 0
+  return valor.split(/(\s+)/u).map((trecho) => {
+    if (!trecho || /^\s+$/u.test(trecho)) return trecho
+    const indiceAtual = indicePalavra
+    indicePalavra += 1
+    return grafiasPreservadas.has(trecho.toLocaleLowerCase('pt-BR'))
+      ? trecho
+      : formatarPalavraPortuguesa(trecho, indiceAtual)
+  }).join('')
 }
 
 export function formatarTelefoneBrasil(valor: string): string {

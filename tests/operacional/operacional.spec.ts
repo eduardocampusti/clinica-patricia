@@ -38,9 +38,17 @@ test('pacientes não baixa CPFs e faz busca exata segura na clínica ativa', asy
     if (url.hostname === '127.0.0.1') return route.continue()
     if (url.hostname !== 'operacional.synthetic.invalid') return route.abort()
     if (url.pathname.endsWith('/pacientes')) return route.fulfill({ contentType: 'application/json', body: JSON.stringify([
-      { id: 'paciente-1', nome_completo: 'Paciente Sintética', data_nascimento: '1990-01-02', telefone: '(71) 90000-0000', endereco: 'Rua Sintética, 10, Centro, Salvador - BA, CEP 40000-000' },
-      { id: 'paciente-2', nome_completo: 'Outra Pessoa', data_nascimento: null, telefone: null, endereco: null },
+      { id: 'paciente-1', nome_completo: 'Paciente Sintética', data_nascimento: '1990-01-02', telefone: '(71) 90000-0000', endereco: 'Rua Sintética, 10, Centro, Salvador - BA, CEP 40000-000', foto_path: null },
+      { id: 'paciente-2', nome_completo: 'Outra Pessoa', data_nascimento: null, telefone: null, endereco: null, foto_path: null },
     ]) })
+    if (url.pathname.endsWith('/rpc/paciente_responsavel_legal_resumo')) {
+      const consulta = route.request().postDataJSON()
+      expect(consulta.p_clinica_id).toBe('clinica-sintetica')
+      return route.fulfill({ contentType: 'application/json', body: JSON.stringify(consulta.p_paciente_id === 'paciente-1'
+        ? [{ id: 'responsavel-1', nome_completo: 'Responsável Sintético', vinculo: 'Mãe', telefone: '71900000000', email: null }]
+        : []) })
+    }
+    if (url.pathname.endsWith('/rpc/paciente_cpf_pendente')) return route.fulfill({ contentType: 'application/json', body: 'true' })
     if (url.pathname.endsWith('/rpc/paciente_buscar_por_cpf')) {
       chamadasBuscaCpf += 1
       expect(route.request().postDataJSON()).toEqual({ p_clinica_id: 'clinica-sintetica', p_cpf: '52998224725' })
@@ -58,13 +66,30 @@ test('pacientes não baixa CPFs e faz busca exata segura na clínica ativa', asy
   await expect(page.locator('body')).not.toContainText(/cpf-cifrado|123\.456\.789/)
   expect(chamadasDecrypt).toBe(0)
   await page.getByRole('searchbox', { name: 'Buscar paciente por nome' }).fill('não existe')
-  await expect(page.getByText('Nenhum paciente corresponde à busca.')).toBeVisible()
+  await expect(page.getByText('Nenhum resultado nesta clínica')).toBeVisible()
   await page.getByRole('searchbox', { name: 'Buscar paciente por nome' }).fill('Paciente')
   await expect(page.locator('body')).toContainText('Paciente Sintética')
   await expect(page.locator('body')).not.toContainText('Outra Pessoa')
-  await page.locator('summary:visible', { hasText: 'Ver endereço' }).click()
-  await expect(page.getByText('Rua Sintética, 10, Centro, Salvador - BA, CEP 40000-000').filter({ visible: true })).toBeVisible()
+  await page.getByRole('button', { name: 'Ver resumo de Paciente Sintética' }).focus()
+  await page.keyboard.press('Enter')
+  await expect(page.getByRole('dialog', { name: /Resumo do cadastro de Paciente Sintética/ }).or(page.getByRole('complementary', { name: /Resumo do cadastro de Paciente Sintética/ }))).toBeVisible()
+  await expect(page.getByText('Rua Sintética, 10, Centro, Salvador - BA, CEP 40000-000')).toBeVisible()
+  await expect(page.getByText('Responsável Sintético')).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Adicionar CPF' })).toBeVisible()
+  await page.screenshot({ path: `scratch/pacientes-lista-${info.project.name}.png`, fullPage: true })
+  if (info.project.name === 'mobile') {
+    await page.keyboard.press('Escape')
+    await expect(page.getByRole('dialog', { name: /Resumo do cadastro/ })).toHaveCount(0)
+    await expect(page.getByRole('button', { name: 'Ver resumo de Paciente Sintética' })).toBeFocused()
+    await page.getByRole('button', { name: 'Ver resumo de Paciente Sintética' }).press('Enter')
+  }
+  await page.getByRole('button', { name: 'Fechar resumo', exact: true }).click()
+  await page.getByRole('searchbox', { name: 'Buscar paciente por nome' }).fill('')
+  await page.getByRole('button', { name: 'Ver resumo de Outra Pessoa' }).click()
+  await expect(page.getByText('Idade não informada').first()).toBeVisible()
+  await page.getByRole('button', { name: 'Fechar resumo', exact: true }).click()
 
+  await page.getByRole('button', { name: 'CPF exato' }).click()
   const buscaCpf = page.getByLabel('Buscar por CPF exato')
   await buscaCpf.fill('11111111111')
   await page.getByRole('button', { name: 'Buscar CPF' }).click()
@@ -73,10 +98,42 @@ test('pacientes não baixa CPFs e faz busca exata segura na clínica ativa', asy
   await buscaCpf.fill('52998224725')
   await page.getByRole('button', { name: 'Buscar CPF' }).click()
   await expect(page.getByText('Paciente Inativo').filter({ visible: true })).toBeVisible()
-  await expect(page.getByText(/^(Status: )?Inativo$/).filter({ visible: true })).toBeVisible()
+  await expect(page.locator('.pacientes-status--inativo')).toBeVisible()
   expect(chamadasBuscaCpf).toBe(1)
   expect(chamadasDecrypt).toBe(0)
   await page.screenshot({ path: `scratch/fase11-operacional/pacientes-${info.project.name}.png`, fullPage: true })
+})
+
+test('Pacientes limpa seleção e resumo imediatamente na troca de clínica com respostas atrasadas', async ({ page }) => {
+  await page.route('**/*', async (route) => {
+    const url = new URL(route.request().url())
+    if (url.hostname === '127.0.0.1') return route.continue()
+    if (url.hostname !== 'operacional.synthetic.invalid') return route.abort()
+    if (url.pathname.endsWith('/pacientes')) {
+      const clinicaB = url.searchParams.get('clinica_id') === 'eq.clinica-b'
+      if (clinicaB) await new Promise((resolve) => setTimeout(resolve, 300))
+      return route.fulfill({ contentType: 'application/json', body: JSON.stringify([{ id: clinicaB ? 'paciente-b' : 'paciente-a', nome_completo: clinicaB ? 'Paciente Clínica B' : 'Paciente Clínica A', data_nascimento: null, telefone: null, endereco: clinicaB ? 'Endereço B' : 'Endereço A', foto_path: null }]) })
+    }
+    if (url.pathname.endsWith('/rpc/paciente_responsavel_legal_resumo')) {
+      const corpo = route.request().postDataJSON()
+      if (corpo.p_clinica_id === 'clinica-a') await new Promise((resolve) => setTimeout(resolve, 500))
+      return route.fulfill({ contentType: 'application/json', body: JSON.stringify([{ id: 'r', nome_completo: corpo.p_clinica_id === 'clinica-a' ? 'Responsável A' : 'Responsável B', vinculo: 'Mãe', telefone: '71900000000' }]) })
+    }
+    if (url.pathname.endsWith('/rpc/paciente_cpf_pendente')) return route.fulfill({ contentType: 'application/json', body: 'false' })
+    return route.fulfill({ contentType: 'application/json', body: 'null' })
+  })
+  await page.goto('/tests/operacional/pacientes-contexto.html')
+  await page.getByRole('button', { name: 'Ver resumo de Paciente Clínica A' }).click()
+  // A troca externa de contexto também pode ocorrer enquanto o painel móvel cobre a tela.
+  await page.getByRole('button', { name: 'Trocar para Clínica B' }).evaluate((botao: HTMLButtonElement) => botao.click())
+  await expect(page.getByText('Carregando contexto da clínica...')).toBeVisible()
+  await expect(page.getByText('Paciente Clínica A')).toHaveCount(0)
+  await expect(page.getByText('Endereço A')).toHaveCount(0)
+  await expect(page.getByRole('button', { name: 'Ver resumo de Paciente Clínica B' })).toBeVisible()
+  await page.waitForTimeout(600)
+  await expect(page.getByText('Responsável A')).toHaveCount(0)
+  await page.getByRole('button', { name: 'Ver resumo de Paciente Clínica B' }).click()
+  await expect(page.getByText('Responsável B')).toBeVisible()
 })
 
 test('cadastro de paciente valida antes de gravar, aceita CPF vazio e protege endereço manual', async ({ page }, info) => {
@@ -137,12 +194,20 @@ test('cadastro de paciente valida antes de gravar, aceita CPF vazio e protege en
   const avatar = page.locator('.paciente-avatar')
   await expect(avatar.locator('svg')).toBeVisible()
   await nome.fill("mARIA dA silva e d'ÁVILA")
-  await expect(avatar).toHaveText('MD')
-  await nome.press('Tab')
   await expect(nome).toHaveValue("Maria da Silva e D'Ávila")
-  await nome.fill("Maria da Silva e D'ÁVILA")
-  await nome.press('Tab')
-  await expect(nome).toHaveValue("Maria da Silva e D'ÁVILA")
+  await page.getByLabel('Data de nascimento', { exact: true }).fill('1990-02-05')
+  await expect(avatar).toHaveText('MD')
+  await nome.evaluate((campo: HTMLInputElement) => {
+    const indice = campo.value.indexOf('vila')
+    campo.focus()
+    campo.setSelectionRange(indice, indice + 1)
+  })
+  await nome.press('V')
+  await expect(nome).toHaveValue("Maria da Silva e D'ÁVila")
+  await nome.fill('OUTRO NOME')
+  await expect(nome).toHaveValue('Outro Nome')
+  await nome.fill("mARIA dA silva e d'ÁVILA")
+  await expect(nome).toHaveValue("Maria da Silva e D'Ávila")
 
   const cpf = page.getByLabel(/CPF/)
   await cpf.fill('52998224725')
@@ -204,7 +269,7 @@ test('cadastro de paciente valida antes de gravar, aceita CPF vazio e protege en
   await expect(page.getByText('Paciente cadastrado com sucesso.')).toBeVisible()
   expect(chamadasCpf).toBe(0)
   expect(pacienteInserido).toMatchObject({
-    nome_completo: "Maria da Silva e D'ÁVILA",
+    nome_completo: "Maria da Silva e D'Ávila",
     cpf_encrypted: null,
     cpf_hash: null,
     telefone: '(71) 99999-8888',
@@ -213,6 +278,123 @@ test('cadastro de paciente valida antes de gravar, aceita CPF vazio e protege en
 
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
   await page.screenshot({ path: `scratch/fase11-operacional/pacientes-formulario-${info.project.name}.png`, fullPage: true })
+})
+
+test('foto opcional tem prévia, trata webcam negada e persiste sem URL pública', async ({ page }) => {
+  let uploads = 0
+  let vinculos = 0
+  await page.addInitScript(() => {
+    const cabecalho = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).replaceAll('=', '')
+    const corpo = btoa(JSON.stringify({ sub: '00000000-0000-4000-8000-000000000001', role: 'authenticated', exp: Math.floor(Date.now() / 1000) + 3600 })).replaceAll('=', '')
+    localStorage.setItem('sb-operacional-auth-token', JSON.stringify({
+      access_token: `${cabecalho}.${corpo}.assinatura-sintetica`,
+      refresh_token: 'refresh-sintetico',
+      token_type: 'bearer',
+      expires_at: Math.floor(Date.now() / 1000) + 3600,
+      user: { id: '00000000-0000-4000-8000-000000000001', aud: 'authenticated', role: 'authenticated' },
+    }))
+    Object.defineProperty(navigator, 'mediaDevices', {
+      configurable: true,
+      value: { getUserMedia: () => Promise.reject(new DOMException('negada', 'NotAllowedError')) },
+    })
+  })
+
+  await page.route('**/*', async (route) => {
+    const url = new URL(route.request().url())
+    if (url.hostname === '127.0.0.1') return route.continue()
+    if (url.hostname !== 'operacional.synthetic.invalid') return route.abort()
+    if (url.pathname.includes('/storage/v1/object/pacientes-fotos/')) {
+      uploads += 1
+      return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ Key: url.pathname }) })
+    }
+    if (url.pathname.endsWith('/rpc/paciente_definir_foto')) {
+      vinculos += 1
+      return route.fulfill({ contentType: 'application/json', body: 'null' })
+    }
+    if (url.pathname.endsWith('/pacientes')) {
+      if (route.request().method() === 'POST') {
+        return route.fulfill({ status: 201, contentType: 'application/json', body: JSON.stringify({
+          id: '00000000-0000-4000-8000-000000000010', nome_completo: 'Pessoa Foto Sintética',
+        }) })
+      }
+      return route.fulfill({ contentType: 'application/json', body: '[]' })
+    }
+    return route.fulfill({ contentType: 'application/json', body: 'null' })
+  })
+
+  await page.goto('/tests/operacional/pacientes.html')
+  await page.getByRole('button', { name: /Novo paciente/ }).click()
+  await page.getByLabel('Nome completo').fill('PESSOA FOTO SINTÉTICA')
+  await page.getByLabel('Data de nascimento', { exact: true }).fill('1990-02-05')
+  await page.getByRole('button', { name: 'Tirar foto com webcam' }).click()
+  await expect(page.getByRole('alert')).toContainText('permissão do navegador')
+
+  await page.locator('.paciente-arquivo-oculto').setInputFiles({
+    name: 'paciente-sintetica.png',
+    mimeType: 'image/png',
+    buffer: Buffer.from('imagem-sintetica-sem-dados-reais'),
+  })
+  await expect(page.getByAltText('Prévia da foto do paciente')).toBeVisible()
+  await page.getByRole('button', { name: 'Confirmar foto' }).click()
+  await page.getByRole('button', { name: /Avançar para Endereço/ }).click()
+  await page.getByRole('button', { name: /Voltar/ }).click()
+  await expect(page.getByAltText('Prévia da foto do paciente')).toBeVisible()
+  await expect(page.getByLabel('Nome completo')).toHaveValue('Pessoa Foto Sintética')
+  await page.getByRole('button', { name: /Avançar para Endereço/ }).click()
+  await page.getByRole('button', { name: 'Salvar paciente' }).click()
+
+  await expect(page.getByText('Paciente cadastrado com sucesso.')).toBeVisible()
+  expect(uploads).toBe(1)
+  expect(vinculos).toBe(1)
+})
+
+test('menor exige responsável e envia vínculo atômico na mesma clínica', async ({ page }, info) => {
+  let criacoes = 0
+  let argumentos: Record<string, unknown> | null = null
+  await page.route('**/*', async (route) => {
+    const url = new URL(route.request().url())
+    if (url.hostname === '127.0.0.1') return route.continue()
+    if (url.hostname !== 'operacional.synthetic.invalid') return route.abort()
+    if (url.pathname.endsWith('/rpc/paciente_menor_criar_com_responsavel')) {
+      criacoes += 1
+      argumentos = route.request().postDataJSON() as Record<string, unknown>
+      return route.fulfill({ contentType: 'application/json', body: JSON.stringify([{ id: 'paciente-menor-sintetico', nome_completo: 'Paciente Menor', clinica_id: 'clinica-sintetica' }]) })
+    }
+    if (url.pathname.endsWith('/pacientes')) return route.fulfill({ contentType: 'application/json', body: '[]' })
+    return route.fulfill({ contentType: 'application/json', body: 'null' })
+  })
+  await page.goto('/tests/operacional/pacientes.html')
+  await page.getByRole('button', { name: /Novo paciente/ }).click()
+  await page.getByLabel('Nome completo').fill('PACIENTE MENOR')
+  const nascimento = page.getByLabel('Data de nascimento', { exact: true })
+  await nascimento.fill('')
+  await expect(page.getByLabel('Idade calculada pela data de nascimento')).toHaveValue('')
+  await page.getByRole('button', { name: /Avançar para Endereço/ }).click()
+  await expect(page.getByRole('alert')).toContainText('data de nascimento válida')
+  await nascimento.fill('2014-09-25')
+  await expect(page.locator('.paciente-etapas').getByRole('button', { name: /Responsável legal/ })).toHaveCount(1)
+  await page.getByRole('button', { name: /Avançar para Responsável legal/ }).click()
+  await expect(page.getByRole('group', { name: 'Responsável legal' })).toBeVisible()
+  await page.getByRole('button', { name: /Avançar para Endereço/ }).click()
+  await expect(page.getByRole('alert')).toContainText('responsável legal')
+  await page.getByLabel('Nome completo *', { exact: true }).last().fill('PESSOA RESPONSÁVEL')
+  await page.getByLabel('Vínculo com o paciente').fill('MÃE')
+  await page.getByLabel('Telefone / WhatsApp *').fill('71999998888')
+  if (info.project.name === 'desktop') {
+    await page.locator('.paciente-modal-scroll').evaluate((elemento) => { elemento.scrollTop = elemento.scrollHeight })
+    await page.locator('.paciente-modal-backdrop').screenshot({ path: 'scratch/pacientes-menor-responsavel-desktop.png' })
+  }
+  await page.getByRole('button', { name: /Voltar para Identificação/ }).click()
+  await nascimento.fill('1990-09-25')
+  await expect(page.getByRole('group', { name: 'Responsável legal' })).toHaveCount(0)
+  await nascimento.fill('2014-09-25')
+  await page.getByRole('button', { name: /Avançar para Responsável legal/ }).click()
+  await expect(page.getByLabel('Nome completo *', { exact: true }).last()).toHaveValue('Pessoa Responsável')
+  await page.getByRole('button', { name: /Avançar para Endereço/ }).click()
+  await page.getByRole('button', { name: 'Salvar paciente' }).click()
+  await expect(page.getByText('Paciente cadastrado com sucesso.')).toBeVisible()
+  expect(criacoes).toBe(1)
+  expect(argumentos).toMatchObject({ p_clinica_id: 'clinica-sintetica', p_nome_completo: 'Paciente Menor', p_responsavel_nome: 'Pessoa Responsável', p_responsavel_telefone: '(71) 99999-8888', p_cpf: null, p_responsavel_cpf: null })
 })
 
 test('login mantém erro técnico encapsulado e bloqueia duplo envio', async ({ page }, info) => {
@@ -225,7 +407,7 @@ test('login mantém erro técnico encapsulado e bloqueia duplo envio', async ({ 
   await page.getByLabel('Senha').fill('senha-sintetica')
   await page.getByRole('button', { name: 'Entrar' }).click()
   await expect(page.getByRole('button', { name: 'Entrando...' })).toBeDisabled()
-  await expect(page.getByRole('alert')).toHaveText('E-mail ou senha inválidos.')
+  await expect(page.getByRole('alert')).toContainText('E-mail ou senha inválidos.')
   await expect(page.locator('body')).not.toContainText(/Invalid login credentials|invalid_credentials|Supabase/i)
   await page.screenshot({ path: `scratch/fase11-operacional/login-${info.project.name}.png`, fullPage: true })
 })
@@ -327,6 +509,7 @@ test('novo paciente retorna à Agenda preservando o formulário e respeitando a 
 
   await page.getByRole('button', { name: '+ Novo paciente' }).click()
   await page.getByLabel('Nome completo').fill('Paciente Nova Sintética')
+  await page.getByLabel('Data de nascimento', { exact: true }).fill('1990-05-18')
   await page.getByRole('button', { name: /Avançar para Endereço/ }).click()
   await page.getByRole('button', { name: 'Salvar paciente' }).click()
   await expect(page.getByRole('heading', { name: 'Novo agendamento' })).toBeVisible()

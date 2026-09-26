@@ -8,6 +8,7 @@ interface AvisoCpfPendenteProps {
   clinicaId: string
   onAdicionado: () => void
   onLembrar: () => void
+  contexto?: 'operacional' | 'cadastro'
 }
 
 export function AvisoCpfPendente({
@@ -16,6 +17,7 @@ export function AvisoCpfPendente({
   clinicaId,
   onAdicionado,
   onLembrar,
+  contexto = 'operacional',
 }: AvisoCpfPendenteProps) {
   const campoId = useId()
   const [editando, setEditando] = useState(false)
@@ -49,7 +51,9 @@ export function AvisoCpfPendente({
     >
       <p className="text-sm font-semibold text-[var(--texto-principal)]">CPF ainda não informado</p>
       <p className="mt-1 text-sm text-[var(--texto-secundario)]">
-        Se o documento estiver disponível, ele pode ser acrescentado agora. O agendamento ou a chegada não serão bloqueados.
+        {contexto === 'cadastro'
+          ? 'Se o documento estiver disponível, ele pode ser acrescentado agora. A ausência dele não bloqueia o cadastro ou o atendimento.'
+          : 'Se o documento estiver disponível, ele pode ser acrescentado agora. O agendamento ou a chegada não serão bloqueados.'}
       </p>
 
       {!editando ? (

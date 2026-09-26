@@ -132,10 +132,12 @@ function App() {
       {tela === 'pacientes' && (
         <Pacientes
           clinicaAtivaId={clinicaAtivaId}
+          clinicaNome={clinicaAtiva?.nome}
           carregandoClinica={carregandoClinica}
           papel={papel}
           carregandoPapel={carregandoPapel}
           usuarioId={session.user.id}
+          onIrParaAgenda={() => setTela('agenda')}
         />
       )}
       {tela === 'equipe' && (

@@ -5,8 +5,9 @@
   inset: 0;
   z-index: 80;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   place-items: center;
-  padding: 3.2vh 2rem;
+  padding: 2vh 1.5rem;
   background: rgb(11 28 48 / 55%);
   backdrop-filter: blur(7px);
 }
@@ -17,10 +18,12 @@
   --cadastro-fundo: #f8f9ff;
   --cadastro-texto: #0b1c30;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   grid-template-rows: auto auto minmax(0, 1fr) auto;
+  min-width: 0;
   width: min(1280px, calc(100vw - 4rem));
   height: auto;
-  max-height: min(1180px, calc(100dvh - 6.4vh));
+  max-height: min(1180px, calc(100dvh - 4vh));
   overflow: hidden;
   color: var(--cadastro-texto);
   font-family: 'Plus Jakarta Sans', Inter, ui-sans-serif, system-ui, sans-serif;
@@ -34,17 +37,17 @@
 .paciente-modal-cabecalho {
   display: flex;
   align-items: center;
-  gap: 18px;
-  min-height: 74px;
-  padding: 12px 30px;
+  gap: 14px;
+  min-height: 64px;
+  padding: 8px 24px;
   background: #fff;
   border-bottom: 1px solid #e6eaf1;
 }
 
 .paciente-modal-icone {
   display: grid;
-  width: 52px;
-  height: 52px;
+  width: 44px;
+  height: 44px;
   place-items: center;
   flex: 0 0 auto;
   color: var(--cadastro-azul);
@@ -63,19 +66,20 @@
 
 .paciente-etapas {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
-  padding: 16px 30px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  padding: 8px 24px;
   overflow-x: auto;
   background: #eef3ff;
   border-bottom: 1px solid #dfe6f1;
 }
-.paciente-etapas > button, .paciente-etapas > span {
+.paciente-etapas.com-responsavel { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.paciente-etapas > button {
   display: flex;
-  min-width: 210px;
+  min-width: 0;
   align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
+  gap: 10px;
+  padding: 7px 10px;
   color: #34465b;
   text-align: left;
   background: rgb(255 255 255 / 55%);
@@ -83,51 +87,60 @@
   border-radius: 15px;
 }
 .paciente-etapas > button { cursor: pointer; }
+.paciente-etapa-planejada { display: flex; min-width: 0; align-items: center; gap: 10px; padding: 7px 10px; color: #526174; background: #e7edf6; border: 1px dashed #c6d1df; border-radius: 15px; }
+.paciente-etapa-planejada-icone { display: grid; width: 32px; height: 32px; flex: 0 0 auto; place-items: center; color: #526174; font-size: 1.35rem; line-height: 1; background: #dce5f1; border-radius: 10px; }
 .paciente-etapas > button.ativa { color: #005b90; background: #fff; border-color: #8cc1df; box-shadow: 0 3px 12px rgb(0 97 148 / 8%); }
 .paciente-etapas > button.concluida { color: var(--cadastro-verde); }
-.paciente-etapas .indisponivel { opacity: .56; }
-.paciente-etapa-numero { display: grid; width: 34px; height: 34px; place-items: center; flex: 0 0 auto; color: #17658f; font-weight: 700; background: #e5eefc; border-radius: 11px; }
+.paciente-etapa-numero { display: grid; width: 32px; height: 32px; place-items: center; flex: 0 0 auto; color: #17658f; font-weight: 700; background: #e5eefc; border-radius: 10px; }
 .paciente-etapas .ativa .paciente-etapa-numero { color: #fff; background: var(--cadastro-azul); }
 .paciente-etapas .concluida .paciente-etapa-numero { color: #fff; background: var(--cadastro-verde); }
 .paciente-etapas strong, .paciente-etapas small { display: block; line-height: 1.25; }
 .paciente-etapas strong { font-size: .86rem; font-weight: 700; }
 .paciente-etapas small { margin-top: 3px; font-size: .75rem; }
 
-.paciente-modal-scroll { min-width: 0; min-height: 0; padding: 30px; overflow: auto; overscroll-behavior: contain; }
-.paciente-aviso-real { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 28px; padding: 18px 22px; color: #173b64; background: #ebf1ff; border: 1px solid #d4e2f7; border-radius: 14px; }
+.paciente-modal-scroll { min-width: 0; min-height: 0; margin: 0; padding: 18px 24px; overflow: auto; overscroll-behavior: contain; border: 0; }
+.paciente-aviso-real { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 12px; padding: 10px 14px; color: #173b64; background: #ebf1ff; border: 1px solid #d4e2f7; border-radius: 12px; }
 .paciente-aviso-real > span { color: var(--cadastro-azul); font-size: 1.25rem; }
-.paciente-aviso-real p { margin: 0; font-size: .9rem; line-height: 1.55; }
-.paciente-secao { min-width: 0; padding: 24px 26px; background: #fff; border: 1px solid #dfe4eb; border-radius: 17px; box-shadow: 0 2px 5px rgb(11 28 48 / 4%); }
+.paciente-aviso-real p { margin: 0; font-size: .86rem; line-height: 1.4; }
+.paciente-secao { min-width: 0; padding: 18px 20px; background: #fff; border: 1px solid #dfe4eb; border-radius: 16px; box-shadow: 0 2px 5px rgb(11 28 48 / 4%); }
 .paciente-secao + .paciente-secao { margin-top: 24px; }
-.paciente-secao-titulo-linha { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-bottom: 14px; border-bottom: 1px solid #e6eaf0; }
-.paciente-secao-titulo-linha h3 { margin: 0; font-size: 1.35rem; font-weight: 700; letter-spacing: -.025em; }
+.paciente-secao-titulo-linha { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-bottom: 10px; border-bottom: 1px solid #e6eaf0; }
+.paciente-secao-titulo-linha h3 { margin: 0; font-size: 1.2rem; font-weight: 700; letter-spacing: -.025em; }
 .paciente-secao-titulo-linha span { color: #5d6878; font-size: .75rem; }
-.paciente-form-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 22px 20px; padding-top: 20px; }
+.paciente-form-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 14px 16px; padding-top: 16px; }
 .paciente-form-grid > div { min-width: 0; grid-column: span 4; }
 .paciente-form-grid label { color: #0b1c30; }
 .paciente-form-grid input, .paciente-form-grid select, .paciente-form-grid textarea { width: 100%; min-width: 0; min-height: 48px; background: #f8faff; border-color: #cfd8e5; border-radius: 10px; }
 .paciente-form-grid input:focus, .paciente-form-grid select:focus, .paciente-form-grid textarea:focus { border-color: var(--cadastro-azul); box-shadow: 0 0 0 3px rgb(0 97 148 / 12%); }
-.paciente-foto-reserva { grid-column: span 3 !important; grid-row: span 2; display: flex; min-height: 244px; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; background: #eff4ff; border: 1px dashed #b8c8dc; border-radius: 15px; }
-.paciente-foto-reserva p { margin: 5px 0 14px; color: #667384; font-size: .75rem; }
-.paciente-foto-reserva button { width: 100%; padding: 10px; color: #526174; background: #fff; border: 1px solid #d2d9e3; border-radius: 9px; }
-.paciente-avatar { display: grid; width: 86px; height: 86px; margin-bottom: 12px; place-items: center; color: #236a94; font-size: 1.5rem; font-weight: 700; background: #d9ebf8; border: 4px solid #b5d8ef; border-radius: 50%; }
+.paciente-foto-reserva { grid-column: span 3 !important; grid-row: span 3; display: flex; min-height: 228px; flex-direction: column; align-items: center; justify-content: center; padding: 14px; text-align: center; background: #eff4ff; border: 1px dashed #b8c8dc; border-radius: 15px; }
+.paciente-foto-area { grid-column: 1 / span 3 !important; grid-row: 1 / span 3; }
+.paciente-foto-area .paciente-foto-reserva { height: 100%; }
+.paciente-foto-reserva p { margin: 5px 0 10px; color: #667384; font-size: .72rem; }
+.paciente-foto-reserva strong span { color: #667384; font-size: .72rem; font-weight: 500; }
+.paciente-foto-reserva button { width: 100%; padding: 8px 9px; color: #31516d; background: #fff; border: 1px solid #cbd6e3; border-radius: 9px; }
+.paciente-foto-reserva button:hover:not(:disabled) { border-color: #72aecd; background: #f8fbff; }
+.paciente-foto-acoes { display: grid; width: 100%; gap: 7px; }
+.paciente-arquivo-oculto { position: absolute !important; width: 1px !important; height: 1px !important; min-height: 0 !important; padding: 0 !important; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0 !important; }
+.paciente-foto-reserva .paciente-foto-confirmar { color: #fff; background: var(--cadastro-verde); border-color: var(--cadastro-verde); }
+.paciente-foto-reserva .paciente-foto-remover { color: #a22b2b; }
+.paciente-foto-erro { color: #a22b2b !important; }
+.paciente-avatar { display: grid; width: 76px; height: 76px; margin-bottom: 8px; place-items: center; color: #236a94; font-size: 1.5rem; font-weight: 700; background: #d9ebf8; border: 4px solid #b5d8ef; border-radius: 50%; }
+.paciente-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
 .paciente-avatar-neutro { width: 34px; height: 34px; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; }
-.paciente-campo-nome { grid-column: span 9 !important; }
-.paciente-campo-cpf { grid-column: span 4 !important; }
-.paciente-campo-data { grid-column: span 3 !important; }
-.paciente-campo-sexo { grid-column: span 2 !important; }
+.paciente-camera { width: 100%; }
+.paciente-camera video { width: 100%; max-height: 150px; margin-bottom: 8px; object-fit: cover; background: #17283a; border-radius: 10px; }
+.paciente-campo-nome { grid-column: 4 / -1 !important; grid-row: 1; }
+.paciente-campo-cpf { grid-column: 4 / span 5 !important; grid-row: 2; }
+.paciente-campo-data { display: grid; grid-column: 4 / -1 !important; grid-row: 3; grid-template-columns: minmax(0, 2fr) minmax(6rem, 1fr); gap: 12px; }
+.paciente-campo-sexo { grid-column: 9 / -1 !important; grid-row: 2; }
+.paciente-responsavel-grid { display: grid; grid-column: 1 / -1; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 14px; padding: 0; border: 0; }
+.paciente-responsavel-grid legend { padding: 0 6px; color: #173b64; font-size: 1rem; font-weight: 700; }
+.paciente-responsavel-grid p { grid-column: 1 / -1; margin: 0; color: #526174; font-size: .8rem; }
+.paciente-responsavel-grid > div { grid-column: span 2; }
+.paciente-responsavel-grid label { display: block; margin-bottom: 6px; font-size: .85rem; font-weight: 600; }
+.paciente-responsavel-grid input { width: 100%; min-height: 48px; padding: 10px 12px; color: var(--cadastro-texto); background: #fff; border: 1px solid #cfd8e5; border-radius: 10px; }
 .paciente-endereco-grid { display: grid; min-width: 0; grid-column: 1 / -1; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 22px 20px; order: 1; }
-.paciente-legenda-visualmente-oculta {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  white-space: nowrap;
-  border: 0;
-  clip: rect(0, 0, 0, 0);
-}
+.paciente-legenda-visualmente-oculta { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; white-space: nowrap; border: 0; clip: rect(0, 0, 0, 0); }
 .paciente-endereco-grid > div { grid-column: span 4; }
 .paciente-endereco-grid > div:nth-of-type(1) { grid-column: span 3; }
 .paciente-endereco-grid > div:nth-of-type(2) { grid-column: span 5; }
@@ -140,52 +153,89 @@
 .paciente-subsecao-titulo > strong { font-size: .95rem; }
 .paciente-contato-card { grid-column: span 6 !important; padding: 18px; border: 1px solid #e0e5ec; border-radius: 14px; order: 3; }
 .paciente-observacoes { grid-column: 1 / -1 !important; order: 4; }
-.paciente-privacidade-pendente { margin: 22px 0 0; padding: 14px 16px; color: #44556b; font-size: .8rem; line-height: 1.5; background: #f4f6fa; border: 1px solid #d8e0eb; border-radius: 12px; }
+.paciente-privacidade-pendente { grid-column: 1 / -1; order: 4; margin: 22px 0 0; padding: 14px 16px; color: #44556b; font-size: .8rem; line-height: 1.5; background: #f4f6fa; border: 1px solid #d8e0eb; border-radius: 12px; }
 .paciente-secao-reservada { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
-  .paciente-secao-reservada h3 { margin: 0 0 4px; font-size: 1.25rem; }
+.paciente-secao-reservada h3 { margin: 0 0 4px; font-size: 1.25rem; }
 .paciente-secao-reservada p { margin: 0; color: #647184; font-size: .82rem; }
 .paciente-secao-reservada > span { flex: 0 0 auto; padding: 7px 11px; color: #5c6777; font-size: .72rem; font-weight: 700; background: #eef1f5; border-radius: 999px; }
 .paciente-oculto { display: none !important; }
 
-.paciente-modal-rodape { display: flex; align-items: center; justify-content: flex-end; gap: 14px; min-height: 84px; padding: 14px 30px; background: #eef3ff; border-top: 1px solid #d9e1ed; }
-.paciente-botao-secundario, .paciente-botao-primario { min-height: 50px; padding: 0 22px; font-weight: 600; border-radius: 13px; transition: .18s ease; }
+@media (min-width: 901px) {
+  .paciente-modal-scroll-endereco { padding-top: 14px; padding-bottom: 14px; }
+  .paciente-modal-scroll-endereco .paciente-secao { padding-top: 12px; padding-bottom: 12px; }
+  .paciente-modal-scroll-endereco .paciente-form-grid { gap: 8px 14px; padding-top: 12px; }
+  .paciente-modal-scroll-endereco .paciente-endereco-grid { gap: 12px 18px; }
+  .paciente-modal-scroll-endereco .paciente-contato-card { padding: 0; border: 0; }
+  .paciente-modal-scroll-endereco .paciente-observacoes { grid-column: 1 / span 8 !important; }
+  .paciente-modal-scroll-endereco .paciente-privacidade-pendente { grid-column: 9 / -1; align-self: stretch; margin: 0; padding: 10px 14px; }
+}
+
+.paciente-modal-rodape { display: flex; align-items: center; justify-content: flex-end; gap: 12px; min-height: 68px; padding: 10px 24px; background: #eef3ff; border-top: 1px solid #d9e1ed; }
+.paciente-botao-secundario, .paciente-botao-primario { min-height: 46px; padding: 0 20px; font-weight: 600; border-radius: 12px; transition: .18s ease; }
 .paciente-botao-secundario { color: #18324d; background: #fff; border: 1px solid #cfd8e5; }
 .paciente-botao-primario { color: #fff; background: var(--cadastro-azul); border: 1px solid var(--cadastro-azul); box-shadow: 0 5px 12px rgb(0 97 148 / 20%); }
 .paciente-botao-secundario:hover { background: #f5f7fb; }
 .paciente-botao-primario:hover { background: #004f7a; }
 .paciente-botao-secundario:focus-visible, .paciente-botao-primario:focus-visible { outline: 3px solid #79b9df; outline-offset: 2px; }
 .paciente-cancelar { margin-right: auto; }
+.paciente-acao-foto { color: var(--cor-primaria); font-size: .78rem; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+.paciente-foto-modal-backdrop { z-index: 90; }
+.paciente-foto-modal { width: min(430px, calc(100vw - 28px)); padding: 22px; background: #fff; border: 1px solid #dfe5ef; border-radius: 18px; box-shadow: 0 24px 70px rgb(11 28 48 / 28%); }
+.paciente-foto-modal > header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+.paciente-foto-modal h2 { margin: 0; font-size: 1.2rem; }
+.paciente-foto-modal header p { margin: 3px 0 0; color: #667384; font-size: .82rem; }
+.paciente-foto-modal header button { width: 38px; height: 38px; font-size: 1.7rem; line-height: 1; border-radius: 10px; }
+.paciente-foto-modal .paciente-foto-reserva { min-height: 0; }
+.paciente-foto-carregando, .paciente-foto-alerta { padding: 14px; font-size: .82rem; border-radius: 10px; }
+.paciente-foto-carregando { color: #31516d; background: #eff4ff; }
+.paciente-foto-alerta { margin-top: 12px; color: #8b2c2c; background: #fff0f0; }
 
 @media (max-width: 900px) {
   .paciente-modal-backdrop { padding: 12px; }
   .paciente-modal { width: calc(100vw - 24px); max-height: calc(100dvh - 24px); }
   .paciente-modal-cabecalho, .paciente-modal-scroll, .paciente-modal-rodape { padding-right: 20px; padding-left: 20px; }
-  .paciente-etapas { grid-template-columns: repeat(4, 230px); padding-right: 20px; padding-left: 20px; }
+  .paciente-etapas, .paciente-etapas.com-responsavel { grid-template-columns: repeat(3, minmax(0, 1fr)); padding-right: 20px; padding-left: 20px; }
+  .paciente-etapas.com-responsavel { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .paciente-form-grid > div { grid-column: span 6; }
   .paciente-foto-reserva { grid-column: span 4 !important; }
-  .paciente-campo-nome { grid-column: span 8 !important; }
-  .paciente-campo-cpf, .paciente-campo-data, .paciente-campo-sexo { grid-column: span 4 !important; }
+  .paciente-foto-area { grid-column: 1 / span 4 !important; grid-row: 1 / span 3; }
+  .paciente-campo-nome { grid-column: 5 / -1 !important; grid-row: 1; }
+  .paciente-campo-cpf { grid-column: 5 / span 4 !important; grid-row: 2; }
+  .paciente-campo-sexo { grid-column: 9 / -1 !important; grid-row: 2; }
+  .paciente-campo-data { grid-column: 5 / -1 !important; grid-row: 3; }
+  .paciente-responsavel-grid > div { grid-column: span 3; }
   .paciente-endereco-grid > div, .paciente-endereco-grid > div:nth-of-type(1), .paciente-endereco-grid > div:nth-of-type(2), .paciente-endereco-grid > div:nth-of-type(3), .paciente-endereco-grid > div:nth-of-type(4), .paciente-endereco-grid > div:nth-of-type(5), .paciente-endereco-grid > div:nth-of-type(6) { grid-column: span 6; }
   .paciente-cidade-uf { grid-template-columns: minmax(0, 1fr) 5rem; gap: 12px; }
 }
 
 @media (max-width: 620px) {
   .paciente-modal-backdrop { padding: 0; }
-  .paciente-modal { width: 100vw; height: 100dvh; max-height: none; border: 0; border-radius: 0; }
-  .paciente-modal-cabecalho { min-height: 68px; padding: 10px 14px; }
-  .paciente-modal-icone { width: 42px; height: 42px; border-radius: 12px; }
+  .paciente-modal { width: 100%; max-width: 100vw; height: 100dvh; max-height: none; border: 0; border-radius: 0; }
+  .paciente-modal-cabecalho { position: relative; min-height: 68px; gap: 8px; padding: 10px 54px 10px 14px; }
+  .paciente-modal-icone { width: 36px; height: 36px; border-radius: 10px; font-size: 1.1rem; }
   .paciente-modal-subtitulo { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .paciente-modal-titulo { font-size: 1.05rem; }
+  .paciente-modal-titulo { font-size: .98rem; }
+  .paciente-modal-fechar { position: absolute; top: 12px; right: 8px; width: 42px; height: 42px; }
   .paciente-rascunho { display: none; }
-  .paciente-etapas { grid-template-columns: repeat(4, 205px); padding: 10px 14px; }
+  .paciente-etapas, .paciente-etapas.com-responsavel { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; padding: 8px 10px; overflow-x: visible; }
+  .paciente-etapas > button, .paciente-etapa-planejada { gap: 5px; padding: 6px; }
+  .paciente-etapa-numero, .paciente-etapa-planejada-icone { width: 26px; height: 26px; }
+  .paciente-etapas strong { font-size: .69rem; line-height: 1.15; }
+  .paciente-etapas small { display: none; }
+  .paciente-etapa-planejada small { display: block; font-size: .65rem; line-height: 1.15; }
   .paciente-modal-scroll { padding: 16px 14px; }
   .paciente-aviso-real { margin-bottom: 16px; padding: 14px; }
   .paciente-secao { padding: 18px 14px; }
   .paciente-secao-titulo-linha { align-items: flex-start; flex-direction: column; gap: 5px; }
   .paciente-secao-titulo-linha h3 { font-size: 1.08rem; }
   .paciente-form-grid { display: flex; flex-direction: column; gap: 0; }
+  .paciente-privacidade-pendente { margin-top: 6px; }
   .paciente-form-grid > div, .paciente-endereco-grid > div { margin-bottom: 16px; }
+  .paciente-foto-area, .paciente-campo-nome, .paciente-campo-cpf, .paciente-campo-data, .paciente-campo-sexo { grid-row: auto; }
   .paciente-foto-reserva { min-height: 190px; }
+  .paciente-campo-data { grid-template-columns: minmax(0, 1fr) minmax(5.5rem, .42fr); gap: 8px; }
+  .paciente-responsavel-grid { display: block; }
+  .paciente-responsavel-grid > div { margin-top: 14px; }
   .paciente-endereco-grid { display: block; }
   .paciente-secao-reservada { align-items: flex-start; flex-direction: column; }
   .paciente-secao-reservada > span { align-self: flex-start; }
