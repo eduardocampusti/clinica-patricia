@@ -139,6 +139,10 @@ test('Pacientes limpa seleção e resumo imediatamente na troca de clínica com 
 test('cadastro de paciente valida antes de gravar, aceita CPF vazio e protege endereço manual', async ({ page }, info) => {
   let chamadasCpf = 0
   let pacienteInserido: Record<string, unknown> | null = null
+  let liberarCepAntigo!: () => void
+  const respostaCepAntigo = new Promise<void>(resolve => { liberarCepAntigo = resolve })
+  let concluirCepAntigo!: () => void
+  const cepAntigoConcluido = new Promise<void>(resolve => { concluirCepAntigo = resolve })
 
   await page.route('**/*', async (route) => {
     const url = new URL(route.request().url())
@@ -151,10 +155,12 @@ test('cadastro de paciente valida antes de gravar, aceita CPF vazio e protege en
       }
       if (cep === '88888888') return route.abort('failed')
       if (cep === '11111111') {
-        await new Promise((resolve) => setTimeout(resolve, 350))
-        return route.fulfill({ contentType: 'application/json', body: JSON.stringify({
+        await respostaCepAntigo
+        await route.fulfill({ contentType: 'application/json', body: JSON.stringify({
           cep: '11111-111', logradouro: 'Rua Antiga', bairro: 'Bairro Antigo', localidade: 'Cidade Antiga', uf: 'BA',
         }) }).catch(() => undefined)
+        concluirCepAntigo()
+        return
       }
       if (cep === '40010000') {
         return route.fulfill({ contentType: 'application/json', body: JSON.stringify({
@@ -234,11 +240,16 @@ test('cadastro de paciente valida antes de gravar, aceita CPF vazio e protege en
   await cep.fill('88888888')
   await expect(page.getByRole('alert')).toContainText('Não foi possível consultar o CEP')
 
+  const pedidoAntigo = page.waitForRequest('https://viacep.com.br/ws/11111111/json/')
   await cep.fill('11111111')
+  await expect(cep).toHaveValue('11111-111')
+  await pedidoAntigo
   await cep.fill('01001000')
+  await expect(cep).toHaveValue('01001-000')
   await expect(page.getByLabel('Cidade')).toHaveValue('São Paulo')
   await expect(page.getByLabel('UF')).toHaveValue('SP')
-  await page.waitForTimeout(450)
+  liberarCepAntigo()
+  await cepAntigoConcluido
   await expect(page.getByLabel('Cidade')).toHaveValue('São Paulo')
 
   await cep.fill('20000000')

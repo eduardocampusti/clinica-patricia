@@ -58,6 +58,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_VERSION: ${{ steps.release.outputs.version }}
+          RELEASE_TAG: ${{ steps.release.outputs.tag_name }}
         run: |
           branch="codex/notas-release-${RELEASE_VERSION}"
           if git ls-remote --exit-code --heads origin "$branch" >/dev/null; then
@@ -66,7 +67,9 @@ jobs:
           else
             git switch -c "$branch"
           fi
-          node scripts/sync-release-notes.mjs publish "$RELEASE_VERSION" "$(date -u +%F)"
+          published_at=$(gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${RELEASE_TAG}" --jq 'select(.draft == false) | .published_at')
+          test -n "$published_at"
+          node scripts/sync-release-notes.mjs publish "$RELEASE_VERSION" "${published_at:0:10}"
           node scripts/check-release-notes.mjs
           if ! git diff --quiet -- src/config/notasEvolucao.json; then
             git config user.name 'github-actions[bot]'
