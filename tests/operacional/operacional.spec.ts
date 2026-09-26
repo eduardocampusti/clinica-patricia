@@ -25,7 +25,7 @@ test('navegação apresenta somente funções operacionais do papel', async ({ p
     await expect(navegacao).not.toContainText('Prontuários')
     await expect(page.getByText('Visão da recepção')).toBeVisible()
   } else {
-    await expect(page.getByText('Visão proprietária')).toBeVisible()
+    await expect(page.getByText('Visão de proprietário(a)')).toBeVisible()
   }
   await page.screenshot({ path: `scratch/fase11-operacional/navegacao-${papel}-${info.project.name}.png`, fullPage: true })
 })

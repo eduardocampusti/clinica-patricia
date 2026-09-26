@@ -34,7 +34,7 @@ test(`endereço e contatos de ${perfil} preserva dados e controles acessíveis`,
 
   for (const tamanho of tamanhos) {
       await page.setViewportSize({ width: tamanho.largura, height: tamanho.altura })
-      await page.goto('/tests/operacional/pacientes.html', { waitUntil: 'commit' })
+      await page.goto('/tests/operacional/pacientes.html', { waitUntil: 'domcontentloaded' })
       await page.getByRole('button', { name: /Novo paciente/ }).click()
       await page.locator('#paciente-nome').fill('Paciente Sintético')
       await page.getByLabel('Data de nascimento', { exact: true }).fill(perfil === 'adulto' ? '1990-05-18' : '2014-05-18')

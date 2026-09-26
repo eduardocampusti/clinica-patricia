@@ -8,6 +8,7 @@ import FinanceiroModulo from './pages/FinanceiroModulo'
 import Dashboard from './pages/Dashboard'
 import Agenda, { type PacienteCriadoAgenda } from './pages/Agenda'
 import Prontuario from './pages/Prontuario'
+import SobreSistema from './pages/SobreSistema'
 import { useTheme } from './theme/ThemeProvider'
 import { useClinicaAtiva } from './hooks/useClinicaAtiva'
 import { useClinicasDoUsuario } from './hooks/useClinicasDoUsuario'
@@ -160,12 +161,14 @@ function App() {
         <FinanceiroModulo clinicaAtivaId={clinicaAtivaId} carregandoClinica={carregandoClinica}
           usuarioId={session.user.id} papel={papel} carregandoPapel={carregandoPapel} />
       )}
+      {tela === 'sobre' && <SobreSistema clinicaAtiva={clinicaAtiva} />}
       {tela !== 'dashboard' &&
         tela !== 'agenda' &&
         tela !== 'pacientes' &&
         tela !== 'equipe' &&
         tela !== 'prontuario' &&
-        tela !== 'financeiro' && <PlaceholderScreen titulo={TITULOS_TELA[tela]} />}
+        tela !== 'financeiro' &&
+        tela !== 'sobre' && <PlaceholderScreen titulo={TITULOS_TELA[tela]} />}
     </AppShell>
   )
 }

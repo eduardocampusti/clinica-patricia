@@ -1,0 +1,17 @@
+{
+  "versaoEmDesenvolvimento": "0.1.0",
+  "naoLancadas": {
+    "novidades": [
+      "Cadastro de pacientes com CPF opcional, foto opcional e integração ao novo agendamento.",
+      "Consulta de pacientes por nome ou CPF exato, com listagem e resumo administrativo no contexto da clínica.",
+      "Página “Sobre o sistema” com versão em execução, créditos de desenvolvimento e contexto da clínica."
+    ],
+    "melhorias": [
+      "Formulário de pacientes com cálculo de idade pela data de nascimento; cadastro de menores ainda em homologação.",
+      "Foto opcional por arquivo ou webcam no cadastro; gestão administrativa da foto na ficha.",
+      "Papel apresentado como “Proprietário(a)” na interface."
+    ],
+    "correcoes": []
+  },
+  "versoesLancadas": []
+}
