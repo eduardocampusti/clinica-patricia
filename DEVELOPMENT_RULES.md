@@ -116,6 +116,26 @@ Supabase (Vault):
 - `cpf_key`, `cpf_pepper` — chaves de criptografia/HMAC do CPF (**provisórias**, trocar
   antes da produção).
 
+## Integridade do banco (obrigatório antes e depois de cada migration)
+
+- **Nunca confie no cabeçalho do arquivo `.sql` como fonte de status.** O comentário
+  "PROPOSTA PARA REVISÃO — NÃO APLICADA" pode persistir mesmo em migrations
+  aplicadas. Ele é convenção histórica, não indicador vivo.
+- **Nunca confie apenas em `supabase_migrations.schema_migrations`.** O registro
+  ali só prova que a migration foi enfileirada, não que executou por completo.
+- **Sempre verifique cada objeto no banco** após aplicar migration. Consulte
+  `information_schema.tables`, `information_schema.columns`, `pg_proc`,
+  `information_schema.triggers`, `pg_policies`.
+- **Nunca chute nome de tabela ou coluna ao investigar.** Consulte primeiro:
+  `SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_name ILIKE '%<termo>%';`
+- **Convenção de nomenclatura:** tabelas de vínculo com natureza jurídica ou de
+  papel recebem sufixo semântico (ex.: `pacientes_responsaveis_legais`,
+  não `pacientes_responsaveis`).
+- **Ferramenta oficial:** rodar `supabase\tools\verificar-integridade.sql` após
+  cada migration nova.
+- **Referência completa:** processo detalhado, checklist e histórico em
+  `docs\modulos\pacientes\12-DIAGNOSTICO-INTEGRIDADE.md`.
+
 ## Ao gerar prompts de implementação (para Claude Code / outra IA)
 
 - Sempre incluir: "use exclusivamente os design tokens; nunca cores literais".

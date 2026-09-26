@@ -47,3 +47,12 @@ dist-ssr
 /scratch/fase13-smoke/
 /test-results/
 /playwright-report/
+
+# Scratch / rascunhos de investigação (não versionar)
+
+scratch/
+
+# Backups e pacotes exportados (não versionar)
+
+*.zip
+!supabase/**/*.zip
