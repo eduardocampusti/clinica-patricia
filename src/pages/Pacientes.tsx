@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import { supabase } from '../lib/supabase'
 import { apenasDigitos, cpfValido, formatarCpf } from '../lib/cpf'
 import { criptografarCpf, gerarHashCpf } from '../lib/cpfCripto'
@@ -204,6 +204,14 @@ function Pacientes({
   const [mostrarFormulario, setMostrarFormulario] = useState(iniciarComCadastroAberto)
   const [etapaCadastro, setEtapaCadastro] = useState<1 | 2 | 3>(1)
   const [form, setForm] = useState(FORM_INICIAL)
+  const selecaoFormatada = useRef<{ input: HTMLInputElement; valor: string; inicio: number; fim: number } | null>(null)
+  useLayoutEffect(() => {
+    const selecao = selecaoFormatada.current
+    selecaoFormatada.current = null
+    if (selecao && document.activeElement === selecao.input && selecao.input.value === selecao.valor) {
+      selecao.input.setSelectionRange(selecao.inicio, selecao.fim)
+    }
+  }, [form])
   const idade = calcularIdade(form.dataNascimento)
   const [salvando, setSalvando] = useState(false)
   const [erroFormulario, setErroFormulario] = useState<string | null>(null)
@@ -567,13 +575,9 @@ function Pacientes({
     const cursor = input.selectionStart ?? input.value.length
     const digitosAntesDoCursor = apenasDigitos(input.value.slice(0, cursor)).length
     const valorFormatado = formatador(input.value)
+    const posicao = posicaoAposDigitos(valorFormatado, digitosAntesDoCursor)
+    selecaoFormatada.current = { input, valor: valorFormatado, inicio: posicao, fim: posicao }
     setForm((atual) => ({ ...atual, [campo]: valorFormatado }))
-
-    requestAnimationFrame(() => {
-      if (document.activeElement !== input || input.value !== valorFormatado) return
-      const posicao = posicaoAposDigitos(valorFormatado, digitosAntesDoCursor)
-      input.setSelectionRange(posicao, posicao)
-    })
   }
 
   function registrarSelecaoAntesDaEdicao(campo: CampoTextoFormatado, input: HTMLInputElement) {
@@ -627,11 +631,10 @@ function Pacientes({
 
     palavrasComGrafiaManual.current[campo] = preservadas
     const valorFormatado = formatarTextoPortuguesAoDigitar(valor, preservadas)
+    // Restaura na própria atualização do React, antes da próxima interação.
+    // Um RAF atrasado podia desfazer a seleção de uma substituição/colagem.
+    selecaoFormatada.current = { input, valor: valorFormatado, ...selecaoDepois }
     setForm((atual) => ({ ...atual, [campo]: valorFormatado }))
-    requestAnimationFrame(() => {
-      if (document.activeElement !== input || input.value !== valorFormatado) return
-      input.setSelectionRange(selecaoDepois.inicio, selecaoDepois.fim)
-    })
   }
 
   function valorTextoParaSalvar(campo: CampoTextoFormatado, valor: string): string {
