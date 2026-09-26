@@ -151,13 +151,19 @@ Permanecem pendentes a possibilidade de múltiplos responsáveis, a comprovaçã
 
 Nenhuma dessas pendências define, por si só, bloqueio de agendamento ou atendimento. O comportamento excepcional dependerá de decisão posterior do proprietário.
 
+## 9-B. Foto opcional do paciente
+
+A clínica pode decidir individualmente em quais pacientes utilizará foto. A ausência de foto nunca bloqueia cadastro, agendamento ou atendimento.
+
+Quando utilizada, a foto deve permanecer vinculada ao cadastro do paciente e à clínica correspondente, em armazenamento privado, com acesso administrativo autorizado e sem URL pública. O fluxo deve permitir enviar arquivo, capturar por webcam após ação e permissão expressas, visualizar, confirmar, trocar e remover. A câmera deve ser desligada ao cancelar, fechar ou concluir a captura. Não há reconhecimento facial, biometria ou autorização implícita para outras finalidades.
+
 # PARTE II — ESTADO ATUAL CONFIRMADO
 
 ## 10. Limite das constatações
 
 Esta parte registra somente achados confirmados no código e nas migrations locais examinadas nas auditorias.
 
-Não foi realizada, para este documento, conferência do Supabase remoto. Portanto, não se afirma que policies, grants, funções, tabelas ou dados implantados sejam idênticos ao repositório local.
+As constatações históricas desta parte vieram das auditorias locais. Em 25/09/2026, houve conferência pontual do projeto Supabase `xftnkusbyqzyvzrovroj` para o histórico, as migrations `20260925100000` e `20260925120000`, seus objetos e ensaios SQL sintéticos com `ROLLBACK`. Isso não equivale à homologação integral de todas as policies, grants, sessões reais, dados ou fluxos implantados; detalhes e pendências estão no checkpoint.
 
 ## 11. Estrutura local confirmada
 
@@ -191,15 +197,17 @@ Existe trigger de auditoria para `INSERT`, `UPDATE` e `DELETE` de pacientes. Fon
 
 Na implementação local ainda não publicada, o frontend:
 
-- consulta diretamente a tabela `pacientes`, mas seleciona apenas `id`, nome, nascimento, telefone e endereço; não seleciona `cpf_encrypted` nem `cpf_hash`;
+- consulta diretamente a tabela `pacientes`, selecionando `id`, nome, nascimento, telefone, endereço e o caminho da foto privada; não seleciona `cpf_encrypted` nem `cpf_hash`;
 - aplica no cliente o `clinica_id` selecionado;
 - lista somente `ativo = true`;
 - ordena por `nome_completo` em ordem crescente;
 - carrega todos os resultados sem paginação;
 - faz busca local por parte do nome;
-- oferece separadamente a busca exata por CPF, que somente é enviada quando os onze dígitos são válidos;
+- oferece alternância explícita entre busca local por nome e busca exata por CPF, que somente é enviada quando os onze dígitos são válidos;
 - chama a RPC local `paciente_buscar_por_cpf`, que exige proprietária ou recepção vinculada à clínica informada, calcula o hash no banco e retorna somente identificação administrativa e status, sem CPF completo, ciphertext ou hash;
 - pode localizar por CPF um cadastro inativo da própria clínica, apresentando-o como inativo sem definir por isso um fluxo de reativação.
+- mostra foto pelo download autenticado do Storage privado ou iniciais; ao selecionar um cadastro, consulta responsável legal e pendência do CPF para montar um resumo administrativo. Não mostra o CPF completo.
+- limpa seleção e resumo durante a troca de clínica e descarta respostas atrasadas. No celular, o resumo abre em superfície sobreposta.
 
 Fontes locais: `src/pages/Pacientes.tsx`, `src/lib/pacienteCpf.ts` e `supabase/migrations/20260924130000_pacientes_busca_cpf_segura.sql`.
 
@@ -220,19 +228,19 @@ O formulário atual possui:
 - CEP, rua/logradouro, número, complemento, bairro, cidade e UF como campos separados na interface;
 - observações.
 
-O nome, o logradouro, o bairro e a cidade digitados manualmente são normalizados ao sair do campo e antes do salvamento, com tratamento das partículas `de`, `da`, `do`, `dos`, `das` e `e`, inclusive em palavras com hífen ou apóstrofo. Depois da primeira normalização, uma correção manual é preservada para permitir siglas, nomes próprios e grafias excepcionais. Valores fornecidos pelo ViaCEP preservam a grafia do serviço enquanto não forem editados. Essa transformação não é aplicada a complemento, e-mail, CPF, telefone, CEP, UF, número do imóvel ou observações.
+O nome, o logradouro, o bairro e a cidade digitados manualmente são formatados durante digitação, colagem e substituição, e normalizados novamente antes do salvamento. O tratamento contempla as partículas `de`, `da`, `do`, `dos`, `das` e `e`, inclusive em palavras com hífen ou apóstrofo, preserva composição do teclado, cursor e seleção e volta a funcionar quando o conteúdo é apagado e substituído. Correções internas deliberadas preservam a grafia excepcional da palavra atual sem desativar silenciosamente a formatação de um nome posterior. Valores fornecidos pelo ViaCEP preservam a grafia do serviço enquanto não forem editados. Essa transformação não é aplicada a complemento, e-mail, CPF, telefone, CEP, UF, número do imóvel ou observações.
 
 CPF, telefone e CEP possuem máscaras de apresentação. O CPF aceita colagem com ou sem pontuação, é validado somente quando informado e não é substituído por valor fictício. O telefone aceita dez dígitos para fixo e onze para celular. O CEP aceita oito dígitos.
 
-O avatar ilustrativo do cadastro acompanha, durante a digitação, as iniciais do primeiro e do último nome informado. Enquanto o nome estiver vazio, a interface apresenta um símbolo neutro; esse recurso não captura nem persiste fotografia.
+O avatar acompanha, durante a digitação, as iniciais do primeiro e do último nome informado e apresenta um símbolo neutro enquanto o nome estiver vazio. A versão local também possui seleção de arquivo, captura por webcam sob ação explícita, prévia, confirmação, troca e remoção. A prévia confirmada permanece ao navegar entre Identificação e Endereço. A migration `20260925120000_pacientes_foto_privada.sql` foi aplicada ao Supabase em 25/09/2026; bucket privado, limite, tipos, policies e RPCs foram confirmados no banco e ensaiados com SQL sintético em `ROLLBACK`. Em sessão autenticada real de proprietária em Ipupiara, upload, leitura após reabrir a aplicação, troca e remoção de foto sintética funcionaram; a limpeza final foi comprovada. Isso não homologa sessões reais de recepção, médico ou usuário vinculado a uma única clínica.
 
-O formulário desta versão ainda não oferece cadastro nem vínculo de responsável legal. Portanto, ele não implementa o fluxo completo aprovado para pacientes menores e não deve ser publicado ou apresentado como cadastro completo de menor até que o vínculo clínico-administrativo exigido na seção 9-A seja implementado. Essa lacuna não cria bloqueio de agendamento ou atendimento e não autoriza inventar um responsável.
+Na árvore original, o formulário mostra a idade calculada a partir da data de nascimento e, quando ela indica menor, exige nome, vínculo e Telefone / WhatsApp do responsável legal; CPF e e-mail dele são opcionais. A migration estrutural `20260925100000_pacientes_responsavel_legal.sql` foi aplicada ao Supabase em 25/09/2026 e sua RPC atômica passou em ensaio SQL sintético com `ROLLBACK` e em cadastro sintético pela sessão real de proprietária em Ipupiara, seguido de limpeza comprovada. O frontend não foi publicado. A trava para impedir `INSERT` direto de menor sem responsável foi preparada como nova migration local `20260925130000`, posterior ao histórico remoto, e passou em ensaio com `ROLLBACK`; permanece **não aplicada**, aguardando frontend compatível em uso e revisão do legado. Por isso o cadastro completo de menores **ainda não pode ser declarado concluído**. Isso não cria bloqueio de agendamento ou atendimento e não autoriza inventar um responsável.
 
 Ao completar o CEP, o frontend consulta `https://viacep.com.br/ws/{CEP}/json/` enviando somente o CEP. O retorno pode preencher rua, bairro, cidade e UF; campos corrigidos manualmente não são sobrescritos. A implementação cancela a solicitação anterior e também compara a identidade da requisição para ignorar respostas atrasadas. CEP não encontrado e falha de rede são informados sem impedir preenchimento manual.
 
 O banco continua possuindo apenas a coluna textual `endereco`. Antes do `INSERT`, os campos estruturados da interface são compostos em uma string legível. Número e complemento permanecem manuais. Como os componentes estruturados não são armazenados separadamente e ainda não existe edição na página, uma edição estruturada futura não poderá reconstruí-los com total confiabilidade a partir do texto existente; resolver essa limitação exigirá decisão técnica posterior.
 
-A listagem administrativa local passou a selecionar e exibir, sob a ação “Ver endereço”, a string textual integral já salva. A interface não tenta inferir CEP, rua, número, complemento, bairro, cidade ou UF. Assim, a leitura literal é preservada, mas nenhuma parte individual pode ser recuperada com garantia para uma futura edição estruturada.
+A listagem administrativa local seleciona a string textual integral já salva e a exibe no resumo do paciente selecionado. A interface não tenta inferir CEP, rua, número, complemento, bairro, cidade ou UF. Assim, a leitura literal é preservada, mas nenhuma parte individual pode ser recuperada com garantia para uma futura edição estruturada.
 
 Fonte local: `src/pages/Pacientes.tsx` e `src/lib/pacienteFormulario.ts`.
 
@@ -335,9 +343,11 @@ Fontes locais do caminho ativo incluem:
 
 Existem testes de interface para a ausência de CPF/ciphertext na listagem, busca exata, validação local, visibilidade de menu por papel e troca de clínica na Agenda. Existem também testes locais de grants das funções de CPF e cenários sintéticos de Prontuário/Financeiro.
 
-As melhorias locais do cadastro possuem testes unitários de formatação de nomes portugueses, máscaras de CPF/telefone/CEP, composição do endereço, CEP encontrado, CEP inexistente e falha de rede. Os cenários operacionais sintéticos cobrem CPF opcional sem chamada às RPCs, digitação/exclusão das máscaras, resposta atrasada após troca de CEP, preservação de cidade corrigida manualmente, persistência e visualização literal da composição textual, lembrete de CPF no agendamento e na chegada, frequência por interação, preservação do formulário, CPF inválido, conflito com registro inativo e isolamento do parâmetro de clínica.
+As melhorias locais do cadastro possuem testes unitários de formatação repetida de nomes portugueses, grafia excepcional, máscaras de CPF/telefone/CEP, composição do endereço, CEP encontrado, CEP inexistente, falha de rede e limites de tipo/tamanho da foto. Os cenários operacionais sintéticos cobrem CPF opcional sem chamada às RPCs, digitação/exclusão das máscaras, resposta atrasada após troca de CEP, preservação de cidade corrigida manualmente, persistência e visualização literal da composição textual, webcam negada, prévia/confirmação de imagem, upload simulado sem URL pública, lembrete de CPF no agendamento e na chegada, frequência por interação, preservação do formulário, CPF inválido, conflito com registro inativo e isolamento do parâmetro de clínica.
 
-Fontes locais: `src/lib/pacienteFormulario.test.ts` e `tests/operacional/operacional.spec.ts`.
+Em 25/09/2026, foram acrescentados testes de idade no aniversário de 18 anos, data inválida/futura, campos do responsável, preservação da foto entre etapas e chamada atômica simulada. Depois das migrations `20260925100000` e `20260925120000`, ensaios SQL com usuários, clínicas e pacientes sintéticos e `ROLLBACK` verificaram as RPCs e policies instaladas; não substituem login autenticado real nem transferência de bytes pelo Storage.
+
+Fontes locais: `src/lib/pacienteFormulario.test.ts`, `src/lib/pacienteFoto.test.ts` e `tests/operacional/operacional.spec.ts`.
 
 Não foram encontrados, nas auditorias realizadas, testes completos que comprovem em conjunto:
 
@@ -480,7 +490,9 @@ Proposta:
 
 ## 25. Ficha administrativa do paciente
 
-Proposta:
+O resumo local da página principal já apresenta identificação, contato, endereço literal, status, responsável legal quando houver, pendência do CPF, gestão de foto e navegação simples para a Agenda. Ele não equivale à ficha completa proposta abaixo; a navegação não pré-seleciona o paciente na Agenda.
+
+Proposta para a ficha completa, ainda não implementada:
 
 A ficha deverá apresentar:
 

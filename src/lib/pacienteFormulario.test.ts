@@ -6,14 +6,30 @@ import {
   formatarCep,
   formatarTelefoneBrasil,
   formatarTextoPortugues,
+  formatarTextoPortuguesAoDigitar,
   obterIniciaisPaciente,
-} from './pacienteFormulario.ts'
-import { cpfValido, formatarCpf } from './cpf.ts'
+} from './pacienteFormulario'
+import { cpfValido, formatarCpf } from './cpf'
 
 test('formata nomes portugueses com partículas, acentos, hífen e apóstrofo', () => {
   assert.equal(formatarTextoPortugues('  joÃO   dA silva e d\'ávila  '), "João da Silva e D'Ávila")
   assert.equal(formatarTextoPortugues('ana-mARIA DOS santos'), 'Ana-Maria dos Santos')
   assert.equal(formatarTextoPortugues('de souza'), 'De Souza')
+})
+
+test('formata repetidamente durante digitação, colagem e substituição sem remover espaços', () => {
+  assert.equal(formatarTextoPortuguesAoDigitar('MARIA DA CONCEIÇÃO'), 'Maria da Conceição')
+  assert.equal(formatarTextoPortuguesAoDigitar('MARIA '), 'Maria ')
+  assert.equal(formatarTextoPortuguesAoDigitar('JOÃO D’ÁVILA E ANA-MARIA'), 'João D’Ávila e Ana-Maria')
+  assert.equal(formatarTextoPortuguesAoDigitar('OUTRO NOME'), 'Outro Nome')
+})
+
+test('preserva somente a palavra marcada como grafia excepcional', () => {
+  assert.equal(
+    formatarTextoPortuguesAoDigitar('ana McDonald DA SILVA', new Set(['mcdonald'])),
+    'Ana McDonald da Silva',
+  )
+  assert.equal(formatarTextoPortuguesAoDigitar('NOVO NOME', new Set()), 'Novo Nome')
 })
 
 test('gera iniciais do primeiro e último nome e mantém estado neutro sem nome', () => {
