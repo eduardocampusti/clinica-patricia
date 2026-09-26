@@ -2,6 +2,41 @@
 
 ## Concluído recentemente
 
+- [x] **Decisão arquitetural Ibitiara → Laboratório formalizada** (12/08/2026).
+  Referência canônica criada em `DECISAO-IBITIARA-LABORATORIO.md`: Brotas e
+  Ipupiara são as duas clínicas operacionais; Ibitiara é laboratório externo,
+  com CNPJ e sistema próprios. O estado histórico foi preservado e separado do
+  estado ainda não alterado do banco. A integração futura chama-se `INT-LAB`.
+  Nenhum SQL foi executado e `desativar_ibitiara.sql` não foi aprovado.
+
+- [x] **Financeiro — IMPLEMENTADO ESTATICAMENTE — AGUARDA TESTE EM BANCO**
+  (12/08/2026). Foram escritos os quatro SQLs, contratos Fastify, asserção HMAC,
+  pool PostgreSQL, endpoints, idempotência e fluxos de cobrança/cortesia,
+  despesa, sangria, suprimento, fechamento, estorno e repasse integral.
+  O frontend foi integrado sem mutações financeiras diretas via PostgREST e sem
+  cálculos financeiros relevantes. Commits: `ec36d1f` (SQL), `271db41`
+  (Fastify) e `88b5bca` (frontend).
+  - Backend: typecheck/build, 6/6 testes e `npm audit` com 0 vulnerabilidades.
+  - Frontend: typecheck/build e revisão das chamadas financeiras concluídos.
+  - Startup: sem as duas variáveis financeiras privadas, o servidor inicia e a
+    rota financeira retorna HTTP `503` controlado.
+  - **Nenhum SQL financeiro foi executado e produção/Supabase não foi alterado.**
+  - Não considerar testados em banco: SQL/RPC/RLS, Vault, roles técnicas,
+    idempotência concorrente, fechamento atômico, estornos e repasses.
+  - **Próximo bloqueio:** ambiente local/staging reproduzível + baseline do
+    schema antes de qualquer execução dos SQLs.
+
+- [x] **Prontuário — hardening preparado no código** (`prontuario_hardening.sql`
+  e `prontuario_seguranca_testes.sql`, 11/08/2026). O frontend passou a usar
+  somente RPCs para listar metadados, abrir com auditoria, criar, salvar,
+  finalizar, adicionar adendos e emitir documentos. A finalização agora é uma
+  única operação atômica e o início pela Agenda é idempotente por agendamento.
+  - A migration é incremental e preserva `prontuario_fundacao.sql`.
+  - **NÃO APLICADO AO BANCO:** os scripts foram apenas preparados e precisam de
+    revisão/autorização explícita antes de qualquer execução no Supabase.
+  - Após aplicação em ambiente local/staging, executar integralmente
+    `prontuario_seguranca_testes.sql` antes de considerar produção.
+
 - [x] **Prontuário — fundação do schema** (`prontuario_fundacao.sql`,
   sessão 04/08/2026). Decisões confirmadas com o Eduardo: assinatura =
   trava no sistema por enquanto (sem ICP-Brasil); núcleo comum de 7
@@ -21,7 +56,8 @@
     ficou bloqueada depois de uma tela de login inesperada — decidido
     não insistir com credenciais, ver diário). Confirmado via SQL de
     verificação: 4 tabelas, 2 RPCs, RLS nas 4, trigger de imutabilidade.
-  - **Pendente:** frontend ainda não existe — só o schema desta etapa.
+  - O frontend foi implementado posteriormente; este item descreve somente o
+    estado existente na data da fundação.
 
 - [x] **Integração Agenda → Financeiro + Dashboard "Próximo paciente"**
   (sessão 05/08/2026). Orquestração entre telas que já existiam — nenhuma
@@ -311,12 +347,13 @@
 
 - [x] **Fundação mínima do backend Node.js + Fastify** (`/server`, pré-requisito
   do módulo Financeiro — `10-PLANO-DIRETOR.md`/`11-PERFIL-PROPRIETARIA.md`).
+  **Registro histórico da etapa inicial; o estado atual está no primeiro item
+  deste arquivo e substitui as limitações descritas abaixo.**
   Projeto próprio (`package.json`/`node_modules`/`tsconfig.json` independentes
   do frontend), Fastify + TypeScript + `tsx`. Sem lógica financeira e **sem
   chave privilegiada (`service_role`)** nesta etapa — toda consulta usa um
   client Supabase escopado ao token JWT da própria requisição, respeitando a
-  mesma RLS do frontend (ver `server/README.md` para quando introduzir
-  `service_role`). Implementado: `requireAuth` (valida `Authorization: Bearer`
+  mesma RLS do frontend. Implementado: `requireAuth` (valida `Authorization: Bearer`
   via `auth.getUser`) + `resolveClinicaAtiva` (header `X-Clinica-Id`,
   confirmado via RLS de `clinicas` — ponte até existir resolução por
   subdomínio) + rota `GET /api/ping`. **Testado localmente, os 4 cenários:**
@@ -325,9 +362,8 @@
   isolamento, não só confia no header); com token e clínica vinculada → `200`
   com `{ usuario, clinica }` corretos. `npm run build` do servidor sem erro de
   tipos. `ARCHITECTURE.md` atualizado (a camada deixou de ser "não
-  implementada"). **O frontend ainda não chama esse servidor** — só passa a
-  ser usado quando o módulo Financeiro existir (ver contrato de chamada
-  futura em `server/README.md`).
+  implementada"). Naquela etapa, o frontend ainda não chamava o servidor; a
+  integração financeira foi implementada depois no commit `88b5bca`.
 
 - [x] **Módulo Cadastros Estruturais** (especialidades, profissionais,
   profissionais_clinicas, serviços/preços) — schema aplicado no banco
@@ -441,8 +477,8 @@
   de hoje" pronto no visual (`src/pages/Dashboard.tsx`), com dados placeholder;
   falta ligar aos dados reais quando o módulo existir.
 - [ ] **Módulo Prontuário** (templates por especialidade; dados clínicos criptografados).
-- [ ] **Módulo Financeiro** — o Dashboard já tem o card "Fluxo de caixa do dia"
-  pronto no visual, com dados placeholder; falta ligar aos dados reais.
+- [ ] **Dashboard financeiro com dados reais** — a fronteira operacional foi
+  implementada estaticamente, mas os cards do Dashboard continuam placeholder.
 - [ ] **Relatórios e dashboards** com dados reais (hoje é `PlaceholderScreen`).
 
 ## Pendências — Backend / Infra
@@ -471,22 +507,28 @@
   real antes de produção, ou zerar) e a nova entrada de teste em Brotas
   (paciente `Maria Teste Silva`, profissional `Dr. Teste Brotas`,
   `valor 500,00`, id `23cc9df1-8aba-418a-b77a-4e474948a265`).
-- [ ] **Rodar o SQL da cor da Clínica Ibitiara** (`ibitiara_cor.sql`, entregue ao
-  Eduardo) — terracota `#c2410c`/`#fed7aa`/`#7c2d12`, escolhida e aprovada
-  nesta sessão. Só falta executar no SQL Editor do Supabase.
+- [ ] ~~**Rodar o SQL da cor da Clínica Ibitiara**~~ — **CANCELADO** (ago/2026).
+  A unidade de Ibitiara não é mais uma clínica no sistema — é um laboratório com
+  sistema próprio. O arquivo `ibitiara_cor.sql` não deve ser executado. O registro
+  histórico da "Clínica Ibitiara" ainda existe no banco documentado e deverá ser
+  preservado. Sua futura inativação (`ativo = false`), os vínculos operacionais e
+  o tratamento de `teste_medico_ibitiara@teste.local` dependem de inventário e
+  plano aprovados. **Não executar `desativar_ibitiara.sql` no estado atual.**
 - [ ] **Nome de exibição da proprietária** — hoje "Proprietária" (placeholder).
 - [ ] Criar a **RPC `clinica_publica_por_subdomain`** (para theming pré-login).
 - [ ] **Refinamento da auditoria**: registros de mudança na própria `clinicas`/`usuarios`
   ficam com `clinica_id` nulo e ninguém os lê; decidir política (ex.: preencher com o id
   da clínica ou dar acesso à proprietária).
-- [ ] **Decidir sobre a camada Node.js + Fastify (+ Prisma)** — necessária para reforçar
-  a trava por clínica ativa e para a lógica do financeiro. Ver `ARCHITECTURE.md`.
+- [x] **Camada Node.js + Fastify para o Financeiro** — implementada sem Prisma e
+  sem `service_role`; aguarda validação em banco local/staging.
+- [ ] **Criar ambiente local/staging reproduzível e capturar baseline do schema**
+  antes de executar qualquer SQL do Financeiro ou hardening adicional.
 - [ ] **Política de esquecimento LGPD** vs auditoria (apagar/anonimizar dado, preservar
   registro de que existiu).
 - [ ] Configurar **GitHub** (versionamento/backup) e deploy na **Vercel** com wildcard de
   subdomínio.
 
-## Módulo Financeiro — regras de negócio já decididas (a implementar)
+## Módulo Financeiro — regras implementadas estaticamente, ainda não testadas em banco
 
 - **Objetivo:** proprietária com o fluxo de caixa "na palma da mão" (saldo do dia por
   clínica, sem cliques).
@@ -497,7 +539,7 @@
 - Vínculo **agenda → atendimento → status de pagamento** (quem pagou / quem deve).
 - **Fechamento por especialidade/profissional** (quanto cada médico gerou).
 - Todo lançamento financeiro **auditável** (quem lançou, quando, editou).
-- **Cálculos financeiros nunca no frontend** — passam por backend próprio quando existir.
+- **Cálculos financeiros nunca no frontend** — passam pelo backend Fastify/RPC privada.
 
 ## Erros / riscos conhecidos
 
@@ -526,16 +568,29 @@
 
 ## Fase 2 (futuro)
 
-- **Visão consolidada** (caixa somado das 3 clínicas para a proprietária).
+- **Visão consolidada** (caixa somado das 2 clínicas para a proprietária).
 - **Emissão automática de NF** via serviço terceirizado (NFe.io / Focus NFe / PlugNotas).
+  Atentar: são 2 CNPJs em prefeituras distintas.
 - **Perfil recepção/secretária** e permissões.
 - Painel de configurações da clínica (proprietária troca logo/cor pelo sistema).
+- **INT-LAB — Integração com laboratório** — consumir API do sistema do laboratório da
+  proprietária (Ibitiara). Bloqueado até o lab ter sistema próprio pronto e expor API.
+  Fluxo: médico pede exame → API do lab → resultado volta → vincula ao prontuário.
+  A iniciativa não tem número nem posição aprovada no roadmap. Ver a seção
+  "Integração com laboratório externo — INT-LAB" em `ARCHITECTURE.md` e
+  `DECISAO-IBITIARA-LABORATORIO.md`.
 
 ## Próximos passos recomendados (ordem sugerida)
 
-1. Concluir o **tema** (cor por clínica + claro/escuro).
-2. **Cadastro/lista de pacientes** (primeira função de uso real).
-3. **Subdomínio + trava** no frontend (fecha o modelo de isolamento do médico).
-4. **Módulo financeiro** (prioridade de negócio) — avaliar backend Node/Fastify aqui.
-5. Antes de qualquer produção: trocar segredos do Vault, remover dados de teste,
+1. Criar **ambiente local/staging reproduzível + baseline do schema**.
+2. Fazer o inventário completo e exclusivamente de leitura do antigo tenant
+   Ibitiara e preparar um plano transacional/reversível; não executar
+   `desativar_ibitiara.sql` no estado atual.
+3. Antes de retomar o Financeiro, garantir documentalmente e depois testar que
+   frontend, backend, RLS e funções privadas rejeitam `clinicas.ativo = false`.
+4. Validar os SQLs do Financeiro, RPCs, RLS, Vault, roles, concorrência,
+   fechamento atômico e repasses sem tocar produção.
+5. **Subdomínio + trava** no frontend (fecha o modelo de isolamento do médico).
+6. Ligar os cards financeiros do Dashboard a dados reais após validação do módulo.
+7. Antes de qualquer produção: trocar segredos do Vault, remover dados de teste,
    configurar GitHub/Vercel.

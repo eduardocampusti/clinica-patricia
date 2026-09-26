@@ -14,15 +14,22 @@ Documento de planejamento profissional trazido pelo Eduardo em 01/08/2026, revis
 e endossado pela IA (engenheiro) como direção técnica correta. As decisões marcadas
 abaixo como "JÁ DECIDIDO" foram formalizadas nesta sessão.
 
-## Decisões formalizadas nesta sessão (01/08/2026)
+## Decisões formalizadas em 01/08/2026 e atualização de 12/08/2026
 
-1. **CNPJs diferentes, mesma proprietária.** As 3 clínicas são pessoas jurídicas
-   separadas. Implicações:
+1. **CNPJs diferentes, mesma proprietária — histórico e decisão vigente.** Em
+   01/08/2026, o modelo então documentado tratava Brotas, Ipupiara e Ibitiara como
+   3 clínicas/pessoas jurídicas e 3 controladores de dados. Os testes e registros
+   produzidos nesse contexto permanecem fatos históricos. Em 12/08/2026 foi
+   esclarecido que somente Brotas e Ipupiara são clínicas; Ibitiara é laboratório
+   com CNPJ e sistema próprios e NÃO faz parte deste multi-tenant. A integração
+   futura será a iniciativa **INT-LAB**, bloqueada até o lab ter API pronta. Ver
+   `DECISAO-IBITIARA-LABORATORIO.md`. Implicações vigentes:
    - Financeiro/caixa/nota fiscal juridicamente independentes por clínica (reforça
      o isolamento por `clinica_id` que já existe).
-   - **LGPD: são 3 controladores de dados diferentes.** Um paciente da Brotas NÃO é
-     automaticamente o mesmo da Ipupiara. NÃO criar "paciente global" compartilhado
-     entre clínicas sem decisão jurídica consciente. O isolamento atual protege isso.
+   - **LGPD: cada clínica é um controlador de dados diferente.** Um paciente da
+     Brotas NÃO é automaticamente o mesmo da Ipupiara. NÃO criar "paciente global"
+     compartilhado entre clínicas sem decisão jurídica consciente. O isolamento
+     atual protege isso.
    - A "visão consolidada" da proprietária é conveniência gerencial dela — cada CNPJ
      ainda fecha o seu separadamente.
 
@@ -135,6 +142,11 @@ abaixo como "JÁ DECIDIDO" foram formalizadas nesta sessão.
 - Ambientes separados (dev/homologação/produção); dev nunca com dados reais de paciente.
 
 ## Roadmap (ORDEM DE IMPLEMENTAÇÃO — seguir esta sequência)
+
+> Os números abaixo identificam **etapas deste plano diretor**, não os módulos
+> funcionais de `02-STATUS-MODULOS.md`. Em particular, a etapa 7 abaixo não é a
+> integração com o laboratório. `INT-LAB` permanece fora da ordem até que seu
+> escopo, contrato e prioridade sejam aprovados.
 
 | Ordem | Etapa | Critério de "pronto" |
 |---|---|---|

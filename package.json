@@ -4,23 +4,37 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "test:operacional:real": "playwright test --config tests/operacional/playwright.real.config.ts",
+    "test:financeiro:10b": "playwright test --config tests/financeiro/playwright.config.ts",
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "test:financeiro": "server\\node_modules\\.bin\\tsx.cmd --test src/lib/financeiro/financeiro.test.ts",
+    "preview": "vite preview",
+    "supabase:version": "node scripts/supabase-local.mjs version",
+    "supabase:validate": "node scripts/supabase-local.mjs validate",
+    "supabase:start": "node scripts/supabase-local.mjs start",
+    "supabase:status": "node scripts/supabase-local.mjs status",
+    "supabase:reset": "node scripts/supabase-local.mjs reset",
+    "supabase:stop": "node scripts/supabase-local.mjs stop"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.111.0",
+    "jspdf": "4.2.1",
+    "jspdf-autotable": "5.0.8",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8"
+    "react-dom": "^19.2.8",
+    "write-excel-file": "4.1.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "@tailwindcss/vite": "^4.3.3",
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.4",
     "oxlint": "^1.75.0",
+    "supabase": "2.110.0",
     "tailwindcss": "^4.3.3",
     "typescript": "~6.0.2",
     "vite": "^8.2.0"

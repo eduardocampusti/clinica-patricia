@@ -8,6 +8,17 @@ import type { ClinicaAtiva } from './useClinicaAtiva'
 export function useClinicasDoUsuario(habilitado: boolean) {
   const [clinicas, setClinicas] = useState<ClinicaAtiva[]>([])
   const [carregando, setCarregando] = useState(true)
+  const [versaoSessao, setVersaoSessao] = useState(0)
+
+  useEffect(() => {
+    if (!habilitado) return
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((evento) => {
+      if (evento === 'SIGNED_IN' || evento === 'SIGNED_OUT' || evento === 'USER_UPDATED') {
+        setVersaoSessao((versao) => versao + 1)
+      }
+    })
+    return () => subscription.unsubscribe()
+  }, [habilitado])
 
   useEffect(() => {
     if (!habilitado) {
@@ -37,7 +48,7 @@ export function useClinicasDoUsuario(habilitado: boolean) {
     return () => {
       cancelado = true
     }
-  }, [habilitado])
+  }, [habilitado, versaoSessao])
 
   return { clinicas, carregando }
 }

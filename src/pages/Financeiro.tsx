@@ -8,6 +8,7 @@ import {
   type PacienteOpcaoEntrada,
   type ProfissionalOpcaoEntrada,
 } from '../components/financeiro/FormRegistrarEntrada'
+import { AcoesFinanceiras } from '../components/financeiro/AcoesFinanceiras'
 
 type PacienteOpcao = PacienteOpcaoEntrada
 type ProfissionalOpcao = ProfissionalOpcaoEntrada
@@ -145,6 +146,7 @@ function Financeiro({ clinicaAtivaId, carregandoClinica }: FinanceiroProps) {
       </div>
 
       {sessao && <EntradasCaixa sessaoCaixaId={sessao.id} clinicaAtivaId={clinicaAtivaId} />}
+      {sessao && clinicaAtivaId && <AcoesFinanceiras clinicaId={clinicaAtivaId} onCaixaFechado={recarregar} />}
     </div>
   )
 }

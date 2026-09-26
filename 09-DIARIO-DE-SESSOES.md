@@ -4,6 +4,145 @@
 > para que qualquer conversa futura (chat ou Claude Code) tenha continuidade
 > e não "saia do contexto". Entrada mais recente no topo.
 
+## Sessão — 12/08/2026 (Formalização arquitetural Ibitiara → Laboratório)
+
+A decisão de negócio sobre Ibitiara foi consolidada em
+`DECISAO-IBITIARA-LABORATORIO.md`, que passa a ser a referência canônica para
+estado futuro: somente Brotas e Ipupiara são clínicas operacionais; o laboratório
+de Ibitiara tem CNPJ e sistema próprios e não é tenant do Clínica Patrícia.
+
+Foram separados três conceitos que não podem ser confundidos:
+
+- **histórico:** Ibitiara existiu como clínica no modelo anterior e participou de
+  testes reais; esses relatos permanecem inalterados;
+- **decisão atual:** Ibitiara será laboratório externo e o registro histórico será
+  preservado como inativo;
+- **estado documentado do banco:** a linha antiga ainda existe e nenhuma
+  desativação foi executada ou validada nesta sessão.
+
+A integração futura recebeu o identificador **INT-LAB**. A expressão “Módulo 7”
+deixa de ser usada para o laboratório: no status funcional, Módulo 7 é Relatórios
+e Dashboards; no plano diretor, o número 7 identifica a etapa Templates por
+Especialidade. `desativar_ibitiara.sql` permanece rascunho não aprovado e não foi
+alterado nem executado.
+
+Nenhum código ou SQL foi alterado, nenhum banco/Supabase foi acessado e nenhum
+efeito operacional ocorreu.
+
+---
+
+## Sessão — 12/08/2026 (Financeiro — implementação estática versionada)
+
+O Financeiro foi organizado na branch `financeiro-v2` e versionado em três
+commits técnicos:
+
+- `ec36d1f6db3885d2e0fa4c55cc013f079f184fef` — fundação SQL, API privada,
+  bloqueio do PostgREST mutável e testes SQL;
+- `271db411b106768f8b772ee939294e5e323a5af6` — fronteira Fastify, pool lazy,
+  asserção HMAC, rotas e testes unitários;
+- `88b5bca9cd8fbeba8b94184f8ec167b8372507ae` — integração do frontend aos
+  comandos financeiros.
+
+**Status: IMPLEMENTADO ESTATICAMENTE — AGUARDA TESTE EM BANCO.** Typecheck e
+build do backend passaram; 6/6 testes unitários passaram; `npm audit` encontrou
+0 vulnerabilidades. Typecheck e build do frontend passaram, e a revisão
+confirmou que mutações financeiras usam Fastify, sem cálculo financeiro
+relevante ou credencial privilegiada no frontend.
+
+O backend continua iniciando quando `FINANCEIRO_DATABASE_URL` e
+`FINANCEIRO_ASSERTION_HMAC_KEY` não existem. Nessas condições, uma operação
+financeira privada falha de forma controlada com HTTP `503`, antes de criar o
+pool ou tentar uma RPC.
+
+**Nenhum SQL financeiro foi executado. Produção/Supabase não foi acessado nem
+alterado.** Portanto SQL, RPCs, RLS, Vault, roles técnicas, idempotência
+concorrente, fechamento atômico e repasses não estão validados em banco.
+
+**Próximo bloqueio:** ambiente local/staging reproduzível e baseline do schema
+real antes de qualquer execução dos SQLs.
+
+---
+
+## Sessão — 12/08/2026 (Correção estrutural: 2 clínicas + laboratório externo)
+
+Decisão de Eduardo: a terceira unidade da proprietária (Ibitiara) **NÃO é uma
+clínica** — é um **laboratório de exames** com CNPJ próprio e sistema
+independente. O Clínica Patrícia passa a gerenciar **apenas 2 clínicas**
+(Brotas e Ipupiara), ambas com CNPJ próprio.
+
+O laboratório terá seu próprio sistema. Quando estiver pronto, vai expor uma
+API que o Clínica Patrícia consumirá para integração (pedido de exame →
+resultado). Na redação inicial desta sessão, essa integração foi chamada de
+**Módulo 7**. A formalização posterior, registrada acima, substituiu essa
+nomenclatura por **INT-LAB**, sem alterar o fato histórico desta decisão.
+
+**Arquivos atualizados nesta sessão:**
+- `PROJECT_CONTEXT.md` — tabela de unidades reescrita, "3 clínicas" → "2 clínicas"
+- `ARCHITECTURE.md` — multi-tenant corrigido, subdomínio Ibitiara removido, nota sobre lab
+- `AUTH_AND_PERMISSIONS.md` — "vê as 3" → "vê as 2 clínicas"
+- `DATABASE_SCHEMA.md` — estado arquitetural separado dos testes históricos
+- `DEVELOPMENT_RULES.md` — "3 controladores" → esclarecimento sobre 2 clínicas + lab
+- `10-PLANO-DIRETOR.md` — decisão formalizada atualizada com nota sobre o lab
+- `TODO.md` — Fase 2 atualizada, ibitiara_cor.sql cancelado, pendência de desativar
+  registro de Ibitiara no banco adicionada
+- `09-DIARIO-DE-SESSOES.md` — esta entrada
+
+**Pendências geradas:**
+- Preparar inventário e plano seguro para futuramente desativar o registro
+  "Clínica Ibitiara" no banco (`ativo = false`)
+- Planejar a inativação do acesso operacional da proprietária em
+  `usuarios_clinicas`, preservando o registro histórico
+- Inventariar e definir o tratamento de `teste_medico_ibitiara@teste.local` em
+  `public.usuarios` e `auth.users`, sem presumir que inativar um bloqueia o outro
+- NÃO executar `ibitiara_cor.sql` (cancelado)
+- No banco documentado, o registro ainda existe. Nenhuma desativação está
+  autorizada até revisão do inventário, da preservação histórica e do plano de
+  reversão
+
+**Registros históricos preservados:** as entradas anteriores do diário que mencionam
+Ibitiara como clínica refletem o que aconteceu nas sessões passadas e não foram
+alteradas. A decisão de reclassificar foi tomada nesta sessão.
+
+---
+
+## Sessão — 11/08/2026 (Financeiro — código preparado sem banco)
+
+Com a arquitetura Fastify → PostgreSQL aprovada, foram preparados os artefatos
+estáticos do Financeiro: migrations separadas em fundação, API privada e corte
+do PostgREST; testes SQL; asserção HMAC com segredo no Vault; pool do papel
+`financeiro_api`; endpoints e frontend operacional. Cortesia não gera entrada
+nem repasse, fechamento congela os valores e estorno posterior gera ajuste
+para repasse futuro. Pagamento de repasse é integral e exclusivo da
+proprietária.
+
+**Nenhum SQL foi executado, nenhum papel/segredo foi criado e o Supabase não
+foi acessado.** A validação real aguarda ambiente local/staging reproduzível.
+
+---
+
+## Sessão — 11/08/2026 (Prontuário — hardening preparado, não aplicado)
+
+Após revisar o frontend e `prontuario_fundacao.sql`, foi confirmado que as
+policies originais ainda permitiam SELECT e UPDATE diretos em `atendimentos`,
+possibilitando contornar a RPC de auditoria e a finalização controlada.
+
+Foi preparado `prontuario_hardening.sql` como evolução incremental, sem alterar
+ou remover a fundação: RPCs com `SECURITY DEFINER` e `search_path` fixo,
+validação de usuário/papel/clínica/paciente/profissional/agendamento, leitura
+clínica auditada, escrita mediada, finalização atômica, unicidade por
+agendamento e grants mínimos. `prontuario_seguranca_testes.sql` contém os
+testes transacionais de isolamento, auditoria, imutabilidade e permissões.
+
+`Prontuario.tsx` e `Agenda.tsx` foram ajustados para usar essas RPCs e não
+acessar diretamente as tabelas clínicas. O encerramento administrativo do
+agendamento continua separado da finalização clínica para preservar o fluxo
+Agenda → Financeiro.
+
+**Nenhum SQL foi executado e nenhum acesso ao Supabase foi realizado nesta
+sessão.** A migration e os testes aguardam revisão e autorização explícita.
+
+---
+
 ## Sessão — 05/08/2026 (Prontuário — fundação do schema)
 
 Antes de desenhar, li o que já estava decidido no plano diretor sobre

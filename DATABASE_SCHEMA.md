@@ -1,7 +1,25 @@
 # DATABASE_SCHEMA.md — Clínica Patrícia (Supabase / PostgreSQL)
 
-> Fonte da verdade do banco. Tudo abaixo já está **aplicado no Supabase** e testado.
+> Fonte da verdade do banco. Tudo abaixo está aplicado no Supabase e testado,
+> **exceto se a seção declarar explicitamente que é uma evolução preparada/não aplicada**.
 > Projeto Supabase: `xftnkusbyqzyvzrovroj` (região São Paulo, sa-east-1).
+
+## Estado arquitetural e estado documentado do banco
+
+- **Estado histórico:** o banco foi criado e testado com três tenants, incluindo
+  a Clínica Ibitiara. Os resultados históricos abaixo permanecem descritos com
+  três clínicas.
+- **Decisão arquitetural de 12/08/2026:** somente Brotas e Ipupiara serão tenants
+  operacionais; Ibitiara será laboratório externo.
+- **Estado documentado do banco nesta formalização:** a linha de Ibitiara ainda
+  existe e não foi marcada como inativa. Nenhum SQL foi executado ou banco
+  consultado para esta atualização documental.
+- **Estado futuro aprovado:** preservar a linha e todos os dados históricos e,
+  somente após inventário e plano aprovados, marcar `clinicas.ativo = false` e
+  retirar seus acessos operacionais.
+
+`desativar_ibitiara.sql` não está aprovado. A referência arquitetural canônica é
+`DECISAO-IBITIARA-LABORATORIO.md`.
 
 ## Extensões
 
@@ -107,6 +125,53 @@
 | `fn_auditoria()` | trigger, SECURITY DEFINER | grava automaticamente na auditoria em INSERT/UPDATE/DELETE |
 | `fn_bloqueia_mutacao()` | trigger | barra UPDATE/DELETE na auditoria (append-only) |
 
+## Prontuário eletrônico
+
+A fundação aplicada está registrada em `prontuario_fundacao.sql`. O hardening
+incremental está preparado em `prontuario_hardening.sql`, mas **ainda não foi
+aplicado ao banco**.
+
+Quando autorizado e aplicado, o frontend deixará de ter grants diretos nas
+tabelas `atendimentos`, `atendimentos_adendos` e `documentos_clinicos`:
+
+- a listagem usará `listar_atendimentos_prontuario` e retornará somente
+  metadados;
+- a leitura completa usará `abrir_prontuario`, que grava
+  `auditoria_leitura_clinica` na mesma transação;
+- criação, rascunho, finalização, adendos e documentos serão escritos por RPCs
+  com validação de `auth.uid()`, papel médico e isolamento por `clinica_id`;
+- `finalizar_atendimento_seguro` salvará o conteúdo e finalizará atomicamente;
+- um índice único parcial impedirá mais de um atendimento por agendamento.
+
+As RPCs do hardening são `SECURITY DEFINER`, usam `search_path = pg_catalog`,
+qualificam os objetos por schema e concedem `EXECUTE` somente a
+`authenticated`. As RPCs legadas são preservadas, mas terão execução revogada
+do aplicativo após a migration.
+
+## Financeiro — IMPLEMENTADO ESTATICAMENTE — AGUARDA TESTE EM BANCO
+
+Quatro artefatos foram preparados sem execução:
+
+- `financeiro_fundacao.sql`: cobranças, despesas, movimentos físicos,
+  fechamentos congelados, repasses, estornos, ajustes e idempotência;
+- `financeiro_api_privada.sql`: schema `financeiro_privado`, papéis técnicos,
+  asserção HMAC lida do Vault e RPCs atômicas;
+- `financeiro_bloqueio_postgrest.sql`: corte final dos INSERT/UPDATE/DELETE
+  diretos de `authenticated`;
+- `financeiro_seguranca_testes.sql`: testes para local/staging.
+
+Os SQLs dependem do schema-base real, da localização confirmada de `pgcrypto`,
+do comportamento de `fn_auditoria()` e do Vault. Esses pontos são preflights
+explícitos e não foram presumidos.
+
+Nenhum desses SQLs foi executado. Produção/Supabase não foi alterado. Não há
+validação em banco de RPCs, RLS, Vault, roles técnicas, idempotência concorrente,
+fechamento atômico, estornos ou repasses. Checks de TypeScript/build e testes
+unitários do backend não substituem os testes transacionais do catálogo SQL.
+
+**Próximo bloqueio:** ambiente local/staging reproduzível e baseline do schema
+real antes de executar `financeiro_fundacao.sql` ou qualquer etapa posterior.
+
 ## Triggers
 
 - `trg_audit_clinicas`, `trg_audit_usuarios`, `trg_audit_usuarios_clinicas`,
@@ -114,7 +179,10 @@
 - `trg_auditoria_imutavel` → executa `fn_bloqueia_mutacao()` antes de UPDATE/DELETE na
   `auditoria` (impede rasura).
 
-## RLS (Row Level Security) — ATIVO em todas as tabelas
+## RLS (Row Level Security) — ATIVO nas tabelas atualmente aplicadas
+
+Esta seção descreve o banco existente. As policies financeiras versionadas nos
+arquivos `financeiro_*.sql` ainda não foram aplicadas nem testadas em banco.
 
 | Tabela | Política | Regra (resumo) |
 |---|---|---|
@@ -141,11 +209,15 @@
 
 - Usuário médico de teste: `teste_medico_brotas@teste.local` (id `4444...`), vinculado a
   Brotas e Ipupiara — criado para validar a trava.
+- Usuário histórico de teste `teste_medico_ibitiara@teste.local`, criado quando
+  Ibitiara ainda era tenant. Seu estado precisa ser inventariado. Inativar
+  `public.usuarios` não equivale a bloquear/remover `auth.users`.
 - 2 pacientes de amostra: **Maria Teste Silva** (Brotas) e **João Teste Souza** (Ipupiara).
 
 ## Testes de fumaça já realizados (todos passaram, no banco)
 
-- Médico de Brotas vê só Brotas; médico de Ipupiara vê só Ipupiara; proprietária vê as 3.
+- No modelo histórico então vigente, médico de Brotas via só Brotas, médico de
+  Ipupiara via só Ipupiara e a proprietária via as 3 clínicas, incluindo Ibitiara.
 - UPDATE/DELETE na auditoria é bloqueado ("append-only").
 - Médico não lê a auditoria; proprietária lê.
 - CPF criptografa e descriptografa corretamente; hash gera valor; unicidade funciona.

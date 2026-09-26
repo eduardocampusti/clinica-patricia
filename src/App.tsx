@@ -4,7 +4,7 @@ import { supabase } from './lib/supabase'
 import Login from './pages/Login'
 import Pacientes from './pages/Pacientes'
 import Cadastros from './pages/cadastros/Cadastros'
-import Financeiro from './pages/Financeiro'
+import FinanceiroModulo from './pages/FinanceiroModulo'
 import Dashboard from './pages/Dashboard'
 import Agenda from './pages/Agenda'
 import Prontuario from './pages/Prontuario'
@@ -32,7 +32,7 @@ function App() {
     selecionarClinica,
     carregando: carregandoClinica,
   } = useClinicaAtiva(clinicasDoUsuario, carregandoClinicas)
-  const { papel } = usePapelNaClinica(session?.user.id ?? '', clinicaAtivaId)
+  const { papel, carregando: carregandoPapel } = usePapelNaClinica(session?.user.id ?? '', clinicaAtivaId)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -122,7 +122,8 @@ function App() {
         />
       )}
       {tela === 'financeiro' && (
-        <Financeiro clinicaAtivaId={clinicaAtivaId} carregandoClinica={carregandoClinica} />
+        <FinanceiroModulo clinicaAtivaId={clinicaAtivaId} carregandoClinica={carregandoClinica}
+          usuarioId={session.user.id} papel={papel} carregandoPapel={carregandoPapel} />
       )}
       {tela !== 'dashboard' &&
         tela !== 'agenda' &&

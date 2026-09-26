@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./financeiro.css";
 
 html {
   font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;

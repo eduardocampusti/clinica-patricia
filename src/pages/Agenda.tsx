@@ -1,9 +1,13 @@
-import { useCallback, useEffect, useMemo, useState, type FormEvent, type ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import { supabase } from '../lib/supabase'
 import { iniciais } from '../lib/texto'
 import type { ClinicaAtiva } from '../hooks/useClinicaAtiva'
 import { usePapelNaClinica } from '../hooks/usePapelNaClinica'
-import { FormRegistrarEntrada } from '../components/financeiro/FormRegistrarEntrada'
+import { ModalBase } from '../components/ModalBase'
+import { ReceberPagamento, type ConsultaParaReceber } from '../components/financeiro/ReceberPagamento'
+import { consultarRecebimentosAgenda, podeReceberNaAgenda } from '../lib/financeiro/financeiro.agenda'
+import { assinarInvalidacaoFinanceira } from '../lib/financeiro/financeiro.cache'
+import { mensagemErroFinanceiro } from '../lib/financeiro/financeiro.errors'
 
 type StatusAgendamento = 'agendado' | 'confirmado' | 'aguardando' | 'em_atendimento' | 'concluido' | 'cancelado'
 type TipoExcecao = 'folga' | 'horario_especial'
@@ -163,8 +167,8 @@ interface AgendaProps {
 
 function Agenda({ clinicaAtiva, carregandoClinica, usuarioId, onAtendimentoIniciado }: AgendaProps) {
   const clinicaAtivaId = clinicaAtiva?.id ?? null
-  const { papel } = usePapelNaClinica(usuarioId, clinicaAtivaId)
-  const podeEscrever = papel === 'proprietaria' || papel === 'recepcao'
+  const { papel, carregando: carregandoPapel } = usePapelNaClinica(usuarioId, clinicaAtivaId)
+  const podeEscrever = !carregandoPapel && (papel === 'proprietaria' || papel === 'recepcao')
   const souMedico = papel === 'medico'
 
   const [dataSelecionada, setDataSelecionada] = useState(() => new Date())
@@ -177,26 +181,41 @@ function Agenda({ clinicaAtiva, carregandoClinica, usuarioId, onAtendimentoInici
   const [pacientes, setPacientes] = useState<PacienteOpcao[]>([])
   const [listaEspera, setListaEspera] = useState<EntradaListaEspera[]>([])
   const [carregandoGrade, setCarregandoGrade] = useState(true)
+  const [erroCarregamento, setErroCarregamento] = useState<string | null>(null)
+  const clinicaAtivaIdRef = useRef(clinicaAtivaId)
+  const requisicaoGradeAtual = useRef(0)
+  clinicaAtivaIdRef.current = clinicaAtivaId
 
   const [menuStatusId, setMenuStatusId] = useState<string | null>(null)
-  const [modalAberto, setModalAberto] = useState<'agendamento' | 'excecao' | 'espera' | 'entrada' | null>(null)
+  const [modalAberto, setModalAberto] = useState<'agendamento' | 'excecao' | 'espera' | null>(null)
   const [prefillAgendamento, setPrefillAgendamento] = useState<{ pacienteId: string; profissionalId: string } | null>(
     null,
   )
   const [profissionalParaExcecao, setProfissionalParaExcecao] = useState<string | null>(null)
-  const [prefillEntrada, setPrefillEntrada] = useState<{ pacienteId: string; profissionalId: string } | null>(null)
-  const [avisoSemCaixa, setAvisoSemCaixa] = useState<string | null>(null)
+  const [consultaReceber, setConsultaReceber] = useState<ConsultaParaReceber | null>(null)
+  const [recebidos, setRecebidos] = useState<Set<string>>(new Set())
+  const [erroRecebimentos, setErroRecebimentos] = useState<string | null>(null)
+  const [revisaoRecebimentos, setRevisaoRecebimentos] = useState(0)
+  const focoRecebimento = useRef<string | null>(null)
+  const botoesAgendamento = useRef(new Map<string, HTMLButtonElement>())
 
   const [meuProfissionalId, setMeuProfissionalId] = useState<string | null>(null)
   const [iniciandoAtendimentoId, setIniciandoAtendimentoId] = useState<string | null>(null)
   const [erroIniciarAtendimento, setErroIniciarAtendimento] = useState<string | null>(null)
 
   const carregarProfissionais = useCallback(async (clinicaId: string) => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('profissionais_clinicas')
       .select('profissionais(id, nome_completo, duracao_consulta_minutos, valor_consulta, especialidades(nome))')
       .eq('clinica_id', clinicaId)
       .eq('ativo', true)
+
+    if (clinicaAtivaIdRef.current !== clinicaId) return
+    if (error) {
+      setProfissionais([])
+      setErroCarregamento('Não foi possível carregar os profissionais da Agenda.')
+      return
+    }
 
     type Linha = {
       profissionais:
@@ -237,22 +256,35 @@ function Agenda({ clinicaAtiva, carregandoClinica, usuarioId, onAtendimentoInici
   }, [])
 
   const carregarPacientes = useCallback(async (clinicaId: string) => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('pacientes')
       .select('id, nome_completo')
       .eq('clinica_id', clinicaId)
       .eq('ativo', true)
       .order('nome_completo', { ascending: true })
+    if (clinicaAtivaIdRef.current !== clinicaId) return
+    if (error) {
+      setPacientes([])
+      setErroCarregamento('Não foi possível carregar os pacientes da Agenda.')
+      return
+    }
     setPacientes(data ?? [])
   }, [])
 
   const carregarListaEspera = useCallback(async (clinicaId: string) => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('lista_espera')
       .select('id, paciente_id, profissional_id, observacoes, created_at, pacientes(nome_completo), profissionais(nome_completo)')
       .eq('clinica_id', clinicaId)
       .eq('status', 'aguardando')
       .order('created_at', { ascending: true })
+
+    if (clinicaAtivaIdRef.current !== clinicaId) return
+    if (error) {
+      setListaEspera([])
+      setErroCarregamento('Não foi possível carregar a lista de espera.')
+      return
+    }
 
     type Linha = {
       id: string
@@ -282,6 +314,7 @@ function Agenda({ clinicaAtiva, carregandoClinica, usuarioId, onAtendimentoInici
   }, [])
 
   const carregarGradeDoDia = useCallback(async (clinicaId: string, data: Date) => {
+    const requisicao = ++requisicaoGradeAtual.current
     setCarregandoGrade(true)
     const diaSemana = data.getDay()
     const dataISO = paraISODate(data)
@@ -304,6 +337,16 @@ function Agenda({ clinicaAtiva, carregandoClinica, usuarioId, onAtendimentoInici
         .eq('clinica_id', clinicaId)
         .eq('data', dataISO),
     ])
+
+    if (clinicaAtivaIdRef.current !== clinicaId || requisicao !== requisicaoGradeAtual.current) return
+    if (respDisponibilidade.error || respExcecoes.error || respAgendamentos.error) {
+      setDisponibilidades([])
+      setExcecoes([])
+      setAgendamentos([])
+      setErroCarregamento('Não foi possível carregar a Agenda. Tente novamente.')
+      setCarregandoGrade(false)
+      return
+    }
 
     setDisponibilidades(respDisponibilidade.data ?? [])
     setExcecoes((respExcecoes.data ?? []) as Excecao[])
@@ -344,6 +387,7 @@ function Agenda({ clinicaAtiva, carregandoClinica, usuarioId, onAtendimentoInici
       setListaEspera([])
       return
     }
+    setErroCarregamento(null)
     carregarProfissionais(clinicaAtivaId)
     carregarPacientes(clinicaAtivaId)
     carregarListaEspera(clinicaAtivaId)
@@ -351,12 +395,14 @@ function Agenda({ clinicaAtiva, carregandoClinica, usuarioId, onAtendimentoInici
 
   useEffect(() => {
     if (!clinicaAtivaId) {
+      requisicaoGradeAtual.current += 1
       setDisponibilidades([])
       setExcecoes([])
       setAgendamentos([])
       setCarregandoGrade(false)
       return
     }
+    setErroCarregamento(null)
     carregarGradeDoDia(clinicaAtivaId, dataSelecionada)
   }, [clinicaAtivaId, dataSelecionada, carregarGradeDoDia])
 
@@ -379,37 +425,73 @@ function Agenda({ clinicaAtiva, carregandoClinica, usuarioId, onAtendimentoInici
     }
   }, [souMedico, usuarioId])
 
+  useEffect(() => {
+    setMenuStatusId(null)
+    setModalAberto(null)
+    setConsultaReceber(null)
+    setPrefillAgendamento(null)
+    setProfissionalParaExcecao(null)
+    setErroIniciarAtendimento(null)
+  }, [clinicaAtivaId])
+
   async function iniciarAtendimento(ag: Agendamento) {
     if (!clinicaAtivaId || !meuProfissionalId) return
     setMenuStatusId(null)
     setErroIniciarAtendimento(null)
     setIniciandoAtendimentoId(ag.id)
 
-    const { data, error } = await supabase
-      .from('atendimentos')
-      .insert({
-        clinica_id: clinicaAtivaId,
-        paciente_id: ag.paciente_id,
-        profissional_id: meuProfissionalId,
-        agendamento_id: ag.id,
-        created_by: usuarioId,
-      })
-      .select('id')
-      .single()
+    const { data, error } = await supabase.rpc('iniciar_atendimento_agendado', {
+      p_clinica_id: clinicaAtivaId,
+      p_agendamento_id: ag.id,
+    })
 
     setIniciandoAtendimentoId(null)
 
-    if (error || !data) {
+    if (error || typeof data !== 'string') {
       setErroIniciarAtendimento('Não foi possível iniciar o atendimento. Tente novamente.')
       return
     }
 
-    onAtendimentoIniciado(data.id)
+    onAtendimentoIniciado(data)
   }
 
   async function recarregarTudo() {
     if (!clinicaAtivaId) return
-    await Promise.all([carregarGradeDoDia(clinicaAtivaId, dataSelecionada), carregarListaEspera(clinicaAtivaId)])
+    setErroCarregamento(null)
+    await Promise.all([
+      carregarProfissionais(clinicaAtivaId),
+      carregarPacientes(clinicaAtivaId),
+      carregarGradeDoDia(clinicaAtivaId, dataSelecionada),
+      carregarListaEspera(clinicaAtivaId),
+    ])
+  }
+
+  useEffect(() => {
+    let atual = true
+    setRecebidos(new Set())
+    setErroRecebimentos(null)
+    if (clinicaAtivaId && podeEscrever) {
+      consultarRecebimentosAgenda(clinicaAtivaId, agendamentos.map((ag) => ag.id))
+        .then((ids) => { if (atual) setRecebidos(ids) })
+        .catch((erro) => { if (atual) setErroRecebimentos(mensagemErroFinanceiro(erro)) })
+    }
+    return () => { atual = false }
+  }, [clinicaAtivaId, podeEscrever, agendamentos, revisaoRecebimentos])
+
+  useEffect(() => assinarInvalidacaoFinanceira((evento) => {
+    if (evento.clinicaId !== clinicaAtivaId || !evento.leituras.includes('agenda')) return
+    setRevisaoRecebimentos((valor) => valor + 1)
+    void carregarGradeDoDia(clinicaAtivaId, dataSelecionada)
+  }), [clinicaAtivaId, dataSelecionada, carregarGradeDoDia])
+
+  function abrirRecebimento(ag: Agendamento) {
+    if (!clinicaAtiva || !podeEscrever || !podeReceberNaAgenda(papel, ag.status) || recebidos.has(ag.id)) return
+    const profissional = profissionais.find((p) => p.id === ag.profissional_id)
+    if (!profissional) return
+    setConsultaReceber({ agendamentoId: ag.id, clinicaId: clinicaAtiva.id, profissionalId: ag.profissional_id,
+      paciente: ag.paciente_nome, profissional: profissional.nome_completo, clinica: clinicaAtiva.nome,
+      data: paraISODate(dataSelecionada), horario: ag.hora_inicio })
+    setMenuStatusId(null)
   }
 
   const janelasPorProfissional = useMemo(() => {
@@ -451,32 +533,8 @@ function Agenda({ clinicaAtiva, carregandoClinica, usuarioId, onAtendimentoInici
 
   async function mudarStatus(agendamentoId: string, novoStatus: StatusAgendamento) {
     setMenuStatusId(null)
-    setAvisoSemCaixa(null)
 
     await supabase.from('agendamentos').update({ status: novoStatus }).eq('id', agendamentoId)
-
-    // Integração Agenda -> Financeiro: ao concluir, abre "Registrar entrada"
-    // já preenchida (mesmo componente do Financeiro.tsx) se houver caixa
-    // aberto na clínica agora; senão, muda o status normalmente e só avisa
-    // (a mudança de status nunca fica bloqueada por causa do caixa).
-    if (novoStatus === 'concluido' && clinicaAtivaId) {
-      const agendamento = agendamentos.find((a) => a.id === agendamentoId)
-      if (agendamento) {
-        const { data: sessaoAberta } = await supabase
-          .from('sessoes_caixa')
-          .select('id')
-          .eq('clinica_id', clinicaAtivaId)
-          .eq('status', 'aberto')
-          .maybeSingle()
-
-        if (sessaoAberta) {
-          setPrefillEntrada({ pacienteId: agendamento.paciente_id, profissionalId: agendamento.profissional_id })
-          setModalAberto('entrada')
-        } else {
-          setAvisoSemCaixa('Sem caixa aberto — lance essa entrada manualmente quando abrir.')
-        }
-      }
-    }
 
     await recarregarTudo()
   }
@@ -553,18 +611,18 @@ function Agenda({ clinicaAtiva, carregandoClinica, usuarioId, onAtendimentoInici
         </p>
       )}
 
-      {avisoSemCaixa && (
+      {erroRecebimentos && (
         <p
           role="status"
           className="flex items-center justify-between gap-3 rounded-lg border border-[var(--cor-alerta-borda)] bg-[var(--cor-alerta-suave)] px-3.5 py-2.5 text-sm text-[var(--cor-alerta)]"
         >
-          {avisoSemCaixa}
+          Não foi possível consultar os recebimentos da Agenda. {erroRecebimentos}
           <button
             type="button"
-            onClick={() => setAvisoSemCaixa(null)}
+            onClick={() => setRevisaoRecebimentos((valor) => valor + 1)}
             className="flex-none font-medium transition hover:opacity-70"
           >
-            ✕
+            Tentar novamente
           </button>
         </p>
       )}
@@ -572,6 +630,14 @@ function Agenda({ clinicaAtiva, carregandoClinica, usuarioId, onAtendimentoInici
       {carregando ? (
         <div className="rounded-[18px] bg-[var(--fundo-card)] p-8 text-center text-sm text-[var(--texto-secundario)]" style={{ boxShadow: 'var(--sombra-neutra)' }}>
           Carregando...
+        </div>
+      ) : erroCarregamento ? (
+        <div role="alert" className="rounded-[18px] border border-[var(--cor-erro-borda)] bg-[var(--cor-erro-suave)] p-8 text-center text-sm text-[var(--cor-erro)]">
+          <p>{erroCarregamento}</p>
+          <button type="button" onClick={() => void recarregarTudo()}
+            className="mt-3 min-h-11 rounded-lg border border-[var(--cor-erro-borda)] px-4 py-2 font-semibold">
+            Tentar novamente
+          </button>
         </div>
       ) : !clinicaAtivaId ? (
         <div className="rounded-[18px] bg-[var(--fundo-card)] p-8 text-center text-sm text-[var(--texto-secundario)]" style={{ boxShadow: 'var(--sombra-neutra)' }}>
@@ -668,9 +734,12 @@ function Agenda({ clinicaAtiva, carregandoClinica, usuarioId, onAtendimentoInici
                       <div key={ag.id} className="absolute inset-x-1" style={{ top, height: altura }}>
                         <button
                           type="button"
-                          onClick={() =>
-                            (podeEscrever || souMedico) && setMenuStatusId((atual) => (atual === ag.id ? null : ag.id))
-                          }
+                          onClick={() => {
+                            focoRecebimento.current = ag.id
+                            if (podeEscrever || souMedico) setMenuStatusId((atual) => (atual === ag.id ? null : ag.id))
+                          }}
+                          aria-label={`${formatarHoraCurta(ag.hora_inicio)} ${ag.paciente_nome}${recebidos.has(ag.id) ? ' — Recebimento registrado' : ''}`}
+                          ref={(node) => { if (node) botoesAgendamento.current.set(ag.id, node); else botoesAgendamento.current.delete(ag.id) }}
                           className="h-full w-full overflow-hidden rounded-lg border-l-[3px] px-2 py-1 text-left transition"
                           style={{ backgroundColor: estilo.fundo, borderColor: estilo.borda }}
                         >
@@ -680,6 +749,7 @@ function Agenda({ clinicaAtiva, carregandoClinica, usuarioId, onAtendimentoInici
                           <div className="truncate text-xs font-semibold" style={{ color: estilo.texto }}>
                             {ag.paciente_nome}
                           </div>
+                          {recebidos.has(ag.id) && <span className="text-[11px] font-semibold" style={{ color: estilo.texto }}>Recebimento registrado</span>}
                         </button>
 
                         {menuStatusId === ag.id && (
@@ -689,6 +759,13 @@ function Agenda({ clinicaAtiva, carregandoClinica, usuarioId, onAtendimentoInici
                               className="absolute left-0 top-full z-20 mt-1 w-48 rounded-xl bg-[var(--fundo-card)] p-1.5"
                               style={{ boxShadow: 'var(--sombra-neutra)' }}
                             >
+                              {podeEscrever && podeReceberNaAgenda(papel, ag.status) && !recebidos.has(ag.id) && (
+                                <button type="button" onClick={() => abrirRecebimento(ag)}
+                                  className="mb-1 min-h-11 w-full rounded-lg bg-[var(--texto-principal)] px-2.5 py-2 text-left text-xs font-semibold text-[var(--fundo-card)]">
+                                  Receber pagamento
+                                </button>
+                              )}
+                              {recebidos.has(ag.id) && <p className="px-2.5 py-2 text-xs">Recebimento registrado</p>}
                               {souMedico &&
                                 ag.profissional_id === meuProfissionalId &&
                                 ag.status !== 'cancelado' &&
@@ -815,19 +892,9 @@ function Agenda({ clinicaAtiva, carregandoClinica, usuarioId, onAtendimentoInici
         />
       )}
 
-      {modalAberto === 'entrada' && clinicaAtivaId && prefillEntrada && (
-        <ModalBase titulo="Registrar entrada" onFechar={() => setModalAberto(null)} largura="lg">
-          <FormRegistrarEntrada
-            clinicaAtivaId={clinicaAtivaId}
-            pacientes={pacientes}
-            profissionais={profissionais}
-            pacienteIdInicial={prefillEntrada.pacienteId}
-            profissionalIdInicial={prefillEntrada.profissionalId}
-            onRegistrado={() => setModalAberto(null)}
-            comCard={false}
-          />
-        </ModalBase>
-      )}
+      {consultaReceber && <ReceberPagamento key={consultaReceber.agendamentoId} consulta={consultaReceber} usuarioId={usuarioId}
+        onFechar={() => { setConsultaReceber(null); requestAnimationFrame(() => { if (focoRecebimento.current) botoesAgendamento.current.get(focoRecebimento.current)?.focus() }) }}
+        onRecebido={(resultado) => setRecebidos((anteriores) => new Set([...anteriores, resultado.agendamento_id]))} />}
 
       {podeEscrever && clinicaAtivaId && (
         <button
@@ -1333,33 +1400,6 @@ function ModalListaEspera({ clinicaAtivaId, pacientes, profissionais, onFechar, 
         </div>
       </form>
     </ModalBase>
-  )
-}
-
-interface ModalBaseProps {
-  titulo: string
-  onFechar: () => void
-  children: ReactNode
-  largura?: 'md' | 'lg'
-}
-
-function ModalBase({ titulo, onFechar, children, largura = 'md' }: ModalBaseProps) {
-  return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center p-4">
-      <button type="button" aria-label="Fechar" onClick={onFechar} className="fixed inset-0 bg-[var(--sobreposicao)]" />
-      <div
-        className={`relative w-full rounded-[18px] bg-[var(--fundo-card)] p-6 ${largura === 'lg' ? 'max-w-lg' : 'max-w-md'}`}
-        style={{ boxShadow: 'var(--sombra-neutra)' }}
-      >
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="texto-titulo-secao text-[var(--texto-principal)]">{titulo}</h2>
-          <button type="button" onClick={onFechar} className="text-sm text-[var(--texto-secundario)] transition hover:text-[var(--texto-principal)]">
-            ✕
-          </button>
-        </div>
-        {children}
-      </div>
-    </div>
   )
 }
 

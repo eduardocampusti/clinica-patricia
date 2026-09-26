@@ -20,6 +20,7 @@ interface AtendimentoResumo {
 interface AtendimentoCompleto {
   id: string
   paciente_id: string
+  paciente_nome: string
   agendamento_id: string | null
   queixa_principal: string | null
   anamnese: string | null
@@ -31,6 +32,7 @@ interface AtendimentoCompleto {
   status: StatusAtendimento
   finalizado_em: string | null
   created_at: string
+  updated_at: string
 }
 
 interface CamposNucleo {
@@ -54,6 +56,12 @@ interface DocumentoClinico {
   tipo: TipoDocumentoClinico
   conteudo: string
   created_at: string
+}
+
+interface ProntuarioAberto {
+  atendimento: AtendimentoCompleto
+  adendos: Adendo[]
+  documentos: DocumentoClinico[]
 }
 
 const CAMPOS_INICIAIS: CamposNucleo = {
@@ -104,8 +112,6 @@ function Prontuario({
   const { papel, carregando: carregandoPapel } = usePapelNaClinica(usuarioId, clinicaAtivaId)
   const souMedico = papel === 'medico'
 
-  const [meuProfissionalId, setMeuProfissionalId] = useState<string | null>(null)
-
   const [vista, setVista] = useState<'lista' | 'editor'>('lista')
   const [pacientes, setPacientes] = useState<PacienteOpcao[]>([])
   const [atendimentos, setAtendimentos] = useState<AtendimentoResumo[]>([])
@@ -149,11 +155,9 @@ function Prontuario({
     setCarregandoLista(true)
     setErroLista(null)
 
-    const { data, error } = await supabase
-      .from('atendimentos')
-      .select('id, status, created_at, pacientes(nome_completo)')
-      .eq('clinica_id', clinicaId)
-      .order('created_at', { ascending: false })
+    const { data, error } = await supabase.rpc('listar_atendimentos_prontuario', {
+      p_clinica_id: clinicaId,
+    })
 
     if (error) {
       setErroLista('Não foi possível carregar seus atendimentos.')
@@ -165,36 +169,19 @@ function Prontuario({
       id: string
       status: StatusAtendimento
       created_at: string
-      pacientes: { nome_completo: string } | { nome_completo: string }[] | null
+      paciente_nome: string
     }
     const linhas = (data ?? []) as unknown as Linha[]
     setAtendimentos(
-      linhas.map((l) => {
-        const p = Array.isArray(l.pacientes) ? l.pacientes[0] : l.pacientes
-        return { id: l.id, paciente_nome: p?.nome_completo ?? '—', status: l.status, created_at: l.created_at }
-      }),
+      linhas.map((l) => ({
+        id: l.id,
+        paciente_nome: l.paciente_nome,
+        status: l.status,
+        created_at: l.created_at,
+      })),
     )
     setCarregandoLista(false)
   }
-
-  useEffect(() => {
-    if (!souMedico) {
-      setMeuProfissionalId(null)
-      return
-    }
-    let cancelado = false
-    supabase
-      .from('profissionais')
-      .select('id')
-      .eq('usuario_id', usuarioId)
-      .maybeSingle()
-      .then(({ data }) => {
-        if (!cancelado) setMeuProfissionalId(data?.id ?? null)
-      })
-    return () => {
-      cancelado = true
-    }
-  }, [souMedico, usuarioId])
 
   useEffect(() => {
     if (!clinicaAtivaId || !souMedico) {
@@ -223,97 +210,43 @@ function Prontuario({
     setMensagemSalvo(null)
     setErroFinalizar(null)
     setNovoAdendoTexto('')
-
-    const conhecido = pacientes.find((p) => p.id === registro.paciente_id)
-    if (conhecido) {
-      setPacienteNomeAtual(conhecido.nome_completo)
-    } else {
-      supabase
-        .from('pacientes')
-        .select('nome_completo')
-        .eq('id', registro.paciente_id)
-        .maybeSingle()
-        .then(({ data }) => setPacienteNomeAtual(data?.nome_completo ?? '—'))
-    }
+    setPacienteNomeAtual(registro.paciente_nome)
   }
 
-  // Atendimento recém-criado nesta mesma sessão (via Agenda ou "Novo
-  // atendimento" abaixo): busca direta, sem auditar — não há conteúdo pra
-  // ler ainda, quem criou é o próprio profissional.
-  async function abrirRecemCriado(id: string) {
+  // Toda abertura, inclusive a de um atendimento recém-criado, passa pela
+  // mesma RPC. Ela valida o vínculo e registra a leitura antes de devolver
+  // atendimento, adendos e documentos clínicos.
+  async function abrirAtendimento(id: string) {
     setVista('editor')
     setCarregandoAtendimento(true)
     setErroAtendimento(null)
 
-    const { data, error } = await supabase
-      .from('atendimentos')
-      .select(
-        'id, paciente_id, agendamento_id, queixa_principal, anamnese, exame_fisico, hipotese_diagnostica, cid, conduta_evolucao, prescricao, status, finalizado_em, created_at',
-      )
-      .eq('id', id)
-      .single()
+    const { data, error } = await supabase.rpc('abrir_prontuario', { p_atendimento_id: id })
 
     if (error || !data) {
       setErroAtendimento('Não foi possível abrir o atendimento.')
       setCarregandoAtendimento(false)
       return
     }
-    aplicarAtendimento(data as AtendimentoCompleto)
-    setCarregandoAtendimento(false)
-  }
-
-  // Abrir um atendimento já existente (da lista) sempre passa pela RPC —
-  // é o único caminho que audita a leitura do conteúdo clínico completo.
-  async function abrirExistente(id: string) {
-    setVista('editor')
-    setCarregandoAtendimento(true)
-    setErroAtendimento(null)
-
-    const { data, error } = await supabase.rpc('abrir_atendimento', { p_atendimento_id: id })
-
-    if (error || !data) {
-      setErroAtendimento('Não foi possível abrir este atendimento.')
-      setCarregandoAtendimento(false)
-      return
-    }
-    aplicarAtendimento(data as AtendimentoCompleto)
+    const prontuario = data as unknown as ProntuarioAberto
+    aplicarAtendimento(prontuario.atendimento)
+    setAdendos(prontuario.adendos ?? [])
+    setDocumentos(prontuario.documentos ?? [])
     setCarregandoAtendimento(false)
   }
 
   useEffect(() => {
     if (!atendimentoParaAbrirId) return
-    abrirRecemCriado(atendimentoParaAbrirId)
+    abrirAtendimento(atendimentoParaAbrirId)
     onAtendimentoParaAbrirConsumido?.()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [atendimentoParaAbrirId])
-
-  async function carregarAdendos(atendimentoId: string) {
-    const { data } = await supabase
-      .from('atendimentos_adendos')
-      .select('id, texto, created_at')
-      .eq('atendimento_id', atendimentoId)
-      .order('created_at', { ascending: true })
-    setAdendos(data ?? [])
-  }
-
-  async function carregarDocumentos(atendimentoId: string) {
-    const { data } = await supabase
-      .from('documentos_clinicos')
-      .select('id, tipo, conteudo, created_at')
-      .eq('atendimento_id', atendimentoId)
-      .order('created_at', { ascending: false })
-    setDocumentos(data ?? [])
-  }
 
   useEffect(() => {
     if (!atendimentoAtual) {
       setAdendos([])
       setDocumentos([])
-      return
     }
-    carregarAdendos(atendimentoAtual.id)
-    carregarDocumentos(atendimentoAtual.id)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [atendimentoAtual?.id])
 
   function voltarParaLista() {
@@ -328,7 +261,16 @@ function Prontuario({
     setErroSalvar(null)
     setMensagemSalvo(null)
 
-    const { error } = await supabase.from('atendimentos').update({ ...campos }).eq('id', atendimentoAtual.id)
+    const { error } = await supabase.rpc('salvar_rascunho_atendimento', {
+      p_atendimento_id: atendimentoAtual.id,
+      p_queixa_principal: campos.queixa_principal,
+      p_anamnese: campos.anamnese,
+      p_exame_fisico: campos.exame_fisico,
+      p_hipotese_diagnostica: campos.hipotese_diagnostica,
+      p_cid: campos.cid,
+      p_conduta_evolucao: campos.conduta_evolucao,
+      p_prescricao: campos.prescricao,
+    })
 
     setSalvandoRascunho(false)
     if (error) {
@@ -343,14 +285,16 @@ function Prontuario({
     setFinalizando(true)
     setErroFinalizar(null)
 
-    const { error: erroUpdate } = await supabase.from('atendimentos').update({ ...campos }).eq('id', atendimentoAtual.id)
-    if (erroUpdate) {
-      setErroFinalizar('Não foi possível salvar as alterações antes de finalizar.')
-      setFinalizando(false)
-      return
-    }
-
-    const { error } = await supabase.rpc('finalizar_atendimento', { p_atendimento_id: atendimentoAtual.id })
+    const { data, error } = await supabase.rpc('finalizar_atendimento_seguro', {
+      p_atendimento_id: atendimentoAtual.id,
+      p_queixa_principal: campos.queixa_principal,
+      p_anamnese: campos.anamnese,
+      p_exame_fisico: campos.exame_fisico,
+      p_hipotese_diagnostica: campos.hipotese_diagnostica,
+      p_cid: campos.cid,
+      p_conduta_evolucao: campos.conduta_evolucao,
+      p_prescricao: campos.prescricao,
+    })
     if (error) {
       setErroFinalizar('Não foi possível finalizar. Tente novamente.')
       setFinalizando(false)
@@ -360,7 +304,14 @@ function Prontuario({
     setFinalizando(false)
     setModalFinalizarAberto(false)
     setAtendimentoAtual((atual) =>
-      atual ? { ...atual, status: 'finalizado', finalizado_em: new Date().toISOString() } : atual,
+      atual
+        ? {
+            ...atual,
+            ...campos,
+            status: 'finalizado',
+            finalizado_em: typeof data === 'string' ? data : new Date().toISOString(),
+          }
+        : atual,
     )
   }
 
@@ -369,19 +320,19 @@ function Prontuario({
     setSalvandoAdendo(true)
     setErroAdendo(null)
 
-    const { error } = await supabase.from('atendimentos_adendos').insert({
-      atendimento_id: atendimentoAtual.id,
-      texto: novoAdendoTexto.trim(),
-      created_by: usuarioId,
+    const { data, error } = await supabase.rpc('adicionar_adendo_prontuario', {
+      p_atendimento_id: atendimentoAtual.id,
+      p_texto: novoAdendoTexto.trim(),
     })
 
     setSalvandoAdendo(false)
-    if (error) {
+    if (error || !data) {
       setErroAdendo('Não foi possível salvar o adendo. Tente novamente.')
       return
     }
+    const adendo = data as unknown as Adendo
     setNovoAdendoTexto('')
-    await carregarAdendos(atendimentoAtual.id)
+    setAdendos((atuais) => [...atuais, adendo])
   }
 
   const emAndamento = useMemo(() => atendimentos.filter((a) => a.status === 'em_andamento'), [atendimentos])
@@ -542,7 +493,6 @@ function Prontuario({
             <button
               type="button"
               onClick={() => setModalNovoAtendimentoAberto(true)}
-              disabled={!meuProfissionalId}
               className="rounded-xl bg-[var(--cor-primaria)] px-4 py-2.5 font-medium text-white transition hover:bg-[var(--cor-primaria-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--cor-primaria)] disabled:cursor-not-allowed disabled:opacity-60"
             >
               + Novo atendimento
@@ -560,28 +510,26 @@ function Prontuario({
             itens={emAndamento}
             carregando={carregandoLista}
             vazio="Nenhum atendimento em andamento."
-            onAbrir={abrirExistente}
+            onAbrir={abrirAtendimento}
           />
           <SecaoAtendimentos
             titulo="Finalizados"
             itens={finalizados}
             carregando={carregandoLista}
             vazio="Nenhum atendimento finalizado ainda."
-            onAbrir={abrirExistente}
+            onAbrir={abrirAtendimento}
           />
         </div>
       )}
 
-      {modalNovoAtendimentoAberto && clinicaAtivaId && meuProfissionalId && (
+      {modalNovoAtendimentoAberto && clinicaAtivaId && (
         <ModalNovoAtendimento
           clinicaAtivaId={clinicaAtivaId}
-          profissionalId={meuProfissionalId}
           pacientes={pacientes}
-          usuarioId={usuarioId}
           onFechar={() => setModalNovoAtendimentoAberto(false)}
           onCriado={(id) => {
             setModalNovoAtendimentoAberto(false)
-            abrirRecemCriado(id)
+            abrirAtendimento(id)
           }}
         />
       )}
@@ -598,11 +546,10 @@ function Prontuario({
       {modalDocumentoAberto && atendimentoAtual && (
         <ModalEmitirDocumento
           atendimentoId={atendimentoAtual.id}
-          usuarioId={usuarioId}
           onFechar={() => setModalDocumentoAberto(false)}
-          onSalvo={async () => {
+          onSalvo={(documento) => {
             setModalDocumentoAberto(false)
-            await carregarDocumentos(atendimentoAtual.id)
+            setDocumentos((atuais) => [documento, ...atuais])
           }}
         />
       )}
@@ -772,18 +719,14 @@ function SecaoAdendos({ adendos, texto, onTextoChange, onAdicionar, salvando, er
 
 interface ModalNovoAtendimentoProps {
   clinicaAtivaId: string
-  profissionalId: string
   pacientes: PacienteOpcao[]
-  usuarioId: string
   onFechar: () => void
   onCriado: (id: string) => void
 }
 
 function ModalNovoAtendimento({
   clinicaAtivaId,
-  profissionalId,
   pacientes,
-  usuarioId,
   onFechar,
   onCriado,
 }: ModalNovoAtendimentoProps) {
@@ -806,23 +749,17 @@ function ModalNovoAtendimento({
     }
 
     setSalvando(true)
-    const { data, error } = await supabase
-      .from('atendimentos')
-      .insert({
-        clinica_id: clinicaAtivaId,
-        paciente_id: pacienteId,
-        profissional_id: profissionalId,
-        created_by: usuarioId,
-      })
-      .select('id')
-      .single()
+    const { data, error } = await supabase.rpc('iniciar_atendimento_avulso', {
+      p_clinica_id: clinicaAtivaId,
+      p_paciente_id: pacienteId,
+    })
 
     setSalvando(false)
-    if (error || !data) {
+    if (error || typeof data !== 'string') {
       setErro('Não foi possível criar o atendimento. Tente novamente.')
       return
     }
-    onCriado(data.id)
+    onCriado(data)
   }
 
   return (
@@ -930,12 +867,11 @@ function ModalConfirmarFinalizar({ finalizando, erro, onFechar, onConfirmar }: M
 
 interface ModalEmitirDocumentoProps {
   atendimentoId: string
-  usuarioId: string
   onFechar: () => void
-  onSalvo: () => void
+  onSalvo: (documento: DocumentoClinico) => void
 }
 
-function ModalEmitirDocumento({ atendimentoId, usuarioId, onFechar, onSalvo }: ModalEmitirDocumentoProps) {
+function ModalEmitirDocumento({ atendimentoId, onFechar, onSalvo }: ModalEmitirDocumentoProps) {
   const [tipo, setTipo] = useState<TipoDocumentoClinico>('receita')
   const [conteudo, setConteudo] = useState('')
   const [salvando, setSalvando] = useState(false)
@@ -951,19 +887,18 @@ function ModalEmitirDocumento({ atendimentoId, usuarioId, onFechar, onSalvo }: M
     }
 
     setSalvando(true)
-    const { error } = await supabase.from('documentos_clinicos').insert({
-      atendimento_id: atendimentoId,
-      tipo,
-      conteudo: conteudo.trim(),
-      created_by: usuarioId,
+    const { data, error } = await supabase.rpc('criar_documento_prontuario', {
+      p_atendimento_id: atendimentoId,
+      p_tipo: tipo,
+      p_conteudo: conteudo.trim(),
     })
 
     setSalvando(false)
-    if (error) {
+    if (error || !data) {
       setErro('Não foi possível emitir o documento. Tente novamente.')
       return
     }
-    onSalvo()
+    onSalvo(data as unknown as DocumentoClinico)
   }
 
   return (

@@ -6,11 +6,20 @@
 > Ver `10-PLANO-DIRETOR.md` para a visão profissional de longo prazo (mapa, não
 > lista de tarefas — implementar incrementalmente).
 
-## Decisões estruturais formalizadas (01/08/2026)
+## Decisões estruturais formalizadas (01/08/2026 e 12/08/2026)
 
-- **CNPJs diferentes por clínica, mesma proprietária** → 3 controladores de dados
-  distintos (LGPD). NÃO criar "paciente global" entre clínicas sem decisão jurídica.
-  Isolamento por `clinica_id` já protege isso.
+- **Histórico da decisão de 01/08/2026:** o modelo então vigente tratava Brotas,
+  Ipupiara e Ibitiara como 3 clínicas/controladores. Testes e relatos produzidos
+  nesse contexto não devem ser reescritos.
+- **Decisão vigente de 12/08/2026:** Brotas e Ipupiara são as 2 clínicas e cada
+  uma é um controlador de dados distinto. O laboratório da proprietária em
+  Ibitiara tem CNPJ e sistema próprios e NÃO faz parte deste multi-tenant. Não
+  criar "paciente global" nem compartilhar dados entre CNPJs sem decisão jurídica.
+- **Ibitiara → laboratório externo:** a referência canônica é
+  `DECISAO-IBITIARA-LABORATORIO.md`. Não tratar o laboratório como `clinica_id`,
+  não apagar registros históricos e não executar `desativar_ibitiara.sql` sem
+  inventário, revisão e autorização futura. Relatos de testes feitos quando havia
+  3 clínicas são históricos e não devem ser reescritos.
 - **Proprietária NÃO tem acesso clínico automático.** Ser dona = acesso financeiro/
   administrativo. Acesso ao conteúdo de prontuário exige necessidade assistencial
   (princípio da minimização, LGPD). Não dar acesso a prontuário "por ser dona".

@@ -37,8 +37,23 @@ Garantido no **banco (RLS)**, não só na interface. Duas camadas de regra em `p
   Ipupiara. O médico entra pelo endereço da unidade onde está; **não há seletor** para
   ele escolher (evita erro de profissional desatento).
 - A proprietária acessa por um endereço de **gestão** (`gestao.dominio`), onde tem o
-  **seletor** e pode ver as 3 (clínica ativa não setada → vê todas as suas) ou filtrar
-  por uma.
+  **seletor** e pode ver as 2 clínicas (clínica ativa não setada → vê todas as suas)
+  ou filtrar por uma.
+
+### Ibitiara: decisão vigente e estado de transição
+
+- Brotas e Ipupiara são as únicas clínicas operacionais aprovadas.
+- Ibitiara será laboratório externo e não poderá conceder contexto de tenant,
+  aparecer no seletor ou ser aceita como clínica ativa.
+- O estado documentado do banco ainda contém o registro e vínculos históricos de
+  Ibitiara; a desativação não ocorreu e `desativar_ibitiara.sql` não está aprovado.
+- A autorização futura deverá exigir simultaneamente vínculo ativo e
+  `clinicas.ativo = true`. Isso deve valer no RLS, frontend e backend.
+- Inativar um perfil em `public.usuarios` não bloqueia por si só a autenticação da
+  identidade correspondente em `auth.users`. O tratamento de contas de teste e o
+  acesso ao acervo histórico exigem planos separados.
+
+Ver `DECISAO-IBITIARA-LABORATORIO.md`.
 
 ### Ponto de atenção (frontend-direto)
 No acesso frontend-direto atual, `app.clinica_ativa` não é setado automaticamente pelo
@@ -57,6 +72,49 @@ PostgREST. Portanto:
 - Só a **proprietária** lê a auditoria (RLS).
 - Auditoria de **leitura** de dado sensível (READ_SENSIVEL) fica na camada de aplicação
   quando existir (o Postgres não tem trigger de SELECT).
+
+### Prontuário clínico
+
+O hardening preparado em `prontuario_hardening.sql` estabelece que:
+
+- somente o médico responsável, com vínculo ativo na clínica, abre o conteúdo;
+- proprietária e recepção não recebem acesso clínico automático;
+- toda abertura completa passa por `abrir_prontuario` e gera auditoria na mesma
+  transação;
+- não há SELECT/INSERT/UPDATE direto do frontend nas tabelas clínicas;
+- `created_by`, `finalizado_por`, vínculos e datas de finalização são definidos
+  no servidor;
+- a finalização é atômica e qualquer correção posterior ocorre por adendo
+  append-only.
+
+**Estado:** regras preparadas no código em 11/08/2026, ainda não aplicadas ao
+Supabase. Até a aplicação autorizada, o banco permanece com as permissões da
+fundação original.
+
+### Fronteira financeira Fastify → PostgreSQL
+
+**Status: IMPLEMENTADO ESTATICAMENTE — AGUARDA TESTE EM BANCO.** As mutações
+financeiras implementadas não usam `service_role`. O Fastify valida o
+JWT pelo Supabase Auth e produz uma asserção HMAC de curta duração contendo
+usuário, clínica, operação, idempotência e payload. A cópia do servidor fica
+somente em variável de ambiente; a cópia PostgreSQL fica exclusivamente no
+Supabase Vault quando a infraestrutura for aplicada.
+
+O papel `financeiro_api` pode apenas executar RPCs privadas. Ele não lê nem
+escreve tabelas. O papel `financeiro_vault_guard` valida a assinatura sem
+devolver o segredo, e `financeiro_executor` executa as regras sob RLS. O corte
+do PostgREST só poderá ocorrer depois dos testes em local/staging.
+
+Nenhum SQL financeiro foi executado e produção/Supabase não foi alterado. Logo,
+as garantias desenhadas para RPCs, RLS, Vault, roles técnicas, idempotência
+concorrente, fechamento atômico e repasses ainda não foram comprovadas em banco.
+O próximo bloqueio é um ambiente local/staging reproduzível com baseline do
+schema real.
+
+As credenciais financeiras são exigidas somente no uso da fronteira privada. O
+backend inicia sem `FINANCEIRO_DATABASE_URL` e
+`FINANCEIRO_ASSERTION_HMAC_KEY`; uma operação financeira nessas condições
+retorna HTTP `503` controlado antes de criar o pool ou tentar RPC.
 
 ## Dados sensíveis / criptografia
 
