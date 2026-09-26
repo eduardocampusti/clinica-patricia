@@ -866,3 +866,4 @@ grant execute on function public.pode_ler_auditoria_atendimento(uuid) to authent
 -- Fim do hardening do Prontuário incorporado.
 
 commit;
+
