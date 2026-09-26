@@ -52,6 +52,10 @@
 - Verificação do redesenho: 11 testes unitários de Pacientes e 42 cenários operacionais sintéticos passaram com saída 0 em desktop, tablet e celular, incluindo busca exata, resumo, teclado e troca de clínica com latência. Typecheck, lint, build e `git diff --check` passaram; o lint mantém um aviso preexistente em `ThemeProvider.tsx` e o build informa chunks grandes. Uma disputa entre edição e reposição do cursor do nome apareceu na primeira execução móvel, foi corrigida sem alterar o visual do modal, passou 3/3 em repetição isolada e 42/42 na suíte final. Capturas sintéticas da página estão em `scratch/pacientes-lista-{desktop,tablet,mobile}.png`. Não houve homologação autenticada nova nesta etapa.
 - Acabamento visual posterior da página principal: cabeçalho, busca integrada, lista e resumo foram recompostos com superfícies claras, ícones existentes do projeto e o azul `#006194` já usado no modal, sem mudar o menu global ou o cadastro. O cabeçalho “Ação” foi alinhado aos links “Ver resumo”. Após a retirada de um CTA duplicado no estado vazio, a suíte operacional integral terminou com 45/45 e código 0; 11 testes unitários, build/typecheck, lint e `git diff --check` também passaram. O lint conservou apenas o aviso preexistente em `ThemeProvider.tsx`; o build conservou avisos de chunks grandes. Capturas sintéticas da página completa: `scratch/pacientes-pagina-{desktop,tablet,mobile}.png` e variantes `-resumo`. A sessão autenticada de Brotas mostrou a nova composição, o resumo abriu sem gravação, e a cor computada dos controles foi `rgb(0, 97, 148)`. O frontend não foi publicado e nenhum paciente real foi alterado.
 
+## Revisão corretiva pré-merge
+
+A repetição com Chromium detectou corrida no reposicionamento assíncrono do cursor, que podia desfazer a seleção de uma substituição rápida de nome/CEP. A restauração passou a ocorrer no layout effect da mesma atualização do React, antes da próxima interação. Não altera regras, ordenação/filtros ou persistência.
+
 ## Pendente
 
 - Publicar o frontend que utiliza a busca exata e deixa de descriptografar CPFs em massa na listagem.
