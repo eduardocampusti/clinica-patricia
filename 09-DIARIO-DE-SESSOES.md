@@ -4,6 +4,47 @@
 > para que qualquer conversa futura (chat ou Claude Code) tenha continuidade
 > e não "saia do contexto". Entrada mais recente no topo.
 
+## Sessão — 08/09/2026 (Benchmark de mercado, auditoria de isolamento e regra de isolamento de sistemas)
+
+Foi analisado um benchmark de mercado (relatório do ChatGPT Deep Research,
+`Benchmark_Gestao_Clinica_2026.docx`, 37 gaps) comparando o Clínica Patrícia com
+EHR open-source, SaaS brasileiros e padrões de mercado. O material foi tratado como
+fonte de decisão, não de implementação. A consolidação e o plano de evolução dela
+derivado foram gravados em `07-BENCHMARK-E-EVOLUCAO.md`.
+
+Dois pressupostos do benchmark foram corrigidos pela realidade do projeto. Primeiro,
+o alerta "Prisma + BYPASSRLS" NÃO se aplica: a rota de dados é PostgREST + RLS na role
+`authenticated`, sem Prisma e sem role de runtime com bypass. Segundo, o Financeiro não
+está "a começar" — está implementado estaticamente aguardando teste em banco, e o
+gargalo real é a ausência de ambiente local/staging e de baseline versionado do schema.
+
+Auditoria de isolamento (via SQL ao vivo, read-only): isolamento base VERIFICADO — casos
+(a) listagem só da própria clínica e (b) IDOR por clinica_id alheio passaram ao vivo com
+JWT real de usuário só-Brotas. Casos de escrita (c/d) ficaram pendentes (rodar em
+`begin…rollback` ou branch). Foram documentadas 5 fraquezas de defesa-em-profundidade,
+nenhuma corrigida; a nº 5 (caixa gravável direto pelo frontend) é o
+`financeiro_bloqueio_postgrest.sql` ainda não aplicado, não um bug novo.
+
+Ordem de evolução confirmada (em `07`): FASE A (ambiente de teste + baseline) → B (validar
+Financeiro em banco) → C (hardening P1/P2 + corte financeiro + prontuário) → D (evolução
+guiada pelo benchmark, incl. Home de Caixa) → E (pré-produção). Decisão registrada: a
+próxima ação é a FASE A, pela Opção 1 (Supabase local + Docker), por não trazer dados reais
+para o ambiente de teste (LGPD). A Opção 2 (branch remoto) fica como fallback com ressalva
+de sanitização.
+
+Incidente de segurança tratado: conectores MCP estavam apontando para OUTRO sistema
+(Brotar 2.1), e o `plugin:supabase` exigia OAuth indisponível na sessão. Para impedir
+reincidência, foi criada a regra de fundação `04-ISOLAMENTO-DE-SISTEMAS.md`, que fixa o
+project ref único do Clínica Patrícia (`xftnkusbyqzyvzrovroj`), define o Chrome + extensão
+Claude Code como canal único de acesso ao banco, proíbe Brotar 2.1 e qualquer MCP de outro
+ref, e obriga uma checagem de ref/canal/branch/ambiente antes de qualquer operação de banco.
+
+Também foram preparados prompts de onboarding para Codex e Claude Code
+(`12-PROMPTS-ONBOARDING-IA.md`) e o mockup da Home de Caixa foi arquivado em
+`docs/mockups/`. Nenhum SQL foi executado; produção/Supabase não foi alterado nesta sessão.
+
+---
+
 ## Sessão — 12/08/2026 (Formalização arquitetural Ibitiara → Laboratório)
 
 A decisão de negócio sobre Ibitiara foi consolidada em

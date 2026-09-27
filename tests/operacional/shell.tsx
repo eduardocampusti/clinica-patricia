@@ -5,6 +5,7 @@ import AppShell from '../../src/components/shell/AppShell'
 import type { Tela } from '../../src/components/shell/types'
 import type { Papel } from '../../src/hooks/usePapelNaClinica'
 import { ThemeProvider } from '../../src/theme/ThemeProvider'
+import SobreSistema from '../../src/pages/SobreSistema'
 
 const papel = (new URLSearchParams(window.location.search).get('papel') ?? 'proprietaria') as Papel
 const clinicas = [
@@ -18,8 +19,7 @@ export function Exemplo() {
   return <AppShell tela={tela} onNavegar={setTela} clinicaAtiva={clinica} clinicasDoUsuario={clinicas}
     onSelecionarClinica={(id) => setClinica(clinicas.find((item) => item.id === id) ?? clinicas[0])}
     emailUsuario="usuario.sintetico@example.invalid" papel={papel} onSair={() => undefined}>
-    <h1 className="texto-titulo-tela">Área operacional</h1>
-    <p className="mt-2 text-[var(--texto-secundario)]">Tela atual: {tela}</p>
+    {tela === 'sobre' ? <SobreSistema clinicaAtiva={clinica} /> : <><h1 className="texto-titulo-tela">Área operacional</h1><p className="mt-2 text-[var(--texto-secundario)]">Tela atual: {tela}</p></>}
   </AppShell>
 }
 

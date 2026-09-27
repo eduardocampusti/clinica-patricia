@@ -65,7 +65,87 @@ um banco existente. `update/20_mark_existing_baseline.sql` permanece apenas
 para alvo que **já** tenha o histórico próprio e as versões 00/01 registradas;
 não é o caminho para o remoto auditado.
 
-## 3. Aplicação do hardening
+## 3. Aplicação isolada de migrations pós-baseline
+
+**Migrations pós-baseline devem ser aplicadas individualmente, validadas e
+registradas antes de prosseguir para a próxima.** O procedimento abaixo foi
+validado com Supabase CLI `2.110.0` contra clone descartável PostgreSQL 17.11.
+Ele não usa `--linked`: o alvo é sempre uma URL de banco fornecida
+transitoriamente pelo executor autorizado e nunca gravada em arquivo ou log.
+
+### 3.1 Workdir isolado e cumulativo
+
+Para cada migration, crie fora do repositório um workdir temporário contendo
+`supabase/config.toml` e somente a sequência canônica até a versão alvo:
+
+| Alvo | Migrations presentes no workdir | Migration posterior ausente |
+| --- | --- | --- |
+| 03 | 00, 01, 02 e 03 | 04 e 05 |
+| 04 | 00, 01, 02, 03 e 04 | 05 |
+| 05 | 00, 01, 02, 03, 04 e 05 | nenhuma |
+
+Copie os arquivos canônicos, não os edite, e confira seus SHA-256 contra
+`RELEASE_MANIFEST.md`. A presença de 00–02 no workdir é necessária para a CLI
+reconciliar o histórico; como essas três versões já estão registradas, elas não
+são executadas. A baseline 02 continua proibida fisicamente.
+
+Use uma variável de processo para o alvo, sem imprimir seu valor:
+
+```powershell
+$env:TARGET_DATABASE_URL = '<fornecida pelo canal seguro do executor>'
+supabase migration list --db-url $env:TARGET_DATABASE_URL --workdir <WORKDIR_ISOLADO>
+supabase db push --dry-run --db-url $env:TARGET_DATABASE_URL --workdir <WORKDIR_ISOLADO>
+```
+
+O `migration list` deve mostrar todas as versões anteriores alinhadas e somente
+a versão alvo como pendente. O `db push --dry-run` deve listar exatamente um
+arquivo: a migration alvo. Se listar 02, mais de uma migration ou uma versão
+inesperada, pare sem escrever.
+
+### 3.2 Execução e registro da versão única
+
+Depois do dry-run aprovado, execute:
+
+```powershell
+supabase migration up --db-url $env:TARGET_DATABASE_URL --workdir <WORKDIR_ISOLADO>
+```
+
+A CLI executa o SQL canônico e registra a mesma versão em
+`supabase_migrations.schema_migrations`. Imediatamente depois, confira o
+histórico e os efeitos específicos da migration. Para 03, o estado esperado é:
+
+- histórico com 00, 01, 02 e 03; 04 e 05 ausentes;
+- 23 entradas de default ACL de `postgres` em `public`, contra 48 antes de 03;
+- ACLs de objetos existentes inalteradas;
+- fingerprints bruto `19|10|188|204|13|47|19|88|29|3` e de domínio
+  `19|10|188|16|13|47|19|88|29|3` inalterados;
+- oito RPCs do Prontuário ainda ausentes.
+
+### 3.3 Tratamento obrigatório de falhas
+
+- Se o SQL falhar, a CLI deve retornar erro e a versão alvo deve permanecer
+  ausente. Não execute `migration repair`. Verifique que os efeitos continuam
+  no estado anterior, preserve o diagnóstico e pare.
+- O arquivo 03 contém `BEGIN`/`COMMIT`. Foi comprovado em clone que uma falha
+  posterior, apenas ao inserir o histórico, pode deixar os efeitos completos
+  com a versão ainda ausente. Nesse estado, **não execute novamente o SQL**.
+- Se e somente se todos os efeitos pós-migration forem comprovados e a única
+  falha for o registro, corrija a causa do registro e use o mecanismo nativo
+  restrito à versão já aplicada:
+
+```powershell
+supabase migration repair <VERSAO_ALVO> --status applied --db-url $env:TARGET_DATABASE_URL --workdir <WORKDIR_ISOLADO>
+```
+
+Depois do repair, confira novamente histórico, efeitos e hashes. Se não for
+possível distinguir com certeza entre estado anterior, parcial e completo,
+pare; não repita SQL e não marque a versão manualmente.
+
+Apague o workdir temporário após preservar as evidências permitidas. Não use
+`db push` sem `--dry-run`, não use o workdir completo do repositório para uma
+etapa individual e não use `migration repair` como caminho normal de aplicação.
+
+## 4. Aplicação do hardening
 
 Com 02 marcada, aplique exclusivamente as migrations posteriores ao marco, na
 ordem e com os hashes do manifesto:
@@ -77,7 +157,7 @@ ordem e com os hashes do manifesto:
 Registre o histórico de migrations e interrompa no primeiro erro. Não edite,
 reordene, repita parcialmente nem execute 02 para contornar uma falha.
 
-## 4. Validação pós-implantação
+## 5. Validação pós-implantação
 
 Ainda na janela, registre:
 
@@ -98,7 +178,7 @@ somente para clone local/descartável: usa fixtures sintéticas em transação e
 sempre executa `ROLLBACK`. A validação no banco implantado deve seguir o plano
 de mudança e gerar apenas as evidências permitidas.
 
-## 5. Encerramento
+## 6. Encerramento
 
 Anexe hashes, fingerprints bruto e de domínio, histórico, validações de
 RPC/RLS/grants e decisão de encerramento ao ticket. O rollback está em

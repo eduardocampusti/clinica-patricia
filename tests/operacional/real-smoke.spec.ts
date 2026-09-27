@@ -33,7 +33,7 @@ async function sair(page: Page) {
 }
 
 test('proprietária — sessão, clínicas e módulos operacionais', async ({ page }) => {
-  await entrar(page, 'OWNER', /Visão proprietária/)
+  await entrar(page, 'OWNER', /Visão de proprietário\(a\)/)
   const nav = page.getByRole('navigation', { name: 'Navegação principal' })
   await expect(nav).toContainText('Agenda')
   await expect(nav).toContainText('Pacientes')
