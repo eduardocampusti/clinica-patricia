@@ -157,6 +157,49 @@ A clínica pode decidir individualmente em quais pacientes utilizará foto. A au
 
 Quando utilizada, a foto deve permanecer vinculada ao cadastro do paciente e à clínica correspondente, em armazenamento privado, com acesso administrativo autorizado e sem URL pública. O fluxo deve permitir enviar arquivo, capturar por webcam após ação e permissão expressas, visualizar, confirmar, trocar e remover. A câmera deve ser desligada ao cancelar, fechar ou concluir a captura. Não há reconhecimento facial, biometria ou autorização implícita para outras finalidades.
 
+## 9-C. Correção de CPF já preenchido
+
+**Aprovação:** 26/09/2026 (arquiteto Eduardo, iteração A da unificação de cadastro e edição).
+
+O CPF de um paciente pode ser corrigido depois de preenchido, sob regras estritas. A correção não é edição administrativa comum e não passa por `paciente_editar_administrativo`. Existe operação dedicada, autorizada e auditada para esta finalidade.
+
+Regras aprovadas:
+
+- só proprietária e recepção da clínica ativa podem corrigir;
+- a correção só é permitida enquanto o cadastro permanece ativo na clínica;
+- o CPF novo deve ser validado pelas mesmas regras do preenchimento inicial (11 dígitos, dígito verificador, não pode ser sequência de repetição);
+- a correção respeita a unicidade `(clinica_id, cpf_hash)` — CPF já em uso por outro paciente da mesma clínica é rejeitado sem revelar o paciente conflitante;
+- CPF idêntico ao já gravado é recusado como não alteração;
+- a correção exige `motivo` textual do operador, com no mínimo 10 e no máximo 500 caracteres;
+- a correção é atômica: um único evento de auditoria com `dados_antes`/`dados_depois` cifrados e `motivo` preenchido;
+- o retorno para o cliente nunca contém CPF em texto, ciphertext ou hash;
+- a operação é rejeitada em conflito otimista (`updated_at` divergente do esperado);
+- a operação preserva o mesmo `id`, `clinica_id`, `created_at`, `foto_path`, `ativo` e vínculos.
+
+A verificação de disponibilidade prévia (antes de submeter a correção) retorna apenas `{ disponivel: boolean }`. O sistema jamais devolve `id`, `nome_completo` ou qualquer atributo do paciente conflitante. Mensagem no cliente é genérica: "Já existe um paciente com este CPF nesta clínica."
+
+Fora do escopo desta decisão: definição do CPF quando o cadastro foi criado sem ele — esse caminho permanece com `paciente_definir_cpf` (aprovado em 5.1) e não exige motivo.
+
+Redirecionamento entre as duas operações: se o paciente tem `cpf_hash IS NULL`, a RPC de correção retorna `P0001` e o cliente deve chamar `paciente_definir_cpf` em vez disso. A UI da correção nunca substitui a UI de complementação inicial.
+
+## 9-D. Motivo obrigatório e auditoria em operações sensíveis
+
+**Aprovação:** 26/09/2026 (arquiteto Eduardo, iteração A da unificação de cadastro e edição).
+
+Operações administrativas sobre campos sensíveis do paciente devem gravar o motivo declarado pelo operador junto ao evento de auditoria existente.
+
+Regras aprovadas:
+
+- a coluna `motivo` é acrescentada em `public.auditoria` como `text NULL`;
+- a coluna é preenchida via `current_setting('audit.motivo', true)` dentro de `fn_auditoria()`, com fallback silencioso quando o setting não estiver definido — auditorias de outras entidades e triggers pré-existentes não podem falhar por ausência do setting;
+- cada RPC administrativa sensível deste módulo declara `set_config('audit.motivo', p_motivo, true)` com escopo local à transação antes de qualquer INSERT/UPDATE/DELETE que dispare o trigger;
+- operações sensíveis desta iteração: correção de CPF já preenchido (9-C). Novas operações sensíveis serão listadas ao serem aprovadas (troca de foto existente, alteração de responsável legal existente etc.);
+- o motivo é obrigatório onde a regra funcional aprovada exigir; ausência ou motivo inferior ao mínimo de 10 caracteres rejeita a operação antes de qualquer escrita;
+- o motivo é dado administrativo com valor probatório: nunca é editado, apagado ou sobrescrito após o commit;
+- edições administrativas ordinárias já cobertas por `paciente_editar_administrativo` (nome, nascimento, sexo, telefone, e-mail, endereço, observações) permanecem sem exigência de motivo por decisão prévia; a auditoria existente continua registrando o antes/depois em `dados_antes`/`dados_depois`.
+
+Consequência de projeto: a auditoria de mutação continua consolidada em uma única tabela `public.auditoria`. Não haverá tabela per-campo por paciente. Consultas administrativas encontram todo o histórico de mutações e motivos em um único lugar.
+
 # PARTE II — ESTADO ATUAL CONFIRMADO
 
 ## 10. Limite das constatações
@@ -197,13 +240,13 @@ Existe trigger de auditoria para `INSERT`, `UPDATE` e `DELETE` de pacientes. Fon
 
 Na implementação local ainda não publicada, o frontend:
 
-- consulta diretamente a tabela `pacientes`, selecionando `id`, nome, nascimento, telefone, endereço e o caminho da foto privada; não seleciona `cpf_encrypted` nem `cpf_hash`;
+- consulta diretamente a tabela `pacientes`, selecionando `id`, nome, nascimento, telefone, endereço, caminho da foto privada e `created_at`; não seleciona `cpf_encrypted` nem `cpf_hash`;
 - aplica no cliente o `clinica_id` selecionado;
 - lista somente `ativo = true`;
-- ordena por `nome_completo` em ordem crescente;
-- carrega todos os resultados sem paginação;
-- faz busca local por parte do nome;
-- oferece alternância explícita entre busca local por nome e busca exata por CPF, que somente é enviada quando os onze dígitos são válidos;
+- oferece seis ordenações, inicialmente nome crescente em português brasileiro, com desempate estável; criação utiliza `created_at` e idade utiliza data de nascimento completa, com ausentes no fim;
+- consulta com contagem exata e limite de 1000, sem paginação; somente ordena respostas comprovadamente completas. Resposta cortada pede refinar busca/filtros, sem exibir lista parcial. Paginação global maior depende de backend ainda proposto;
+- faz busca por substring de nome e filtros complementares na consulta, antes do limite; repete a verificação dos filtros no conjunto completo retornado;
+- oferece alternância explícita entre busca por nome e busca exata por CPF, que somente é enviada quando os onze dígitos são válidos;
 - chama a RPC local `paciente_buscar_por_cpf`, que exige proprietária ou recepção vinculada à clínica informada, calcula o hash no banco e retorna somente identificação administrativa e status, sem CPF completo, ciphertext ou hash;
 - pode localizar por CPF um cadastro inativo da própria clínica, apresentando-o como inativo sem definir por isso um fluxo de reativação.
 - mostra foto pelo download autenticado do Storage privado ou iniciais; ao selecionar um cadastro, consulta responsável legal e pendência do CPF para montar um resumo administrativo. Não mostra o CPF completo.
@@ -234,11 +277,11 @@ CPF, telefone e CEP possuem máscaras de apresentação. O CPF aceita colagem co
 
 O avatar acompanha, durante a digitação, as iniciais do primeiro e do último nome informado e apresenta um símbolo neutro enquanto o nome estiver vazio. A versão local também possui seleção de arquivo, captura por webcam sob ação explícita, prévia, confirmação, troca e remoção. A prévia confirmada permanece ao navegar entre Identificação e Endereço. A migration `20260925120000_pacientes_foto_privada.sql` foi aplicada ao Supabase em 25/09/2026; bucket privado, limite, tipos, policies e RPCs foram confirmados no banco e ensaiados com SQL sintético em `ROLLBACK`. Em sessão autenticada real de proprietária em Ipupiara, upload, leitura após reabrir a aplicação, troca e remoção de foto sintética funcionaram; a limpeza final foi comprovada. Isso não homologa sessões reais de recepção, médico ou usuário vinculado a uma única clínica.
 
-Na árvore original, o formulário mostra a idade calculada a partir da data de nascimento e, quando ela indica menor, exige nome, vínculo e Telefone / WhatsApp do responsável legal; CPF e e-mail dele são opcionais. A migration estrutural `20260925100000_pacientes_responsavel_legal.sql` foi aplicada ao Supabase em 25/09/2026 e sua RPC atômica passou em ensaio SQL sintético com `ROLLBACK` e em cadastro sintético pela sessão real de proprietária em Ipupiara, seguido de limpeza comprovada. O frontend não foi publicado. A trava para impedir `INSERT` direto de menor sem responsável foi preparada em `supabase/review/20260925130000_pacientes_menor_exigir_responsavel.sql`, posterior ao histórico remoto, e passou em ensaio com `ROLLBACK`; permanece **fora da fila executável e não aplicada**, aguardando frontend compatível em uso e revisão do legado. Por isso o cadastro completo de menores **ainda não pode ser declarado concluído**. Isso não cria bloqueio de agendamento ou atendimento e não autoriza inventar um responsável.
+Na árvore original, o formulário mostra a idade calculada a partir da data de nascimento e, quando ela indica menor, exige nome, vínculo e Telefone / WhatsApp do responsável legal; CPF e e-mail dele são opcionais. A migration estrutural `20260925100000_pacientes_responsavel_legal.sql` foi aplicada ao Supabase em 25/09/2026 e sua RPC atômica passou em ensaio SQL sintético com `ROLLBACK` e em cadastro sintético pela sessão real de proprietária em Ipupiara, seguido de limpeza comprovada. O frontend não foi publicado. A trava para impedir `INSERT` direto de menor sem responsável foi preparada como nova migration local `20260925130000`, posterior ao histórico remoto, e passou em ensaio com `ROLLBACK`; permanece **não aplicada**, aguardando frontend compatível em uso e revisão do legado. Por isso o cadastro completo de menores **ainda não pode ser declarado concluído**. Isso não cria bloqueio de agendamento ou atendimento e não autoriza inventar um responsável.
 
 Ao completar o CEP, o frontend consulta `https://viacep.com.br/ws/{CEP}/json/` enviando somente o CEP. O retorno pode preencher rua, bairro, cidade e UF; campos corrigidos manualmente não são sobrescritos. A implementação cancela a solicitação anterior e também compara a identidade da requisição para ignorar respostas atrasadas. CEP não encontrado e falha de rede são informados sem impedir preenchimento manual.
 
-O banco continua possuindo apenas a coluna textual `endereco`. Antes do `INSERT`, os campos estruturados da interface são compostos em uma string legível. Número e complemento permanecem manuais. Como os componentes estruturados não são armazenados separadamente e ainda não existe edição na página, uma edição estruturada futura não poderá reconstruí-los com total confiabilidade a partir do texto existente; resolver essa limitação exigirá decisão técnica posterior.
+O banco continua possuindo apenas a coluna textual `endereco`. Antes do `INSERT`, os campos estruturados da interface são compostos em uma string legível. Número e complemento permanecem manuais. A interface de edição preparada em 26/09/2026 conserva o texto integral e oferece sua edição direta, sem reconstruir componentes; a persistência depende do contrato em revisão descrito na seção 14. Uma edição estruturada futura não poderá reconstruí-los com total confiabilidade a partir do texto existente; resolver essa limitação exigirá decisão técnica posterior.
 
 A listagem administrativa local seleciona a string textual integral já salva e a exibe no resumo do paciente selecionado. A interface não tenta inferir CEP, rua, número, complemento, bairro, cidade ou UF. Assim, a leitura literal é preservada, mas nenhuma parte individual pode ser recuperada com garantia para uma futura edição estruturada.
 
@@ -270,7 +313,7 @@ A versão local de design não apresenta nem exige consentimento genérico e nã
 
 ## 14. Edição, inativação e reativação atuais
 
-A página auditada não implementa edição, inativação ou reativação de paciente.
+A auditoria original não encontrou edição, inativação ou reativação. Em 26/09/2026 a árvore original ganhou a interface de edição administrativa, aberta por “Editar cadastro” no resumo e, posteriormente, também por “Editar” diretamente na linha da tabela. As duas ações usam o mesmo editor. Ele carrega os campos administrativos e vínculos, preserva endereço textual integral, foto e CPF; mantém o mesmo paciente e separa salvamento de criação. O contrato foi instalado pelas migrations `20260926100000` e `20260926101000`; edição e recarga do mesmo registro sintético foram confirmadas com sessão real de Proprietário(a) em Brotas pelo caminho do resumo. A verificação real específica da entrada direta pela tabela é documentada separadamente no checkpoint; testes de interface simulados não a substituem nem comprovam outros papéis. O frontend permanece local e não publicado. Inativação e reativação continuam não implementadas.
 
 A tabela possui `ativo` e `updated_at`, mas a existência desses campos não comprova um fluxo funcional completo.
 
@@ -475,7 +518,11 @@ Proposta:
 
 ## 24. Listagem, busca, ordenação e paginação
 
-Proposta:
+Decisão aprovada nesta evolução: seis ordenações (nome A–Z/Z–A, criação recente/antiga, idade menor/maior), filtros aplicáveis de início/fim de cadastro, idade mínima/máxima e nascimento informado/ausente. Limites podem ser isolados; idade zero é válida; intervalos invertidos/negativos e idade combinada com nascimento ausente são recusados. O último dia é incluído integralmente no fuso da Bahia. Limpar filtros preserva busca e ordem. Cabeçalhos e seletor compartilham estado; resumo é preservado ao reordenar e encerrado se o paciente sair dos resultados. Não persistir dados da busca no armazenamento do navegador.
+
+Estado local e limitação de volume: ver seção 12 e `09-REVISAO-ORDENACAO-FILTROS.md`. Não tratar a proposta de RPC paginada como recurso implementado ou homologado.
+
+Propostas restantes:
 
 - paginação no servidor;
 - tamanho de página e limites a definir tecnicamente após aprovação funcional;
@@ -509,7 +556,9 @@ A ficha administrativa não deverá mostrar automaticamente conteúdo clínico �
 
 ## 26. Edição
 
-Proposta:
+Decisão aprovada pelo pedido de implementação de 26/09/2026: disponibilizar edição administrativa de nome, nascimento, sexo, telefone, e-mail, endereço textual integral e observações. Preservar ID, clínica, autoria, CPF, foto e vínculos não alterados. Cadastros existentes sem nascimento podem corrigir outros campos sem presumir maioridade. Cancelamento sujo exige confirmação; conflitos não sobrescrevem dados silenciosamente; busca, filtros e ordenação continuam ativos. Se o nascimento identificar menor sem responsável, atualizar o mesmo paciente e vincular o primeiro responsável atomicamente, sem usar RPC de criação. Não aprova substituição/exclusão de responsáveis, múltiplos vínculos ou novas regras de guarda/acesso. Estado técnico e dependências: seção 14 e `10-EDICAO-ADMINISTRATIVA.md`.
+
+Requisitos preservados:
 
 - edição apenas de campos administrativos autorizados;
 - `clinica_id`, `created_by` e `created_at` não editáveis pelo fluxo comum;
