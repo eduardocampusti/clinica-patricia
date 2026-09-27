@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-clinica="brotas" data-tema="claro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mockup — Home de Caixa</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap');
+
+  /* ---- TOKENS ---- */
+  /* Dimensão 1: cor da clínica (vem do banco). Dimensão 2: claro/escuro (preferência do usuário). */
+  :root[data-clinica="brotas"]   { --cor-clinica:#2563eb; --cor-clinica-forte:#1d4ed8; }
+  :root[data-clinica="ipupiara"] { --cor-clinica:#0d9488; --cor-clinica-forte:#0f766e; }
+
+  :root[data-tema="claro"] {
+    --bg-pagina:#f1f5f9; --bg-card:#ffffff; --bg-suave:#f8fafc;
+    --texto-1:#0f172a; --texto-2:#64748b; --borda:#e2e8f0;
+    --alerta:#b45309; --alerta-bg:#fffbeb; --sucesso:#15803d;
+    --sombra-1:0 1px 2px rgba(15,23,42,.06);
+    --sombra-2:0 4px 12px rgba(15,23,42,.08);
+    --sombra-3:0 12px 28px rgba(15,23,42,.12);
+    --frame:#cbd5e1;
+  }
+  :root[data-tema="escuro"] {
+    --bg-pagina:#0b1220; --bg-card:#0f1a2e; --bg-suave:#111c33;
+    --texto-1:#f1f5f9; --texto-2:#94a3b8; --borda:#1e2c47;
+    --alerta:#fbbf24; --alerta-bg:#241d0e; --sucesso:#4ade80;
+    --sombra-1:0 1px 2px rgba(0,0,0,.4);
+    --sombra-2:0 6px 16px rgba(0,0,0,.45);
+    --sombra-3:0 14px 34px rgba(0,0,0,.55);
+    --frame:#0a0f1c;
+  }
+
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body {
+    font-family:'Geist', system-ui, -apple-system, sans-serif;
+    background:
+      radial-gradient(1200px 600px at 50% -10%, color-mix(in srgb, var(--cor-clinica) 12%, transparent), transparent),
+      var(--bg-pagina);
+    min-height:100vh; color:var(--texto-1);
+    display:flex; flex-direction:column; align-items:center;
+    padding:24px 16px 48px; transition:background .3s, color .3s;
+  }
+  .mono { font-family:'JetBrains Mono', ui-monospace, monospace; font-variant-numeric:tabular-nums; }
+
+  /* ---- CONTROLES DO MOCKUP (fora do "telefone") ---- */
+  .controles {
+    display:flex; gap:20px; flex-wrap:wrap; justify-content:center;
+    margin-bottom:22px; align-items:center;
+  }
+  .grupo { display:flex; align-items:center; gap:8px; }
+  .grupo > span { font-size:12px; color:var(--texto-2); font-weight:500; }
+  .seg { display:flex; background:var(--bg-card); border:1px solid var(--borda);
+         border-radius:10px; padding:3px; box-shadow:var(--sombra-1); }
+  .seg button {
+    border:0; background:transparent; color:var(--texto-2); cursor:pointer;
+    font-family:inherit; font-size:12px; font-weight:600; padding:6px 12px; border-radius:7px;
+    transition:all .18s;
+  }
+  .seg button.on { background:var(--cor-clinica); color:#fff; box-shadow:var(--sombra-1); }
+
+  /* ---- FRAME DE CELULAR ---- */
+  .fone {
+    width:390px; max-width:100%; background:var(--bg-pagina);
+    border:10px solid var(--frame); border-radius:40px;
+    box-shadow:var(--sombra-3); overflow:hidden; transition:all .3s;
+  }
+  .tela { height:812px; overflow-y:auto; }
+  .tela::-webkit-scrollbar { width:0; }
+
+  /* ---- HEADER ---- */
+  .top {
+    position:sticky; top:0; z-index:5;
+    background:color-mix(in srgb, var(--bg-pagina) 88%, transparent);
+    backdrop-filter:blur(10px);
+    padding:18px 20px 12px; border-bottom:1px solid var(--borda);
+  }
+  .top .linha { display:flex; align-items:center; justify-content:space-between; }
+  .clinica-nome { display:flex; align-items:center; gap:10px; }
+  .pin { width:12px; height:12px; border-radius:50%; background:var(--cor-clinica); box-shadow:0 0 0 4px color-mix(in srgb, var(--cor-clinica) 18%, transparent); }
+  .clinica-nome b { font-size:17px; font-weight:600; letter-spacing:-.01em; }
+  .rotulo-prop { font-size:11px; color:var(--texto-2); margin-top:3px; }
+  .switch-clinica {
+    font-size:12px; font-weight:600; color:var(--cor-clinica);
+    background:color-mix(in srgb, var(--cor-clinica) 12%, transparent);
+    border:0; padding:7px 12px; border-radius:9px; cursor:pointer; font-family:inherit;
+  }
+
+  .corpo { padding:16px 20px 96px; display:flex; flex-direction:column; gap:14px; }
+
+  /* ---- HERO: SALDO ---- */
+  .hero {
+    background:var(--bg-card); border:1px solid var(--borda); border-radius:20px;
+    padding:20px; box-shadow:var(--sombra-2); position:relative; overflow:hidden;
+  }
+  .hero::before {
+    content:""; position:absolute; inset:0 0 auto 0; height:4px;
+    background:linear-gradient(90deg, var(--cor-clinica), var(--cor-clinica-forte));
+  }
+  .hero .lbl { font-size:13px; color:var(--texto-2); font-weight:500; }
+  .hero .valor { font-size:44px; font-weight:700; letter-spacing:-.02em; margin:6px 0 2px; line-height:1; }
+  .hero .atual { font-size:11px; color:var(--texto-2); }
+  .es { display:flex; gap:10px; margin-top:16px; }
+  .es > div { flex:1; background:var(--bg-suave); border:1px solid var(--borda); border-radius:12px; padding:10px 12px; }
+  .es .cap { font-size:11px; color:var(--texto-2); display:flex; align-items:center; gap:5px; }
+  .es .num { font-size:16px; font-weight:600; margin-top:3px; }
+  .dot { width:7px; height:7px; border-radius:50%; }
+  .up { background:var(--sucesso); } .down { background:var(--alerta); }
+  .explicar {
+    margin-top:14px; width:100%; border:1px dashed color-mix(in srgb, var(--cor-clinica) 40%, var(--borda));
+    background:transparent; color:var(--cor-clinica); font-family:inherit; font-weight:600; font-size:13px;
+    padding:11px; border-radius:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;
+  }
+
+  /* ---- REALIZADO x PREVISTO ---- */
+  .rp { background:var(--bg-card); border:1px solid var(--borda); border-radius:16px; padding:16px; box-shadow:var(--sombra-1); }
+  .rp .cab { display:flex; justify-content:space-between; font-size:13px; margin-bottom:10px; }
+  .rp .cab .k { color:var(--texto-2); }
+  .barra { height:8px; background:var(--bg-suave); border-radius:99px; overflow:hidden; border:1px solid var(--borda); }
+  .barra i { display:block; height:100%; width:34%; background:var(--cor-clinica); border-radius:99px; }
+  .rp .pe { display:flex; justify-content:space-between; margin-top:8px; font-size:11px; color:var(--texto-2); }
+
+  /* ---- VENCIDO ---- */
+  .vencido {
+    background:var(--alerta-bg); border:1px solid color-mix(in srgb, var(--alerta) 30%, var(--borda));
+    border-radius:16px; padding:14px 16px; display:flex; align-items:center; justify-content:space-between; box-shadow:var(--sombra-1);
+  }
+  .vencido .t { font-size:13px; font-weight:600; color:var(--alerta); }
+  .vencido .s { font-size:11px; color:var(--texto-2); margin-top:2px; }
+  .vencido .vv { font-size:18px; font-weight:700; color:var(--alerta); }
+
+  /* ---- PENDÊNCIAS ---- */
+  .sec-tit { font-size:13px; font-weight:600; color:var(--texto-2); margin:6px 2px 0; }
+  .lista { background:var(--bg-card); border:1px solid var(--borda); border-radius:16px; overflow:hidden; box-shadow:var(--sombra-1); }
+  .item { display:flex; align-items:center; gap:12px; padding:14px 16px; cursor:pointer; }
+  .item + .item { border-top:1px solid var(--borda); }
+  .ic { width:34px; height:34px; border-radius:10px; display:grid; place-items:center; flex-shrink:0;
+        background:color-mix(in srgb, var(--cor-clinica) 12%, transparent); color:var(--cor-clinica); }
+  .item .txt { flex:1; }
+  .item .txt b { font-size:14px; font-weight:600; display:block; }
+  .item .txt span { font-size:12px; color:var(--texto-2); }
+  .chev { color:var(--texto-2); flex-shrink:0; }
+
+  /* ---- POR CNPJ ---- */
+  .cnpj { display:flex; gap:10px; }
+  .cnpj > div { flex:1; background:var(--bg-card); border:1px solid var(--borda); border-radius:14px; padding:12px 14px; box-shadow:var(--sombra-1); }
+  .cnpj .nm { font-size:12px; color:var(--texto-2); display:flex; align-items:center; gap:6px; }
+  .cnpj .sd { font-size:17px; font-weight:700; margin-top:5px; }
+  .pin-sm { width:8px; height:8px; border-radius:50%; }
+  .b-brotas { background:#2563eb; } .b-ipup { background:#0d9488; }
+  .consolidado { text-align:center; font-size:12px; font-weight:600; color:var(--cor-clinica); padding:6px; cursor:pointer; }
+
+  /* ---- BOTTOM NAV ---- */
+  .nav {
+    position:sticky; bottom:0; display:flex; background:var(--bg-card);
+    border-top:1px solid var(--borda); padding:8px 4px 10px;
+  }
+  .nav a { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; font-size:10px; color:var(--texto-2); text-decoration:none; }
+  .nav a.at { color:var(--cor-clinica); }
+  .nav svg { width:22px; height:22px; }
+
+  .nota { margin-top:20px; font-size:12px; color:var(--texto-2); max-width:390px; text-align:center; line-height:1.5; }
+</style>
+</head>
+<body>
+
+  <div class="controles">
+    <div class="grupo">
+      <span>Clínica</span>
+      <div class="seg" id="segClinica">
+        <button class="on" data-v="brotas">Brotas</button>
+        <button data-v="ipupiara">Ipupiara</button>
+      </div>
+    </div>
+    <div class="grupo">
+      <span>Tema</span>
+      <div class="seg" id="segTema">
+        <button class="on" data-v="claro">Claro</button>
+        <button data-v="escuro">Escuro</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="fone">
+    <div class="tela">
+
+      <div class="top">
+        <div class="linha">
+          <div>
+            <div class="clinica-nome"><span class="pin"></span><b id="nomeClinica">Clínica Brotas</b></div>
+            <div class="rotulo-prop">Visão proprietária · segunda, 7 set 2026</div>
+          </div>
+          <button class="switch-clinica" onclick="proxClinica()">Trocar</button>
+        </div>
+      </div>
+
+      <div class="corpo">
+
+        <div class="hero">
+          <div class="lbl">Saldo de hoje</div>
+          <div class="valor mono" id="saldo">R$ 4.280</div>
+          <div class="atual">Atualizado às 16:42 · calculado no servidor</div>
+          <div class="es">
+            <div>
+              <div class="cap"><span class="dot up"></span>Entradas</div>
+              <div class="num mono">R$ 5.130</div>
+            </div>
+            <div>
+              <div class="cap"><span class="dot down"></span>Saídas</div>
+              <div class="num mono">R$ 850</div>
+            </div>
+          </div>
+          <button class="explicar">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg>
+            Explicar meu caixa
+          </button>
+        </div>
+
+        <div class="rp">
+          <div class="cab"><span class="k">Realizado hoje</span><b class="mono">R$ 4.280</b></div>
+          <div class="barra"><i></i></div>
+          <div class="pe"><span>Previsto até 30/09</span><span class="mono">R$ 12.400</span></div>
+        </div>
+
+        <div class="vencido">
+          <div>
+            <div class="t">A receber vencido</div>
+            <div class="s">3 pacientes · toque para ver</div>
+          </div>
+          <div class="vv mono">R$ 1.150</div>
+        </div>
+
+        <div class="sec-tit">Pendências</div>
+        <div class="lista">
+          <div class="item">
+            <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/></svg></div>
+            <div class="txt"><b>Caixa de ontem sem fechar</b><span>Clínica Brotas · sexta, 6 set</span></div>
+            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
+          </div>
+          <div class="item">
+            <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v12H4zM4 20h16"/></svg></div>
+            <div class="txt"><b>2 recebimentos sem comprovante</b><span>Anexar para conferência</span></div>
+            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
+          </div>
+        </div>
+
+        <div class="sec-tit">Por clínica (CNPJ separado)</div>
+        <div class="cnpj">
+          <div>
+            <div class="nm"><span class="pin-sm b-brotas"></span>Brotas</div>
+            <div class="sd mono">R$ 4.280</div>
+          </div>
+          <div>
+            <div class="nm"><span class="pin-sm b-ipup"></span>Ipupiara</div>
+            <div class="sd mono">R$ 1.900</div>
+          </div>
+        </div>
+        <div class="consolidado">Ver total consolidado · R$ 6.180</div>
+
+      </div>
+
+      <div class="nav">
+        <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8M5 10v10h14V10"/></svg>Início</a>
+        <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Agenda</a>
+        <a href="#" class="at"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="6" width="20" height="13" rx="2"/><path d="M2 10h20M6 15h4"/></svg>Caixa</a>
+        <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Pacientes</a>
+        <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>Mais</a>
+      </div>
+
+    </div>
+  </div>
+
+  <p class="nota">
+    Mockup para aprovação — não é a tela final. Os controles acima demonstram as duas dimensões de
+    tema do Design System: a <b>cor da clínica</b> (azul em Brotas, verde em Ipupiara) vem do banco;
+    o <b>claro/escuro</b> é preferência do usuário. Nenhuma cor está fixa no componente.
+  </p>
+
+<script>
+  const root = document.documentElement;
+  const nomes = { brotas:'Clínica Brotas', ipupiara:'Clínica Ipupiara' };
+  function setSeg(id, val){
+    document.querySelectorAll('#'+id+' button').forEach(b=>b.classList.toggle('on', b.dataset.v===val));
+  }
+  document.getElementById('segClinica').addEventListener('click', e=>{
+    const b=e.target.closest('button'); if(!b) return;
+    root.setAttribute('data-clinica', b.dataset.v);
+    document.getElementById('nomeClinica').textContent = nomes[b.dataset.v];
+    setSeg('segClinica', b.dataset.v);
+  });
+  document.getElementById('segTema').addEventListener('click', e=>{
+    const b=e.target.closest('button'); if(!b) return;
+    root.setAttribute('data-tema', b.dataset.v);
+    setSeg('segTema', b.dataset.v);
+  });
+  function proxClinica(){
+    const atual = root.getAttribute('data-clinica');
+    const nova = atual==='brotas' ? 'ipupiara' : 'brotas';
+    root.setAttribute('data-clinica', nova);
+    document.getElementById('nomeClinica').textContent = nomes[nova];
+    setSeg('segClinica', nova);
+  }
+</script>
+</body>
+</html>
