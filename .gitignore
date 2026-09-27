@@ -56,3 +56,6 @@ scratch/
 
 *.zip
 !supabase/**/*.zip
+
+# Backup temporario pre-merge (remover apos merge)
+.backup_pre_merge_2026-09-26/

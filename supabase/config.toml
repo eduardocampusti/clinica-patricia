@@ -39,9 +39,7 @@ shadow_port = 54320
 health_timeout = "2m"
 # The database major version to use. This has to be the same as your remote database's. Run `SHOW
 # server_version;` on the remote database to check.
-# TEMPORARY LOCAL VALUE: the remote PostgreSQL version has not been verified yet. PostgreSQL 17 is
-# retained only to keep the generated local configuration valid. Do not claim production parity or
-# create the baseline until the remote version is obtained through an approved read-only channel.
+# Verified against production on 08/09/2026: server_version = 17.6
 major_version = 17
 
 [db.pooler]
@@ -389,7 +387,7 @@ deno_version = 2
 # secret_key = "env(SECRET_VALUE)"
 
 [analytics]
-enabled = true
+enabled = false
 port = 54327
 # Configure one of the supported backends: `postgres`, `bigquery`.
 backend = "postgres"
