@@ -1,3 +1,5 @@
+import { rotuloPapel } from '../papelApresentacao'
+
 export type CodigoErroFinanceiro =
   | 'nao_autenticado'
   | 'nao_autorizado'
@@ -83,7 +85,7 @@ export function mapearErroFinanceiro(erro: unknown): ErroFinanceiro {
     return new ErroFinanceiro('caixa_indisponivel', 'Não há um caixa financeiro aberto para esta clínica. Abra o caixa antes de receber pagamentos.', false, erro)
   }
   if (/preco da consulta nao configurado|configuracao financeira vigente nao encontrada/.test(texto)) {
-    return new ErroFinanceiro('configuracao_ausente', 'O preço ou a configuração financeira desta clínica está ausente. Solicite a configuração à proprietária.', false, erro)
+    return new ErroFinanceiro('configuracao_ausente', `O preço ou a configuração financeira desta clínica está ausente. Solicite a configuração ao perfil ${rotuloPapel('proprietaria')}.`, false, erro)
   }
   if (/soma dos pagamentos|pagamentos.*valor|quitar|componente de pagamento/.test(texto)) {
     return new ErroFinanceiro('pagamento_inconsistente', 'A soma das formas de pagamento deve corresponder ao valor integral.', false, erro)

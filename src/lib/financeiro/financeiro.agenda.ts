@@ -1,6 +1,7 @@
 import { mapearErroFinanceiro, ErroFinanceiro } from './financeiro.errors'
 import { decimalBancoParaCentavos } from './financeiro.money'
 import type { UUID } from './financeiro.types'
+import { rotuloPapel } from '../papelApresentacao'
 
 export function podeReceberNaAgenda(papel: string | null, status: string): boolean {
   return (papel === 'proprietaria' || papel === 'recepcao') && ['agendado', 'confirmado', 'aguardando'].includes(status)
@@ -14,7 +15,7 @@ export async function consultarPrecoConsulta(clinicaId: UUID, profissionalId: UU
     .eq('ativo', true).maybeSingle()
   if (error) throw mapearErroFinanceiro(error)
   if (data?.valor_consulta == null || decimalBancoParaCentavos(data.valor_consulta) <= 0n) {
-    throw new ErroFinanceiro('configuracao_ausente', 'O preço da consulta não está configurado para este profissional nesta clínica. Solicite a configuração à proprietária.')
+    throw new ErroFinanceiro('configuracao_ausente', `O preço da consulta não está configurado para este profissional nesta clínica. Solicite a configuração ao perfil ${rotuloPapel('proprietaria')}.`)
   }
   return decimalBancoParaCentavos(data.valor_consulta)
 }

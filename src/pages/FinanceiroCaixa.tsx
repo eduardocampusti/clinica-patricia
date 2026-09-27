@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState, type FormEvent } from 'react'
 import { ModalBase } from '../components/ModalBase'
+import { rotuloPapel } from '../lib/papelApresentacao'
 import { useFinanceiroConsulta } from '../hooks/useFinanceiroConsulta'
 import {
   consultarCaixaAtual, consultarDetalhesCaixa,
@@ -201,7 +202,7 @@ export default function FinanceiroCaixa({ clinicaAtivaId, carregandoClinica, usu
     {sucesso && <p role="status" className="rounded-lg border border-[var(--cor-sucesso-borda)] bg-[var(--cor-sucesso-suave)] p-3 text-sm text-[var(--texto-principal)]">{sucesso}</p>}
     {(carregandoClinica || carregandoPapel || consulta.resultado.estado === 'carregando') && <div role="status" aria-label="Carregando caixa" className={`${card} finance-skeleton`} />}
     {!carregandoClinica && !clinicaAtivaId && <p className={card}>Selecione uma clínica para consultar o caixa.</p>}
-    {!carregandoPapel && clinicaAtivaId && !autorizado && <p className={card}>O caixa operacional é restrito à proprietária e à recepção.</p>}
+    {!carregandoPapel && clinicaAtivaId && !autorizado && <p className={card}>O caixa operacional é restrito aos perfis {rotuloPapel('proprietaria')} e {rotuloPapel('recepcao')}.</p>}
     {consulta.resultado.estado === 'erro' && <div className={card} role="alert">
       <p>{consulta.resultado.erro.message}</p><button type="button" className={`${botao} mt-3`} onClick={() => void consulta.recarregar()}>Tentar novamente</button>
     </div>}
@@ -246,7 +247,7 @@ export default function FinanceiroCaixa({ clinicaAtivaId, carregandoClinica, usu
           {(caixa.status === 'em_fechamento' || caixa.status === 'devolvido_para_correcao') &&
             <button type="button" className={primario} onClick={() => setAcao({ tipo: 'enviar_fechamento' })}>Conferir e enviar fechamento</button>}
         </div>
-        {caixa.status === 'aguardando_aprovacao' && <p className="mt-3 text-sm text-[var(--texto-secundario)]">Fechamento enviado, aguardando revisão da proprietária.</p>}
+        {caixa.status === 'aguardando_aprovacao' && <p className="mt-3 text-sm text-[var(--texto-secundario)]">Fechamento enviado, aguardando revisão do perfil {rotuloPapel('proprietaria')}.</p>}
       </section>
       <section className={card}>
         <h2 className="texto-titulo-secao">Sangrias</h2>
