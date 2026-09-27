@@ -8,6 +8,8 @@ import { ReceberPagamento, type ConsultaParaReceber } from '../components/financ
 import { consultarRecebimentosAgenda, podeReceberNaAgenda } from '../lib/financeiro/financeiro.agenda'
 import { assinarInvalidacaoFinanceira } from '../lib/financeiro/financeiro.cache'
 import { mensagemErroFinanceiro } from '../lib/financeiro/financeiro.errors'
+import { consultarCpfPendentePaciente } from '../lib/pacienteCpf'
+import { AvisoCpfPendente } from '../components/pacientes/AvisoCpfPendente'
 
 type StatusAgendamento = 'agendado' | 'confirmado' | 'aguardando' | 'em_atendimento' | 'concluido' | 'cancelado'
 type TipoExcecao = 'folga' | 'horario_especial'
@@ -51,6 +53,11 @@ interface Agendamento {
 interface PacienteOpcao {
   id: string
   nome_completo: string
+}
+
+export interface PacienteCriadoAgenda extends PacienteOpcao {
+  clinica_id: string
+  revisao: number
 }
 
 interface EntradaListaEspera {
@@ -163,9 +170,20 @@ interface AgendaProps {
   carregandoClinica: boolean
   usuarioId: string
   onAtendimentoIniciado: (atendimentoId: string) => void
+  onNovoPaciente?: () => void
+  pacienteCriadoExternamente?: PacienteCriadoAgenda | null
+  cadastroPacienteAberto?: boolean
 }
 
-function Agenda({ clinicaAtiva, carregandoClinica, usuarioId, onAtendimentoIniciado }: AgendaProps) {
+function Agenda({
+  clinicaAtiva,
+  carregandoClinica,
+  usuarioId,
+  onAtendimentoIniciado,
+  onNovoPaciente,
+  pacienteCriadoExternamente,
+  cadastroPacienteAberto = false,
+}: AgendaProps) {
   const clinicaAtivaId = clinicaAtiva?.id ?? null
   const { papel, carregando: carregandoPapel } = usePapelNaClinica(usuarioId, clinicaAtivaId)
   const podeEscrever = !carregandoPapel && (papel === 'proprietaria' || papel === 'recepcao')
@@ -184,6 +202,8 @@ function Agenda({ clinicaAtiva, carregandoClinica, usuarioId, onAtendimentoInici
   const [erroCarregamento, setErroCarregamento] = useState<string | null>(null)
   const clinicaAtivaIdRef = useRef(clinicaAtivaId)
   const requisicaoGradeAtual = useRef(0)
+  const chaveContextoAtual = clinicaAtivaId ? `${clinicaAtivaId}:${paraISODate(dataSelecionada)}` : null
+  const [chaveContextoCarregado, setChaveContextoCarregado] = useState<string | null>(null)
   clinicaAtivaIdRef.current = clinicaAtivaId
 
   const [menuStatusId, setMenuStatusId] = useState<string | null>(null)
@@ -198,6 +218,12 @@ function Agenda({ clinicaAtiva, carregandoClinica, usuarioId, onAtendimentoInici
   const [revisaoRecebimentos, setRevisaoRecebimentos] = useState(0)
   const focoRecebimento = useRef<string | null>(null)
   const botoesAgendamento = useRef(new Map<string, HTMLButtonElement>())
+  const lembretesChegadaExibidos = useRef(new Set<string>())
+  const [lembreteCpfChegada, setLembreteCpfChegada] = useState<{
+    agendamentoId: string
+    pacienteId: string
+    pacienteNome: string
+  } | null>(null)
 
   const [meuProfissionalId, setMeuProfissionalId] = useState<string | null>(null)
   const [iniciandoAtendimentoId, setIniciandoAtendimentoId] = useState<string | null>(null)
@@ -381,30 +407,41 @@ function Agenda({ clinicaAtiva, carregandoClinica, usuarioId, onAtendimentoInici
   }, [])
 
   useEffect(() => {
-    if (!clinicaAtivaId) {
-      setProfissionais([])
-      setPacientes([])
-      setListaEspera([])
-      return
-    }
-    setErroCarregamento(null)
-    carregarProfissionais(clinicaAtivaId)
-    carregarPacientes(clinicaAtivaId)
-    carregarListaEspera(clinicaAtivaId)
-  }, [clinicaAtivaId, carregarProfissionais, carregarPacientes, carregarListaEspera])
+    const clinicaId = clinicaAtivaId
+    const chaveContexto = chaveContextoAtual
+    let cancelado = false
 
-  useEffect(() => {
-    if (!clinicaAtivaId) {
+    setChaveContextoCarregado(null)
+    setProfissionais([])
+    setPacientes([])
+    setListaEspera([])
+    setDisponibilidades([])
+    setExcecoes([])
+    setAgendamentos([])
+
+    if (!clinicaId || !chaveContexto) {
       requisicaoGradeAtual.current += 1
-      setDisponibilidades([])
-      setExcecoes([])
-      setAgendamentos([])
       setCarregandoGrade(false)
       return
     }
+
     setErroCarregamento(null)
-    carregarGradeDoDia(clinicaAtivaId, dataSelecionada)
-  }, [clinicaAtivaId, dataSelecionada, carregarGradeDoDia])
+    setCarregandoGrade(true)
+    void Promise.all([
+      carregarProfissionais(clinicaId),
+      carregarPacientes(clinicaId),
+      carregarListaEspera(clinicaId),
+      carregarGradeDoDia(clinicaId, dataSelecionada),
+    ]).then(() => {
+      if (!cancelado && clinicaAtivaIdRef.current === clinicaId) {
+        setChaveContextoCarregado(chaveContexto)
+      }
+    })
+
+    return () => {
+      cancelado = true
+    }
+  }, [clinicaAtivaId, chaveContextoAtual, dataSelecionada, carregarProfissionais, carregarPacientes, carregarListaEspera, carregarGradeDoDia])
 
   useEffect(() => {
     if (!souMedico) {
@@ -433,6 +470,14 @@ function Agenda({ clinicaAtiva, carregandoClinica, usuarioId, onAtendimentoInici
     setProfissionalParaExcecao(null)
     setErroIniciarAtendimento(null)
   }, [clinicaAtivaId])
+
+  useEffect(() => {
+    if (!pacienteCriadoExternamente || pacienteCriadoExternamente.clinica_id !== clinicaAtivaId) return
+    setPacientes((atuais) => {
+      const semDuplicata = atuais.filter((paciente) => paciente.id !== pacienteCriadoExternamente.id)
+      return [...semDuplicata, pacienteCriadoExternamente].sort((a, b) => a.nome_completo.localeCompare(b.nome_completo))
+    })
+  }, [clinicaAtivaId, pacienteCriadoExternamente])
 
   async function iniciarAtendimento(ag: Agendamento) {
     if (!clinicaAtivaId || !meuProfissionalId) return
@@ -531,15 +576,58 @@ function Agenda({ clinicaAtiva, carregandoClinica, usuarioId, onAtendimentoInici
     setModalAberto('agendamento')
   }
 
-  async function mudarStatus(agendamentoId: string, novoStatus: StatusAgendamento) {
-    setMenuStatusId(null)
+  useEffect(() => {
+    lembretesChegadaExibidos.current.clear()
+    setLembreteCpfChegada(null)
+  }, [clinicaAtivaId])
 
-    await supabase.from('agendamentos').update({ status: novoStatus }).eq('id', agendamentoId)
+  async function mudarStatus(agendamento: Agendamento, novoStatus: StatusAgendamento) {
+    setMenuStatusId(null)
+    if (!clinicaAtivaId) return
+
+    const { error } = await supabase
+      .from('agendamentos')
+      .update({ status: novoStatus })
+      .eq('id', agendamento.id)
+      .eq('clinica_id', clinicaAtivaId)
 
     await recarregarTudo()
+
+    if (!error && novoStatus === 'aguardando' && podeEscrever && !lembretesChegadaExibidos.current.has(agendamento.id)) {
+      lembretesChegadaExibidos.current.add(agendamento.id)
+      void consultarCpfPendentePaciente(agendamento.paciente_id, clinicaAtivaId)
+        .then((cpfPendente) => {
+          if (cpfPendente && clinicaAtivaIdRef.current === clinicaAtivaId) {
+            setLembreteCpfChegada({
+              agendamentoId: agendamento.id,
+              pacienteId: agendamento.paciente_id,
+              pacienteNome: agendamento.paciente_nome,
+            })
+          }
+        })
+        .catch(() => {
+          // A falha do lembrete não pode impedir o registro de chegada.
+        })
+    }
   }
 
-  const carregando = carregandoClinica || carregandoGrade
+  const carregando = carregandoClinica || carregandoPapel || carregandoGrade || chaveContextoCarregado !== chaveContextoAtual
+
+  if (carregando) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="texto-titulo-tela text-[var(--texto-principal)]">Agenda</h1>
+          <p className="text-sm text-[var(--texto-secundario)]">
+            {clinicaAtiva?.nome ?? 'Nenhuma clínica vinculada ao seu usuário.'}
+          </p>
+        </div>
+        <div role="status" className="rounded-[18px] bg-[var(--fundo-card)] p-8 text-center text-sm text-[var(--texto-secundario)]" style={{ boxShadow: 'var(--sombra-neutra)' }}>
+          Carregando contexto da clínica...
+        </div>
+      </div>
+    )
+  }
 
   const contagem = {
     hoje: agendamentos.length,
@@ -786,7 +874,7 @@ function Agenda({ clinicaAtiva, carregandoClinica, usuarioId, onAtendimentoInici
                                     <button
                                       key={status}
                                       type="button"
-                                      onClick={() => mudarStatus(ag.id, status)}
+                                      onClick={() => mudarStatus(ag, status)}
                                       className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-xs font-medium transition hover:bg-[var(--fundo-pagina)]"
                                     >
                                       <span
@@ -858,6 +946,9 @@ function Agenda({ clinicaAtiva, carregandoClinica, usuarioId, onAtendimentoInici
           profissionais={profissionais}
           prefill={prefillAgendamento}
           dataInicial={dataSelecionada}
+          onNovoPaciente={onNovoPaciente}
+          pacienteCriadoExternamente={pacienteCriadoExternamente}
+          suspenso={cadastroPacienteAberto}
           onFechar={() => setModalAberto(null)}
           onSalvo={async () => {
             setModalAberto(null)
@@ -895,6 +986,18 @@ function Agenda({ clinicaAtiva, carregandoClinica, usuarioId, onAtendimentoInici
       {consultaReceber && <ReceberPagamento key={consultaReceber.agendamentoId} consulta={consultaReceber} usuarioId={usuarioId}
         onFechar={() => { setConsultaReceber(null); requestAnimationFrame(() => { if (focoRecebimento.current) botoesAgendamento.current.get(focoRecebimento.current)?.focus() }) }}
         onRecebido={(resultado) => setRecebidos((anteriores) => new Set([...anteriores, resultado.agendamento_id]))} />}
+
+      {lembreteCpfChegada && clinicaAtivaId && (
+        <aside className="fixed bottom-4 right-4 z-30 w-[calc(100%-2rem)] max-w-md" aria-label="Lembrete de CPF na chegada">
+          <AvisoCpfPendente
+            pacienteId={lembreteCpfChegada.pacienteId}
+            pacienteNome={lembreteCpfChegada.pacienteNome}
+            clinicaId={clinicaAtivaId}
+            onAdicionado={() => setLembreteCpfChegada(null)}
+            onLembrar={() => setLembreteCpfChegada(null)}
+          />
+        </aside>
+      )}
 
       {podeEscrever && clinicaAtivaId && (
         <button
@@ -946,6 +1049,9 @@ interface ModalNovoAgendamentoProps {
   dataInicial: Date
   onFechar: () => void
   onSalvo: () => void
+  onNovoPaciente?: () => void
+  pacienteCriadoExternamente?: PacienteCriadoAgenda | null
+  suspenso?: boolean
 }
 
 function ModalNovoAgendamento({
@@ -956,14 +1062,56 @@ function ModalNovoAgendamento({
   dataInicial,
   onFechar,
   onSalvo,
+  onNovoPaciente,
+  pacienteCriadoExternamente,
+  suspenso = false,
 }: ModalNovoAgendamentoProps) {
   const [buscaPaciente, setBuscaPaciente] = useState('')
   const [pacienteId, setPacienteId] = useState(prefill?.pacienteId ?? '')
   const [profissionalId, setProfissionalId] = useState(prefill?.profissionalId ?? '')
   const [data, setData] = useState(paraISODate(dataInicial))
   const [horaInicio, setHoraInicio] = useState('')
+  const [observacoes, setObservacoes] = useState('')
   const [salvando, setSalvando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
+  const [cpfPendente, setCpfPendente] = useState(false)
+  const [consultandoCpf, setConsultandoCpf] = useState(false)
+  const lembretesCpfIgnorados = useRef(new Set<string>())
+
+  useEffect(() => {
+    if (!pacienteCriadoExternamente || pacienteCriadoExternamente.clinica_id !== clinicaAtivaId) return
+    setBuscaPaciente('')
+    setPacienteId(pacienteCriadoExternamente.id)
+  }, [clinicaAtivaId, pacienteCriadoExternamente])
+
+  useEffect(() => {
+    let consultaAtual = true
+
+    if (!pacienteId || lembretesCpfIgnorados.current.has(pacienteId)) {
+      setCpfPendente(false)
+      setConsultandoCpf(false)
+      return () => {
+        consultaAtual = false
+      }
+    }
+
+    setConsultandoCpf(true)
+    setCpfPendente(false)
+    void consultarCpfPendentePaciente(pacienteId, clinicaAtivaId)
+      .then((pendente) => {
+        if (consultaAtual) setCpfPendente(pendente)
+      })
+      .catch(() => {
+        // O lembrete é complementar e não pode bloquear o agendamento.
+      })
+      .finally(() => {
+        if (consultaAtual) setConsultandoCpf(false)
+      })
+
+    return () => {
+      consultaAtual = false
+    }
+  }, [clinicaAtivaId, pacienteId])
 
   const pacientesFiltrados = buscaPaciente.trim()
     ? pacientes.filter((p) => p.nome_completo.toLowerCase().includes(buscaPaciente.trim().toLowerCase()))
@@ -994,6 +1142,7 @@ function ModalNovoAgendamento({
       data,
       hora_inicio: horaInicio,
       status: 'agendado',
+      observacoes: observacoes.trim() || null,
     })
 
     if (error) {
@@ -1011,13 +1160,22 @@ function ModalNovoAgendamento({
   }
 
   return (
-    <ModalBase titulo="Novo agendamento" onFechar={onFechar}>
+    <ModalBase titulo="Novo agendamento" onFechar={onFechar} suspenso={suspenso}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-[var(--texto-principal)]">
-            Paciente <span className="text-[var(--cor-erro)]">*</span>
-          </label>
+          <div className="mb-1.5 flex items-center justify-between gap-3">
+            <label htmlFor="novo-agendamento-paciente" className="block text-sm font-medium text-[var(--texto-principal)]">
+              Paciente <span className="text-[var(--cor-erro)]">*</span>
+            </label>
+            {onNovoPaciente && (
+              <button type="button" onClick={onNovoPaciente} disabled={salvando} className="text-sm font-semibold text-[var(--cor-primaria)] underline-offset-4 hover:underline disabled:opacity-60">
+                + Novo paciente
+              </button>
+            )}
+          </div>
           <input
+            id="novo-agendamento-busca-paciente"
+            aria-label="Buscar paciente"
             type="text"
             placeholder="Buscar..."
             value={buscaPaciente}
@@ -1026,6 +1184,7 @@ function ModalNovoAgendamento({
             className="mb-2 w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 py-2 text-sm text-[var(--texto-principal)] outline-none transition focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60"
           />
           <select
+            id="novo-agendamento-paciente"
             required
             value={pacienteId}
             onChange={(e) => setPacienteId(e.target.value)}
@@ -1041,11 +1200,26 @@ function ModalNovoAgendamento({
           </select>
         </div>
 
+        {consultandoCpf && <p role="status" className="text-xs text-[var(--texto-secundario)]">Verificando cadastro do paciente...</p>}
+        {cpfPendente && pacienteId && (
+          <AvisoCpfPendente
+            pacienteId={pacienteId}
+            pacienteNome={pacientes.find((paciente) => paciente.id === pacienteId)?.nome_completo ?? 'Paciente'}
+            clinicaId={clinicaAtivaId}
+            onAdicionado={() => setCpfPendente(false)}
+            onLembrar={() => {
+              lembretesCpfIgnorados.current.add(pacienteId)
+              setCpfPendente(false)
+            }}
+          />
+        )}
+
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-[var(--texto-principal)]">
+          <label htmlFor="novo-agendamento-profissional" className="mb-1.5 block text-sm font-medium text-[var(--texto-principal)]">
             Profissional <span className="text-[var(--cor-erro)]">*</span>
           </label>
           <select
+            id="novo-agendamento-profissional"
             required
             value={profissionalId}
             onChange={(e) => setProfissionalId(e.target.value)}
@@ -1063,10 +1237,11 @@ function ModalNovoAgendamento({
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-[var(--texto-principal)]">
+            <label htmlFor="novo-agendamento-data" className="mb-1.5 block text-sm font-medium text-[var(--texto-principal)]">
               Data <span className="text-[var(--cor-erro)]">*</span>
             </label>
             <input
+              id="novo-agendamento-data"
               type="date"
               required
               value={data}
@@ -1076,10 +1251,11 @@ function ModalNovoAgendamento({
             />
           </div>
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-[var(--texto-principal)]">
+            <label htmlFor="novo-agendamento-inicio" className="mb-1.5 block text-sm font-medium text-[var(--texto-principal)]">
               Início <span className="text-[var(--cor-erro)]">*</span>
             </label>
             <input
+              id="novo-agendamento-inicio"
               type="time"
               required
               value={horaInicio}
@@ -1088,6 +1264,20 @@ function ModalNovoAgendamento({
               className="w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 py-2.5 text-[var(--texto-principal)] outline-none transition focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60"
             />
           </div>
+        </div>
+
+        <div>
+          <label htmlFor="novo-agendamento-observacoes" className="mb-1.5 block text-sm font-medium text-[var(--texto-principal)]">
+            Observações
+          </label>
+          <textarea
+            id="novo-agendamento-observacoes"
+            value={observacoes}
+            onChange={(e) => setObservacoes(e.target.value)}
+            disabled={salvando}
+            rows={3}
+            className="w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 py-2.5 text-[var(--texto-principal)] outline-none transition focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60"
+          />
         </div>
 
         {erro && (

@@ -9,6 +9,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
+    "test:pacientes": "node --test src/lib/pacienteFormulario.test.ts",
     "test:financeiro": "server\\node_modules\\.bin\\tsx.cmd --test src/lib/financeiro/financeiro.test.ts",
     "preview": "vite preview",
     "supabase:version": "node scripts/supabase-local.mjs version",
