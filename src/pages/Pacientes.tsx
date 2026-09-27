@@ -17,6 +17,10 @@ import { AvisoCpfPendente } from '../components/pacientes/AvisoCpfPendente'
 import PacienteAvatar from '../components/pacientes/PacienteAvatar'
 import { IconeCalendario, IconeChevron, IconeLupa, IconeMais, IconePessoas } from '../components/shell/icons'
 import { calcularIdade } from '../lib/pacienteIdade'
+import { FILTROS_PACIENTES_INICIAIS, LIMITE_CONSULTA_PACIENTES, correspondeAosFiltros, hojeNaBahia, ordenarPacientes, padraoBuscaNome, respostaCompletaPacientes, restricoesPacientes, resumoFiltrosPacientes, type OrdemPacientes } from '../lib/pacienteLista'
+import ControlesListaPacientes from '../components/pacientes/ControlesListaPacientes'
+import EditarPaciente from '../components/pacientes/EditarPaciente'
+import type { PacienteEdicao } from '../lib/pacienteEdicao'
 import type { Papel } from '../hooks/usePapelNaClinica'
 import './pacientes-cadastro.css'
 import './pacientes-lista.css'
@@ -29,6 +33,7 @@ interface PacienteListado {
   endereco: string | null
   ativo: boolean
   foto_path?: string | null
+  created_at?: string | null
 }
 
 interface PacienteRow {
@@ -38,6 +43,7 @@ interface PacienteRow {
   telefone: string | null
   endereco: string | null
   foto_path: string | null
+  created_at: string | null
 }
 
 interface ResponsavelResumo {
@@ -152,6 +158,10 @@ function formatarData(data: string | null): string {
   return `${dia}/${mes}/${ano}`
 }
 
+function IconeLapis() {
+  return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 20h9" /><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L9 17l-4 1 1-4Z" /></svg>
+}
+
 interface PacientesProps {
   clinicaAtivaId: string | null
   clinicaNome?: string | null
@@ -180,6 +190,18 @@ function Pacientes({
   const podeAdministrar = papel === 'proprietaria' || papel === 'recepcao'
   const [pacientes, setPacientes] = useState<PacienteListado[]>([])
   const [busca, setBusca] = useState('')
+  const [ordem, setOrdem] = useState<OrdemPacientes>('nome_asc')
+  const [filtros, setFiltros] = useState(FILTROS_PACIENTES_INICIAIS)
+  const [totalConsulta, setTotalConsulta] = useState<number | null>(null)
+  const [consultaCompleta, setConsultaCompleta] = useState(false)
+  const [chaveListaCarregada, setChaveListaCarregada] = useState('')
+  const hoje = hojeNaBahia()
+  const dataReferenciaLista = new Date(`${hoje}T12:00:00`)
+  const regrasFiltros = useMemo(() => restricoesPacientes(filtros, hoje), [filtros, hoje])
+  const filtrosAtivos = resumoFiltrosPacientes(filtros)
+  const chaveLista = JSON.stringify([clinicaAtivaId, busca.trim(), filtros, hoje])
+  const consultaListaPendente = chaveListaCarregada !== chaveLista
+  const abortarLista = useRef<AbortController | null>(null)
   const [modoBusca, setModoBusca] = useState<'nome' | 'cpf'>('nome')
   const [buscaCpf, setBuscaCpf] = useState('')
   const [resultadoCpf, setResultadoCpf] = useState<PacienteListado[] | null>(null)
@@ -192,6 +214,8 @@ function Pacientes({
   const [clinicaListaId, setClinicaListaId] = useState<string | null>(null)
   const [selecao, setSelecao] = useState<{ clinicaId: string; paciente: PacienteListado } | null>(null)
   const [resumo, setResumo] = useState<{ chave: string; responsaveis: ResponsavelResumo[]; cpfPendente: boolean | null; erro: boolean } | null>(null)
+  const [edicao, setEdicao] = useState<{ pacienteId: string; clinicaId: string } | null>(null)
+  useEffect(() => { setEdicao(null) }, [clinicaAtivaId, papel, carregandoClinica, carregandoPapel])
   const [carregandoResumo, setCarregandoResumo] = useState(false)
   const [mostrarAdicionarCpf, setMostrarAdicionarCpf] = useState(false)
   const [revisaoResumo, setRevisaoResumo] = useState(0)
@@ -251,30 +275,44 @@ function Pacientes({
 
   const carregarPacientes = useCallback(async (clinicaId: string) => {
     const requisicao = ++requisicaoAtual.current
+    abortarLista.current?.abort()
+    const controlador = new AbortController()
+    abortarLista.current = controlador
     setCarregandoLista(true)
     setErroLista(null)
-
-    const { data, error } = await supabase
+    setTotalConsulta(null)
+    setConsultaCompleta(false)
+    let consulta = supabase
       .from('pacientes')
-      .select('id, nome_completo, data_nascimento, telefone, endereco, foto_path')
+      .select('id, nome_completo, data_nascimento, telefone, endereco, foto_path, created_at', { count: 'exact' })
       .eq('clinica_id', clinicaId)
       .eq('ativo', true)
-      .order('nome_completo', { ascending: true })
+    // Escape curingas: a busca por nome continua sendo substring literal, não expressão.
+    if (busca.trim()) consulta = consulta.filter('nome_completo', 'imatch', padraoBuscaNome(busca))
+    for (const regra of regrasFiltros) consulta = consulta.filter(regra.campo, regra.operador, regra.valor)
+    const { data, error, count } = await consulta.order('id', { ascending: true })
+      .limit(LIMITE_CONSULTA_PACIENTES).abortSignal(controlador.signal)
 
-    if (error) {
+    if (controlador.signal.aborted || requisicao !== requisicaoAtual.current) return
+    setChaveListaCarregada(chaveLista)
+    setTotalConsulta(count)
+    if (error || count === null) {
       if (requisicao !== requisicaoAtual.current) return
       setPacientes([])
-      setErroLista('Não foi possível carregar os pacientes.')
+      setErroLista('Não foi possível carregar os pacientes e confirmar a contagem completa.')
       setClinicaListaId(clinicaId)
       setCarregandoLista(false)
       return
     }
 
     if (requisicao !== requisicaoAtual.current) return
-    setPacientes(((data ?? []) as PacienteRow[]).map((linha) => ({ ...linha, ativo: true })))
+    const completa = respostaCompletaPacientes(data?.length ?? 0, count)
+    setConsultaCompleta(completa)
+    // Nunca apresentar uma ordenação local de uma resposta cortada como global.
+    setPacientes(completa ? ((data ?? []) as PacienteRow[]).map((linha) => ({ ...linha, ativo: true })) : [])
     setClinicaListaId(clinicaId)
     setCarregandoLista(false)
-  }, [])
+  }, [busca, regrasFiltros, chaveLista])
 
   useEffect(() => {
     if (carregandoClinica || carregandoPapel) return
@@ -297,8 +335,14 @@ function Pacientes({
       return
     }
 
-    carregarPacientes(clinicaAtivaId)
-  }, [carregandoClinica, carregandoPapel, podeAdministrar, clinicaAtivaId, carregarPacientes])
+    if (modoBusca !== 'nome') return
+    const temporizador = setTimeout(() => void carregarPacientes(clinicaAtivaId), busca ? 250 : 0)
+    return () => {
+      clearTimeout(temporizador)
+      requisicaoAtual.current += 1
+      abortarLista.current?.abort()
+    }
+  }, [carregandoClinica, carregandoPapel, podeAdministrar, clinicaAtivaId, carregarPacientes, modoBusca, busca])
 
   useEffect(() => {
     if (clinicaFormularioAnterior.current === clinicaAtivaId) return
@@ -310,6 +354,7 @@ function Pacientes({
     setMensagemSucesso(null)
     setBuscaCpf('')
     setBusca('')
+    setFiltros(FILTROS_PACIENTES_INICIAIS)
     setModoBusca('nome')
     setResultadoCpf(null)
     setErroBuscaCpf(null)
@@ -424,11 +469,25 @@ function Pacientes({
     return pacientes.filter((paciente) => paciente.nome_completo.toLocaleLowerCase('pt-BR').includes(termo))
   }, [busca, pacientes])
 
-  const pacientesExibidos = modoBusca === 'cpf' ? (resultadoCpf ?? []) : pacientesFiltrados
+  const pacientesExibidos = useMemo(() => ordenarPacientes(
+    (modoBusca === 'cpf' ? (resultadoCpf ?? []) : pacientesFiltrados).filter((paciente) => correspondeAosFiltros(paciente, regrasFiltros)), ordem,
+  ), [modoBusca, resultadoCpf, pacientesFiltrados, regrasFiltros, ordem])
+  const listaPendente = modoBusca === 'nome' ? carregandoLista || consultaListaPendente : buscandoCpf
+  const totalEncontrado = listaPendente || (modoBusca === 'nome' ? Boolean(erroLista) : resultadoCpf === null)
+    ? null : modoBusca === 'nome' && !consultaCompleta ? totalConsulta : pacientesExibidos.length
   const pacienteSelecionado = selecao?.clinicaId === clinicaAtivaId && clinicaListaId === clinicaAtivaId
+    && !listaPendente
     ? pacientesExibidos.find((paciente) => paciente.id === selecao.paciente.id) ?? null
     : null
   const chaveResumo = pacienteSelecionado && clinicaAtivaId ? `${clinicaAtivaId}:${pacienteSelecionado.id}` : null
+  const idadeSelecionada = pacienteSelecionado?.data_nascimento ? calcularIdade(pacienteSelecionado.data_nascimento, dataReferenciaLista) : null
+
+  useEffect(() => {
+    if (!listaPendente && selecao && !pacientesExibidos.some((paciente) => paciente.id === selecao.paciente.id)) {
+      setSelecao(null)
+      setMostrarAdicionarCpf(false)
+    }
+  }, [listaPendente, pacientesExibidos, selecao])
 
   useEffect(() => {
     const media = window.matchMedia('(max-width: 1100px)')
@@ -473,7 +532,7 @@ function Pacientes({
     document.body.style.overflow = 'hidden'
     fecharResumoRef.current?.focus()
     function aoTeclar(evento: KeyboardEvent) {
-      if (document.querySelector('.paciente-foto-modal-backdrop')) return
+      if (document.querySelector('.paciente-foto-modal-backdrop, .paciente-edicao[open]')) return
       if (evento.key === 'Escape') {
         evento.preventDefault()
         setSelecao(null)
@@ -512,12 +571,34 @@ function Pacientes({
     setMostrarAdicionarCpf(false)
   }
 
+  function aplicarEdicaoConfirmada(atualizado: PacienteEdicao) {
+    if (!edicao || atualizado.clinica_id !== clinicaAtivaId || atualizado.id !== edicao.pacienteId) return
+    const linha: PacienteListado = {
+      id: atualizado.id, nome_completo: atualizado.nome_completo ?? '', data_nascimento: atualizado.data_nascimento,
+      telefone: atualizado.telefone, endereco: atualizado.endereco, ativo: atualizado.ativo,
+      foto_path: atualizado.foto_path, created_at: atualizado.created_at,
+    }
+    setPacientes((atuais) => atuais.map((p) => p.id === linha.id ? linha : p))
+    setResultadoCpf((atuais) => atuais?.map((p) => p.id === linha.id ? linha : p) ?? null)
+    setSelecao({ clinicaId: atualizado.clinica_id, paciente: linha })
+    setRevisaoResumo((v) => v + 1)
+    const corresponde = correspondeAosFiltros(linha, regrasFiltros)
+      && (modoBusca !== 'nome' || linha.nome_completo.toLocaleLowerCase('pt-BR').includes(busca.trim().toLocaleLowerCase('pt-BR')))
+    setMensagemSucesso(corresponde ? 'Cadastro atualizado.' : 'Cadastro atualizado. O paciente deixou de corresponder à busca ou aos filtros atuais.')
+    setEdicao(null)
+  }
+
   function selecionarPaciente(paciente: PacienteListado, gatilho: HTMLButtonElement) {
     if (!clinicaAtivaId) return
     gatilhoResumoRef.current = gatilho
     setSelecao({ clinicaId: clinicaAtivaId, paciente })
     setResumo(null)
     setMostrarAdicionarCpf(false)
+  }
+
+  function abrirEdicao(paciente: PacienteListado) {
+    if (!podeAdministrar || !clinicaAtivaId || carregandoClinica || carregandoPapel || clinicaListaId !== clinicaAtivaId) return
+    setEdicao({ pacienteId: paciente.id, clinicaId: clinicaAtivaId })
   }
 
   function fecharResumo() {
@@ -549,7 +630,17 @@ function Pacientes({
     try {
       const encontrados = await buscarPacientePorCpf(clinicaDaBusca, cpf)
       if (requisicao !== requisicaoCpfAtual.current) return
-      setResultadoCpf(encontrados)
+      // A RPC de CPF permanece intacta. Metadados não sensíveis somente dos IDs autorizados.
+      if (encontrados.length) {
+        const { data, error } = await supabase.from('pacientes').select('id, created_at, foto_path')
+          .eq('clinica_id', clinicaDaBusca).in('id', encontrados.map((p) => p.id))
+        if (requisicao !== requisicaoCpfAtual.current) return
+        if (error || encontrados.some((p) => !data?.some((linha) => linha.id === p.id))) throw new Error('Metadados indisponíveis')
+        setResultadoCpf(encontrados.map((p) => {
+          const metadados = data!.find((linha) => linha.id === p.id)!
+          return { ...p, created_at: metadados.created_at, foto_path: metadados.foto_path }
+        }))
+      } else setResultadoCpf([])
     } catch {
       if (requisicao !== requisicaoCpfAtual.current) return
       setResultadoCpf(null)
@@ -631,8 +722,8 @@ function Pacientes({
 
     palavrasComGrafiaManual.current[campo] = preservadas
     const valorFormatado = formatarTextoPortuguesAoDigitar(valor, preservadas)
-    // Restaura na própria atualização do React, antes da próxima interação.
-    // Um RAF atrasado podia desfazer a seleção de uma substituição/colagem.
+    // Restaura na propria atualizacao do React, antes da proxima interacao.
+    // Um RAF atrasado podia desfazer a selecao de uma substituicao/colagem.
     selecaoFormatada.current = { input, valor: valorFormatado, ...selecaoDepois }
     setForm((atual) => ({ ...atual, [campo]: valorFormatado }))
   }
@@ -965,6 +1056,7 @@ function Pacientes({
 
   return (
     <div className="pacientes-pagina">
+      {edicao && edicao.clinicaId === clinicaAtivaId && podeAdministrar && !carregandoClinica && !carregandoPapel && <EditarPaciente key={`${edicao.clinicaId}:${edicao.pacienteId}`} pacienteId={edicao.pacienteId} clinicaId={edicao.clinicaId} clinicaNome={clinicaNome || 'Clínica selecionada'} onFechar={() => setEdicao(null)} onSalvo={aplicarEdicaoConfirmada} />}
       <header className="pacientes-pagina-cabecalho">
         <div className="pacientes-pagina-identidade">
           <span className="pacientes-pagina-icone" aria-hidden="true"><IconePessoas /></span>
@@ -1531,7 +1623,7 @@ function Pacientes({
                 <label className="pacientes-busca-campo">
                   <span className="sr-only">Buscar paciente por nome</span>
                   <IconeLupa className="pacientes-busca-campo-icone" />
-                  <input type="search" value={busca} onChange={(event) => { setBusca(event.target.value); fecharResumo() }} placeholder="Buscar paciente por nome" />
+                  <input type="search" value={busca} onChange={(event) => setBusca(event.target.value)} placeholder="Buscar paciente por nome" />
                 </label>
               ) : (
                 <form onSubmit={pesquisarCpf} className="pacientes-busca-cpf">
@@ -1539,7 +1631,7 @@ function Pacientes({
                     <span className="sr-only">Buscar por CPF exato</span>
                     <IconeLupa className="pacientes-busca-campo-icone" />
                     <input type="text" inputMode="numeric" autoComplete="off" value={buscaCpf}
-                      onChange={(event) => { setBuscaCpf(formatarCpf(event.target.value)); setErroBuscaCpf(null); setResultadoCpf(null); fecharResumo() }}
+                      onChange={(event) => { requisicaoCpfAtual.current += 1; setBuscandoCpf(false); setBuscaCpf(formatarCpf(event.target.value)); setErroBuscaCpf(null); setResultadoCpf(null); fecharResumo() }}
                       placeholder="000.000.000-00" maxLength={14} aria-describedby="busca-paciente-cpf-ajuda" />
                   </label>
                   <button type="submit" disabled={buscandoCpf || !apenasDigitos(buscaCpf)} className="pacientes-botao-primario">
@@ -1556,14 +1648,9 @@ function Pacientes({
           <div className={`pacientes-conteudo${pacienteSelecionado ? ' pacientes-conteudo--com-resumo' : ''}`}>
             <section className="pacientes-lista-area" aria-labelledby="pacientes-lista-titulo">
               <div className="pacientes-lista-card">
-                <div className="pacientes-lista-cabecalho">
-                  <div>
-                    <h2 id="pacientes-lista-titulo">Pacientes cadastrados</h2>
-                    <p>{modoBusca === 'nome' ? 'Pacientes ativos da clínica atual' : 'Resultado da busca exata por CPF'}</p>
-                  </div>
-                  <span className="pacientes-lista-contexto" aria-hidden="true"><IconePessoas /></span>
-                </div>
-                {carregandoLista ? (
+                <ControlesListaPacientes key={clinicaAtivaId} ordem={ordem} onOrdem={setOrdem}
+                  filtros={filtros} onFiltros={setFiltros} total={totalEncontrado} />
+                {listaPendente ? (
                   <div className="pacientes-estado pacientes-estado--carregando" role="status"><span className="pacientes-estado-icone" aria-hidden="true"><IconePessoas /></span><strong>Carregando pacientes…</strong><span>Aguarde a consulta da clínica atual.</span><div className="pacientes-esqueleto" aria-hidden="true"><i /><i /><i /></div></div>
                 ) : !clinicaAtivaId ? (
                   <div className="pacientes-estado"><span className="pacientes-estado-icone" aria-hidden="true"><IconePessoas /></span><strong>Nenhuma clínica selecionada</strong><span>Selecione uma clínica autorizada para consultar pacientes.</span></div>
@@ -1571,33 +1658,44 @@ function Pacientes({
                   <div className="pacientes-estado" role="alert"><span className="pacientes-estado-icone" aria-hidden="true"><IconePessoas /></span><strong>Não foi possível carregar os pacientes</strong><span>{erroLista}</span><button type="button" className="pacientes-botao-secundario" onClick={() => void carregarPacientes(clinicaAtivaId)}>Tentar novamente</button></div>
                 ) : modoBusca === 'cpf' && resultadoCpf === null ? (
                   <div className="pacientes-estado"><span className="pacientes-estado-icone" aria-hidden="true"><IconeLupa /></span><strong>Busca exata por CPF</strong><span>Informe um CPF válido e selecione “Buscar CPF”.</span></div>
-                ) : modoBusca === 'nome' && pacientes.length === 0 ? (
+                ) : modoBusca === 'nome' && !consultaCompleta ? (
+                  <div className="pacientes-estado" role="status"><strong>Refine a busca ou os filtros</strong><span>Foram encontrados {totalConsulta} pacientes, acima da quantidade que pode ser exibida nesta consulta. Use um nome ou filtros mais específicos para ver todos os resultados, sem uma lista incompleta.</span></div>
+                ) : modoBusca === 'nome' && pacientes.length === 0 && !busca.trim() && filtrosAtivos.length === 0 ? (
                   <div className="pacientes-estado"><span className="pacientes-estado-icone" aria-hidden="true"><IconePessoas /></span><strong>Nenhum paciente ativo cadastrado</strong><span>Use “Novo paciente” para iniciar um cadastro nesta clínica.</span></div>
                 ) : pacientesExibidos.length === 0 ? (
-                  <div className="pacientes-estado"><span className="pacientes-estado-icone" aria-hidden="true"><IconeLupa /></span><strong>Nenhum resultado nesta clínica</strong><span>{modoBusca === 'nome' ? 'Tente outro nome.' : 'Nenhum cadastro corresponde a esta busca exata na clínica atual.'}</span></div>
+                  <div className="pacientes-estado"><span className="pacientes-estado-icone" aria-hidden="true"><IconeLupa /></span><strong>Nenhum resultado nesta clínica</strong><span>Tente outra busca ou ajuste os filtros aplicados.</span></div>
                 ) : (
-                  <>
-                    <div className="pacientes-lista-colunas" aria-hidden="true"><span>Paciente</span><span>Nascimento / idade</span><span>Telefone / WhatsApp</span><span>Status</span><span>Ação</span></div>
-                    <ul className="pacientes-lista-itens">
+                  <div role="table" aria-label="Pacientes encontrados">
+                    <div className="pacientes-lista-colunas" role="row">
+                      <span role="columnheader" aria-sort={ordem === 'nome_asc' ? 'ascending' : ordem === 'nome_desc' ? 'descending' : undefined}><button type="button" onClick={() => setOrdem(ordem === 'nome_asc' ? 'nome_desc' : 'nome_asc')}>Paciente <span aria-hidden="true">{ordem.startsWith('nome') ? ordem === 'nome_asc' ? '↑' : '↓' : ''}</span></button></span>
+                      <span role="columnheader" aria-sort={ordem === 'nascimento_asc' ? 'ascending' : ordem === 'nascimento_desc' ? 'descending' : undefined}><button type="button" onClick={() => setOrdem(ordem === 'nascimento_desc' ? 'nascimento_asc' : 'nascimento_desc')}>Nascimento / idade <span aria-hidden="true">{ordem.startsWith('nascimento') ? ordem === 'nascimento_asc' ? '↑' : '↓' : ''}</span></button></span>
+                      <span role="columnheader">Telefone / WhatsApp</span><span role="columnheader">Status</span><span role="columnheader">Ações</span>
+                    </div>
+                    <div className="pacientes-lista-itens" role="rowgroup">
                       {pacientesExibidos.map((paciente) => {
-                        const idadePaciente = paciente.data_nascimento ? calcularIdade(paciente.data_nascimento) : null
+                        const idadePaciente = paciente.data_nascimento ? calcularIdade(paciente.data_nascimento, dataReferenciaLista) : null
                         const selecionado = pacienteSelecionado?.id === paciente.id
                         return (
-                          <li key={paciente.id}>
-                            <button type="button" className={`pacientes-lista-linha${selecionado ? ' pacientes-lista-linha--selecionada' : ''}`}
-                              aria-label={`Ver resumo de ${paciente.nome_completo}`} aria-pressed={selecionado}
-                              onClick={(evento) => selecionarPaciente(paciente, evento.currentTarget)}>
-                              <span className="pacientes-lista-identidade"><PacienteAvatar pacienteId={paciente.id} clinicaId={clinicaAtivaId} nome={paciente.nome_completo} caminho={paciente.foto_path} /><strong>{paciente.nome_completo}</strong></span>
-                              <span className="pacientes-lista-dado"><span className="pacientes-lista-dado-rotulo">Nascimento</span><span>{formatarData(paciente.data_nascimento)}</span><small>{idadePaciente === null ? 'Idade não informada' : `${idadePaciente} anos`}</small></span>
-                              <span className="pacientes-lista-dado pacientes-lista-telefone"><span className="pacientes-lista-dado-rotulo">Telefone / WhatsApp</span>{paciente.telefone ? formatarTelefoneBrasil(paciente.telefone) : 'Não informado'}</span>
-                              <span><span className={`pacientes-status pacientes-status--${paciente.ativo ? 'ativo' : 'inativo'}`}>{paciente.ativo ? 'Ativo' : 'Inativo'}</span></span>
-                              <span className="pacientes-lista-acao" aria-hidden="true"><span>Ver resumo</span><IconeChevron /></span>
-                            </button>
-                          </li>
+                          <div key={paciente.id} role="row" className={`pacientes-lista-linha${selecionado ? ' pacientes-lista-linha--selecionada' : ''}`}
+                            onClick={(evento) => {
+                              // Preserva o clique na linha; o botão continua sendo o alvo de teclado.
+                              if ((evento.target as Element).closest('button')) return
+                              const botao = evento.currentTarget.querySelector('button')
+                              if (botao) selecionarPaciente(paciente, botao)
+                            }}>
+                              <span role="cell" className="pacientes-lista-identidade"><PacienteAvatar pacienteId={paciente.id} clinicaId={clinicaAtivaId} nome={paciente.nome_completo} caminho={paciente.foto_path} /><strong>{paciente.nome_completo}</strong></span>
+                              <span role="cell" className="pacientes-lista-dado"><span className="pacientes-lista-dado-rotulo">Nascimento</span><span>{formatarData(paciente.data_nascimento)}</span><small>{idadePaciente === null ? 'Idade não informada' : `${idadePaciente} anos`}</small></span>
+                              <span role="cell" className="pacientes-lista-dado pacientes-lista-telefone"><span className="pacientes-lista-dado-rotulo">Telefone / WhatsApp</span>{paciente.telefone ? formatarTelefoneBrasil(paciente.telefone) : 'Não informado'}</span>
+                              <span role="cell"><span className={`pacientes-status pacientes-status--${paciente.ativo ? 'ativo' : 'inativo'}`}>{paciente.ativo ? 'Ativo' : 'Inativo'}</span></span>
+                              <span role="cell" className="pacientes-lista-acao">
+                                <button type="button" aria-label={`Ver resumo de ${paciente.nome_completo}`} aria-pressed={selecionado} onClick={(evento) => { evento.stopPropagation(); selecionarPaciente(paciente, evento.currentTarget) }}>Ver resumo<IconeChevron /></button>
+                                <button type="button" className="pacientes-lista-editar" aria-label={`Editar ${paciente.nome_completo}`} onClick={(evento) => { evento.stopPropagation(); abrirEdicao(paciente) }}><IconeLapis />Editar</button>
+                              </span>
+                          </div>
                         )
                       })}
-                    </ul>
-                  </>
+                    </div>
+                  </div>
                 )}
               </div>
             </section>
@@ -1607,9 +1705,10 @@ function Pacientes({
                 {resumoMovel && <button type="button" className="pacientes-resumo-fundo" aria-label="Fechar resumo do paciente" onClick={fecharResumo} />}
                 <aside ref={resumoRef} className="pacientes-resumo" role={resumoMovel ? 'dialog' : 'complementary'} aria-modal={resumoMovel ? true : undefined} aria-label={`Resumo do cadastro de ${pacienteSelecionado.nome_completo}`}>
                   <div className="pacientes-resumo-cabecalho"><h2>Resumo do cadastro</h2><button ref={fecharResumoRef} type="button" aria-label="Fechar resumo" onClick={fecharResumo}>×</button></div>
+                  <button type="button" className="pacientes-botao-secundario" onClick={() => abrirEdicao(pacienteSelecionado)}>Editar cadastro</button>
                   <div className="pacientes-resumo-identidade">
                     <PacienteAvatar pacienteId={pacienteSelecionado.id} clinicaId={clinicaAtivaId} nome={pacienteSelecionado.nome_completo} caminho={pacienteSelecionado.foto_path} tamanho="resumo" />
-                    <div><h3>{pacienteSelecionado.nome_completo}</h3><p>{pacienteSelecionado.data_nascimento && calcularIdade(pacienteSelecionado.data_nascimento) !== null ? `${calcularIdade(pacienteSelecionado.data_nascimento)} anos` : 'Idade não informada'}</p><span className={`pacientes-status pacientes-status--${pacienteSelecionado.ativo ? 'ativo' : 'inativo'}`}>{pacienteSelecionado.ativo ? 'Ativo' : 'Inativo'}</span></div>
+                    <div><h3>{pacienteSelecionado.nome_completo}</h3><p>{idadeSelecionada !== null ? `${idadeSelecionada} anos` : 'Idade não informada'}</p><span className={`pacientes-status pacientes-status--${pacienteSelecionado.ativo ? 'ativo' : 'inativo'}`}>{pacienteSelecionado.ativo ? 'Ativo' : 'Inativo'}</span></div>
                   </div>
                   <div className="pacientes-resumo-bloco"><h4>Dados do paciente</h4><dl><dt>Nascimento</dt><dd>{formatarData(pacienteSelecionado.data_nascimento)}</dd><dt>CPF</dt><dd>{carregandoResumo || resumo?.chave !== chaveResumo ? 'Consultando…' : resumo.erro ? 'Consulta indisponível' : resumo.cpfPendente ? 'Não informado' : 'Informado'}</dd><dt>Telefone / WhatsApp</dt><dd>{pacienteSelecionado.telefone ? formatarTelefoneBrasil(pacienteSelecionado.telefone) : 'Não informado'}</dd></dl>
                     {resumo?.chave === chaveResumo && resumo.cpfPendente === true && !mostrarAdicionarCpf && <button type="button" className="pacientes-link" onClick={() => setMostrarAdicionarCpf(true)}>Adicionar CPF</button>}

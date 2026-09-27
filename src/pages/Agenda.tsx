@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import { supabase } from '../lib/supabase'
+import { iniciarAtendimentoAgendado } from '../lib/prontuarioRpc'
 import { iniciais } from '../lib/texto'
 import type { ClinicaAtiva } from '../hooks/useClinicaAtiva'
 import { usePapelNaClinica } from '../hooks/usePapelNaClinica'
@@ -485,14 +486,11 @@ function Agenda({
     setErroIniciarAtendimento(null)
     setIniciandoAtendimentoId(ag.id)
 
-    const { data, error } = await supabase.rpc('iniciar_atendimento_agendado', {
-      p_clinica_id: clinicaAtivaId,
-      p_agendamento_id: ag.id,
-    })
+    const { data, error } = await iniciarAtendimentoAgendado(clinicaAtivaId, ag.id)
 
     setIniciandoAtendimentoId(null)
 
-    if (error || typeof data !== 'string') {
+    if (error || !data) {
       setErroIniciarAtendimento('Não foi possível iniciar o atendimento. Tente novamente.')
       return
     }

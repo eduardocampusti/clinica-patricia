@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { Session } from '@supabase/supabase-js'
+import type { Papel } from './hooks/usePapelNaClinica'
 import { supabase } from './lib/supabase'
 import Login from './pages/Login'
 import Pacientes from './pages/Pacientes'
@@ -8,6 +9,7 @@ import FinanceiroModulo from './pages/FinanceiroModulo'
 import Dashboard from './pages/Dashboard'
 import Agenda, { type PacienteCriadoAgenda } from './pages/Agenda'
 import Prontuario from './pages/Prontuario'
+import SobreSistema from './pages/SobreSistema'
 import { useTheme } from './theme/ThemeProvider'
 import { useClinicaAtiva } from './hooks/useClinicaAtiva'
 import { useClinicasDoUsuario } from './hooks/useClinicasDoUsuario'
@@ -19,10 +21,13 @@ import { TITULOS_TELA, type Tela } from './components/shell/types'
 function App() {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
+  const [escolhaAcesso, setEscolhaAcesso] = useState<{ clinicaId: string; papel: Papel; lembrar: boolean } | null>(null)
+  const [escolhaAplicada, setEscolhaAplicada] = useState(false)
+  const [acessoValidado, setAcessoValidado] = useState(false)
+  const [erroAcesso, setErroAcesso] = useState<string | null>(null)
   const [tela, setTela] = useState<Tela>('dashboard')
   // Atendimento criado a partir da Agenda ("Iniciar atendimento"): navega
-  // pra tela do Prontuário já com esse id, que abre o editor direto (sem
-  // passar pela RPC de leitura — acabou de ser criado nesta mesma ação).
+  // para o Prontuário, que sempre o abre pela RPC auditada de leitura.
   const [atendimentoParaAbrir, setAtendimentoParaAbrir] = useState<string | null>(null)
   const [cadastroPacienteAgendaAberto, setCadastroPacienteAgendaAberto] = useState(false)
   const [pacienteCriadoAgenda, setPacienteCriadoAgenda] = useState<PacienteCriadoAgenda | null>(null)
@@ -37,6 +42,33 @@ function App() {
   const { papel, carregando: carregandoPapel } = usePapelNaClinica(session?.user.id ?? '', clinicaAtivaId)
 
   useEffect(() => {
+    if (!escolhaAcesso || !session || carregandoClinicas) return
+    if (!clinicasDoUsuario.some(clinica => clinica.id === escolhaAcesso.clinicaId)) {
+      setErroAcesso('Não foi possível confirmar o vínculo com a unidade selecionada. Entre em contato com a administração.')
+      setEscolhaAcesso(null)
+      void supabase.auth.signOut()
+      return
+    }
+    if (!escolhaAplicada) {
+      selecionarClinica(escolhaAcesso.clinicaId, escolhaAcesso.lembrar)
+      setEscolhaAplicada(true)
+      return
+    }
+    if (clinicaAtivaId !== escolhaAcesso.clinicaId) return
+    if (carregandoPapel) return
+    if (papel !== escolhaAcesso.papel) {
+      setErroAcesso('O perfil escolhido não está autorizado para esta unidade. Entre em contato com a administração.')
+      setEscolhaAcesso(null)
+      void supabase.auth.signOut()
+      return
+    }
+    setTela('dashboard')
+    setEscolhaAcesso(null)
+    setAcessoValidado(true)
+    setErroAcesso(null)
+  }, [escolhaAcesso, escolhaAplicada, session, carregandoClinicas, clinicasDoUsuario, clinicaAtivaId, selecionarClinica, carregandoPapel, papel])
+
+  useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session)
       setLoading(false)
@@ -44,8 +76,13 @@ function App() {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, newSession) => {
+    } = supabase.auth.onAuthStateChange((event, newSession) => {
       setSession(newSession)
+      if (event === 'SIGNED_OUT' || event === 'USER_UPDATED') {
+        setAcessoValidado(false)
+        setEscolhaAcesso(null)
+        setEscolhaAplicada(false)
+      }
     })
 
     return () => subscription.unsubscribe()
@@ -72,6 +109,9 @@ function App() {
   async function handleSignOut() {
     await supabase.auth.signOut()
     setTela('dashboard')
+    setEscolhaAcesso(null)
+    setEscolhaAplicada(false)
+    setAcessoValidado(false)
   }
 
   if (loading) {
@@ -82,8 +122,8 @@ function App() {
     )
   }
 
-  if (!session) {
-    return <Login />
+  if (!session || !acessoValidado) {
+    return <Login authenticatedUserId={session?.user.id} onBeginAuth={() => setErroAcesso(null)} onAccessGranted={escolha => { setEscolhaAplicada(false); setEscolhaAcesso(escolha) }} accessError={erroAcesso} />
   }
 
   return (
@@ -160,12 +200,14 @@ function App() {
         <FinanceiroModulo clinicaAtivaId={clinicaAtivaId} carregandoClinica={carregandoClinica}
           usuarioId={session.user.id} papel={papel} carregandoPapel={carregandoPapel} />
       )}
+      {tela === 'sobre' && <SobreSistema clinicaAtiva={clinicaAtiva} />}
       {tela !== 'dashboard' &&
         tela !== 'agenda' &&
         tela !== 'pacientes' &&
         tela !== 'equipe' &&
         tela !== 'prontuario' &&
-        tela !== 'financeiro' && <PlaceholderScreen titulo={TITULOS_TELA[tela]} />}
+        tela !== 'financeiro' &&
+        tela !== 'sobre' && <PlaceholderScreen titulo={TITULOS_TELA[tela]} />}
     </AppShell>
   )
 }

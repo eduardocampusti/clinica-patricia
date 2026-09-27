@@ -25,7 +25,7 @@ test('navegação apresenta somente funções operacionais do papel', async ({ p
     await expect(navegacao).not.toContainText('Prontuários')
     await expect(page.getByText('Visão da recepção')).toBeVisible()
   } else {
-    await expect(page.getByText('Visão proprietária')).toBeVisible()
+    await expect(page.getByText('Visão de proprietário(a)')).toBeVisible()
   }
   await page.screenshot({ path: `scratch/fase11-operacional/navegacao-${papel}-${info.project.name}.png`, fullPage: true })
 })
@@ -37,7 +37,8 @@ test('pacientes não baixa CPFs e faz busca exata segura na clínica ativa', asy
     const url = new URL(route.request().url())
     if (url.hostname === '127.0.0.1') return route.continue()
     if (url.hostname !== 'operacional.synthetic.invalid') return route.abort()
-    if (url.pathname.endsWith('/pacientes')) return route.fulfill({ contentType: 'application/json', body: JSON.stringify([
+    if (url.pathname.endsWith('/pacientes') && url.searchParams.has('id')) return route.fulfill({ contentType: 'application/json', body: JSON.stringify([{ id: 'paciente-inativo', created_at: '2026-09-25T03:00:00Z', foto_path: null }]) })
+    if (url.pathname.endsWith('/pacientes')) return route.fulfill({ headers: { 'access-control-expose-headers': 'content-range', 'content-range': '0-1/2' }, contentType: 'application/json', body: JSON.stringify([
       { id: 'paciente-1', nome_completo: 'Paciente Sintética', data_nascimento: '1990-01-02', telefone: '(71) 90000-0000', endereco: 'Rua Sintética, 10, Centro, Salvador - BA, CEP 40000-000', foto_path: null },
       { id: 'paciente-2', nome_completo: 'Outra Pessoa', data_nascimento: null, telefone: null, endereco: null, foto_path: null },
     ]) })
@@ -112,7 +113,7 @@ test('Pacientes limpa seleção e resumo imediatamente na troca de clínica com 
     if (url.pathname.endsWith('/pacientes')) {
       const clinicaB = url.searchParams.get('clinica_id') === 'eq.clinica-b'
       if (clinicaB) await new Promise((resolve) => setTimeout(resolve, 300))
-      return route.fulfill({ contentType: 'application/json', body: JSON.stringify([{ id: clinicaB ? 'paciente-b' : 'paciente-a', nome_completo: clinicaB ? 'Paciente Clínica B' : 'Paciente Clínica A', data_nascimento: null, telefone: null, endereco: clinicaB ? 'Endereço B' : 'Endereço A', foto_path: null }]) })
+      return route.fulfill({ headers: { 'access-control-expose-headers': 'content-range', 'content-range': '0-0/1' }, contentType: 'application/json', body: JSON.stringify([{ id: clinicaB ? 'paciente-b' : 'paciente-a', nome_completo: clinicaB ? 'Paciente Clínica B' : 'Paciente Clínica A', data_nascimento: null, telefone: null, endereco: clinicaB ? 'Endereço B' : 'Endereço A', foto_path: null }]) })
     }
     if (url.pathname.endsWith('/rpc/paciente_responsavel_legal_resumo')) {
       const corpo = route.request().postDataJSON()
@@ -404,9 +405,9 @@ test('login mantém erro técnico encapsulado e bloqueia duplo envio', async ({ 
   })
   await page.goto('/tests/operacional/login.html')
   await page.getByLabel('E-mail').fill('usuario@example.invalid')
-  await page.getByLabel('Senha').fill('senha-sintetica')
-  await page.getByRole('button', { name: 'Entrar' }).click()
-  await expect(page.getByRole('button', { name: 'Entrando...' })).toBeDisabled()
+  await page.getByRole('textbox', { name: 'Senha de Acesso', exact: true }).fill('senha-sintetica')
+  await page.getByRole('button', { name: 'Acessar Sistema Integrado', exact: true }).click()
+  await expect(page.getByRole('button', { name: 'Validando acesso…', exact: true })).toBeDisabled()
   await expect(page.getByRole('alert')).toContainText('E-mail ou senha inválidos.')
   await expect(page.locator('body')).not.toContainText(/Invalid login credentials|invalid_credentials|Supabase/i)
   await page.screenshot({ path: `scratch/fase11-operacional/login-${info.project.name}.png`, fullPage: true })
