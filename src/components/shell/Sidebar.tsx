@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { ClinicaAtiva } from '../../hooks/useClinicaAtiva'
 import type { Papel } from '../../hooks/usePapelNaClinica'
 import { iniciais } from '../../lib/texto'
+import { rotuloPapel, rotuloVisao } from '../../lib/papelApresentacao'
 import { TITULOS_TELA, type Tela } from './types'
 import {
   IconeCadeado,
@@ -15,6 +16,7 @@ import {
   IconeGrid,
   IconeMais,
   IconePessoas,
+  IconeAjuda,
 } from './icons'
 
 function SeloClinica({ nome, corLetra, tamanho }: { nome: string; corLetra: string; tamanho: number }) {
@@ -48,12 +50,6 @@ const TELAS_POR_PAPEL: Record<Papel, readonly Tela[]> = {
   proprietaria: ['dashboard', 'agenda', 'pacientes', 'prontuario', 'financeiro', 'equipe'],
   recepcao: ['dashboard', 'agenda', 'pacientes', 'financeiro', 'equipe'],
   medico: ['dashboard', 'agenda', 'prontuario', 'financeiro'],
-}
-
-const ROTULO_PAPEL: Record<Papel, string> = {
-  proprietaria: 'Visão proprietária',
-  recepcao: 'Visão da recepção',
-  medico: 'Visão do profissional',
 }
 
 interface SidebarProps {
@@ -116,7 +112,7 @@ function Sidebar({
       </div>
       <div className="relative mb-4 rounded-[11px] bg-[var(--menu-hover-bg)] p-2">
         <div className="flex items-center gap-1.5 px-2 pb-1 text-[11px] text-[var(--menu-texto-secundario)]">
-          <IconeCadeado /> {papel ? ROTULO_PAPEL[papel] : 'Validando acesso'}
+          <IconeCadeado /> {rotuloVisao(papel)}
         </div>
 
         {podeTrocarClinica ? (
@@ -234,7 +230,11 @@ function Sidebar({
       </nav>
 
       <div className="mt-auto border-t border-[var(--menu-borda)] pt-3">
-        <div className="mb-3 flex items-center gap-3 px-3 pt-2"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--menu-avatar-bg)] text-xs font-semibold text-[var(--menu-texto)]">{emailUsuario.slice(0, 2).toUpperCase()}</span><div className="min-w-0"><p className="truncate text-xs font-semibold text-[var(--menu-texto)]" title={emailUsuario}>{emailUsuario.split('@')[0]}</p><p className="text-xs text-[var(--menu-texto-secundario)]">{papel === 'proprietaria' ? 'Proprietária' : papel === 'medico' ? 'Médico' : papel === 'recepcao' ? 'Recepção' : 'Usuário'}</p></div></div>
+        <button type="button" onClick={() => selecionarTela('sobre')} aria-current={tela === 'sobre' ? 'page' : undefined}
+          className={`mb-3 flex min-h-11 w-full items-center gap-3 rounded-[9px] px-3.5 text-left text-sm transition hover:bg-[var(--menu-hover-bg)] focus-visible:outline-2 focus-visible:outline-white ${tela === 'sobre' ? 'bg-[var(--menu-ativo-bg)] text-[var(--menu-texto)]' : 'text-[var(--menu-texto-secundario)]'}`}>
+          <IconeAjuda /><span>Sobre o sistema</span>
+        </button>
+        <div className="mb-3 flex items-center gap-3 px-3 pt-2"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--menu-avatar-bg)] text-xs font-semibold text-[var(--menu-texto)]">{emailUsuario.slice(0, 2).toUpperCase()}</span><div className="min-w-0"><p className="truncate text-xs font-semibold text-[var(--menu-texto)]" title={emailUsuario}>{emailUsuario.split('@')[0]}</p><p className="text-xs text-[var(--menu-texto-secundario)]">{rotuloPapel(papel)}</p></div></div>
         <div className="flex flex-col gap-0.5">
           <button
             type="button"

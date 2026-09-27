@@ -1,0 +1,20 @@
+{
+  "versaoEmDesenvolvimento": "0.1.0",
+  "naoLancadas": {
+    "novidades": [
+      "Acesso identificado pela clínica de entrada, com contexto próprio para Brotas e Ipupiara.",
+      "Cadastro de pacientes com CPF opcional, foto opcional e integração ao novo agendamento.",
+      "Consulta de pacientes por nome ou CPF exato, com listagem e resumo administrativo no contexto da clínica.",
+      "Página “Sobre o sistema” com versão em execução, créditos de desenvolvimento e contexto da clínica."
+    ],
+    "melhorias": [
+      "Pacientes: ação Editar diretamente na listagem e no resumo, com o mesmo formulário de edição administrativa; salvamento confirmado no mesmo cadastro, preservação do endereço literal, CPF, foto e responsável e aviso de alteração concorrente.",
+      "Pacientes: seis opções de ordenação e filtros de cadastro, idade e nascimento, com contagem de resultados e aviso para refinar consultas que excedam o limite de leitura.",
+      "Formulário de pacientes com cálculo de idade pela data de nascimento e seção de responsável legal para menores.",
+      "Foto opcional por arquivo ou webcam no cadastro; gestão administrativa da foto na ficha.",
+      "Papel apresentado como “Proprietário(a)” na interface."
+    ],
+    "correcoes": []
+  },
+  "versoesLancadas": []
+}

@@ -1,299 +1,232 @@
-import { useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type FormEvent, type ReactNode } from 'react'
 import { supabase } from '../lib/supabase'
+import type { Papel } from '../hooks/usePapelNaClinica'
+import { rotuloPapel } from '../lib/papelApresentacao'
+import { carregarAcessosClinicas, type AcessoClinica } from '../lib/clinicAccess'
+import { clinicaCorrespondeAoBrand, resolveClinicBrand } from '../config/clinicBrands'
+import './login.css'
 
-function Login() {
+function Icon({ children }: { children: ReactNode }) {
+  return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{children}</svg>
+}
+const shield = <><path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6l8-3Z" /><path d="m8 12 3 3 5-6" /></>
+const perfis: { valor: Papel | 'laboratorio'; rotulo: string }[] = [
+  { valor: 'medico', rotulo: 'Médico / Clínico' },
+  { valor: 'recepcao', rotulo: 'Recepção' },
+  { valor: 'proprietaria', rotulo: rotuloPapel('proprietaria') },
+  { valor: 'laboratorio', rotulo: 'Laboratório' },
+]
+type EscolhaAcesso = { clinicaId: string; papel: Papel; lembrar: boolean }
+type LoginProps = {
+  authenticatedUserId?: string
+  onBeginAuth?: () => void
+  onAccessGranted?: (escolha: EscolhaAcesso) => void
+  accessError?: string | null
+}
+
+export default function Login({ authenticatedUserId, onBeginAuth, onAccessGranted, accessError }: LoginProps) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [perfil, setPerfil] = useState<Papel | 'laboratorio'>('medico')
+  const [unidadeId, setUnidadeId] = useState('')
+  const [vinculos, setVinculos] = useState<AcessoClinica[]>([])
+  const [etapa, setEtapa] = useState<'credenciais' | 'sessao'>('credenciais')
+  const [lembrar, setLembrar] = useState(true)
+  const [ajudaAberta, setAjudaAberta] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const submitting = useRef(false)
+  const usuarioCarregado = useRef<string | null>(null)
+  const brandResolution = useMemo(() => resolveClinicBrand(), [])
+  const brand = brandResolution.brand
+  const acessoConfirmado = vinculos[0] ?? null
+  const nomeMarca = brand?.nome ?? 'Domínio não configurado'
+  const estilosMarca = brand ? {
+    '--login-primary': brand.cores.primaria,
+    '--login-primary-hover': brand.cores.primariaHover,
+    '--login-soft': brand.cores.destaqueSuave,
+    '--login-visual': brand.cores.visual,
+  } as CSSProperties : undefined
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    setError(null)
+  async function prepararAcessos(usuarioId: string) {
+    if (!brand) return
+    if (usuarioCarregado.current === usuarioId) return
+    usuarioCarregado.current = usuarioId
     setLoading(true)
+    setError(null)
+    try {
+      const acessos = await carregarAcessosClinicas(usuarioId)
+      if (!acessos.length) throw new Error('Nenhum vínculo disponível')
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email: email.trim(),
-      password,
-    })
-
-    if (error) {
-      setError('E-mail ou senha inválidos.')
+      const acessoDoDominio = acessos.find(acesso => clinicaCorrespondeAoBrand({ id: acesso.clinicaId, nome: acesso.nome }, brand))
+      if (!acessoDoDominio) {
+        usuarioCarregado.current = null
+        await supabase.auth.signOut()
+        setError(`Sua conta não possui vínculo ativo com ${brand.nome}. O domínio identifica a clínica, mas não concede permissão.`)
+        return
+      }
+      setPerfil(acessoDoDominio.papel)
+      setVinculos([acessoDoDominio])
+      setUnidadeId(acessoDoDominio.clinicaId)
+      setPassword('')
+      setEtapa('sessao')
+    } catch {
+      usuarioCarregado.current = null
+      await supabase.auth.signOut()
+      setError('Não foi possível confirmar suas unidades de acesso. Tente novamente ou procure a administração.')
+    } finally {
       setLoading(false)
     }
   }
 
-  return (
-    <div className="flex min-h-screen">
-      {/* ===== LADO ESQUERDO — desktop only ===== */}
-      <div
-        className="hidden w-1/2 lg:flex lg:flex-col lg:justify-between"
-        style={{ backgroundColor: 'var(--cor-menu)', padding: '32px' }}
-      >
-        {/* Topo */}
-        <div className="flex items-center gap-3">
-          <span className="text-lg font-semibold text-white">
-            Clínica Patrícia
-          </span>
-          <span
-            className="flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium text-white"
-            style={{ backgroundColor: 'rgba(255,255,255,0.12)' }}
-          >
-            <span className="h-2 w-2 rounded-full bg-green-400" />
-            Clínica Brotas
-          </span>
-        </div>
+  useEffect(() => {
+    if (!accessError) return
+    usuarioCarregado.current = null
+    setEtapa('credenciais')
+    setVinculos([])
+    setUnidadeId('')
+    setPassword('')
+    setLoading(false)
+  }, [accessError])
 
-        {/* Centro — slogan + ilustrações */}
-        <div className="flex flex-1 flex-col justify-center">
-          <h2
-            className="mb-4 text-4xl font-bold leading-tight text-white"
-            style={{ letterSpacing: '-0.02em' }}
-          >
-            Cuidado conectado.
-            <br />
-            Gestão inteligente.
-          </h2>
-          <p className="max-w-md text-base" style={{ color: 'rgba(255,255,255,0.7)' }}>
-            Uma experiência integrada para cuidar de pacientes,
-            atendimentos e da gestão da clínica.
-          </p>
+  useEffect(() => {
+    if (authenticatedUserId && brand) void prepararAcessos(authenticatedUserId)
+  // O ref impede consultas duplicadas no StrictMode; a resolução de marca é imutável nesta montagem.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authenticatedUserId])
 
-          <div className="relative mt-10 h-72">
-            {/* Card 1 — topo direita */}
-            <div
-              className="absolute right-4 top-0 w-64 rounded-xl p-4"
-              style={{
-                backgroundColor: 'rgba(255,255,255,0.07)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                transform: 'rotate(-3deg)',
-                backdropFilter: 'blur(8px)',
-              }}
-            >
-              <div className="mb-3 flex items-center gap-2">
-                <div
-                  className="flex h-8 w-8 items-center justify-center rounded-lg"
-                  style={{ backgroundColor: 'rgba(255,255,255,0.12)' }}
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="2">
-                    <rect x="3" y="5" width="18" height="16" rx="2" />
-                    <path d="M3 9h18M8 3v4M16 3v4" />
-                  </svg>
-                </div>
-                <div className="h-2 w-24 rounded-full" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }} />
-              </div>
-              <div className="space-y-2">
-                <div className="h-2 w-full rounded-full" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }} />
-                <div className="h-2 w-3/4 rounded-full" style={{ backgroundColor: 'rgba(255,255,255,0.08)' }} />
-              </div>
+  useEffect(() => {
+    document.title = `${nomeMarca} — Acesso`
+  }, [nomeMarca])
+
+  useEffect(() => {
+    if (brandResolution.redirectTo && window.location.pathname !== brandResolution.redirectTo) {
+      window.location.replace(brandResolution.redirectTo)
+    }
+  }, [brandResolution.redirectTo])
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    if (submitting.current) return
+    if (etapa === 'sessao') {
+      if (!acessoConfirmado || acessoConfirmado.clinicaId !== unidadeId || perfil === 'laboratorio') {
+        setError('Não foi possível confirmar o vínculo ativo com esta clínica. Entre com outra conta ou procure a administração.')
+        return
+      }
+      setError(null)
+      setLoading(true)
+      onAccessGranted?.({ clinicaId: acessoConfirmado.clinicaId, papel: acessoConfirmado.papel, lembrar })
+      return
+    }
+    submitting.current = true
+    setError(null)
+    setLoading(true)
+    onBeginAuth?.()
+    try {
+      const { data, error: authError } = await supabase.auth.signInWithPassword({ email: email.trim(), password })
+      if (authError) {
+        setError(authError.status === 429 ? 'Muitas tentativas. Aguarde um momento antes de tentar novamente.' : authError.status === 400 || authError.status === 401 || authError.status === 422 ? 'E-mail ou senha inválidos. Confira seus dados e tente novamente.' : 'Não foi possível acessar o sistema. Verifique sua conexão e tente novamente.')
+      } else if (data.user) {
+        await prepararAcessos(data.user.id)
+      } else {
+        setError('Não foi possível confirmar a autenticação. Tente novamente.')
+      }
+    } catch {
+      await supabase.auth.signOut()
+      setError('Não foi possível confirmar suas unidades de acesso. Tente novamente ou procure a administração.')
+    } finally {
+      submitting.current = false
+      setLoading(false)
+    }
+  }
+
+  async function trocarConta() {
+    await supabase.auth.signOut()
+    usuarioCarregado.current = null
+    setEtapa('credenciais')
+    setVinculos([])
+    setUnidadeId('')
+    setPassword('')
+    setError(null)
+    setLoading(false)
+  }
+
+  if (!brand) {
+    return <main className="flex min-h-screen items-center justify-center bg-slate-950 px-6 text-white" data-clinic-brand="invalid" data-brand-source={brandResolution.origem}>
+      <section className="max-w-xl text-center" aria-labelledby="invalid-domain-title">
+        <h1 id="invalid-domain-title" className="text-2xl font-semibold">Domínio não configurado</h1>
+        <p className="mt-3 text-sm leading-6 text-slate-300">Este endereço não está autorizado para acessar o portal da clínica. Verifique o domínio informado ou procure a administração.</p>
+      </section>
+    </main>
+  }
+
+  return <main className="login-page" data-clinic-brand={brand.slug} data-brand-source={brandResolution.origem} data-active-profile={perfil} style={estilosMarca}>
+    <section className="login-access" aria-labelledby="login-title">
+      <header className="login-brand-row">
+        <a className="login-brand" href={`/acesso/${brand.slug}`} aria-label={`${nomeMarca} — início`}>
+          {brand.logoSrc ? <img className="login-brand-logo" src={brand.logoSrc} alt="" /> : <span className="login-brand-symbol"><Icon><path d="M12 4v16M5 11h14M6 16c0 5 12 5 12 0" /><circle cx="17" cy="6" r="2" /></Icon></span>}
+          <span><strong>{nomeMarca}</strong><small>{brand.textos.descricaoMarca}</small></span>
+        </a>
+        <span className="login-brand-description">Prontuário &amp;<br />gestão clínica</span>
+        <span className="login-access-badge"><Icon>{shield}</Icon>Acesso profissional</span>
+      </header>
+
+      <div className="login-content">
+        <h1 id="login-title">{brand.titulo}</h1>
+        <p className="login-intro">{brand.subtitulo}</p>
+        <form onSubmit={handleSubmit} className="login-form" aria-busy={loading}>
+          {etapa === 'credenciais' && <fieldset className="login-role-fieldset" disabled={loading}>
+            <legend>Perfil de Acesso</legend>
+            <div className="login-role-options">
+              {perfis.map(opcao => <label key={opcao.valor} className="login-role-option" data-role={opcao.valor}>
+                <input type="radio" name="perfil" value={opcao.valor} checked={perfil === opcao.valor} onChange={() => { setPerfil(opcao.valor); setUnidadeId(''); setError(null) }} />
+                <span>{opcao.rotulo}</span>
+              </label>)}
             </div>
-
-            {/* Card 2 — centro */}
-            <div
-              className="absolute left-8 top-24 w-56 rounded-xl p-4"
-              style={{
-                backgroundColor: 'rgba(255,255,255,0.06)',
-                border: '1px solid rgba(255,255,255,0.08)',
-                backdropFilter: 'blur(8px)',
-              }}
-            >
-              <div className="mb-3 flex items-center gap-2">
-                <div
-                  className="flex h-8 w-8 items-center justify-center rounded-lg"
-                  style={{ backgroundColor: 'rgba(255,255,255,0.12)' }}
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="2">
-                    <circle cx="9" cy="8" r="3.2" />
-                    <path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6" />
-                  </svg>
-                </div>
-                <div className="h-2 w-20 rounded-full" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }} />
-                <div className="ml-auto h-5 w-5 rounded-full" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }} />
-              </div>
-              <div className="space-y-2">
-                <div className="h-2 w-full rounded-full" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }} />
-                <div className="h-2 w-2/3 rounded-full" style={{ backgroundColor: 'rgba(255,255,255,0.08)' }} />
-              </div>
-            </div>
-
-            {/* Card 3 — embaixo direita */}
-            <div
-              className="absolute bottom-0 right-12 w-60 rounded-xl p-4"
-              style={{
-                backgroundColor: 'rgba(255,255,255,0.05)',
-                border: '1px solid rgba(255,255,255,0.08)',
-                transform: 'rotate(2deg)',
-                backdropFilter: 'blur(8px)',
-              }}
-            >
-              <div className="mb-3 flex items-center gap-2">
-                <div
-                  className="flex h-8 w-8 items-center justify-center rounded-lg"
-                  style={{ backgroundColor: 'rgba(255,255,255,0.12)' }}
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="2">
-                    <circle cx="12" cy="12" r="9" />
-                    <path d="M12 7.5v1.2M12 15.5v1.3" />
-                  </svg>
-                </div>
-                <div className="h-2 w-16 rounded-full" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }} />
-              </div>
-              <div className="flex gap-2">
-                <div className="h-16 w-1/3 rounded-lg" style={{ backgroundColor: 'rgba(255,255,255,0.08)' }} />
-                <div className="h-16 w-1/3 rounded-lg" style={{ backgroundColor: 'rgba(255,255,255,0.06)' }} />
-                <div className="h-16 w-1/3 rounded-lg" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }} />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Rodapé */}
-        <p className="text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>
-          Gestão Clínica Inteligente © {new Date().getFullYear()}
-        </p>
+            <p className="login-field-hint">O perfil será conferido com suas permissões após a autenticação.</p>
+          </fieldset>}
+          {etapa === 'credenciais' && <div className="login-field">
+            <label htmlFor="email">E-mail institucional ou CRM / Identificador</label>
+            <div className="login-input-wrap"><Icon><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m3 6 9 7 9-7" /></Icon><input id="email" type="email" autoComplete="username" autoCapitalize="none" spellCheck={false} required value={email} onChange={e => setEmail(e.target.value)} disabled={loading} placeholder="seuemail@exemplo.com" aria-describedby={error || accessError ? 'login-error' : 'login-identifier-hint'} /></div>
+            <p id="login-identifier-hint" className="login-field-hint">Neste sistema, a entrada utiliza o e-mail cadastrado.</p>
+          </div>}
+          {etapa === 'credenciais' && <div className="login-field">
+            <div className="login-label-row"><label htmlFor="password">Senha de Acesso</label><a href="#ajuda-acesso" onClick={() => setAjudaAberta(true)}>Esqueci minha senha</a></div>
+            <div className="login-input-wrap"><Icon><circle cx="7" cy="12" r="4" /><path d="M11 12h10m-3 0v3m-3-3v2" /></Icon><input id="password" type={showPassword ? 'text' : 'password'} autoComplete="current-password" required value={password} onChange={e => setPassword(e.target.value)} disabled={loading} placeholder="Digite sua senha" aria-describedby={error || accessError ? 'login-error' : undefined} /><button className="login-password-toggle" type="button" onClick={() => setShowPassword(value => !value)} aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'} aria-pressed={showPassword} disabled={loading}><Icon><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7S2 12 2 12Z" /><circle cx="12" cy="12" r="3" />{showPassword && <path d="m3 3 18 18" />}</Icon></button></div>
+          </div>}
+          {etapa === 'credenciais' && <div className="login-context" aria-label={`Clínica de entrada: ${brand.nome}`}>
+            <Icon><path d="M4 21V5l8-2 8 2v16M2 21h20M9 8h1m-1 4h1m4-4h1m-1 4h1m-5 4h6" /></Icon>
+            <p><strong>Clínica de entrada</strong><span>{brand.nome}. O vínculo e o papel serão confirmados após autenticar.</span></p>
+          </div>}
+          {etapa === 'sessao' && acessoConfirmado && <section className="login-active-session" aria-labelledby="login-active-session-title">
+            <span className="login-active-session-icon"><Icon>{shield}</Icon></span>
+            <div><h2 id="login-active-session-title">Sessão ativa</h2><p>Acesso confirmado para {brand.nome} como {rotuloPapel(acessoConfirmado.papel)}.</p></div>
+          </section>}
+          <div className="login-options-row"><label className="login-remember"><input type="checkbox" checked={lembrar} onChange={event => setLembrar(event.target.checked)} disabled={loading} /><span>Lembrar meu acesso neste dispositivo seguro</span></label><a href="#ajuda-acesso" onClick={() => setAjudaAberta(true)}>Ajuda no Acesso</a></div>
+          <p className="login-field-hint login-remember-hint">Guarda apenas a unidade escolhida neste navegador; nunca o e-mail ou a senha.</p>
+          <details id="ajuda-acesso" className="login-help" open={ajudaAberta} onToggle={event => setAjudaAberta(event.currentTarget.open)}><summary>Orientações para acesso</summary><p>Se esqueceu sua senha ou ainda não tem acesso, entre em contato com a administração da clínica para recuperar sua conta. Não compartilhe sua senha.</p></details>
+          {(error || accessError) && <p id="login-error" className="login-error" role="alert">{error || accessError}</p>}
+          <button className="login-submit" type="submit" disabled={loading} aria-live="polite"><span>{loading ? 'Validando acesso…' : etapa === 'sessao' ? `Continuar na ${brand.nome}` : 'Acessar Sistema Integrado'}</span><Icon><path d="M14 4h6v16h-6M3 12h12m-4-4 4 4-4 4" /></Icon></button>
+          {etapa === 'sessao' && <button type="button" className="login-switch-account" onClick={() => void trocarConta()}>Entrar com outra conta</button>}
+          <p className="login-certificate">Acessar com Certificado Digital <span>Indisponível neste sistema</span></p>
+        </form>
+        <div className="login-notice"><Icon>{shield}</Icon><p><strong>Acesso restrito.</strong> {brand.textos.avisoAcesso} Proteja os dados dos pacientes e encerre sua sessão ao utilizar um dispositivo compartilhado.</p></div>
       </div>
+      <footer className="login-footer"><span>{brand.textos.rodape}</span><span>Suporte: administração da clínica</span></footer>
+    </section>
 
-      {/* ===== LADO DIREITO — formulário ===== */}
-      <div className="flex min-h-screen w-full flex-1 flex-col items-center justify-center bg-gradient-to-b from-[var(--cor-primaria-suave)] to-[var(--fundo-pagina)] lg:w-1/2 lg:bg-none lg:bg-[var(--fundo-pagina)]">
-        <div className="flex w-full flex-col items-center justify-center px-4 py-12 lg:px-8">
-          <div className="w-full max-w-[420px]">
-            {/* Logo mobile only */}
-            <div className="mb-10 flex items-center justify-center gap-2.5 lg:hidden">
-              <div
-                className="flex h-10 w-10 items-center justify-center rounded-xl"
-                style={{ backgroundColor: 'var(--cor-primaria)' }}
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                  <rect x="3" y="5" width="18" height="16" rx="2" />
-                  <path d="M3 9h18M8 3v4M16 3v4" />
-                </svg>
-              </div>
-              <span className="text-xl font-semibold text-[var(--texto-principal)]">
-                Clínica Patrícia
-              </span>
-            </div>
-
-            {/* Título */}
-            <div className="mb-8">
-              <h1
-                className="text-3xl font-semibold text-[var(--texto-principal)]"
-                style={{ letterSpacing: '-0.02em' }}
-              >
-                Bem-vindo
-              </h1>
-              <p className="mt-2 text-base text-[var(--texto-secundario)]">
-                Entre na sua conta para acessar a Clínica Brotas.
-              </p>
-            </div>
-
-            {/* Formulário */}
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div>
-                <label
-                  htmlFor="email"
-                  className="texto-label-tecnico mb-1.5 block text-[var(--texto-secundario)]"
-                >
-                  E-mail
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  disabled={loading}
-                  placeholder="seuemail@exemplo.com"
-                  className="w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3.5 py-2.5 text-[var(--texto-principal)] outline-none transition placeholder:text-[var(--texto-terciario)] focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60"
-                />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="password"
-                  className="texto-label-tecnico mb-1.5 block text-[var(--texto-secundario)]"
-                >
-                  Senha
-                </label>
-                <input
-                  id="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  disabled={loading}
-                  placeholder="••••••••"
-                  className="w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3.5 py-2.5 text-[var(--texto-principal)] outline-none transition placeholder:text-[var(--texto-terciario)] focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60"
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <label className="flex cursor-pointer items-center gap-2 text-sm text-[var(--texto-secundario)]">
-                  <input
-                    type="checkbox"
-                    disabled
-                    className="h-4 w-4 rounded border-[var(--borda)] text-[var(--cor-primaria)] focus:ring-[var(--cor-primaria-suave)]"
-                  />
-                  Lembrar meu acesso
-                </label>
-                <button
-                  type="button"
-                  disabled
-                  className="text-sm font-medium opacity-60"
-                  style={{ color: 'var(--cor-primaria)' }}
-                >
-                  Esqueci minha senha
-                </button>
-              </div>
-
-              {error && (
-                <p
-                  role="alert"
-                  className="rounded-lg border border-[var(--cor-erro-borda)] bg-[var(--cor-erro-suave)] px-3 py-2 text-sm text-[var(--cor-erro)]"
-                >
-                  {error}
-                </p>
-              )}
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[var(--cor-primaria)] disabled:cursor-not-allowed disabled:opacity-70"
-                style={{ backgroundColor: 'var(--cor-primaria)' }}
-              >
-                {loading ? 'Entrando...' : 'Entrar'}
-                {!loading && (
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                    <path d="M5 12h14M12 5l7 7-7 7" />
-                  </svg>
-                )}
-              </button>
-            </form>
-
-            {/* Rodapé do formulário */}
-            <div className="mt-10 flex flex-col items-center gap-3 text-center">
-              <div className="flex items-center gap-1.5 text-xs text-[var(--texto-terciario)]">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                  <rect x="5" y="11" width="14" height="9" rx="2" />
-                  <path d="M8 11V8a4 4 0 0 1 8 0v3" />
-                </svg>
-                Ambiente seguro
-              </div>
-              <div className="flex items-center gap-2 text-xs text-[var(--texto-terciario)]">
-                <span className="cursor-pointer hover:underline">Privacidade</span>
-                <span>·</span>
-                <span className="cursor-pointer hover:underline">Termos de Uso</span>
-              </div>
-              <p className="text-xs text-[var(--texto-terciario)]">
-                Problemas para acessar? Falar com o administrador
-              </p>
-            </div>
-          </div>
+    <aside className="login-visual" aria-label="Cuidado e gestão clínica">
+      <img className="login-photo" src={brand.imagemLogin} alt="" fetchPriority="high" />
+      <div className="login-photo-shade" />
+      <div className="login-visual-top"><span><Icon>{shield}</Icon>Ambiente de acesso profissional</span><span>{nomeMarca}</span></div>
+      <div className="login-visual-bottom">
+        <div className="login-features">
+          <article><span className="login-feature-icon"><Icon><rect x="4" y="3" width="16" height="18" rx="2" /><path d="M8 7h8M8 11h5M8 15h3" /><circle cx="16" cy="16" r="2" /></Icon></span><h2>Informação &amp;<br />continuidade do cuidado</h2><p>Prontuários e histórico de atendimentos para apoiar a rotina dos profissionais.</p></article>
+          <article><span className="login-feature-icon login-feature-green"><Icon><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M7 3v4m10-4v4M3 11h18M7 15h3m4 0h3" /></Icon></span><h2>Gestão<br />em um só lugar</h2><p>Agenda, pacientes e financeiro conectados à operação da sua clínica.</p></article>
         </div>
+        <div className="login-message"><span aria-hidden="true">“</span><p>Cuidar de pessoas começa com atenção em cada detalhe.<small>Tecnologia a serviço de um atendimento mais humano.</small></p></div>
       </div>
-    </div>
-  )
+    </aside>
+  </main>
 }
-
-export default Login
