@@ -14,7 +14,7 @@ Remote: https://github.com/eduardocampusti/clinica-patricia. Branch efetiva: `co
 
 Workflow definido no repositório: Release Please em main/manual, não deploy da branch atual. Nenhum pipeline Hostinger das clínicas configurado nesta execução. Hooks/integrações externas não são comprovados apenas pelo arquivo de workflow.
 
-Sincronização e SHA remoto: a completar após commit/push e comparação do ref, sem afirmar sucesso antecipado.
+Sincronização efetivamente concluída por push normal em `codex/resgate-local-2026-09-26`: commit de código `063a2baf0f3c52db19d66f0f3df3f32571edcd3e`. `git ls-remote` retornou exatamente o mesmo SHA do HEAD local. Commit reúne 149 arquivos alterados/criados. Build repetido e aprovado com árvore limpa desse SHA; não é release nem merge em main. Este registro documental posterior não altera o código compilado.
 
 ## Hostinger consultada somente por leitura
 
@@ -37,6 +37,8 @@ Consulta DNS: ambos os A retornaram `2.57.91.91`; consulta MX retornou somente a
 ## Verificações e limitações
 
 Build aprovado e lint com aviso histórico Fast Refresh. Testes unitários: 25 Pacientes, 15 Financeiro, 10 convite/redirect, 2 domínio (fonte real compilada em ambiente vazio), todos aprovados. São testes isolados, não publicação pública.
+
+Preflight remoto por leitura: OPTIONS HTTP200 retornou origem permitida exata para HTTPS Brotas, HTTPS Ipupiara e local127.0.0.1:3000; origem externa desconhecida não recebeu permissão CORS. Não é comprovação de ação autenticada pelo navegador público. Uma primeira tentativa PowerShell restrita falhou na conexão TLS; repetição autorizada fora dessa restrição retornou os resultados acima. Checagem de espaços do índice aponta somente quebras Markdown/espaços finais de relatórios históricos preservados, não erro de compilação.
 
 Suíte sintética login: 21 passaram, 22 pulados, 2 falharam (timeout inicial de navegação App e igualdade de cores por perfil). Reexecução App ainda atingiu timeout; não apresentar aprovação. Teste dirigido de hostnames, usando harness de Login e assertivas dos dois domínios/www/host desconhecido, passou. Nenhum comportamento funcional foi enfraquecido para esconder falhas; checagem de paleta fica identificada para investigação, sem redesign fora de escopo. Uma tentativa paralela colidiu na porta4182; o ensaio dirigido foi executado novamente sem essa colisão.
 

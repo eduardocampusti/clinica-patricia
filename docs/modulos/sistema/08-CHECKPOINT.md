@@ -2,7 +2,11 @@
 
 Continuidade30/09/2026: relatório09-GITHUB-DOMINIOS-SMTP.md registra planos/dominios/SMTP e revisão de Git. Preparado deploy estático e retorno por unidade, Edgev6 aplicada, nenhum deploy Hostinger conforme decisão posterior do usuário. Sem SMTP das clínicas/remetente definido. Testes isolados e limites da suíte login registrados, sem afirmar publicação pública.
 
-**Estado:** implementação local em revisão, em 26/09/2026. Sem commit, release ou publicação nesta etapa.
+Código atual sincronizado na branch codex/resgate-local-2026-09-26, commit de código 063a2baf0f3c52db19d66f0f3df3f32571edcd3e e SHA remoto idêntico. Build aprovado desse commit com árvore limpa. Nenhum merge/release em main; nenhum deploy Hostinger. Relatório09 contém limitações e pendências de SMTP.
+
+## Histórico — estado de 26/09/2026
+
+**Estado naquele momento:** implementação local em revisão, em 26/09/2026. Sem commit, release ou publicação naquela etapa.
 
 - O shell, o rodapé e o cabeçalho usam o rótulo centralizado `Proprietário(a)`; a visão lateral usa `Visão de proprietário(a)`. O identificador de autorização continua `proprietaria`.
 - “Sobre o sistema” está na navegação secundária para perfis autenticados. A página acompanha a clínica ativa, mostra `0.1.0` como versão **em desenvolvimento**, apresenta os créditos aprovados da Vencer Digital e omite dados institucionais não confirmados. A marca vetorial está em asset local, sobre superfície clara nos temas claro e escuro. O histórico não contém lançamentos fictícios.
