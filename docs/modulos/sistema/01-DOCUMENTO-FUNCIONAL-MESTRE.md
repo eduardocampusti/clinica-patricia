@@ -6,6 +6,8 @@
 
 ### Decisão de publicação — 30/09/2026
 
+Decisão posterior: após primeiro deploy de Brotas na branch atual/f177207, usuário autoriza corrigir e publicar fallback para acesso direto/recarregamento das rotas na mesma integração GitHub. Preservar arquivos estáticos, caminho/parâmetros de autenticação e permissões; nenhum DNS/SMTP/Supabase/outro site no escopo. A restrição anterior abaixo descreve a etapa precedente.
+
 Sincronizar o repositório existente sem force push, mudança de visibilidade ou perda do trabalho. Brotas usa clinicabrotas.com.br e Ipupiara clinicaipupiara.com.br, mesma base/Supabase, hostname apenas visual e permissões no servidor. Não comprar clinicaipupiara.com, planos ou VPS. Preserve Site Geovana, MX/SPF/DKIM/DMARC e configurações existentes. Remetente institucional depende de escolha/autorização e serviço real; destinatário de teste não é remetente. Decisão posterior do usuário nesta execução: **não fazer deploy na Hostinger sem nova autorização**. Preparar/consultar é permitido; não publicar, criar site ou alterar DNS ali.
 
 - Mostrar o papel visual “Proprietário(a)” e “Visão de proprietário(a)” sem mudar o identificador interno `proprietaria` nem autorização.

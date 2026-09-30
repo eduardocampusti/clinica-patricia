@@ -1,5 +1,9 @@
 # Publicação preparada, não executada
 
+## Atualização — correção autorizada de rotas após primeiro deploy
+
+Usuário confirmou o deploy GitHub de Brotas na branch codex/resgate-local-2026-09-26/f177207, preset Vite, dist, raiz ./, Node22. Agora autoriza publicar correção do404 na mesma branch. A configuração efetiva de fallback é `public/.htaccess`, copiada pelo Vite para `dist/.htaccess` em Windows e Linux. Reescrita interna para index.html somente quando arquivo/diretório não existe; mantém query string e URL, sem regras de HTTPS/canonical adicionais. O exemplo nesta pasta abaixo é histórico/opcional, não a fonte da configuração publicada. Não copiar esse exemplo por cima do arquivo gerado.
+
 Mesma SPA React/Vite nos dois domínios: clinicabrotas.com.br e clinicaipupiara.com.br. Backend Supabase xftnkusbyqzyvzrovroj. O servidor Fastify em server/ pertence ao caminho financeiro legado: App usa FinanceiroModulo/RPCs Supabase e o build atual não contém localhost:3333 nem os endpoints antigos. Não enviar código/chaves de server/ para public_html; não é dependência comprovada do frontend atual.
 
 Em 30/09/2026 o usuário determinou não fazer deploy na Hostinger sem nova autorização. Esta pasta não publica automaticamente nem dispara DNS/SMTP. Confirmar plano, destinos exclusivos das clínicas e preservar arquivos/.htaccess anteriores antes de qualquer upload.

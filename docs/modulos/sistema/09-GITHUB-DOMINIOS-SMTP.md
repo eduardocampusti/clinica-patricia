@@ -1,6 +1,36 @@
 # GitHub, domínios e SMTP — execução de 30/09/2026
 
+## Correção autorizada do404 de rotas — estado em 30/09/2026
+
+Usuário concluiu o primeiro deploy GitHub na mesma branch/f177207 e autorizou publicar correção direcionada. Painel autenticado confirmou: Vite, raiz ./, Node22.x, commit f177207c, implantação concluída e automática ativada. Nenhuma troca para main. Alterações documentais da conferência anterior preservadas.
+
+Causa comprovada: navegador público em https://clinicabrotas.com.br/acesso/brotas mostra404 Hostinger; raiz serve login. Arquivos reais de public_html (gerenciador autenticado) incluem index.html/assets/imagens/_redirects, mas **não .htaccess**. Fonte anterior tinha .htaccess somente em deploy/hostinger, fora do publicDir do Vite e do dist. _redirects não resolveu o fallback nesta modalidade; não é falta da rota no aplicativo.
+
+Correção mínima: novo public/.htaccess, automaticamente copiado pelo Vite para dist/.htaccess em todo build, sem script dependente de shell/Windows/Linux. Rewrite interna para /index.html somente se alvo não é arquivo/diretório, com guarda do index para evitar loop. Sem redirect HTTP, regras canonical/HTTPS adicionais ou QSD: URL externa, query string e fragmento de Auth mantidos. Não mudados validação de domínio, permissões, Supabase, DNS, SMTP ou outros sites. Exemplo anterior em deploy/hostinger preservado como histórico; README esclarece fonte efetiva.
+
+Arquivos desta correção: public/.htaccess, tests/deploy/spa-fallback.test.mjs, deploy/hostinger/README.md, src/config/notasEvolucao.json e registros de documentação/checkpoint. Build aprovado; teste dirigido1/1 confirmou cópia exata e diretivas sem descarte de query/redirecionamento; lint aprovado com aviso histórico ThemeProvider. Não repetir suítes clínicas/login não relacionadas. Os dois testes de login pendentes continuam separados, sem aprovação fictícia.
+
+Publicação/validação pública desta correção: em andamento nesta seção; não considerar build como prova remota. Commit e evidências finais serão registrados após push/deploy. Recuperação: reverter somente commit de fallback com commit novo/redeploy se necessário, sem reset/force push; versão anterior disponível no histórico Hostinger, sem backup de banco necessário para regra estática. Nenhum .htaccess remoto preexistente encontrado para sobrescrever.
+
+Documentação consultada: https://www.hostinger.com/support/how-to-deploy-a-nodejs-website-in-hostinger/ (preset Vite/frontend estático, integração automática e estrutura de arquivos); https://www.hostinger.com/support/1583307-how-to-create-an-htaccess-file-at-hostinger/ (suporte .htaccess e dotfiles visíveis); https://vite.dev/guide/assets.html (public copiado para raiz do output). TypeSafe/índice oficial consultados; IA não pertinente ao fallback determinístico, sem API/chave.
+
 ## Decisões e limites
+
+## Conferência de variáveis Hostinger — continuação em 30/09/2026
+
+Somente leitura, exportação local e documentação; não feito deploy, merge, push, configuração remota ou rotação de credenciais nesta conferência. TypeSafe/índice oficial consultados; IA não necessária para estas verificações determinísticas.
+
+- Arquivo gerado: `D:\PROJETOS SAAS\CLINICA PATRICIA\scratch\hostinger\.env.hostinger`, fora de public/dist e ignorado pelo Git (`git check-ignore` confirmou regra scratch/). Contém exatamente `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY`, sem chave administrativa, senha, sessão ou chave TypeSafe. Não anexar à documentação/versionamento. Importar pelo seletor de arquivo de variáveis do painel.
+- URL local efetiva de produção: `https://xftnkusbyqzyvzrovroj.supabase.co`. JWT público existente conferido internamente: ref autorizada e role anon. Mesma chave preservada, sem exposição do valor; ausência de chave publishable diferente com prioridade confirmada. Consulta pública `/auth/v1/settings` com a chave existente retornou HTTP200; nenhuma conta/dado alterado.
+- Atenção à branch: leitura atual do GitHub confirma main em `5fb56137e88af6a6144f6a7ce8c64592034c2855`, enquanto a versão atual está em `codex/resgate-local-2026-09-26`, `f177207c2e32df958f2989168a6fc8b9f70bb6db`. Main está 62 commits atrás, sem commits exclusivos. Não alterada automaticamente.
+- Fonte atual: `src/lib/api.ts:28` é a única leitura operacional de VITE_API_URL. Exporta abrirCaixa, registrarEntradaCaixa, registrarDespesa, registrarMovimentoCaixa, fecharCaixa, estornarLancamento e pagarRepasseIntegral. Importações com execução estão no caminho legado `pages/Financeiro.tsx`, `FormRegistrarEntrada.tsx` e `AcoesFinanceiras.tsx`; dois hooks importam somente tipos. Rastreamento estático AST a partir de main.tsx, incluindo imports dinâmicos e excluindo imports só de tipos, percorreu 89 módulos: lib/api e componentes legados não alcançáveis. App atual usa FinanceiroModulo e `src/lib/financeiro/financeiro.rpc.ts`, com chamadas Supabase. Busca no build atual não encontrou localhost3333 nem os endpoints legados pesquisados.
+- Portanto, VITE_API_URL pode ser removida do painel **para o código da branch atual**. Não recebe a URL Supabase nem a URL da clínica. Na main antiga, App importa Financeiro e a lib/api chama `/api/caixa/abrir` e `/api/caixa/entrada`; nesse código a variável ainda é necessária e teria de conter a base HTTPS de servidor próprio que forneça esses endpoints. Nenhum endereço público desse backend foi comprovado; localhost3333 não serve usuários públicos. Não usar o arquivo de duas variáveis como configuração completa da main antiga.
+- Vite, `npm run build`, dist e raiz ./ correspondem ao projeto atual. Vite8.2 e plugin React6 exigem Node20.19+ ou Node22.12+; selecionar Node22 atualizado, não 22.0. Build anterior aprovado usou Node24.13.1 local: compatibilidade22 confirmada pelo contrato das dependências, não por execução real Node22/Hostinger. Sem novo build/testes gerais nesta conferência, pois não mudou o código. Ainda necessário testar HTTPS, fallback SPA e login nos sites após publicação autorizada.
+- Duas verificações sintéticas de login continuam pendentes, sem nova execução/correção: timeout de navegação no ensaio desktop App (repetição também falhou) e igualdade de cores por perfil. Não são provas de falha autenticada em produção nem de aprovação geral. Ensaio dirigido de hostnames já aprovado; nenhuma credencial/conta recriada.
+
+Importação recomendada: primeiro escolher a versão atual na Hostinger (ou autorizar separadamente a integração revisada em main); importar `.env.hostinger`; conferir os dois nomes e excluir VITE_API_URL somente para essa versão. Não adicionar chave service_role/secret ou variáveis TypeSafe. Variáveis VITE entram no bundle público no build, conforme https://vite.dev/guide/env-and-mode.html. Importação não modifica automaticamente o código remoto nem libera deploy por este agente.
+
+## Histórico da execução de publicação/preparação
 
 Anexo de decisões e prompt lidos integralmente. Supabase mantido em xftnkusbyqzyvzrovroj. Domínios autorizados: clinicabrotas.com.br e clinicaipupiara.com.br; não usar/comprar versão .com. TypeSafe/índice oficial consultados, sem Jev: Git/DNS/Auth/SMTP determinísticos.
 

@@ -1,5 +1,9 @@
 # Sistema — índice
 
+Correção de rotas Hostinger autorizada após primeiro deploy/f177207. Ausência de .htaccess confirmada no public_html real; fallback versionado public/.htaccess incluído no dist. Build/teste dirigido/lint aprovados; publicação e evidências no relatório09, sem alterar banco/SMTP/DNS.
+
+Conferência das variáveis Hostinger registrada na atualização do relatório09: arquivo local ignorado com URL/chave anon preservadas; VITE_API_URL dispensável na branch atual, mas ainda usada pela main antiga. Node22 precisa ser22.12+. Sem deploy/merge nesta conferência.
+
 Continuidade de publicação em `09-GITHUB-DOMINIOS-SMTP.md`: consulta Git/Hostinger, sincronização controlada, domínios aprovados, Edge v6 e preparação de deploy/SMTP. Usuário determinou não fazer deploy Hostinger sem nova autorização; envio institucional permanece dependente de caixa/remetente.
 
 **Estado:** implementação local em revisão, sem release publicada nesta tarefa.
