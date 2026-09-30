@@ -1,6 +1,6 @@
 # Sistema — índice
 
-Correção de rotas Hostinger autorizada após primeiro deploy/f177207. Ausência de .htaccess confirmada no public_html real; fallback versionado public/.htaccess incluído no dist. Build/teste dirigido/lint aprovados; publicação e evidências no relatório09, sem alterar banco/SMTP/DNS.
+Correção de rotas Hostinger publicada no commit643e428 e implantação concluída: public/.htaccess incluído pelo build, presente no public_html real. Raiz/rota/nova aba/F5 e recursos reais aprovados; sessão autenticada pública ainda depende do titular. Build/teste dirigido/lint aprovados; evidências no relatório09, sem alterar banco/SMTP/DNS.
 
 Conferência das variáveis Hostinger registrada na atualização do relatório09: arquivo local ignorado com URL/chave anon preservadas; VITE_API_URL dispensável na branch atual, mas ainda usada pela main antiga. Node22 precisa ser22.12+. Sem deploy/merge nesta conferência.
 
