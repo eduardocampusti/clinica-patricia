@@ -4,6 +4,7 @@ import type { Papel } from './hooks/usePapelNaClinica'
 import { supabase } from './lib/supabase'
 import Login from './pages/Login'
 import ConviteEquipe from './pages/ConviteEquipe'
+import RecuperarSenha from './pages/RecuperarSenha'
 import Pacientes from './pages/Pacientes'
 import Cadastros from './pages/cadastros/Cadastros'
 import FinanceiroModulo from './pages/FinanceiroModulo'
@@ -22,6 +23,8 @@ import { TITULOS_TELA, type Tela } from './components/shell/types'
 function App() {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
+  const [recuperacao, setRecuperacao] = useState(() => new URLSearchParams(window.location.search).get('recuperar') === '1' || new URLSearchParams(window.location.hash.slice(1)).get('type') === 'recovery')
+  const [recuperacaoAutorizada, setRecuperacaoAutorizada] = useState(false)
   const [escolhaAcesso, setEscolhaAcesso] = useState<{ clinicaId: string; papel: Papel; lembrar: boolean } | null>(null)
   const [escolhaAplicada, setEscolhaAplicada] = useState(false)
   const [acessoValidado, setAcessoValidado] = useState(false)
@@ -79,6 +82,11 @@ function App() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, newSession) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        setRecuperacao(true)
+        setRecuperacaoAutorizada(true)
+        window.history.replaceState({}, document.title, `${window.location.pathname}?recuperar=1`)
+      }
       setSession(newSession)
       if (event === 'SIGNED_OUT' || event === 'USER_UPDATED') {
         setAcessoValidado(false)
@@ -123,6 +131,13 @@ function App() {
       </div>
     )
   }
+
+  if (recuperacao) return <RecuperarSenha retorno autorizado={recuperacaoAutorizada && !!session} onVoltar={() => {
+    window.history.replaceState({}, document.title, window.location.pathname)
+    setRecuperacao(false)
+    setRecuperacaoAutorizada(false)
+    setAcessoValidado(false)
+  }} />
 
   if (session && conviteId && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/iu.test(conviteId)) {
     return <ConviteEquipe conviteId={conviteId} session={session} onConcluido={() => {

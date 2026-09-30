@@ -1,5 +1,5 @@
 {
-  "invite": "{{ $marca := \"Clínicas Brotas e Ipupiara\" }}{{ $unidade := printf \"%v\" (index .Data \"equipe_email_unidades\") }}{{ if eq $unidade \"brotas\" }}{{ $marca = \"Clínica Brotas\" }}{{ else if eq $unidade \"ipupiara\" }}{{ $marca = \"Clínica Ipupiara\" }}{{ end }}{{ $marca }} | Convite para acessar o sistema",
+  "invite": "{{ $u := printf \"%v\" .Data.equipe_email_unidades }}{{ if eq $u \"brotas\" }}Clínica Brotas{{ else if eq $u \"ipupiara\" }}Clínica Ipupiara{{ else }}Clínicas Brotas e Ipupiara{{ end }} | Convite para acessar o sistema",
   "magic_link": "Clínicas Brotas e Ipupiara | Confirme seu acesso",
   "recovery": "Clínicas Brotas e Ipupiara | Recuperação de acesso"
 }

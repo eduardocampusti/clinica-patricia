@@ -2,6 +2,7 @@
   "versaoEmDesenvolvimento": "0.1.0",
   "naoLancadas": {
     "novidades": [
+      "Acesso: solicitação de recuperação de senha com mensagem discreta, retorno à clínica de origem e confirmação da nova senha, sem alterar vínculos ou permissões.",
       "Equipe ganhou uma área unificada para consultar médicos, outros profissionais, recepção, administração e funcionários de apoio, separando cadastro de acesso ao sistema.",
       "Equipe: a migration segura foi aplicada e validada no Supabase autorizado; proprietária pode cadastrar e editar membros com persistência real, auditoria e vínculos multi-clínica.",
       "Equipe: contexto da clínica ativa, bloqueio de homologação e estados de carregamento, consulta vazia e indisponibilidade ficam explícitos; o formulário adapta seus campos à função.",

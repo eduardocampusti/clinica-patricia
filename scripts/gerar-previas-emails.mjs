@@ -6,6 +6,8 @@ const output = new URL('../public/previas-emails/', import.meta.url)
 await mkdir(output, { recursive: true })
 const fixtures = { brotas: 'Clínica Brotas', ipupiara: 'Clínica Ipupiara', conjunta: 'Clínicas Brotas e Ipupiara' }
 const tipos = ['invite', 'magic-link', 'recovery']
+const assuntos = JSON.parse(await readFile(new URL('subjects.json', base), 'utf8'))
+for (const assunto of Object.values(assuntos)) assert.ok(assunto.length <= 255, 'Assunto dentro do limite do Auth')
 for (const tipo of tipos) {
   const source = await readFile(new URL(`${tipo}.html`, base), 'utf8')
   assert.ok(source.includes('href="{{ .ConfirmationURL }}"'), 'Link oficial deve ser preservado')

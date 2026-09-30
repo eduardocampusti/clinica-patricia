@@ -6,6 +6,7 @@ import { carregarAcessosClinicas, type AcessoClinica } from '../lib/clinicAccess
 import { clinicaCorrespondeAoBrand, resolveClinicBrand } from '../config/clinicBrands'
 import { FeedbackAlert } from '../components/feedback/FeedbackAlert'
 import './login.css'
+import RecuperarSenha from './RecuperarSenha'
 
 function Icon({ children }: { children: ReactNode }) {
   return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{children}</svg>
@@ -34,6 +35,7 @@ export default function Login({ authenticatedUserId, onBeginAuth, onAccessGrante
   const [etapa, setEtapa] = useState<'credenciais' | 'sessao'>('credenciais')
   const [lembrar, setLembrar] = useState(true)
   const [ajudaAberta, setAjudaAberta] = useState(false)
+  const [recuperar, setRecuperar] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -153,6 +155,8 @@ export default function Login({ authenticatedUserId, onBeginAuth, onAccessGrante
     setLoading(false)
   }
 
+  if (recuperar && brand) return <RecuperarSenha onVoltar={() => setRecuperar(false)} />
+
   if (!brand) {
     return <main className="flex min-h-screen items-center justify-center bg-slate-950 px-6 text-white" data-clinic-brand="invalid" data-brand-source={brandResolution.origem}>
       <section className="max-w-xl text-center" aria-labelledby="invalid-domain-title">
@@ -193,7 +197,7 @@ export default function Login({ authenticatedUserId, onBeginAuth, onAccessGrante
             <p id="login-identifier-hint" className="login-field-hint">Neste sistema, a entrada utiliza o e-mail cadastrado.</p>
           </div>}
           {etapa === 'credenciais' && <div className="login-field">
-            <div className="login-label-row"><label htmlFor="password">Senha de Acesso</label><a href="#ajuda-acesso" onClick={() => setAjudaAberta(true)}>Esqueci minha senha</a></div>
+            <div className="login-label-row"><label htmlFor="password">Senha de Acesso</label><a href="#recuperar-acesso" onClick={event => { event.preventDefault(); setRecuperar(true) }}>Esqueci minha senha</a></div>
             <div className="login-input-wrap"><Icon><circle cx="7" cy="12" r="4" /><path d="M11 12h10m-3 0v3m-3-3v2" /></Icon><input id="password" type={showPassword ? 'text' : 'password'} autoComplete="current-password" required value={password} onChange={e => setPassword(e.target.value)} disabled={loading} placeholder="Digite sua senha" aria-describedby={error || accessError ? 'login-error' : undefined} /><button className="login-password-toggle" type="button" onClick={() => setShowPassword(value => !value)} aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'} aria-pressed={showPassword} disabled={loading}><Icon><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7S2 12 2 12Z" /><circle cx="12" cy="12" r="3" />{showPassword && <path d="m3 3 18 18" />}</Icon></button></div>
           </div>}
           {etapa === 'credenciais' && <div className="login-context" aria-label={`Clínica de entrada: ${brand.nome}`}>
@@ -206,7 +210,7 @@ export default function Login({ authenticatedUserId, onBeginAuth, onAccessGrante
           </section>}
           <div className="login-options-row"><label className="login-remember"><input type="checkbox" checked={lembrar} onChange={event => setLembrar(event.target.checked)} disabled={loading} /><span>Lembrar meu acesso neste dispositivo seguro</span></label><a href="#ajuda-acesso" onClick={() => setAjudaAberta(true)}>Ajuda no Acesso</a></div>
           <p className="login-field-hint login-remember-hint">Guarda apenas a unidade escolhida neste navegador; nunca o e-mail ou a senha.</p>
-          <details id="ajuda-acesso" className="login-help" open={ajudaAberta} onToggle={event => setAjudaAberta(event.currentTarget.open)}><summary>Orientações para acesso</summary><p>Se esqueceu sua senha ou ainda não tem acesso, entre em contato com a administração da clínica para recuperar sua conta. Não compartilhe sua senha.</p></details>
+          <details id="ajuda-acesso" className="login-help" open={ajudaAberta} onToggle={event => setAjudaAberta(event.currentTarget.open)}><summary>Orientações para acesso</summary><p>Use “Esqueci minha senha” para recuperar sua conta. Se ainda não possui acesso à unidade, procure a administração. Não compartilhe sua senha.</p></details>
           {(error || accessError) && <div id="login-error"><FeedbackAlert variant="destructive" title="Não foi possível entrar" description={error || accessError} urgent /></div>}
           <button className="login-submit" type="submit" disabled={loading} aria-live="polite"><span>{loading ? 'Validando acesso…' : etapa === 'sessao' ? `Continuar na ${brand.nome}` : 'Acessar Sistema Integrado'}</span><Icon><path d="M14 4h6v16h-6M3 12h12m-4-4 4 4-4 4" /></Icon></button>
           {etapa === 'sessao' && <button type="button" className="login-switch-account" onClick={() => void trocarConta()}>Entrar com outra conta</button>}
