@@ -1,7 +1,6 @@
 .paciente-edicao { margin: auto; padding: 0; }
 .paciente-edicao:not([open]) { display: none; }
 .paciente-edicao::backdrop { background: rgb(11 28 48 / 55%); }
-.paciente-edicao .paciente-etapas { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .paciente-edicao fieldset { min-width: 0; border: 0; margin: 0; padding: 0; }
 .paciente-edicao section[hidden] { display: none; }
 .paciente-edicao .edicao-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 20px; }
@@ -11,17 +10,48 @@
 .paciente-edicao input[readonly] { background: #eef3f8; }
 .paciente-edicao .edicao-grafia { flex-direction: row; align-items: center; font-size: .75rem; margin-top: 8px; }
 .paciente-edicao .edicao-identidade { display: flex; align-items: center; gap: 20px; margin-bottom: 20px; }
+.paciente-edicao .edicao-identidade-acoes { display: flex; min-width: 0; flex-direction: column; align-items: flex-start; gap: 8px; }
+.paciente-edicao .edicao-identidade-acoes p { margin: 0; }
+.paciente-edicao .edicao-identidade-acoes button { min-height: 40px; }
 .paciente-edicao .edicao-identidade p, .paciente-edicao .edicao-ajuda, .paciente-edicao small { color: #46566a; font-size: .8rem; line-height: 1.5; }
 .paciente-edicao .edicao-ajuda { margin: 12px 0; }
+.paciente-edicao .edicao-cpf { margin: 16px 0; padding: 12px; border: 1px solid var(--borda); border-radius: 8px; background: var(--fundo-card); color: var(--texto-principal); }
+.paciente-edicao .edicao-cpf h3 { margin: 0 0 8px; }
+.paciente-edicao .edicao-cpf p { margin: 8px 0; font-size: .875rem; }
+.paciente-edicao .edicao-cpf .edicao-ajuda { color: var(--texto-secundario); }
+.paciente-edicao .edicao-cpf-acoes { display: flex; flex-wrap: wrap; gap: 8px; }
+.paciente-edicao .edicao-cpf > label { max-width: 21rem; margin: 10px 0; }
+.paciente-edicao .edicao-cpf input[readonly], .paciente-correcao-cpf input[readonly] { background: var(--fundo-card); color: var(--texto-principal); font-weight: 600; cursor: text; }
+.paciente-correcao-cpf { width: min(100% - 24px, 520px); margin: auto; padding: 0; }
+.paciente-correcao-cpf:not([open]) { display: none; }
+.paciente-correcao-cpf::backdrop { background: rgb(11 28 48 / 55%); }
+.paciente-correcao-cpf-conteudo { display: grid; gap: 16px; overflow-y: auto; padding: 20px 24px; }
+.paciente-correcao-cpf-conteudo label { display: grid; gap: 6px; color: var(--texto-principal); font-weight: 500; }
+.paciente-correcao-cpf-conteudo input:not([type=checkbox]), .paciente-correcao-cpf-conteudo textarea { width: 100%; min-height: 44px; padding: 10px 12px; border: 1px solid var(--borda); border-radius: 8px; background: var(--fundo-card); color: var(--texto-principal); font: inherit; }
+.paciente-correcao-cpf-conteudo :is(input,textarea):focus-visible { outline: 2px solid var(--cor-primaria); outline-offset: 2px; }
+.paciente-correcao-cpf-conteudo .paciente-correcao-cpf-confirma { display: flex; align-items: flex-start; gap: 10px; font-weight: 400; }
+.paciente-correcao-cpf-confirma input { margin-top: 4px; }
+.paciente-correcao-cpf .edicao-erro { padding: 12px; border-radius: 8px; background: var(--fundo-card); color: var(--texto-principal); border: 1px solid var(--borda); }
 .paciente-edicao h3 { font-weight: 700; margin: 18px 0 8px; }
 .paciente-edicao .edicao-largura { grid-column: 1 / -1; }
 .paciente-edicao .edicao-erro { padding: 12px; margin-bottom: 12px; background: #fff1f0; color: #9b2220; border-radius: 8px; }
 .paciente-edicao .edicao-descarte { padding: 16px; background: #eef3ff; }
 .paciente-edicao .edicao-descarte button { margin: 8px 8px 0 0; }
 .paciente-edicao .paciente-cancelar { display: inline-block; }
+.paciente-edicao .paciente-form-grid { padding-top: 16px; }
+.paciente-edicao .paciente-form-grid label { display: block; }
+.paciente-edicao .paciente-form-grid label + input,
+.paciente-edicao .paciente-form-grid label + textarea { margin-top: 6px; }
+.paciente-edicao .paciente-endereco-historico { grid-column: 1 / -1; display: grid; gap: 4px; padding: 10px 12px; background: var(--fundo-pagina); border: 1px solid var(--borda); border-radius: 10px; }
+.paciente-edicao .paciente-endereco-historico p { margin: 0; color: var(--texto-principal); font-size: .8125rem; line-height: 1.4; white-space: pre-wrap; }
+.paciente-edicao .paciente-endereco-historico small { color: var(--texto-secundario); font-size: .75rem; }
+.paciente-edicao .paciente-campo-ajuda, .paciente-edicao .paciente-campo-erro { margin: 5px 0 0; font-size: .75rem; line-height: 1.35; }
+.paciente-edicao .paciente-campo-ajuda { color: var(--texto-secundario); }
+.paciente-edicao .paciente-campo-erro { color: var(--feedback-error-text, #991b1b); }
 @media (max-width: 650px) {
   .paciente-edicao .edicao-grid { grid-template-columns: minmax(0, 1fr); }
   .paciente-edicao .paciente-modal-rodape { flex-wrap: wrap; gap: 8px; }
   .paciente-edicao .paciente-modal-rodape button { flex: 1 1 100%; }
   .paciente-edicao .edicao-identidade { align-items: flex-start; }
+  .paciente-edicao .edicao-identidade-acoes { flex: 1; }
 }

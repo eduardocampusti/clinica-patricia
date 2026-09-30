@@ -7,7 +7,7 @@ test('página completa de Pacientes mantém busca, resumo e cadastro em desktop 
     { id: 'exemplo-02', nome_completo: 'Contato Modelo', data_nascimento: '1982-01-30', telefone: '71900000001', endereco: null, foto_path: null },
     { id: 'exemplo-03', nome_completo: 'Menor Sintético', data_nascimento: '2014-09-12', telefone: null, endereco: 'Endereço sintético', foto_path: null },
     { id: 'exemplo-04', nome_completo: 'Nascimento Ausente', data_nascimento: null, telefone: '71900000003', endereco: null, foto_path: null },
-    { id: 'exemplo-05', nome_completo: 'Registro Demonstrativo', data_nascimento: '1961-03-10', telefone: '71900000004', endereco: null, foto_path: null },
+    { id: 'exemplo-05', nome_completo: 'Registro Demonstrativo com Nome Extenso para Conferir Quebra e Leitura', data_nascimento: '1961-03-10', telefone: '71900000004', endereco: null, foto_path: null },
   ]
 
   await page.route('**/*', async (route) => {
@@ -16,7 +16,7 @@ test('página completa de Pacientes mantém busca, resumo e cadastro em desktop 
     if (url.hostname !== 'operacional.synthetic.invalid') return route.abort()
     if (url.pathname.endsWith('/pacientes')) {
       expect(url.searchParams.get('clinica_id')).toBe('eq.clinica-sintetica')
-      return route.fulfill({ contentType: 'application/json', body: JSON.stringify(pacientes) })
+      return route.fulfill({ contentType: 'application/json', headers: { 'access-control-expose-headers': 'content-range', 'content-range': `0-${pacientes.length - 1}/${pacientes.length}` }, body: JSON.stringify(pacientes) })
     }
     if (url.pathname.endsWith('/rpc/paciente_responsavel_legal_resumo')) {
       expect(route.request().postDataJSON().p_clinica_id).toBe('clinica-sintetica')
@@ -41,7 +41,7 @@ test('página completa de Pacientes mantém busca, resumo e cadastro em desktop 
   await expect(page.locator('.pacientes-busca-modos button[aria-pressed="true"]')).toHaveCSS('background-color', 'rgb(0, 97, 148)')
   if (info.project.name === 'desktop') {
     const alinhamento = await page.evaluate(() => {
-      const titulo = document.querySelector('.pacientes-lista-colunas span:last-child')?.getBoundingClientRect()
+      const titulo = document.querySelector('.pacientes-lista-colunas > span:last-child')?.getBoundingClientRect()
       const acao = document.querySelector('.pacientes-lista-acao')?.getBoundingClientRect()
       return titulo && acao ? Math.abs(titulo.right - acao.right) : Infinity
     })
@@ -51,12 +51,32 @@ test('página completa de Pacientes mantém busca, resumo e cadastro em desktop 
   await page.evaluate(() => document.fonts.ready)
   await page.screenshot({ path: `scratch/pacientes-pagina-${info.project.name}.png`, fullPage: true })
 
+  const larguraTabela = (await page.locator('.pacientes-lista-area').boundingBox())!.width
   await page.getByRole('button', { name: 'Ver resumo de Menor Sintético' }).click()
+  expect((await page.locator('.pacientes-lista-area').boundingBox())!.width).toBe(larguraTabela)
+  const painel = page.getByRole('dialog', { name: /Resumo do cadastro de Menor Sintético/ })
+  await expect(painel).toBeVisible()
+  expect((await painel.boundingBox())!.width).toBe(Math.min(460, page.viewportSize()!.width))
+  await expect(page.getByRole('button', { name: 'Fechar resumo', exact: true })).toBeFocused()
+  await page.keyboard.press('Shift+Tab')
+  await expect(painel.getByRole('button', { name: 'Ir para Agenda' })).toBeFocused()
+  await page.keyboard.press('Tab')
+  await expect(page.getByRole('button', { name: 'Fechar resumo', exact: true })).toBeFocused()
   await expect(page.getByRole('dialog', { name: /Resumo do cadastro de Menor Sintético/ }).or(page.getByRole('complementary', { name: /Resumo do cadastro de Menor Sintético/ }))).toBeVisible()
   await expect(page.getByText('Responsável Exemplo')).toBeVisible()
   await expect(page.getByText('Endereço sintético')).toBeVisible()
   await page.screenshot({ path: `scratch/pacientes-pagina-${info.project.name}-resumo.png`, fullPage: true })
   await page.getByRole('button', { name: 'Fechar resumo', exact: true }).click()
+  await expect(page.getByRole('button', { name: 'Ver resumo de Menor Sintético' })).toBeFocused()
+  await page.getByRole('button', { name: 'Ativar modo escuro' }).click()
+  await expect(page.getByRole('button', { name: 'CPF exato', exact: true })).toHaveCSS('color', 'rgb(148, 163, 184)')
+  await expect(page.getByRole('button', { name: /^Filtros/ })).toHaveCSS('background-color', 'rgb(30, 41, 59)')
+  await page.screenshot({ path: `scratch/pacientes-pagina-${info.project.name}-escuro.png`, fullPage: true })
+  await page.getByRole('button', { name: 'Ver resumo de Menor Sintético' }).click()
+  await page.screenshot({ path: `scratch/pacientes-pagina-${info.project.name}-resumo-escuro.png`, fullPage: true })
+  await page.keyboard.press('Escape')
+  await expect(painel).toHaveCount(0)
+  await page.getByRole('button', { name: 'Ativar modo claro' }).click()
 
   await page.getByRole('searchbox', { name: 'Buscar paciente por nome' }).fill('sem correspondência')
   await expect(page.getByText('Nenhum resultado nesta clínica')).toBeVisible()

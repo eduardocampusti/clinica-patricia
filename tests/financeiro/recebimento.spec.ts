@@ -123,13 +123,13 @@ for (const [nome, erro, mensagem] of [
   ['caixa ausente', 'Nao existe caixa aberto para a clinica.', 'Não há um caixa financeiro aberto para esta clínica. Abra o caixa antes de receber pagamentos.'],
   ['caixa legado', 'Sessao de caixa legada nao pode receber operacoes do novo Financeiro.', 'Esta clínica possui um caixa antigo ainda em aberto. Ele precisa ser regularizado antes de usar o novo Financeiro.'],
   ['duplicado', 'Agendamento ja possui recebimento principal.', 'Este atendimento já possui um recebimento registrado.'],
-  ['configuração', 'Configuracao financeira vigente nao encontrada para a clinica.', 'O preço ou a configuração financeira desta clínica está ausente. Solicite a configuração à proprietária.'],
+  ['configuração', 'Configuracao financeira vigente nao encontrada para a clinica.', 'O preço ou a configuração financeira desta clínica está ausente. Solicite a configuração ao perfil Proprietário(a).'],
 ]) {
   test(`erro ${nome} permanece aberto sem sucesso`, async ({ page }, info) => {
     await abrir(page, { erro })
     await revisar(page)
     await page.getByRole('button', { name: 'Confirmar pagamento' }).click()
-    await expect(page.getByRole('alert')).toHaveText(mensagem)
+    await expect(page.getByRole('alert')).toContainText(mensagem)
     await expect(page.getByRole('heading', { name: 'Pagamento confirmado' })).toHaveCount(0)
     if (nome === 'caixa legado') await screenshot(page, 'erro', info.project.name)
   })

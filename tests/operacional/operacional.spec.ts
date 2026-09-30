@@ -219,6 +219,7 @@ test('cadastro de paciente valida antes de gravar, aceita CPF vazio e protege en
   await page.getByRole('button', { name: /Avançar para Endereço/ }).click()
   await expect(page.getByRole('alert')).toContainText('Confira o CPF informado')
   await expect(cpf).toHaveValue('529.982.247-2')
+  await expect(cpf).toBeFocused()
   expect(chamadasCpf).toBe(0)
   await cpf.fill('')
   await page.getByRole('button', { name: /Avançar para Endereço/ }).click()
@@ -263,6 +264,7 @@ test('cadastro de paciente valida antes de gravar, aceita CPF vazio e protege en
   await page.getByRole('button', { name: 'Salvar paciente' }).click()
 
   expect(await email.evaluate((campo) => (campo as HTMLInputElement).checkValidity())).toBe(false)
+  await expect(email).toBeFocused()
   expect(pacienteInserido).toBeNull()
   await email.fill('')
   await page.getByRole('button', { name: 'Salvar paciente' }).click()
@@ -279,6 +281,47 @@ test('cadastro de paciente valida antes de gravar, aceita CPF vazio e protege en
 
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
   await page.screenshot({ path: `scratch/fase11-operacional/pacientes-formulario-${info.project.name}.png`, fullPage: true })
+})
+
+test('cadastro bloqueia envio repetido enquanto o serviço responde', async ({ page }) => {
+  let insercoes = 0
+  let liberar!: () => void
+  const resposta = new Promise<void>((resolve) => { liberar = resolve })
+
+  await page.route('**/*', async (route) => {
+    const url = new URL(route.request().url())
+    if (url.hostname === '127.0.0.1') return route.continue()
+    if (url.hostname !== 'operacional.synthetic.invalid') return route.abort()
+    if (url.pathname.endsWith('/pacientes')) {
+      if (route.request().method() === 'POST') {
+        insercoes += 1
+        await resposta
+        return route.fulfill({ status: 201, contentType: 'application/json', body: JSON.stringify({ id: 'paciente-repeticao', nome_completo: 'Pessoa Repetição' }) })
+      }
+      return route.fulfill({ contentType: 'application/json', body: '[]' })
+    }
+    return route.fulfill({ contentType: 'application/json', body: 'null' })
+  })
+
+  await page.goto('/tests/operacional/pacientes.html')
+  await page.getByRole('button', { name: /Novo paciente/ }).click()
+  await page.getByLabel('Nome completo').fill('PESSOA REPETIÇÃO')
+  await page.getByLabel('Data de nascimento', { exact: true }).fill('1990-02-05')
+  await page.getByRole('button', { name: /Avançar para Endereço/ }).click()
+  const formulario = page.locator('form[aria-label="Cadastrar novo paciente"]')
+  await page.getByRole('button', { name: 'Salvar paciente' }).click()
+  await expect.poll(() => insercoes).toBe(1)
+  await expect(page.getByRole('button', { name: 'Salvando...' })).toBeDisabled()
+
+  // Duas submissões síncronas representam um duplo clique/Enter antes da resposta.
+  await formulario.evaluate((elemento) => {
+    const form = elemento as HTMLFormElement
+    form.requestSubmit()
+    form.requestSubmit()
+  })
+  expect(insercoes).toBe(1)
+  liberar()
+  await expect(page.getByText('Paciente cadastrado com sucesso.')).toBeVisible()
 })
 
 test('foto opcional tem prévia, trata webcam negada e persiste sem URL pública', async ({ page }) => {
@@ -578,7 +621,7 @@ test('Agenda lembra CPF uma vez por interação e preserva o agendamento ao adic
   await page.getByRole('combobox', { name: /^Paciente/ }).selectOption('paciente-A')
   await expect(page.getByLabel('CPF pendente de Paciente A')).toBeVisible()
 
-  await page.getByRole('button', { name: 'Lembrar na próxima visita' }).click()
+  await page.getByRole('button', { name: 'Informar depois' }).click()
   await expect(page.getByLabel('CPF pendente de Paciente A')).toHaveCount(0)
   await page.getByRole('combobox', { name: /^Paciente/ }).selectOption('')
   await page.getByRole('combobox', { name: /^Paciente/ }).selectOption('paciente-A')
@@ -663,7 +706,7 @@ test('registro de chegada exibe lembrete não bloqueante uma única vez', async 
   await expect(page.getByLabel('Lembrete de CPF na chegada')).toBeVisible()
   expect(atualizacaoIsolada).toBe(true)
   expect(consultasPendencia).toBe(1)
-  await page.getByRole('button', { name: 'Lembrar na próxima visita' }).click()
+  await page.getByRole('button', { name: 'Informar depois' }).click()
   await expect(page.getByLabel('Lembrete de CPF na chegada')).toHaveCount(0)
 
   await agendamento.click()

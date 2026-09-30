@@ -6,6 +6,8 @@
 **Data de aprovação:** 26/09/2026 (arquiteto Eduardo)
 **Base:** `01-DOCUMENTO-FUNCIONAL-MESTRE.md` §9-C, §9-D e §5.1
 
+**Revisão de 27/09:** o pedido posterior do proprietário acrescentou leitura individual integral de CPF para proprietária na ficha e antecipou a UI de correção. A implementação usa `20260927100000_pacientes_cpf_leitura_correcao.sql`, que retorna somente a nova revisão após corrigir. Ela foi aplicada isoladamente ao Supabase vinculado após ensaio transacional; o teste HTTP com sessão real ainda está pendente, conforme o checkpoint. A proposta anterior em `supabase/review/` permanece histórica, não é uma segunda migration a aplicar. A migration de trava de menores `20260925130000` permanece pendente e não integrou esta aplicação.
+
 ## 1. Objetivo
 
 Fechar as lacunas funcionais da edição administrativa de paciente e caminhar, em iterações pequenas, para um formulário compartilhado entre cadastro e edição — sem quebrar o padrão RPC + RLS do projeto e sem duplicar auditoria.
@@ -39,7 +41,7 @@ Entra:
 3. Proposta de migration em `supabase/review/pacientes_correcao_cpf_com_motivo.sql`, contendo:
    - `ALTER TABLE public.auditoria ADD COLUMN IF NOT EXISTS motivo text;`
    - `CREATE OR REPLACE FUNCTION public.fn_auditoria()` reescrita para preencher `motivo` a partir de `current_setting('audit.motivo', true)` com `missing_ok = true` (nunca falha por ausência do setting);
-   - `CREATE FUNCTION public.paciente_corrigir_cpf(p_paciente_id uuid, p_clinica_id uuid, p_updated_at timestamptz, p_cpf_novo text, p_motivo text) RETURNS void`, `SECURITY DEFINER`, `search_path = pg_catalog, public`, executando: autorização (proprietária/recepção da clínica ativa, usuário ativo, clínica ativa), validação de motivo (10 a 500 caracteres, `btrim`), validação de CPF novo (`pacientes_cpf_valido`), lock otimista por `updated_at`, checagem de unicidade `(clinica_id, cpf_hash)` sem revelar conflito, `set_config('audit.motivo', p_motivo, true)`, UPDATE em `pacientes` (`cpf_encrypted`, `cpf_hash`), retorno `void`;
+   - a proposta inicial definia `paciente_corrigir_cpf(...) RETURNS void`; a revisão versionada retorna `timestamptz` (nova revisão), com o mesmo controle de autorização, motivo, validade, unicidade e auditoria, para preservar edições cadastrais ainda abertas;
    - `CREATE FUNCTION public.paciente_cpf_disponivel(p_clinica_id uuid, p_paciente_id uuid, p_cpf text) RETURNS boolean`, `SECURITY DEFINER`, sem retornar identificador do conflito;
    - `REVOKE ALL ... FROM public, anon;` e `GRANT EXECUTE ... TO authenticated;` para as duas funções novas;
    - ensaio SQL em `supabase/review/pacientes_correcao_cpf_ensaio.sql`, transacional com `ROLLBACK`, cobrindo os cenários da §6.
@@ -47,7 +49,7 @@ Entra:
 Não entra (fica para B–E):
 
 - qualquer alteração no frontend;
-- botão "Corrigir CPF" no resumo do paciente;
+- ação "Corrigir CPF" na seção Identificação da edição, somente quando o serviço auditado estiver implantado;
 - `MotivoModal` reutilizável;
 - endpoint de troca de foto com motivo;
 - edição de responsável legal existente;
@@ -55,7 +57,7 @@ Não entra (fica para B–E):
 
 ### Iteração B — UI mínima da correção de CPF
 
-Depende de A aprovada e migration aplicada. Entra: componente `MotivoModal` reutilizável, botão "Corrigir CPF" no resumo do paciente, chamada da nova RPC, `paciente_cpf_disponivel` consumido on-blur, mensagens genéricas de conflito, testes operacionais dedicados.
+Depende de A aprovada e migration aplicada. Entra: confirmação e motivo na seção Identificação da edição para proprietária, chamada da nova RPC, `paciente_cpf_disponivel` consumido on-blur, mensagens genéricas de conflito e testes operacionais dedicados. O botão local atual permanece desabilitado até esse contrato estar disponível.
 
 Não entra: foto, responsável, refactor.
 
@@ -92,7 +94,7 @@ Rollback: migration compensatória específica revogando/removendo apenas as dua
 Todos ensaiados com `ROLLBACK` em conexão dedicada, sem tocar em dados reais:
 
 1. Proprietária de Brotas corrige CPF de paciente de Brotas com motivo válido → sucesso, uma linha em `auditoria` com `entidade = 'pacientes'`, `acao = 'UPDATE'`, `dados_antes.cpf_hash` distinto de `dados_depois.cpf_hash`, `motivo` preenchido.
-2. Recepção de Brotas idem → sucesso.
+2. Recepção de Brotas → negada na correção; inclusão inicial de CPF ausente permanece permitida pela RPC já aplicada.
 3. Médico → `42501`.
 4. Anônimo → `42501`.
 5. Proprietária de Brotas tenta corrigir paciente de Ipupiara → `42501` sem revelar existência.

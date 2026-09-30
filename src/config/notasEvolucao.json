@@ -2,19 +2,47 @@
   "versaoEmDesenvolvimento": "0.1.0",
   "naoLancadas": {
     "novidades": [
+      "Equipe ganhou uma área unificada para consultar médicos, outros profissionais, recepção, administração e funcionários de apoio, separando cadastro de acesso ao sistema.",
+      "Equipe: a migration segura foi aplicada e validada no Supabase autorizado; proprietária pode cadastrar e editar membros com persistência real, auditoria e vínculos multi-clínica.",
+      "Equipe: contexto da clínica ativa, bloqueio de homologação e estados de carregamento, consulta vazia e indisponibilidade ficam explícitos; o formulário adapta seus campos à função.",
       "Acesso identificado pela clínica de entrada, com contexto próprio para Brotas e Ipupiara.",
       "Cadastro de pacientes com CPF opcional, foto opcional e integração ao novo agendamento.",
       "Consulta de pacientes por nome ou CPF exato, com listagem e resumo administrativo no contexto da clínica.",
       "Página “Sobre o sistema” com versão em execução, créditos de desenvolvimento e contexto da clínica."
     ],
     "melhorias": [
+      "Publicação: identificação dos domínios clinicabrotas.com.br e clinicaipupiara.com.br preparada; a função de acessos aceita somente origens públicas explícitas e mantém o retorno do convite na unidade autorizada. O site público e o SMTP ainda não foram publicados/configurados.",
+      "Equipe: convite real teve aceite, login de Recepção em Brotas e recusa de Ipupiara confirmados; dados e conta sintéticos foram removidos preservando auditoria. Modelos portugueses de e-mail estão preparados, mas dependem de envio personalizado para aplicação no Auth.",
+      "Cadastro e edição de pacientes compartilham etapas e os campos de Endereço e Contatos; endereços históricos permanecem como referência literal, sem separação automática.",
+      "Pacientes: edição identifica CPF ausente, informado ou indisponível; permite completar depois sem bloquear outras alterações e mostra lembrete não bloqueante.",
+      "Pacientes: a ficha individual da proprietária mostra o CPF em campo somente de leitura e oferece correção confirmada com motivo, sem alterar o salvamento comum.",
+      "Pacientes: resumo sobreposto sem comprimir a lista, ações alinhadas e gestão de foto com seleção, salvamento e remoção claramente separados.",
+      "Edição de pacientes: acesso direto à gestão de foto e à inclusão de CPF ausente, com confirmação antes de descartar dados não salvos.",
       "Pacientes: ação Editar diretamente na listagem e no resumo, com o mesmo formulário de edição administrativa; salvamento confirmado no mesmo cadastro, preservação do endereço literal, CPF, foto e responsável e aviso de alteração concorrente.",
       "Pacientes: seis opções de ordenação e filtros de cadastro, idade e nascimento, com contagem de resultados e aviso para refinar consultas que excedam o limite de leitura.",
+      "Pacientes: endereço estruturado persistido em campos próprios, mantendo o endereço histórico como referência literal sem reconstrução automática.",
       "Formulário de pacientes com cálculo de idade pela data de nascimento e seção de responsável legal para menores.",
       "Foto opcional por arquivo ou webcam no cadastro; gestão administrativa da foto na ficha.",
-      "Papel apresentado como “Proprietário(a)” na interface."
+      "Mensagens de sucesso, atenção e erro agora seguem um padrão visual acessível; ações destrutivas usam confirmação com consequência e foco seguros.",
+      "Papel apresentado como “Proprietário(a)” na interface.",
+      "Equipe: a ação Ver cadastro abre uma ficha responsiva com identificação, dados profissionais, vínculos clínicos e acesso ao sistema, distinguindo informação cadastrada, não aplicável e não confirmada.",
+      "Equipe: a gestão de acessos por clínica foi instalada no Supabase autorizado e publicada na Edge Function, com consulta real de acesso em Brotas e estado vazio correto em Ipupiara; convite e aceite aguardam redirect allowlisted e conta de teste autorizada."
     ],
-    "correcoes": []
+    "correcoes": [
+      "Equipe: cadastro e edição receberam validações adicionais de permissão, repetição de envio, vínculos inativos, CPF, conselho por UF (inclusive troca ou remoção isolada), registro profissional e estado real de acesso por clínica.",
+      "Equipe: erros de validação apontam o campo e preservam o preenchimento; descarte de alterações pede confirmação e as ações do formulário se adaptam ao celular.",
+      "Botão Salvar foto com contraste legível, estado de envio e bloqueio de confirmação sem seleção válida.",
+      "Situação do CPF não confirmada não é apresentada como CPF informado nem libera inclusão.",
+      "Ao reabrir uma ficha, o CEP já salvo não consulta novamente o ViaCEP nem substitui correções manuais de cidade e endereço.",
+      "A confirmação de edição permanece visível após fechar o formulário, inclusive quando o resumo do paciente está aberto.",
+      "Pacientes: após confirmação do serviço, a edição mostra o Alert “Alterações salvas” com a descrição “O cadastro do paciente foi atualizado com sucesso.”; a mensagem sobrevive ao fechamento do formulário e erros de validação direcionam o foco para o primeiro campo que precisa de correção; o envio de cadastro é protegido contra repetição.",
+      "Ficha de Equipe mascara CPF, preserva a limitação do modo legado, descarta respostas antigas ao trocar membro ou clínica e apresenta falhas de leitura sem expor códigos técnicos.",
+      "Equipe: conflitos de unicidade traduzem o índice técnico em mensagens específicas e seguras para CPF ou registro profissional, sem expor hash ou detalhes do banco.",
+      "Equipe: a migration de gestão de acessos foi aplicada somente no projeto Supabase autorizado e a Edge Function equipe-acessos está ativa; as ações de convite permanecem protegidas até a configuração segura do redirect e os testes com contas temporárias autorizadas.",
+      "Equipe: a gestão de acessos foi corrigida e publicada na versão 2; consultar não concede acesso, vínculos de profissionais permanecem sincronizados e aceite, expiração, reenvio e escopo por clínica são validados no servidor.",
+      "Equipe: convites vencidos agora podem ser substituídos por nova solicitação sem apagar o histórico; reenvios recuperam com segurança a conta Auth e a suspensão bloqueia imediatamente sessões já abertas no servidor.",
+      "Pacientes: CPF legado com dígitos inválidos confirmados pelo servidor agora é apresentado como documento que precisa de revisão; a proprietária pode iniciar a correção auditada sem exibir o número antigo, enquanto falhas técnicas continuam indicadas separadamente."
+    ]
   },
   "versoesLancadas": []
 }

@@ -165,14 +165,15 @@ O CPF de um paciente pode ser corrigido depois de preenchido, sob regras estrita
 
 Regras aprovadas:
 
-- só proprietária e recepção da clínica ativa podem corrigir;
+- inicialmente, só a proprietária da clínica ativa pode corrigir; a recepção continua autorizada apenas a complementar CPF ausente pelo fluxo separado;
 - a correção só é permitida enquanto o cadastro permanece ativo na clínica;
 - o CPF novo deve ser validado pelas mesmas regras do preenchimento inicial (11 dígitos, dígito verificador, não pode ser sequência de repetição);
 - a correção respeita a unicidade `(clinica_id, cpf_hash)` — CPF já em uso por outro paciente da mesma clínica é rejeitado sem revelar o paciente conflitante;
 - CPF idêntico ao já gravado é recusado como não alteração;
-- a correção exige `motivo` textual do operador, com no mínimo 10 e no máximo 500 caracteres;
+- a correção exige confirmação explícita e `motivo` textual do operador, com no mínimo 10 e no máximo 500 caracteres; o motivo não pode conter o CPF nem outra sequência numérica longa;
 - a correção é atômica: um único evento de auditoria com `dados_antes`/`dados_depois` cifrados e `motivo` preenchido;
 - o retorno para o cliente nunca contém CPF em texto, ciphertext ou hash;
+- o retorno da correção contém somente a nova revisão (`updated_at`), para permitir salvar depois outros campos que já estavam em edição;
 - a operação é rejeitada em conflito otimista (`updated_at` divergente do esperado);
 - a operação preserva o mesmo `id`, `clinica_id`, `created_at`, `foto_path`, `ativo` e vínculos.
 
@@ -181,6 +182,14 @@ A verificação de disponibilidade prévia (antes de submeter a correção) reto
 Fora do escopo desta decisão: definição do CPF quando o cadastro foi criado sem ele — esse caminho permanece com `paciente_definir_cpf` (aprovado em 5.1) e não exige motivo.
 
 Redirecionamento entre as duas operações: se o paciente tem `cpf_hash IS NULL`, a RPC de correção retorna `P0001` e o cliente deve chamar `paciente_definir_cpf` em vez disso. A UI da correção nunca substitui a UI de complementação inicial.
+
+### Leitura individual aprovada para a ficha administrativa
+
+Na ficha de edição, a proprietária/administradora vinculada à clínica do paciente pode ver o CPF completo, formatado, em campo somente de leitura. A consulta é individual, pelo paciente e clínica explícitos, com autorização verificada no banco; ausência confirmada retorna `null`, enquanto falta de permissão ou falha produz erro. Fechar a ficha, sair da sessão ou mudar de clínica descarta o valor da memória da interface. Recepção continua vendo somente a indicação de CPF informado/ausente, sem o número completo; médico não recebe essa leitura. A listagem, busca, URLs, logs, capturas de evidência e armazenamento persistente do navegador não recebem o CPF completo. A correção pela proprietária usa formulário próprio com motivo e confirmação e não modifica outros campos cadastrais ainda não salvos.
+
+**Estado em 27/09/2026:** as RPCs de leitura individual e correção auditada foram aplicadas isoladamente ao projeto Supabase vinculado, com grants conferidos e ensaio SQL sintético em `ROLLBACK`. A UI local chama esses contratos; ainda falta homologar leitura/correção por sessão HTTP real, persistência após recarga e papéis reais. A verificação prévia separada de disponibilidade, descrita acima como regra futura, não foi exposta: a RPC de correção verifica duplicidade atomicamente e responde sem identificar o outro paciente. A listagem continua sem CPF completo.
+
+**Decisão posterior — CPF legado inválido (29/09/2026):** quando a leitura autorizada comprova que o valor descriptografado coincide com o hash armazenado, mas falha exclusivamente na validação dos dígitos, a RPC retorna o código específico `PC422` sem revelar o valor. A interface informa que o CPF precisa de revisão e permite à proprietária iniciar a mesma correção auditada, mesmo sem mostrar o número antigo. É indispensável conferir o documento apresentado pelo paciente: não há ajuste automático, inferência dos dígitos nem exclusão do CPF. Falha de rede, erro de descriptografia/hash e falta de autorização continuam estados diferentes e não habilitam a correção por esse motivo. CPF ausente permanece opcional e usa apenas a complementação inicial. A operação dedicada mantém CPF novo válido, confirmação explícita, motivo, isolamento por clínica, unicidade e revisão concorrente; os demais campos não salvos são preservados na ficha.
 
 ## 9-D. Motivo obrigatório e auditoria em operações sensíveis
 
@@ -199,6 +208,16 @@ Regras aprovadas:
 - edições administrativas ordinárias já cobertas por `paciente_editar_administrativo` (nome, nascimento, sexo, telefone, e-mail, endereço, observações) permanecem sem exigência de motivo por decisão prévia; a auditoria existente continua registrando o antes/depois em `dados_antes`/`dados_depois`.
 
 Consequência de projeto: a auditoria de mutação continua consolidada em uma única tabela `public.auditoria`. Não haverá tabela per-campo por paciente. Consultas administrativas encontram todo o histórico de mutações e motivos em um único lugar.
+
+## 9-E. Formulário compartilhado de cadastro e edição
+
+**Aprovação funcional:** 28/09/2026.
+
+Cadastro e edição administrativa devem usar a mesma linguagem visual, navegação de etapas, formatação e organização de Identificação, Responsável legal (quando aplicável) e Endereço e Contatos. Os contratos de criação e atualização permanecem distintos: editar nunca cria outro paciente e o salvamento comum não altera CPF, foto ou vínculos existentes por consequência.
+
+Endereços estruturados devem manter CEP, logradouro, número, complemento, bairro, cidade e UF, além da representação textual integral usada pelos consumidores atuais. Cadastros históricos que possuam somente `pacientes.endereco` não serão divididos por heurística. O texto original será exibido e preservado até que a pessoa autorizada o revise explicitamente em campos separados.
+
+**Estado técnico confirmado:** a navegação e a seção de Endereço e Contatos são componentes compartilhados. A edição sempre apresenta os campos estruturados depois que a leitura individual termina: preenche os componentes existentes; para cadastro histórico, mantém os campos vazios e exibe o texto anterior em uma referência compacta; para ausência de endereço, apresenta campos vazios sem referência. Falha ou carregamento incompleto não é classificado como endereço legado e impede salvar até uma nova leitura bem-sucedida. A migration aditiva `20260928110000_pacientes_endereco_estruturado.sql` foi aplicada ao Supabase vinculado em 28/09/2026. Ensaio transacional conectado e homologação autenticada com fixtures sintéticas confirmaram persistência e releitura dos componentes sem decompor o texto histórico.
 
 # PARTE II — ESTADO ATUAL CONFIRMADO
 
@@ -281,7 +300,7 @@ Na árvore original, o formulário mostra a idade calculada a partir da data de 
 
 Ao completar o CEP, o frontend consulta `https://viacep.com.br/ws/{CEP}/json/` enviando somente o CEP. O retorno pode preencher rua, bairro, cidade e UF; campos corrigidos manualmente não são sobrescritos. A implementação cancela a solicitação anterior e também compara a identidade da requisição para ignorar respostas atrasadas. CEP não encontrado e falha de rede são informados sem impedir preenchimento manual.
 
-O banco continua possuindo apenas a coluna textual `endereco`. Antes do `INSERT`, os campos estruturados da interface são compostos em uma string legível. Número e complemento permanecem manuais. A interface de edição preparada em 26/09/2026 conserva o texto integral e oferece sua edição direta, sem reconstruir componentes; a persistência depende do contrato em revisão descrito na seção 14. Uma edição estruturada futura não poderá reconstruí-los com total confiabilidade a partir do texto existente; resolver essa limitação exigirá decisão técnica posterior.
+No estado remoto confirmado após a migration de 28/09/2026, `pacientes` mantém a coluna textual `endereco` e possui também `cep`, `logradouro`, `numero`, `complemento`, `bairro`, `cidade`, `uf` e `endereco_historico`, todos opcionais. A interface compõe uma string legível e persiste também os componentes separados; número e complemento permanecem manuais. Na edição, o texto antigo é apenas referência literal e nunca é decomposto automaticamente. As constraints de formato de CEP e UF foram instaladas como `NOT VALID`: protegem gravações novas sem presumir que todo o legado já foi saneado.
 
 A listagem administrativa local seleciona a string textual integral já salva e a exibe no resumo do paciente selecionado. A interface não tenta inferir CEP, rua, número, complemento, bairro, cidade ou UF. Assim, a leitura literal é preservada, mas nenhuma parte individual pode ser recuperada com garantia para uma futura edição estruturada.
 
@@ -316,6 +335,10 @@ A versão local de design não apresenta nem exige consentimento genérico e nã
 A auditoria original não encontrou edição, inativação ou reativação. Em 26/09/2026 a árvore original ganhou a interface de edição administrativa, aberta por “Editar cadastro” no resumo e, posteriormente, também por “Editar” diretamente na linha da tabela. As duas ações usam o mesmo editor. Ele carrega os campos administrativos e vínculos, preserva endereço textual integral, foto e CPF; mantém o mesmo paciente e separa salvamento de criação. O contrato foi instalado pelas migrations `20260926100000` e `20260926101000`; edição e recarga do mesmo registro sintético foram confirmadas com sessão real de Proprietário(a) em Brotas pelo caminho do resumo. A verificação real específica da entrada direta pela tabela é documentada separadamente no checkpoint; testes de interface simulados não a substituem nem comprovam outros papéis. O frontend permanece local e não publicado. Inativação e reativação continuam não implementadas.
 
 A tabela possui `ativo` e `updated_at`, mas a existência desses campos não comprova um fluxo funcional completo.
+
+Na revisão local de 27/09, o editor passou a oferecer acesso direto ao gerenciador de foto privada e, somente quando o CPF está ausente, à inclusão de CPF existente no resumo. Nenhum dos dois valores é enviado no patch administrativo. Sair da edição com dados alterados para essas ações requer confirmação explícita de descarte. A correção de CPF já preenchido e a alteração de vínculo legal existente permanecem não implementadas; a primeira depende da operação auditada proposta na seção 9-C, sem reutilizar a RPC de inclusão. Na continuação, a sessão real de Proprietário(a) comprovou edição com recarga e foto privada usando fixtures existentes em Brotas e Ipupiara, além de recusa de revisão obsoleta em Brotas. Inclusão positiva de CPF e outros papéis continuam sem comprovação autenticada nesta rodada. Resposta de CPF inválida/não booleana permanece indisponível, nunca autoriza inclusão nem afirma CPF informado. Detalhes, restauração das fixtures e limites do inventário de Storage estão no checkpoint.
+
+Na revisão local posterior, a etapa Identificação recebeu seção própria de CPF: ausência e inclusão, CPF informado com dígitos totalmente ocultos, carregamento e erro com repetição da consulta. Edição dos demais campos não depende do CPF. A proprietária vê a correção claramente indisponível enquanto a operação auditada proposta não for instalada; a recepção não recebe essa ação. O lembrete no resumo só aparece após ausência confirmada, sem bloquear a ficha ou o atendimento. Testes sintéticos dessa interface não comprovam aplicação da proposta nem autenticação conectada.
 
 ## 15. Autorização atual nas migrations locais
 
@@ -537,6 +560,8 @@ Propostas restantes:
 
 ## 25. Ficha administrativa do paciente
 
+Refinamento aprovado em 27/09/2026: resumo em painel sobreposto no desktop e celular, sem comprimir a listagem, com identificação, contato, responsável e endereço literal separados. Na gestão administrativa de foto, “Salvar foto” exige seleção válida ainda não salva; “Descartar seleção” não remove a foto persistida. Sucesso depende da confirmação da operação. O cadastro inicial mantém confirmação local da seleção e persistência somente ao salvar a ficha. Nenhuma destas mudanças amplia permissões ou cria edição de CPF já preenchido/responsável existente.
+
 O resumo local da página principal já apresenta identificação, contato, endereço literal, status, responsável legal quando houver, pendência do CPF, gestão de foto e navegação simples para a Agenda. Ele não equivale à ficha completa proposta abaixo; a navegação não pré-seleciona o paciente na Agenda.
 
 Proposta para a ficha completa, ainda não implementada:
@@ -732,6 +757,8 @@ Proposta:
 - foco visível;
 - mensagens de erro próximas ao contexto;
 - estados de carregamento, vazio, erro e sucesso;
+- confirmação textual somente após retorno válido do serviço: “Paciente cadastrado com sucesso.” na criação e um Alert de edição com título “Alterações salvas” e descrição “O cadastro do paciente foi atualizado com sucesso.”; falhas preservam o rascunho;
+- validação indica o problema no contexto do campo e posiciona o foco no primeiro campo aplicável; envio em andamento informa o estado e bloqueia repetição;
 - não depender somente de cor;
 - evitar exposição de dados em notificações, URLs ou títulos de página.
 

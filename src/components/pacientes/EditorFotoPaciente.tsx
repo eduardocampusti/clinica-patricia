@@ -1,12 +1,16 @@
 import { useEffect, useRef, useState } from 'react'
 import { obterIniciaisPaciente } from '../../lib/pacienteFormulario'
 import { validarFotoPaciente } from '../../lib/pacienteFotoValidacao'
+import { FeedbackAlert } from '../feedback/FeedbackAlert'
+import { ConfirmacaoDialog } from '../feedback/ConfirmacaoDialog'
 
 interface EditorFotoPacienteProps {
   nome: string
   imagemAtualUrl?: string | null
   disabled?: boolean
   ativo?: boolean
+  onCancelar?: () => void
+  onProcessando?: (valor: boolean) => void
   onConfirmar: (arquivo: File) => void | Promise<void>
   onRemover: () => void | Promise<void>
 }
@@ -25,6 +29,8 @@ export default function EditorFotoPaciente({
   imagemAtualUrl = null,
   disabled = false,
   ativo = true,
+  onCancelar,
+  onProcessando,
   onConfirmar,
   onRemover,
 }: EditorFotoPacienteProps) {
@@ -33,6 +39,7 @@ export default function EditorFotoPaciente({
   const streamRef = useRef<MediaStream | null>(null)
   const ativoRef = useRef(ativo)
   const montadoRef = useRef(true)
+  const operacaoRef = useRef(false)
   ativoRef.current = ativo
   const urlsCriadasRef = useRef(new Set<string>())
   const [arquivoPendente, setArquivoPendente] = useState<File | null>(null)
@@ -40,7 +47,11 @@ export default function EditorFotoPaciente({
   const [previewConfirmada, setPreviewConfirmada] = useState<string | null>(null)
   const [cameraAberta, setCameraAberta] = useState(false)
   const [processando, setProcessando] = useState(false)
+  const [mensagemAndamento, setMensagemAndamento] = useState<string | null>(null)
   const [erro, setErro] = useState<string | null>(null)
+  const [sucesso, setSucesso] = useState<string | null>(null)
+  const [confirmarRemocao, setConfirmarRemocao] = useState(false)
+  const administrativo = Boolean(onCancelar)
   const iniciais = obterIniciaisPaciente(nome)
   const preview = previewPendente || previewConfirmada || imagemAtualUrl
 
@@ -75,6 +86,7 @@ export default function EditorFotoPaciente({
   }, [ativo])
 
   function prepararArquivo(arquivo: File) {
+    setSucesso(null)
     try {
       validarFotoPaciente(arquivo)
       setErro(null)
@@ -139,8 +151,11 @@ export default function EditorFotoPaciente({
   }
 
   async function confirmar() {
-    if (!arquivoPendente || !previewPendente) return
+    if (!arquivoPendente || !previewPendente || disabled || operacaoRef.current) return
+    operacaoRef.current = true
+    onProcessando?.(true)
     setProcessando(true)
+    setMensagemAndamento(administrativo ? 'Salvando foto…' : 'Confirmando foto…')
     setErro(null)
     try {
       await onConfirmar(arquivoPendente)
@@ -148,15 +163,24 @@ export default function EditorFotoPaciente({
       setPreviewConfirmada(previewPendente)
       setPreviewPendente(null)
       setArquivoPendente(null)
+      setSucesso(administrativo ? 'Foto salva com sucesso.' : null)
     } catch (causa) {
       setErro(causa instanceof Error ? causa.message : 'Não foi possível confirmar a foto.')
     } finally {
+      operacaoRef.current = false
+      onProcessando?.(false)
       setProcessando(false)
+      setMensagemAndamento(null)
     }
   }
 
   async function remover() {
+    if (disabled || operacaoRef.current) return
+    operacaoRef.current = true
+    onProcessando?.(true)
+    setSucesso(null)
     setProcessando(true)
+    setMensagemAndamento('Removendo foto…')
     setErro(null)
     try {
       await onRemover()
@@ -166,20 +190,34 @@ export default function EditorFotoPaciente({
       setPreviewConfirmada(null)
       setArquivoPendente(null)
       if (inputRef.current) inputRef.current.value = ''
+      setSucesso(administrativo ? 'Foto removida.' : null)
+      setConfirmarRemocao(false)
     } catch (causa) {
       setErro(causa instanceof Error ? causa.message : 'Não foi possível remover a foto.')
     } finally {
+      operacaoRef.current = false
+      onProcessando?.(false)
       setProcessando(false)
+      setMensagemAndamento(null)
     }
   }
 
+  function descartarSelecao() {
+    revogar(previewPendente)
+    setPreviewPendente(null)
+    setArquivoPendente(null)
+    setErro(null)
+    if (inputRef.current) inputRef.current.value = ''
+  }
+
   return (
-    <div className="paciente-foto-reserva">
+    <div className={`paciente-foto-reserva${administrativo ? ' paciente-foto-editor-administrativo' : ''}`} aria-busy={processando}>
+      <div className="paciente-foto-conteudo">
       <div className="paciente-avatar" aria-label={preview ? 'Prévia da foto do paciente' : 'Avatar sem foto'}>
         {preview ? <img src={preview} alt="Prévia da foto do paciente" /> : (iniciais || <IconePessoa />)}
       </div>
-      <strong>Foto do paciente <span>(opcional)</span></strong>
-      <p>JPG, PNG ou WebP, até 5 MB. A ausência não bloqueia o cadastro.</p>
+      {!administrativo && <strong>Foto do paciente <span>(opcional)</span></strong>}
+      <p>{administrativo ? 'JPG, PNG ou WebP · até 5 MB. Foto opcional.' : 'JPG, PNG ou WebP, até 5 MB. A ausência não bloqueia o cadastro.'}</p>
 
       {cameraAberta ? (
         <div className="paciente-camera">
@@ -203,15 +241,27 @@ export default function EditorFotoPaciente({
             disabled={disabled || processando}
           />
           <button type="button" onClick={() => inputRef.current?.click()} disabled={disabled || processando}>
-            {preview ? 'Trocar foto' : 'Enviar foto'}
+            {administrativo ? 'Escolher foto' : preview ? 'Trocar foto' : 'Enviar foto'}
           </button>
-          <button type="button" onClick={abrirCamera} disabled={disabled || processando}>Tirar foto com webcam</button>
-          {arquivoPendente && <button type="button" className="paciente-foto-confirmar" onClick={confirmar} disabled={disabled || processando}>Confirmar foto</button>}
-          {preview && <button type="button" className="paciente-foto-remover" onClick={remover} disabled={disabled || processando}>Remover foto</button>}
+          <button type="button" onClick={abrirCamera} disabled={disabled || processando}>{administrativo ? 'Usar câmera' : 'Tirar foto com webcam'}</button>
+          {!administrativo && arquivoPendente && <button type="button" className="paciente-foto-confirmar" onClick={confirmar} disabled={disabled || processando}>{processando ? 'Aguarde…' : 'Confirmar foto'}</button>}
+          {administrativo && arquivoPendente && <button type="button" onClick={descartarSelecao} disabled={processando}>Descartar seleção</button>}
+          {(!administrativo ? preview : !arquivoPendente && (previewConfirmada || imagemAtualUrl)) && <button type="button" className="paciente-foto-remover" onClick={() => setConfirmarRemocao(true)} disabled={disabled || processando}>{administrativo ? 'Remover foto salva' : 'Remover foto'}</button>}
         </div>
       )}
-      {arquivoPendente && <p role="status">Confira a prévia e confirme a foto antes de salvar.</p>}
-      {erro && <p className="paciente-foto-erro" role="alert">{erro}</p>}
+      {arquivoPendente && <p role="status">{administrativo ? 'Prévia selecionada — ainda não salva. Confira antes de salvar.' : 'Confira a prévia e confirme a foto.'}</p>}
+      {administrativo && cameraAberta && <p>Capture a imagem ou cancele a câmera antes de salvar.</p>}
+      {administrativo && !arquivoPendente && !sucesso && <p>Escolha uma foto ou use a câmera para habilitar o salvamento.</p>}
+      {administrativo && erro && (previewConfirmada || imagemAtualUrl) && <p>A foto salva anteriormente permanece. Você pode tentar novamente ou descartar a seleção.</p>}
+      {mensagemAndamento && <p role="status" aria-live="polite">{mensagemAndamento}</p>}
+      {sucesso && <FeedbackAlert variant="success" title="Foto atualizada" description={sucesso} onClose={() => setSucesso(null)} autoDismissMs={6000} />}
+      {erro && <FeedbackAlert variant="destructive" title="Não foi possível atualizar a foto" description={erro} urgent />}
+      </div>
+      {administrativo && <footer className="paciente-foto-rodape">
+        <button type="button" onClick={onCancelar} disabled={processando}>Cancelar</button>
+        <button type="button" className="paciente-foto-confirmar" onClick={confirmar} disabled={disabled || processando || !arquivoPendente || cameraAberta}>{processando ? 'Salvando…' : 'Salvar foto'}</button>
+      </footer>}
+      <ConfirmacaoDialog open={confirmarRemocao} onOpenChange={setConfirmarRemocao} title="Remover a foto deste paciente?" description="A foto privada será desvinculada do cadastro. Os demais dados do paciente serão preservados." confirmLabel="Remover foto" onConfirm={() => void remover()} disabled={processando} />
     </div>
   )
 }

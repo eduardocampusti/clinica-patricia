@@ -1,5 +1,7 @@
 # Sistema — checkpoint de implementação local
 
+Continuidade30/09/2026: relatório09-GITHUB-DOMINIOS-SMTP.md registra planos/dominios/SMTP e revisão de Git. Preparado deploy estático e retorno por unidade, Edgev6 aplicada, nenhum deploy Hostinger conforme decisão posterior do usuário. Sem SMTP das clínicas/remetente definido. Testes isolados e limites da suíte login registrados, sem afirmar publicação pública.
+
 **Estado:** implementação local em revisão, em 26/09/2026. Sem commit, release ou publicação nesta etapa.
 
 - O shell, o rodapé e o cabeçalho usam o rótulo centralizado `Proprietário(a)`; a visão lateral usa `Visão de proprietário(a)`. O identificador de autorização continua `proprietaria`.
@@ -9,3 +11,7 @@
 - Validação sintética da página Sobre: 6 testes operacionais aprovados em desktop, tablet e celular, incluindo contexto de clínica, créditos/links, logo, versão, histórico vazio, teclado e tema escuro. `npm run build` (inclui typecheck) e `npm run lint` concluídos; lint mantém aviso preexistente em `ThemeProvider.tsx`. `git diff --check` sem erros de espaço.
 
 Pendências: revisão e integração modular do checkpoint e da árvore original em `main`; publicar e confirmar o workflow/PR automática no GitHub somente após aprovação; confirmar dados institucionais e política de suporte das clínicas. Esta página não altera autorização ou dados clínicos. O conteúdo sintético dos testes não comprova publicação em produção.
+
+## Mensagens compartilhadas — 28/09/2026
+
+Foi preparado localmente o padrão visual e acessível de mensagens e confirmações em `docs/padroes/PADRAO-MENSAGENS-SISTEMA.md`. Os componentes reutilizáveis são baseados em shadcn/ui `Alert` e `AlertDialog`, têm variantes explícitas de sucesso, atenção, erro e informação, suporte a tema escuro, movimento reduzido, anúncio assistivo e foco seguro. A configuração ainda não foi publicada.

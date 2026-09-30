@@ -1,5 +1,6 @@
-import { useCallback, useRef, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react'
 import { ModalBase } from '../components/ModalBase'
+import { FeedbackAlert } from '../components/feedback/FeedbackAlert'
 import { useFinanceiroConsulta } from '../hooks/useFinanceiroConsulta'
 import { invalidarFinanceiro } from '../lib/financeiro/financeiro.cache'
 import { formatarDataFinanceira } from '../lib/financeiro/financeiro.date'
@@ -57,11 +58,11 @@ function DialogoFiscal({ documento, acao, clinicaId, usuarioId, onFechar, onConc
   return <ModalBase titulo={acao === 'emissao' ? 'Solicitar emissão fiscal' : 'Solicitar cancelamento fiscal'} largura="lg" ocupado={ocupado} onFechar={fechar}>
     <form onSubmit={enviar} className="space-y-4">
       <p className="text-sm">{documento.paciente} · estado atual: {rotulos[documento.status]}</p>
-      <p className="rounded-lg bg-[var(--cor-alerta-suave)] p-3 text-sm">Esta ação registra apenas uma solicitação interna. Não emite nem cancela nota na prefeitura ou em provedor externo.</p>
+      <FeedbackAlert variant="warning" title="Solicitação interna" description="Esta ação não emite nem cancela nota na prefeitura ou em provedor externo." />
       {acao === 'cancelamento' && <label className="block text-sm font-medium">Motivo do cancelamento
         <textarea className={`${campo} mt-1 py-2`} rows={3} maxLength={1000} required disabled={ocupado || enviado}
           value={motivo} onChange={(e) => setMotivo(e.target.value)} /></label>}
-      {erro && <p role="alert" className="text-sm text-[var(--cor-erro)]">{erro}</p>}
+      {erro && <FeedbackAlert variant="destructive" title="Solicitação não registrada" description={erro} urgent />}
       {enviado && erro && <p className="text-xs text-[var(--texto-secundario)]">A mesma solicitação e chave foram preservadas para repetição segura.</p>}
       <div className="flex justify-end gap-2"><button type="button" className={botao} disabled={ocupado} onClick={fechar}>Cancelar</button>
         <button type="submit" className={primario} disabled={ocupado}>{ocupado ? 'Processando…' : enviado ? 'Tentar novamente' : 'Confirmar solicitação'}</button></div>
@@ -74,6 +75,7 @@ export default function FinanceiroFiscal({ clinicaId, usuarioId }: { clinicaId: 
   const [status, setStatus] = useState<'todos' | StatusFiscal>('todos')
   const [selecionado, setSelecionado] = useState<{ documento: DocumentoFiscalOperacional; acao: 'emissao' | 'cancelamento' } | null>(null)
   const [sucesso, setSucesso] = useState<string | null>(null)
+  useEffect(() => setSucesso(null), [clinicaId])
   const carregar = useCallback(() => listarDocumentosFiscais(clinicaId, pagina, status), [clinicaId, pagina, status])
   const consulta = useFinanceiroConsulta(`${clinicaId}:${pagina}:${status}`, carregar, nuncaVazio, { clinicaId, leitura: 'fiscal' })
   const dados = consulta.resultado.estado === 'sucesso' ? consulta.resultado.dados : null
@@ -83,9 +85,9 @@ export default function FinanceiroFiscal({ clinicaId, usuarioId }: { clinicaId: 
       <select className={`${campo} mt-1 block`} value={status} onChange={(e) => { setStatus(e.target.value as typeof status); setPagina(0) }}>
         <option value="todos">Todas</option>{Object.entries(rotulos).map(([valor, rotulo]) => <option key={valor} value={valor}>{rotulo}</option>)}
       </select></label><button type="button" className={botao} onClick={() => void consulta.recarregar()}>Atualizar</button></div>
-    {sucesso && <p role="status" className="rounded-lg bg-[var(--cor-sucesso-suave)] p-3 text-sm">{sucesso}</p>}
+    {sucesso && <FeedbackAlert variant="warning" title="Solicitação registrada" description={sucesso} onClose={() => setSucesso(null)} />}
     {consulta.resultado.estado === 'carregando' && <div role="status" aria-label="Carregando documentos fiscais" className={`${card} finance-skeleton`} />}
-    {consulta.resultado.estado === 'erro' && <div role="alert" className={card}><p>{consulta.resultado.erro.message}</p><button type="button" className={`${botao} mt-3`} onClick={() => void consulta.recarregar()}>Tentar novamente</button></div>}
+    {consulta.resultado.estado === 'erro' && <FeedbackAlert variant="destructive" title="Não foi possível carregar os documentos fiscais" description={consulta.resultado.erro.message} action={<button type="button" onClick={() => void consulta.recarregar()}>Tentar novamente</button>} urgent />}
     {dados && <section className={card}><h2 className="texto-titulo-secao">Documentos da clínica</h2>
       {!dados.itens.length ? <div className="finance-empty"><strong>Nenhum documento nesta seleção</strong><p>Solicitações fiscais da clínica aparecerão aqui.</p></div> :
         <ul className="mt-3 divide-y divide-[var(--borda)]">{dados.itens.map((documento) => <li key={documento.id} className="flex flex-wrap items-center justify-between gap-3 py-4">

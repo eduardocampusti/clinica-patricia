@@ -33,7 +33,7 @@ export const CLINIC_BRANDS: Record<ClinicBrandSlug, ClinicBrandConfig> = {
   brotas: {
     slug: 'brotas',
     nome: 'Clínica Brotas',
-    hostname: brotasHostname || undefined,
+    hostname: brotasHostname || 'clinicabrotas.com.br',
     clinicId: brotasId || undefined,
     aliasesClinica: ['brotas', 'clinica brotas'],
     imagemLogin: '/imagem_login_brotas.png',
@@ -55,7 +55,7 @@ export const CLINIC_BRANDS: Record<ClinicBrandSlug, ClinicBrandConfig> = {
   ipupiara: {
     slug: 'ipupiara',
     nome: 'Clínica Ipupiara',
-    hostname: ipupiaraHostname || undefined,
+    hostname: ipupiaraHostname || 'clinicaipupiara.com.br',
     clinicId: ipupiaraId || undefined,
     aliasesClinica: ['ipupiara', 'clinica ipupiara'],
     imagemLogin: '/imagem_login_ipupiara.png',

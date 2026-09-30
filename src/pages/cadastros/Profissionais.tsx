@@ -1,6 +1,7 @@
 import { Fragment, useCallback, useEffect, useState, type FormEvent } from 'react'
 import { supabase } from '../../lib/supabase'
 import { apenasDigitos, cpfValido, formatarCpf } from '../../lib/cpf'
+import { FeedbackAlert } from '../../components/feedback/FeedbackAlert'
 
 interface Especialidade {
   id: string
@@ -629,14 +630,7 @@ function Profissionais({ clinicaAtivaId, carregandoClinica, souProprietaria, pod
             </div>
           </div>
 
-          {erroFormulario && (
-            <p
-              role="alert"
-              className="rounded-lg border border-[var(--cor-erro-borda)] bg-[var(--cor-erro-suave)] px-3 py-2 text-sm text-[var(--cor-erro)]"
-            >
-              {erroFormulario}
-            </p>
-          )}
+          {erroFormulario && <FeedbackAlert variant="destructive" title="Profissional não salvo" description={erroFormulario} urgent />}
 
           <div className="flex justify-end gap-3">
             <button
@@ -1013,11 +1007,7 @@ function PainelHorarios({
             + Adicionar linha
           </button>
 
-          {erro && (
-            <p role="alert" className="rounded-lg border border-[var(--cor-erro-borda)] bg-[var(--cor-erro-suave)] px-3 py-2 text-sm text-[var(--cor-erro)]">
-              {erro}
-            </p>
-          )}
+          {erro && <FeedbackAlert variant="destructive" title="Vínculo não salvo" description={erro} urgent />}
 
           <div className="flex justify-end gap-3 pt-1">
             <button

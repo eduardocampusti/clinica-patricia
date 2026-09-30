@@ -6,6 +6,8 @@
 
 begin;
 
+-- Somente banco descartável: estas identidades SQL NÃO são sessões Auth reais.
+-- Não executar este bootstrap no Supabase conectado; Auth real exige contas próprias.
 -- Usuários e clínicas sintéticas.
 insert into auth.users(id) values
  ('00000000-0000-4000-8000-000000009501'),
@@ -26,7 +28,7 @@ insert into public.usuarios_clinicas(usuario_id,clinica_id,papel) values
  ('00000000-0000-4000-8000-000000009503','00000000-0000-4000-8000-000000009601','medico');
 
 -- Pacientes com CPF já preenchido. Usa CPFs sintéticos válidos.
--- CPFs de teste: 39053344705 (A), 11144477735 (B), 62289365003 (livre para correção).
+-- CPFs exclusivos das fixtures descartáveis; não usar na base conectada.
 insert into public.pacientes(id,clinica_id,nome_completo,
                              cpf_encrypted,cpf_hash) values
  ('00000000-0000-4000-8000-000000009701',
@@ -65,16 +67,16 @@ declare
   hash_depois text;
   motivo_ok text := 'Paciente solicitou correção; documento apresentado hoje.';
 begin
-  -- Sessão: recepção da clínica A.
+  -- Contexto SQL simulado: proprietária (não comprova login autenticado).
   perform set_config('request.jwt.claim.sub',
-                     '00000000-0000-4000-8000-000000009502', true);
+                     '00000000-0000-4000-8000-000000009501', true);
 
   select updated_at, cpf_hash into rev, hash_antes
     from public.pacientes where id = p_a;
 
-  -- 1. Recepção corrige CPF de paciente A com motivo válido.
+  -- 1. Proprietária corrige CPF de paciente A com motivo válido.
   perform public.paciente_corrigir_cpf(p_a, c_a, rev,
-                                       '62289365003', motivo_ok);
+                                       '12345678909', motivo_ok);
   select cpf_hash into hash_depois from public.pacientes where id = p_a;
   if hash_depois is not distinct from hash_antes then
     raise exception '1: hash não mudou'; end if;
@@ -87,6 +89,11 @@ begin
       and (a.dados_antes->>'cpf_hash')
           is distinct from (a.dados_depois->>'cpf_hash')
   ) then raise exception '1: auditoria sem motivo ou sem diff de cpf_hash'; end if;
+  if not exists (select 1 from public.auditoria where entidade_id = p_a::text
+    and motivo = motivo_ok and usuario_id = auth.uid() and created_at is not null)
+    then raise exception '1: autoria/data ausentes'; end if;
+  if nullif(current_setting('audit.motivo', true), '') is not null
+    then raise exception '1: motivo vazou para próxima operação'; end if;
 
   -- Após a correção, atualiza rev.
   select updated_at into rev from public.pacientes where id = p_a;
@@ -115,6 +122,12 @@ begin
   -- 9. CPF inválido → 22023.
   begin
     perform public.paciente_corrigir_cpf(p_a, c_a, rev,
+      '52998224725', 'Documento apresentado 529.982.247-25');
+    raise exception 'motivo com documento aceito' using errcode = 'XX000';
+  exception when invalid_parameter_value then null; end;
+
+  begin
+    perform public.paciente_corrigir_cpf(p_a, c_a, rev,
                                          '11111111111', motivo_ok);
     raise exception '9: CPF inválido aceito';
   exception when invalid_parameter_value then null; end;
@@ -122,7 +135,7 @@ begin
   -- 10. Mesmo CPF (idempotente) → 22023 "nenhuma alteração solicitada".
   begin
     perform public.paciente_corrigir_cpf(p_a, c_a, rev,
-                                         '62289365003', motivo_ok);
+                                         '12345678909', motivo_ok);
     raise exception '10: noop aceito';
   exception when invalid_parameter_value then null; end;
 
@@ -151,13 +164,19 @@ begin
   begin
     perform public.paciente_corrigir_cpf(p_sem, c_a, rev,
                                          '52998224725', motivo_ok);
-    raise exception '14: cadastro sem CPF aceito na correção';
+    raise exception '14: cadastro sem CPF aceito na correção' using errcode = 'XX000';
   exception when raise_exception then null; end;
 
   -- 15. Retorno é void. Uma seleção contra qualquer campo de CPF neste
   -- ensaio nunca partiu da RPC, apenas do banco local, portanto está OK.
 
-  -- 5. Recepção de A tenta corrigir paciente da clínica B → 42501.
+  -- 5. Recepção não pode corrigir nem na própria clínica, nem na outra.
+  perform set_config('request.jwt.claim.sub',
+                     '00000000-0000-4000-8000-000000009502', true);
+  begin
+    perform public.paciente_corrigir_cpf(p_a, c_a, rev, '52998224725', motivo_ok);
+    raise exception '5: recepção autorizada a corrigir' using errcode = 'XX000';
+  exception when insufficient_privilege then null; end;
   select updated_at into rev from public.pacientes where id = p_ipu;
   begin
     perform public.paciente_corrigir_cpf(p_ipu, c_b, rev,
@@ -209,7 +228,7 @@ begin
   --  - médico → 42501.
   perform set_config('request.jwt.claim.sub',
                      '00000000-0000-4000-8000-000000009502', true);
-  if not public.paciente_cpf_disponivel(c_a, p_a, '80403602004') then
+  if not public.paciente_cpf_disponivel(c_a, p_a, '98765432100') then
     raise exception '18a: CPF novo válido marcado indisponível'; end if;
   if public.paciente_cpf_disponivel(c_a, p_a, '11144477735') then
     raise exception '18b: CPF em uso marcado disponível'; end if;
@@ -222,7 +241,7 @@ begin
   perform set_config('request.jwt.claim.sub',
                      '00000000-0000-4000-8000-000000009503', true);
   begin
-    perform public.paciente_cpf_disponivel(c_a, p_a, '80403602004');
+    perform public.paciente_cpf_disponivel(c_a, p_a, '98765432100');
     raise exception '18c: médico autorizado';
   exception when insufficient_privilege then null; end;
 

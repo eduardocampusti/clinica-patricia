@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react'
 import { supabase } from '../lib/supabase'
 import { usePapelNaClinica } from '../hooks/usePapelNaClinica'
+import { FeedbackAlert } from '../components/feedback/FeedbackAlert'
 import {
   abrirProntuario,
   adicionarAdendoProntuario,
@@ -391,11 +392,7 @@ function Prontuario({
                   rows={4}
                 />
 
-                {erroSalvar && (
-                  <p role="alert" className="rounded-lg border border-[var(--cor-erro-borda)] bg-[var(--cor-erro-suave)] px-3 py-2 text-sm text-[var(--cor-erro)]">
-                    {erroSalvar}
-                  </p>
-                )}
+                {erroSalvar && <FeedbackAlert variant="destructive" title="Não foi possível salvar o prontuário" description={erroSalvar} urgent />}
                 {mensagemSalvo && (
                   <p className="rounded-lg border border-[var(--cor-sucesso-borda)] bg-[var(--cor-sucesso-suave)] px-3 py-2 text-sm text-[var(--cor-sucesso)]">
                     {mensagemSalvo}
@@ -451,11 +448,7 @@ function Prontuario({
             </button>
           </div>
 
-          {erroLista && (
-            <p role="alert" className="rounded-lg border border-[var(--cor-erro-borda)] bg-[var(--cor-erro-suave)] px-3 py-2 text-sm text-[var(--cor-erro)]">
-              {erroLista}
-            </p>
-          )}
+          {erroLista && <FeedbackAlert variant="destructive" title="Atendimentos indisponíveis" description={erroLista} urgent />}
 
           <SecaoAtendimentos
             titulo="Em andamento"
@@ -649,11 +642,7 @@ function SecaoAdendos({ adendos, texto, onTextoChange, onAdicionar, salvando, er
           placeholder="Adicionar um adendo..."
           className={CAMPO_CLASSE}
         />
-        {erro && (
-          <p role="alert" className="text-sm text-[var(--cor-erro)]">
-            {erro}
-          </p>
-        )}
+        {erro && <FeedbackAlert variant="destructive" title="Não foi possível adicionar o conteúdo" description={erro} urgent />}
         <div className="flex justify-end">
           <button
             type="button"
@@ -742,11 +731,7 @@ function ModalNovoAtendimento({
           </select>
         </div>
 
-        {erro && (
-          <p role="alert" className="rounded-lg border border-[var(--cor-erro-borda)] bg-[var(--cor-erro-suave)] px-3 py-2 text-sm text-[var(--cor-erro)]">
-            {erro}
-          </p>
-        )}
+        {erro && <FeedbackAlert variant="destructive" title="Atendimento não criado" description={erro} urgent />}
 
         <div className="flex justify-end gap-3 pt-1">
           <button
@@ -785,11 +770,7 @@ function ModalConfirmarFinalizar({ finalizando, erro, onFechar, onConfirmar }: M
           Depois de finalizado, esse registro não pode mais ser editado. Só é possível corrigir por adendo. Confirma?
         </p>
 
-        {erro && (
-          <p role="alert" className="rounded-lg border border-[var(--cor-erro-borda)] bg-[var(--cor-erro-suave)] px-3 py-2 text-sm text-[var(--cor-erro)]">
-            {erro}
-          </p>
-        )}
+        {erro && <FeedbackAlert variant="destructive" title="Atendimento não finalizado" description={erro} urgent />}
 
         <div className="flex justify-end gap-3 pt-1">
           <button
@@ -879,11 +860,7 @@ function ModalEmitirDocumento({ atendimentoId, onFechar, onSalvo }: ModalEmitirD
           />
         </div>
 
-        {erro && (
-          <p role="alert" className="rounded-lg border border-[var(--cor-erro-borda)] bg-[var(--cor-erro-suave)] px-3 py-2 text-sm text-[var(--cor-erro)]">
-            {erro}
-          </p>
-        )}
+        {erro && <FeedbackAlert variant="destructive" title="Documento não emitido" description={erro} urgent />}
 
         <div className="flex justify-end gap-3 pt-1">
           <button

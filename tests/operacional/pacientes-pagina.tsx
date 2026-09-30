@@ -16,6 +16,8 @@ const clinica = {
 
 export function PaginaSintetica() {
   const [tela, setTela] = useState<Tela>('pacientes')
+  // Apenas o harness: nunca determina autorização da aplicação real.
+  const papel = new URLSearchParams(location.search).get('papel') === 'proprietaria' ? 'proprietaria' : 'recepcao'
 
   useEffect(() => {
     document.documentElement.style.setProperty('--cor-primaria', clinica.cor_primaria)
@@ -25,10 +27,10 @@ export function PaginaSintetica() {
 
   return (
     <AppShell tela={tela} onNavegar={setTela} clinicaAtiva={clinica} clinicasDoUsuario={[clinica]}
-      onSelecionarClinica={() => undefined} emailUsuario="usuario.sintetico@example.invalid" papel="recepcao" onSair={() => undefined}>
+      onSelecionarClinica={() => undefined} emailUsuario="usuario.sintetico@example.invalid" papel={papel} onSair={() => undefined}>
       {tela === 'pacientes' ? (
         <Pacientes clinicaAtivaId={clinica.id} clinicaNome={clinica.nome} carregandoClinica={false}
-          papel="recepcao" carregandoPapel={false} usuarioId="usuario-sintetico" onIrParaAgenda={() => setTela('agenda')} />
+          papel={papel} carregandoPapel={false} usuarioId="usuario-sintetico" onIrParaAgenda={() => setTela('agenda')} />
       ) : <p>Área de navegação sintética. Nenhum agendamento é gravado.</p>}
     </AppShell>
   )

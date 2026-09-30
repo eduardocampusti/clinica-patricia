@@ -3,6 +3,7 @@ import type { Session } from '@supabase/supabase-js'
 import type { Papel } from './hooks/usePapelNaClinica'
 import { supabase } from './lib/supabase'
 import Login from './pages/Login'
+import ConviteEquipe from './pages/ConviteEquipe'
 import Pacientes from './pages/Pacientes'
 import Cadastros from './pages/cadastros/Cadastros'
 import FinanceiroModulo from './pages/FinanceiroModulo'
@@ -40,6 +41,7 @@ function App() {
     carregando: carregandoClinica,
   } = useClinicaAtiva(clinicasDoUsuario, carregandoClinicas)
   const { papel, carregando: carregandoPapel } = usePapelNaClinica(session?.user.id ?? '', clinicaAtivaId)
+  const conviteId = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('convite') : null
 
   useEffect(() => {
     if (!escolhaAcesso || !session || carregandoClinicas) return
@@ -120,6 +122,15 @@ function App() {
         <p className="text-sm text-[var(--texto-secundario)]">Carregando...</p>
       </div>
     )
+  }
+
+  if (session && conviteId && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/iu.test(conviteId)) {
+    return <ConviteEquipe conviteId={conviteId} session={session} onConcluido={() => {
+      window.history.replaceState({}, document.title, window.location.pathname)
+      setEscolhaAcesso(null)
+      setEscolhaAplicada(false)
+      setAcessoValidado(false)
+    }} />
   }
 
   if (!session || !acessoValidado) {

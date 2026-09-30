@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { registrarEntradaCaixa, type FormaPagamento } from '../../lib/api'
+import { FeedbackAlert } from '../feedback/FeedbackAlert'
 
 const FORMAS_PAGAMENTO: { valor: FormaPagamento; rotulo: string }[] = [
   { valor: 'dinheiro', rotulo: 'Dinheiro' },
@@ -214,14 +215,7 @@ export function FormRegistrarEntrada({
         </div>
       </div>
 
-      {erro && (
-        <p
-          role="alert"
-          className="rounded-lg border border-[var(--cor-erro-borda)] bg-[var(--cor-erro-suave)] px-3 py-2 text-sm text-[var(--cor-erro)]"
-        >
-          {erro}
-        </p>
-      )}
+      {erro && <FeedbackAlert variant="destructive" title="Não foi possível registrar a entrada" description={erro} urgent />}
 
       <button
         type="submit"

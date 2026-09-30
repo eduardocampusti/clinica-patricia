@@ -22,6 +22,8 @@ import ControlesListaPacientes from '../components/pacientes/ControlesListaPacie
 import EditarPaciente from '../components/pacientes/EditarPaciente'
 import type { PacienteEdicao } from '../lib/pacienteEdicao'
 import type { Papel } from '../hooks/usePapelNaClinica'
+import { FeedbackAlert } from '../components/feedback/FeedbackAlert'
+import { CamposEnderecoContatosPaciente, NavegacaoFormularioPaciente } from '../components/pacientes/FormularioPacienteCompartilhado'
 import './pacientes-cadastro.css'
 import './pacientes-lista.css'
 
@@ -60,6 +62,13 @@ interface PacienteCriado {
   clinica_id: string
 }
 
+interface FeedbackPagina {
+  variant: 'success' | 'warning'
+  title: string
+  description: string
+  atualizarLista?: boolean
+}
+
 const OPCOES_SEXO = [
   { value: 'nao_informado', label: 'Não informado' },
   { value: 'feminino', label: 'Feminino' },
@@ -87,6 +96,24 @@ interface FormPaciente {
   responsavelTelefone: string
   responsavelCpf: string
   responsavelEmail: string
+}
+
+type CampoErroFormulario = 'nomeCompleto' | 'cpf' | 'dataNascimento' | 'responsavelNome' | 'responsavelVinculo' | 'responsavelTelefone' | 'responsavelCpf' | 'telefone' | 'cep' | 'email'
+
+function campoParaErroFormulario(mensagem: string, form: FormPaciente): CampoErroFormulario | null {
+  const texto = mensagem.toLocaleLowerCase('pt-BR')
+  if (texto.includes('cpf opcional do responsável')) return 'responsavelCpf'
+  if (texto.includes('cpf informado')) return 'cpf'
+  if (texto.includes('nome completo do paciente')) return 'nomeCompleto'
+  if (texto.includes('data de nascimento')) return 'dataNascimento'
+  if (texto.includes('telefone com ddd')) return 'telefone'
+  if (texto.includes('cep com 8')) return 'cep'
+  if (texto.includes('responsável legal')) {
+    if (!form.responsavelNome.trim()) return 'responsavelNome'
+    if (!form.responsavelVinculo.trim()) return 'responsavelVinculo'
+    return 'responsavelTelefone'
+  }
+  return null
 }
 
 type CampoTextoFormatado = 'nomeCompleto' | 'responsavelNome' | 'responsavelVinculo' | 'logradouro' | 'bairro' | 'cidade'
@@ -214,14 +241,17 @@ function Pacientes({
   const [clinicaListaId, setClinicaListaId] = useState<string | null>(null)
   const [selecao, setSelecao] = useState<{ clinicaId: string; paciente: PacienteListado } | null>(null)
   const [resumo, setResumo] = useState<{ chave: string; responsaveis: ResponsavelResumo[]; cpfPendente: boolean | null; erro: boolean } | null>(null)
-  const [edicao, setEdicao] = useState<{ pacienteId: string; clinicaId: string } | null>(null)
+  const [edicao, setEdicao] = useState<{ pacienteId: string; clinicaId: string; paciente: PacienteListado } | null>(null)
+  const edicaoIniciadaNoResumo = useRef(false)
   useEffect(() => { setEdicao(null) }, [clinicaAtivaId, papel, carregandoClinica, carregandoPapel])
   const [carregandoResumo, setCarregandoResumo] = useState(false)
   const [mostrarAdicionarCpf, setMostrarAdicionarCpf] = useState(false)
+  const lembreteResumoAdiado = useRef<string | null>(null)
   const [revisaoResumo, setRevisaoResumo] = useState(0)
-  const [resumoMovel, setResumoMovel] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 1100px)').matches)
   const requisicaoResumoAtual = useRef(0)
-  const resumoRef = useRef<HTMLElement>(null)
+  const resumoRef = useRef<HTMLDialogElement>(null)
+  const fotoModalRef = useRef<HTMLDialogElement>(null)
+  const [processandoFoto, setProcessandoFoto] = useState(false)
   const fecharResumoRef = useRef<HTMLButtonElement>(null)
   const gatilhoResumoRef = useRef<HTMLButtonElement>(null)
 
@@ -239,17 +269,20 @@ function Pacientes({
   const idade = calcularIdade(form.dataNascimento)
   const [salvando, setSalvando] = useState(false)
   const [erroFormulario, setErroFormulario] = useState<string | null>(null)
-  const [mensagemSucesso, setMensagemSucesso] = useState<string | null>(null)
+  const [feedbackPagina, setFeedbackPagina] = useState<FeedbackPagina | null>(null)
+  const [atualizandoAposSalvar, setAtualizandoAposSalvar] = useState(false)
   const [estadoCep, setEstadoCep] = useState<EstadoCep>('inicial')
   const [fotoCadastro, setFotoCadastro] = useState<File | null>(null)
   const [fotoCadastroUrl, setFotoCadastroUrl] = useState<string | null>(null)
   const [pacienteCriadoPendente, setPacienteCriadoPendente] = useState<PacienteCriado | null>(null)
+  const enviandoCadastro = useRef(false)
   const [pacienteFoto, setPacienteFoto] = useState<PacienteListado | null>(null)
   const [fotoAtualUrl, setFotoAtualUrl] = useState<string | null>(null)
   const [carregandoFoto, setCarregandoFoto] = useState(false)
   const [erroFotoAdministrativa, setErroFotoAdministrativa] = useState<string | null>(null)
   const requisicaoFotoAtual = useRef(0)
   const modalCadastroRef = useRef<HTMLFormElement>(null)
+  const erroFormularioRef = useRef<HTMLDivElement>(null)
   const gatilhoNovoPacienteRef = useRef<HTMLButtonElement>(null)
   const palavrasComGrafiaManual = useRef<Partial<Record<CampoTextoFormatado, Set<string>>>>({})
   const selecaoAntesDaEdicao = useRef<Partial<Record<CampoTextoFormatado, SelecaoAntesDaEdicao>>>({})
@@ -258,6 +291,8 @@ function Pacientes({
   const valoresViaCep = useRef<Partial<Record<CampoEnderecoViaCep, string>>>({})
   const requisicaoCepAtual = useRef(0)
   const clinicaFormularioAnterior = useRef(clinicaAtivaId)
+  const clinicaAtivaRef = useRef(clinicaAtivaId)
+  clinicaAtivaRef.current = clinicaAtivaId
 
   const fecharFormulario = useCallback(() => {
     requisicaoCepAtual.current += 1
@@ -293,16 +328,15 @@ function Pacientes({
     const { data, error, count } = await consulta.order('id', { ascending: true })
       .limit(LIMITE_CONSULTA_PACIENTES).abortSignal(controlador.signal)
 
-    if (controlador.signal.aborted || requisicao !== requisicaoAtual.current) return
+    if (controlador.signal.aborted || requisicao !== requisicaoAtual.current) return null
     setChaveListaCarregada(chaveLista)
     setTotalConsulta(count)
     if (error || count === null) {
       if (requisicao !== requisicaoAtual.current) return
-      setPacientes([])
       setErroLista('Não foi possível carregar os pacientes e confirmar a contagem completa.')
       setClinicaListaId(clinicaId)
       setCarregandoLista(false)
-      return
+      return false
     }
 
     if (requisicao !== requisicaoAtual.current) return
@@ -312,6 +346,7 @@ function Pacientes({
     setPacientes(completa ? ((data ?? []) as PacienteRow[]).map((linha) => ({ ...linha, ativo: true })) : [])
     setClinicaListaId(clinicaId)
     setCarregandoLista(false)
+    return true
   }, [busca, regrasFiltros, chaveLista])
 
   useEffect(() => {
@@ -351,7 +386,8 @@ function Pacientes({
     setEtapaCadastro(1)
     setForm(FORM_INICIAL)
     setErroFormulario(null)
-    setMensagemSucesso(null)
+    setFeedbackPagina(null)
+    setAtualizandoAposSalvar(false)
     setBuscaCpf('')
     setBusca('')
     setFiltros(FILTROS_PACIENTES_INICIAIS)
@@ -377,12 +413,6 @@ function Pacientes({
     })
     requisicaoCpfAtual.current += 1
   }, [clinicaAtivaId])
-
-  useEffect(() => {
-    if (!mensagemSucesso) return
-    const timeout = setTimeout(() => setMensagemSucesso(null), 5000)
-    return () => clearTimeout(timeout)
-  }, [mensagemSucesso])
 
   useEffect(() => {
     if (!mostrarFormulario) return
@@ -415,6 +445,33 @@ function Pacientes({
       gatilho?.focus()
     }
   }, [mostrarFormulario, salvando, fecharFormulario])
+
+  useLayoutEffect(() => {
+    if (!mostrarFormulario || !erroFormulario) return
+    const campo = campoParaErroFormulario(erroFormulario, form)
+    const ids: Record<CampoErroFormulario, string> = {
+      nomeCompleto: 'paciente-nome',
+      cpf: 'paciente-cpf',
+      dataNascimento: 'paciente-data-nascimento',
+      responsavelNome: 'responsavel-nome',
+      responsavelVinculo: 'responsavel-vinculo',
+      responsavelTelefone: 'responsavel-telefone',
+      responsavelCpf: 'responsavel-cpf',
+      telefone: 'paciente-telefone',
+      cep: 'paciente-cep',
+      email: 'paciente-email',
+    }
+    const input = campo ? document.getElementById(ids[campo]) : null
+    if (input instanceof HTMLElement && !input.hasAttribute('disabled')) {
+      const timer = window.setTimeout(() => {
+        if (!input.isConnected) return
+        input.focus()
+        input.scrollIntoView({ block: 'nearest' })
+      }, 0)
+      return () => window.clearTimeout(timer)
+    }
+    erroFormularioRef.current?.focus()
+  }, [erroFormulario, form, mostrarFormulario])
 
   useEffect(() => {
     const cep = apenasDigitos(form.cep)
@@ -490,13 +547,6 @@ function Pacientes({
   }, [listaPendente, pacientesExibidos, selecao])
 
   useEffect(() => {
-    const media = window.matchMedia('(max-width: 1100px)')
-    const atualizar = () => setResumoMovel(media.matches)
-    media.addEventListener('change', atualizar)
-    return () => media.removeEventListener('change', atualizar)
-  }, [])
-
-  useEffect(() => {
     const requisicao = ++requisicaoResumoAtual.current
     if (!pacienteSelecionado || !clinicaAtivaId || !chaveResumo) {
       setResumo(null)
@@ -517,6 +567,7 @@ function Pacientes({
       if (requisicao !== requisicaoResumoAtual.current) return
       if (responsaveis.error) throw responsaveis.error
       setResumo({ chave: chaveResumo, responsaveis: (responsaveis.data ?? []) as ResponsavelResumo[], cpfPendente, erro: false })
+      setMostrarAdicionarCpf(cpfPendente && lembreteResumoAdiado.current !== chaveResumo)
     }).catch(() => {
       if (requisicao !== requisicaoResumoAtual.current) return
       setResumo({ chave: chaveResumo, responsaveis: [], cpfPendente: null, erro: true })
@@ -526,13 +577,14 @@ function Pacientes({
   }, [chaveResumo, clinicaAtivaId, pacienteSelecionado, revisaoResumo])
 
   useEffect(() => {
-    if (!pacienteSelecionado || !resumoMovel) return
+    if (!pacienteSelecionado) return
+    resumoRef.current?.showModal()
     const anterior = document.activeElement instanceof HTMLElement ? document.activeElement : null
     const overflowAnterior = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     fecharResumoRef.current?.focus()
     function aoTeclar(evento: KeyboardEvent) {
-      if (document.querySelector('.paciente-foto-modal-backdrop, .paciente-edicao[open]')) return
+      if (document.querySelector('.paciente-foto-modal[open], .paciente-edicao[open]')) return
       if (evento.key === 'Escape') {
         evento.preventDefault()
         setSelecao(null)
@@ -557,7 +609,12 @@ function Pacientes({
       if (gatilhoResumoRef.current?.isConnected) gatilhoResumoRef.current.focus()
       else anterior?.focus()
     }
-  }, [pacienteSelecionado, resumoMovel])
+  }, [pacienteSelecionado])
+
+  useEffect(() => {
+    if (!pacienteFoto) return
+    fotoModalRef.current?.showModal()
+  }, [pacienteFoto])
 
   function mudarModoBusca(modo: 'nome' | 'cpf') {
     if (modo === modoBusca) return
@@ -571,8 +628,11 @@ function Pacientes({
     setMostrarAdicionarCpf(false)
   }
 
-  function aplicarEdicaoConfirmada(atualizado: PacienteEdicao) {
+  async function aplicarEdicaoConfirmada(atualizado: PacienteEdicao) {
     if (!edicao || atualizado.clinica_id !== clinicaAtivaId || atualizado.id !== edicao.pacienteId) return
+    const clinicaDaEdicao = atualizado.clinica_id
+    const manterResumo = edicaoIniciadaNoResumo.current
+    edicaoIniciadaNoResumo.current = false
     const linha: PacienteListado = {
       id: atualizado.id, nome_completo: atualizado.nome_completo ?? '', data_nascimento: atualizado.data_nascimento,
       telefone: atualizado.telefone, endereco: atualizado.endereco, ativo: atualizado.ativo,
@@ -580,17 +640,60 @@ function Pacientes({
     }
     setPacientes((atuais) => atuais.map((p) => p.id === linha.id ? linha : p))
     setResultadoCpf((atuais) => atuais?.map((p) => p.id === linha.id ? linha : p) ?? null)
-    setSelecao({ clinicaId: atualizado.clinica_id, paciente: linha })
-    setRevisaoResumo((v) => v + 1)
+    if (manterResumo) {
+      setSelecao({ clinicaId: atualizado.clinica_id, paciente: linha })
+      setRevisaoResumo((v) => v + 1)
+    } else {
+      setSelecao(null)
+      setResumo(null)
+      setMostrarAdicionarCpf(false)
+    }
     const corresponde = correspondeAosFiltros(linha, regrasFiltros)
       && (modoBusca !== 'nome' || linha.nome_completo.toLocaleLowerCase('pt-BR').includes(busca.trim().toLocaleLowerCase('pt-BR')))
-    setMensagemSucesso(corresponde ? 'Cadastro atualizado.' : 'Cadastro atualizado. O paciente deixou de corresponder à busca ou aos filtros atuais.')
+    const descricaoSucesso = 'O cadastro do paciente foi atualizado com sucesso.'
+    setFeedbackPagina({
+      variant: 'success',
+      title: 'Alterações salvas',
+      description: corresponde
+        ? descricaoSucesso
+        : `${descricaoSucesso} O paciente saiu dos critérios atuais de busca ou filtro.`,
+    })
     setEdicao(null)
+    if (modoBusca !== 'nome') return
+    setAtualizandoAposSalvar(true)
+    const atualizada = await carregarPacientes(clinicaDaEdicao)
+    if (clinicaAtivaRef.current !== clinicaDaEdicao || atualizada === null) return
+    setAtualizandoAposSalvar(false)
+    if (!atualizada) {
+      setFeedbackPagina({
+        variant: 'warning',
+        title: 'Alterações salvas, mas não foi possível atualizar a lista.',
+        description: 'O cadastro foi salvo. Atualize a lista para conferir os dados sem gravar novamente.',
+        atualizarLista: true,
+      })
+    }
+  }
+
+  async function tentarAtualizarListaAposSalvar() {
+    const clinicaDaTentativa = clinicaAtivaRef.current
+    if (!clinicaDaTentativa || atualizandoAposSalvar) return
+    setAtualizandoAposSalvar(true)
+    const atualizada = await carregarPacientes(clinicaDaTentativa)
+    if (clinicaAtivaRef.current !== clinicaDaTentativa || atualizada === null) return
+    setAtualizandoAposSalvar(false)
+    if (atualizada) {
+      setFeedbackPagina({
+        variant: 'success',
+        title: 'Alterações salvas',
+        description: 'O cadastro do paciente foi atualizado com sucesso.',
+      })
+    }
   }
 
   function selecionarPaciente(paciente: PacienteListado, gatilho: HTMLButtonElement) {
     if (!clinicaAtivaId) return
     gatilhoResumoRef.current = gatilho
+    setFeedbackPagina(null)
     setSelecao({ clinicaId: clinicaAtivaId, paciente })
     setResumo(null)
     setMostrarAdicionarCpf(false)
@@ -598,11 +701,24 @@ function Pacientes({
 
   function abrirEdicao(paciente: PacienteListado) {
     if (!podeAdministrar || !clinicaAtivaId || carregandoClinica || carregandoPapel || clinicaListaId !== clinicaAtivaId) return
-    setEdicao({ pacienteId: paciente.id, clinicaId: clinicaAtivaId })
+    edicaoIniciadaNoResumo.current = pacienteSelecionado?.id === paciente.id
+    setFeedbackPagina(null)
+    setEdicao({ pacienteId: paciente.id, clinicaId: clinicaAtivaId, paciente })
+  }
+
+  function abrirAcaoDaEdicao(acao: 'foto' | 'cpf') {
+    if (!edicao || !podeAdministrar || !clinicaAtivaId || edicao.clinicaId !== clinicaAtivaId || clinicaListaId !== clinicaAtivaId) return
+    const paciente = edicao.paciente
+    setSelecao({ clinicaId: clinicaAtivaId, paciente })
+    setResumo(null)
+    setMostrarAdicionarCpf(acao === 'cpf')
+    setEdicao(null)
+    if (acao === 'foto') void abrirGerenciadorFoto(paciente)
   }
 
   function fecharResumo() {
     if (pacienteFoto) fecharGerenciadorFoto()
+    lembreteResumoAdiado.current = null
     setSelecao(null)
     setResumo(null)
     setMostrarAdicionarCpf(false)
@@ -760,9 +876,10 @@ function Pacientes({
   }
 
   function abrirFormulario() {
+    enviandoCadastro.current = false
     setForm({ ...FORM_INICIAL })
     setErroFormulario(null)
-    setMensagemSucesso(null)
+    setFeedbackPagina(null)
     setEstadoCep('inicial')
     setFotoCadastro(null)
     setFotoCadastroUrl((url) => {
@@ -788,7 +905,7 @@ function Pacientes({
       return null
     })
     setMostrarFormulario(false)
-    setMensagemSucesso('Paciente cadastrado com sucesso.')
+    setFeedbackPagina({ variant: 'success', title: 'Paciente cadastrado', description: 'Paciente cadastrado com sucesso.' })
     if (onPacienteCriado) {
       onPacienteCriado(paciente)
       return
@@ -807,7 +924,7 @@ function Pacientes({
       arquivo: fotoCadastro,
     })
     if (resultado.limpezaPendente) {
-      setMensagemSucesso('Foto vinculada; há uma limpeza técnica pendente no armazenamento.')
+      setFeedbackPagina({ variant: 'warning', title: 'Foto salva com pendência', description: 'Foto vinculada; há uma limpeza técnica pendente no armazenamento.' })
     }
     await concluirCadastro(paciente)
   }
@@ -816,6 +933,7 @@ function Pacientes({
     if (!clinicaAtivaId) return
     const requisicao = ++requisicaoFotoAtual.current
     const clinicaDaFoto = clinicaAtivaId
+    setProcessandoFoto(false)
     setPacienteFoto(paciente)
     setErroFotoAdministrativa(null)
     setFotoAtualUrl((url) => {
@@ -886,7 +1004,9 @@ function Pacientes({
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    if (enviandoCadastro.current) return
     if (pacienteCriadoPendente) {
+      enviandoCadastro.current = true
       setSalvando(true)
       setErroFormulario(null)
       try {
@@ -894,6 +1014,8 @@ function Pacientes({
       } catch (causa) {
         setErroFormulario(causa instanceof Error ? causa.message : 'O paciente foi salvo, mas a foto não foi enviada.')
         setSalvando(false)
+      } finally {
+        enviandoCadastro.current = false
       }
       return
     }
@@ -948,11 +1070,12 @@ function Pacientes({
       return
     }
 
+    enviandoCadastro.current = true
     setSalvando(true)
 
     try {
       if (idadeInformada < 18) {
-        const { data, error } = await supabase.rpc('paciente_menor_criar_com_responsavel', {
+        const parametrosMenor = {
           p_clinica_id: clinicaAtivaId,
           p_nome_completo: dados.nomeCompleto,
           p_data_nascimento: dados.dataNascimento,
@@ -967,7 +1090,17 @@ function Pacientes({
           p_observacoes: dados.observacoes || null,
           p_responsavel_cpf: apenasDigitos(dados.responsavelCpf) || null,
           p_responsavel_email: dados.responsavelEmail || null,
-        })
+          p_endereco_componentes: {
+            cep: dados.cep || null,
+            logradouro: dados.logradouro || null,
+            numero: dados.numero || null,
+            complemento: dados.complemento || null,
+            bairro: dados.bairro || null,
+            cidade: dados.cidade || null,
+            uf: dados.uf || null,
+          },
+        }
+        const { data, error } = await supabase.rpc('paciente_menor_criar_com_responsavel', parametrosMenor)
         if (error) {
           setErroFormulario(error.code === '23505' ? 'Já existe um paciente com este CPF cadastrado nesta clínica.' : 'Não foi possível salvar paciente e responsável. Nenhum cadastro foi concluído.')
           setSalvando(false)
@@ -1007,6 +1140,13 @@ function Pacientes({
         endereco: comporEnderecoPaciente(dados),
         observacoes: dados.observacoes || null,
         created_by: usuarioId,
+        cep: dados.cep || null,
+        logradouro: dados.logradouro || null,
+        numero: dados.numero || null,
+        complemento: dados.complemento || null,
+        bairro: dados.bairro || null,
+        cidade: dados.cidade || null,
+        uf: dados.uf || null,
       }).select('id, nome_completo').single()
 
       if (error) {
@@ -1035,14 +1175,14 @@ function Pacientes({
     } catch {
       setErroFormulario('Não foi possível salvar o paciente. Tente novamente.')
       setSalvando(false)
+    } finally {
+      enviandoCadastro.current = false
     }
   }
 
   if (!carregandoPapel && !podeAdministrar) {
     return (
-      <p role="alert" className="rounded-lg border border-[var(--cor-erro-borda)] bg-[var(--cor-erro-suave)] px-4 py-3 text-sm text-[var(--cor-erro)]">
-        Você não tem permissão para acessar o cadastro administrativo de pacientes.
-      </p>
+      <FeedbackAlert variant="destructive" title="Acesso não autorizado" description="Você não tem permissão para acessar o cadastro administrativo de pacientes." urgent />
     )
   }
 
@@ -1054,9 +1194,26 @@ function Pacientes({
     )
   }
 
+  const alertaResultado = feedbackPagina && (
+    <div className="pacientes-feedback-resultado">
+      <FeedbackAlert
+        variant={feedbackPagina.variant}
+        title={feedbackPagina.title}
+        description={feedbackPagina.description}
+        action={feedbackPagina.atualizarLista ? (
+          <button type="button" disabled={atualizandoAposSalvar} onClick={() => void tentarAtualizarListaAposSalvar()}>
+            {atualizandoAposSalvar ? 'Atualizando…' : 'Atualizar lista'}
+          </button>
+        ) : undefined}
+        onClose={() => setFeedbackPagina(null)}
+        autoDismissMs={feedbackPagina.variant === 'success' ? 6000 : undefined}
+      />
+    </div>
+  )
+
   return (
     <div className="pacientes-pagina">
-      {edicao && edicao.clinicaId === clinicaAtivaId && podeAdministrar && !carregandoClinica && !carregandoPapel && <EditarPaciente key={`${edicao.clinicaId}:${edicao.pacienteId}`} pacienteId={edicao.pacienteId} clinicaId={edicao.clinicaId} clinicaNome={clinicaNome || 'Clínica selecionada'} onFechar={() => setEdicao(null)} onSalvo={aplicarEdicaoConfirmada} />}
+      {edicao && edicao.clinicaId === clinicaAtivaId && podeAdministrar && !carregandoClinica && !carregandoPapel && <EditarPaciente key={`${edicao.clinicaId}:${edicao.pacienteId}`} pacienteId={edicao.pacienteId} clinicaId={edicao.clinicaId} clinicaNome={clinicaNome || 'Clínica selecionada'} podeCorrigirCpf={papel === 'proprietaria'} onFechar={() => setEdicao(null)} onSalvo={aplicarEdicaoConfirmada} onGerenciarFoto={() => abrirAcaoDaEdicao('foto')} onAdicionarCpf={() => abrirAcaoDaEdicao('cpf')} />}
       <header className="pacientes-pagina-cabecalho">
         <div className="pacientes-pagina-identidade">
           <span className="pacientes-pagina-icone" aria-hidden="true"><IconePessoas /></span>
@@ -1079,11 +1236,7 @@ function Pacientes({
         )}
       </header>
 
-      {mensagemSucesso && (
-        <p role="status" aria-live="polite" className="rounded-lg border border-[var(--cor-sucesso-borda)] bg-[var(--cor-sucesso-suave)] px-4 py-2.5 text-sm font-medium text-[var(--cor-sucesso)]">
-          {mensagemSucesso}
-        </p>
-      )}
+      {!pacienteSelecionado && alertaResultado}
 
       {mostrarFormulario && (
         <div className="paciente-modal-backdrop">
@@ -1111,25 +1264,16 @@ function Pacientes({
             </button>
           </header>
 
-          <nav className={`paciente-etapas ${idade !== null && idade < 18 ? 'com-responsavel' : ''}`} aria-label="Etapas do cadastro">
-            <button type="button" className={etapaCadastro === 1 ? 'ativa' : 'concluida'} onClick={() => setEtapaCadastro(1)}>
-              <span className="paciente-etapa-numero">{etapaCadastro === 1 ? '1' : '✓'}</span>
-              <span><strong>1. Identificação</strong><small>Dados do paciente</small></span>
-            </button>
-            <span className="paciente-etapa-planejada" role="note" aria-label="Convênios — Em planejamento">
-              <span className="paciente-etapa-planejada-icone" aria-hidden="true">◇</span>
-              <span><strong>Convênios</strong><small>Em planejamento</small></span>
-            </span>
-            {idade !== null && idade < 18 && (
-              <button type="button" className={etapaCadastro === 2 ? 'ativa' : etapaCadastro === 3 ? 'concluida' : ''} onClick={() => etapaCadastro === 1 ? avancarCadastro() : setEtapaCadastro(2)}>
-                <span className="paciente-etapa-numero">{etapaCadastro === 3 ? '✓' : '2'}</span>
-                <span><strong>2. Responsável legal</strong><small>Vínculo do menor</small></span>
-              </button>
-            )}
-            <button type="button" className={etapaCadastro === 3 ? 'ativa' : ''} onClick={avancarCadastro}>
-              <span className="paciente-etapa-numero">{idade !== null && idade < 18 ? '3' : '2'}</span><span><strong>{idade !== null && idade < 18 ? '3' : '2'}. Endereço &amp; Contatos</strong><small>Dados de contato</small></span>
-            </button>
-          </nav>
+          <NavegacaoFormularioPaciente
+            etapaAtual={idade !== null && idade >= 18 && etapaCadastro === 3 ? 2 : etapaCadastro}
+            menor={idade !== null && idade < 18}
+            onIrParaEtapa={(destino) => {
+              if (destino === 1) setEtapaCadastro(1)
+              else if (idade !== null && idade >= 18 && destino === 2) avancarCadastro()
+              else if (destino < etapaCadastro) setEtapaCadastro(destino as 1 | 2 | 3)
+              else avancarCadastro()
+            }}
+          />
 
           <fieldset className={`paciente-modal-scroll ${etapaCadastro === 3 ? 'paciente-modal-scroll-endereco' : ''}`} disabled={Boolean(pacienteCriadoPendente)}>
             {etapaCadastro === 1 && (
@@ -1291,227 +1435,35 @@ function Pacientes({
               </fieldset>
             )}
 
-            {etapaCadastro === 3 && (
-              <div className="paciente-subsecao-titulo">
-                <span aria-hidden="true">▣</span>
-                <strong>Canais de contato</strong>
-              </div>
-            )}
-
-            <div className={etapaCadastro === 3 ? 'paciente-contato-card' : 'paciente-oculto'}>
-              <label htmlFor="paciente-telefone" className="mb-1.5 block text-sm font-medium text-[var(--texto-principal)]">
-                Telefone / WhatsApp
-              </label>
-              <input
-                id="paciente-telefone"
-                type="tel"
-                inputMode="tel"
-                autoComplete="tel"
-                placeholder="(00) 00000-0000"
-                value={form.telefone}
-                onChange={(e) => atualizarComMascara('telefone', e.currentTarget, formatarTelefoneBrasil)}
-                disabled={salvando}
-                maxLength={15}
-                className="w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 py-2.5 text-[var(--texto-principal)] outline-none transition focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60"
-              />
-            </div>
-
-            <div className={etapaCadastro === 3 ? 'paciente-contato-card' : 'paciente-oculto'}>
-              <label htmlFor="paciente-email" className="mb-1.5 block text-sm font-medium text-[var(--texto-principal)]">
-                E-mail
-              </label>
-              <input
-                id="paciente-email"
-                type="email"
-                autoComplete="email"
-                value={form.email}
-                onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-                disabled={salvando}
-                className="w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 py-2.5 text-[var(--texto-principal)] outline-none transition focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60"
-              />
-            </div>
-
-            <fieldset className={etapaCadastro === 3 ? 'paciente-endereco-grid' : 'paciente-oculto'}>
-              <legend className="paciente-legenda-visualmente-oculta">Endereço e contatos</legend>
-
-              <div>
-                <label htmlFor="paciente-cep" className="mb-1.5 block text-sm font-medium text-[var(--texto-principal)]">
-                  CEP
-                </label>
-                <input
-                  id="paciente-cep"
-                  type="text"
-                  inputMode="numeric"
-                  autoComplete="postal-code"
-                  placeholder="00000-000"
-                  value={form.cep}
-                  onChange={(e) => atualizarComMascara('cep', e.currentTarget, formatarCep)}
-                  disabled={salvando}
-                  maxLength={9}
-                  aria-describedby="paciente-cep-status"
-                  aria-invalid={estadoCep === 'nao_encontrado' || estadoCep === 'erro'}
-                  className="w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 py-2.5 text-[var(--texto-principal)] outline-none transition focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60"
-                />
-                <p
-                  id="paciente-cep-status"
-                  role={estadoCep === 'nao_encontrado' || estadoCep === 'erro' ? 'alert' : 'status'}
-                  aria-live="polite"
-                  className={`mt-1 text-xs ${estadoCep === 'nao_encontrado' || estadoCep === 'erro' ? 'text-[var(--cor-erro)]' : 'text-[var(--texto-secundario)]'}`}
-                >
-                  {estadoCep === 'consultando' && 'Consultando CEP...'}
-                  {estadoCep === 'encontrado' && 'Dados sugeridos pela consulta do CEP. Confira e corrija, se necessário.'}
-                  {estadoCep === 'nao_encontrado' && 'CEP não encontrado. Preencha o endereço manualmente.'}
-                  {estadoCep === 'erro' && 'Não foi possível consultar o CEP. Preencha manualmente.'}
-                  {estadoCep === 'inicial' && 'Ao completar o CEP, cidade e UF serão consultadas.'}
-                </p>
-              </div>
-
-              <div className="sm:col-span-2">
-                <label htmlFor="paciente-logradouro" className="mb-1.5 block text-sm font-medium text-[var(--texto-principal)]">
-                  Rua / logradouro
-                </label>
-                <input
-                  id="paciente-logradouro"
-                  type="text"
-                  autoComplete="address-line1"
-                  value={form.logradouro}
-                  onBeforeInput={(e) => registrarSelecaoAntesDaEdicao('logradouro', e.currentTarget)}
-                  onCompositionStart={() => { camposEmComposicao.current.logradouro = true }}
-                  onCompositionEnd={(e) => {
-                    camposEmComposicao.current.logradouro = false
-                    atualizarCampoTexto('logradouro', e.currentTarget, true)
-                  }}
-                  onChange={(e) => atualizarCampoTexto('logradouro', e.currentTarget, true)}
-                  onBlur={() => aplicarFormatacaoCampo('logradouro')}
-                  disabled={salvando}
-                  className="w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 py-2.5 text-[var(--texto-principal)] outline-none transition focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="paciente-numero" className="mb-1.5 block text-sm font-medium text-[var(--texto-principal)]">
-                  Número
-                </label>
-                <input
-                  id="paciente-numero"
-                  type="text"
-                  inputMode="text"
-                  autoComplete="address-line2"
-                  value={form.numero}
-                  onChange={(e) => setForm((atual) => ({ ...atual, numero: e.target.value }))}
-                  disabled={salvando}
-                  className="w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 py-2.5 text-[var(--texto-principal)] outline-none transition focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="paciente-complemento" className="mb-1.5 block text-sm font-medium text-[var(--texto-principal)]">
-                  Complemento
-                </label>
-                <input
-                  id="paciente-complemento"
-                  type="text"
-                  value={form.complemento}
-                  onChange={(e) => setForm((atual) => ({ ...atual, complemento: e.target.value }))}
-                  disabled={salvando}
-                  className="w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 py-2.5 text-[var(--texto-principal)] outline-none transition focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="paciente-bairro" className="mb-1.5 block text-sm font-medium text-[var(--texto-principal)]">
-                  Bairro
-                </label>
-                <input
-                  id="paciente-bairro"
-                  type="text"
-                  value={form.bairro}
-                  onBeforeInput={(e) => registrarSelecaoAntesDaEdicao('bairro', e.currentTarget)}
-                  onCompositionStart={() => { camposEmComposicao.current.bairro = true }}
-                  onCompositionEnd={(e) => {
-                    camposEmComposicao.current.bairro = false
-                    atualizarCampoTexto('bairro', e.currentTarget, true)
-                  }}
-                  onChange={(e) => atualizarCampoTexto('bairro', e.currentTarget, true)}
-                  onBlur={() => aplicarFormatacaoCampo('bairro')}
-                  disabled={salvando}
-                  className="w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 py-2.5 text-[var(--texto-principal)] outline-none transition focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60"
-                />
-              </div>
-
-              <div className="paciente-cidade-uf">
-                <div>
-                  <label htmlFor="paciente-cidade" className="mb-1.5 block text-sm font-medium text-[var(--texto-principal)]">
-                    Cidade
-                  </label>
-                  <input
-                    id="paciente-cidade"
-                    type="text"
-                    autoComplete="address-level2"
-                    value={form.cidade}
-                    onBeforeInput={(e) => registrarSelecaoAntesDaEdicao('cidade', e.currentTarget)}
-                    onCompositionStart={() => { camposEmComposicao.current.cidade = true }}
-                    onCompositionEnd={(e) => {
-                      camposEmComposicao.current.cidade = false
-                      atualizarCampoTexto('cidade', e.currentTarget, true)
-                    }}
-                    onChange={(e) => atualizarCampoTexto('cidade', e.currentTarget, true)}
-                    onBlur={() => aplicarFormatacaoCampo('cidade')}
-                    disabled={salvando}
-                    className="w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 py-2.5 text-[var(--texto-principal)] outline-none transition focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="paciente-uf" className="mb-1.5 block text-sm font-medium text-[var(--texto-principal)]">
-                    UF
-                  </label>
-                  <input
-                    id="paciente-uf"
-                    type="text"
-                    autoComplete="address-level1"
-                    value={form.uf}
-                    onChange={(e) => {
-                      camposEnderecoManuais.current.uf = true
-                      delete valoresViaCep.current.uf
-                      setForm((atual) => ({ ...atual, uf: e.target.value.replace(/[^a-z]/gi, '').slice(0, 2).toLocaleUpperCase('pt-BR') }))
-                    }}
-                    disabled={salvando}
-                    maxLength={2}
-                    className="w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 py-2.5 text-center uppercase text-[var(--texto-principal)] outline-none transition focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60"
-                  />
-                </div>
-              </div>
-            </fieldset>
-
-            <div className={etapaCadastro === 3 ? 'paciente-observacoes' : 'paciente-oculto'}>
-              <label htmlFor="paciente-observacoes" className="mb-1.5 block text-sm font-medium text-[var(--texto-principal)]">
-                Observações
-              </label>
-              <textarea
-                id="paciente-observacoes"
-                value={form.observacoes}
-                onChange={(e) => setForm((f) => ({ ...f, observacoes: e.target.value }))}
-                disabled={salvando}
-                rows={2}
-                className="w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 py-2.5 text-[var(--texto-principal)] outline-none transition focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60"
-              />
-            </div>
-            {etapaCadastro === 3 && (
-              <p className="paciente-privacidade-pendente">
-                O cadastro não registra autorização genérica de uso dos dados. Texto, finalidade e forma de consentimento dependem de aprovação específica.
-              </p>
-            )}
+            {etapaCadastro === 3 && <CamposEnderecoContatosPaciente
+              idPrefixo="paciente"
+              valor={form}
+              estadoCep={estadoCep}
+              disabled={salvando}
+              onChange={(campo, valor, input) => {
+                if (campo === 'cep' && input) atualizarComMascara('cep', input, formatarCep)
+                else if ((campo === 'logradouro' || campo === 'bairro' || campo === 'cidade') && input) atualizarCampoTexto(campo, input, true)
+                else if (campo === 'uf') {
+                  camposEnderecoManuais.current.uf = true
+                  delete valoresViaCep.current.uf
+                  setForm((atual) => ({ ...atual, uf: valor.replace(/[^a-z]/gi, '').slice(0, 2).toLocaleUpperCase('pt-BR') }))
+                } else setForm((atual) => ({ ...atual, [campo]: valor }))
+              }}
+              onBeforeInputTexto={(campo, input) => registrarSelecaoAntesDaEdicao(campo, input)}
+              onCompositionStartTexto={(campo) => { camposEmComposicao.current[campo] = true }}
+              onCompositionEndTexto={(campo, input) => { camposEmComposicao.current[campo] = false; atualizarCampoTexto(campo, input, true) }}
+              onBlurTexto={aplicarFormatacaoCampo}
+              telefone={form.telefone}
+              email={form.email}
+              observacoes={form.observacoes}
+              onTelefoneChange={(input) => atualizarComMascara('telefone', input, formatarTelefoneBrasil)}
+              onEmailChange={(valor) => setForm((atual) => ({ ...atual, email: valor }))}
+              onObservacoesChange={(valor) => setForm((atual) => ({ ...atual, observacoes: valor }))}
+            />}
           </div>
           </section>
 
-          {erroFormulario && (
-            <p
-              role="alert"
-              className="rounded-lg border border-[var(--cor-erro-borda)] bg-[var(--cor-erro-suave)] px-3 py-2 text-sm text-[var(--cor-erro)]"
-            >
-              {erroFormulario}
-            </p>
-          )}
+          {erroFormulario && <div ref={erroFormularioRef} tabIndex={-1}><FeedbackAlert variant={pacienteCriadoPendente ? 'warning' : 'destructive'} title={pacienteCriadoPendente ? 'Cadastro salvo com pendência' : 'Não foi possível concluir'} description={erroFormulario} urgent={!pacienteCriadoPendente} /></div>}
           </fieldset>
 
           <footer className="paciente-modal-rodape">
@@ -1551,14 +1503,13 @@ function Pacientes({
       )}
 
       {pacienteFoto && clinicaAtivaId && selecao?.clinicaId === clinicaAtivaId && (
-        <div className="paciente-modal-backdrop paciente-foto-modal-backdrop">
-          <section className="paciente-foto-modal" role="dialog" aria-modal="true" aria-labelledby="paciente-foto-modal-titulo">
+          <dialog ref={fotoModalRef} className="paciente-foto-modal" aria-labelledby="paciente-foto-modal-titulo" onCancel={(evento) => { evento.preventDefault(); if (!processandoFoto) fecharGerenciadorFoto() }}>
             <header>
               <div>
                 <h2 id="paciente-foto-modal-titulo">Foto do paciente</h2>
                 <p>{pacienteFoto.nome_completo}</p>
               </div>
-              <button type="button" onClick={fecharGerenciadorFoto} aria-label="Fechar gerenciamento de foto">×</button>
+              <button type="button" onClick={fecharGerenciadorFoto} disabled={processandoFoto} aria-label="Fechar gerenciamento de foto">×</button>
             </header>
             {carregandoFoto ? (
               <p role="status" className="paciente-foto-carregando">Carregando foto protegida...</p>
@@ -1566,12 +1517,17 @@ function Pacientes({
               <EditorFotoPaciente
                 nome={pacienteFoto.nome_completo}
                 imagemAtualUrl={fotoAtualUrl}
+                onCancelar={fecharGerenciadorFoto}
+                onProcessando={setProcessandoFoto}
                 onConfirmar={async (arquivo) => {
+                  const requisicao = requisicaoFotoAtual.current
+                  setErroFotoAdministrativa(null)
                   const resultado = await persistirFotoPaciente({
                     pacienteId: pacienteFoto.id,
                     clinicaId: clinicaAtivaId,
                     arquivo,
                   })
+                  if (requisicao !== requisicaoFotoAtual.current) return
                   setPacientes((atuais) => atuais.map((item) => item.id === pacienteFoto.id
                     ? { ...item, foto_path: resultado.objectPath }
                     : item))
@@ -1583,10 +1539,13 @@ function Pacientes({
                 }}
                 onRemover={async () => {
                   if (!pacienteFoto.foto_path) return
+                  const requisicao = requisicaoFotoAtual.current
+                  setErroFotoAdministrativa(null)
                   const resultado = await removerFotoPaciente({
                     pacienteId: pacienteFoto.id,
                     clinicaId: clinicaAtivaId,
                   })
+                  if (requisicao !== requisicaoFotoAtual.current) return
                   setPacientes((atuais) => atuais.map((item) => item.id === pacienteFoto.id
                     ? { ...item, foto_path: null }
                     : item))
@@ -1602,9 +1561,8 @@ function Pacientes({
                 }}
               />
             )}
-            {erroFotoAdministrativa && <p role="alert" className="paciente-foto-alerta">{erroFotoAdministrativa}</p>}
-          </section>
-        </div>
+            {erroFotoAdministrativa && <FeedbackAlert variant="warning" title="Foto salva com pendência" description={erroFotoAdministrativa} />}
+          </dialog>
       )}
 
       {!mostrarFormulario && (
@@ -1702,22 +1660,23 @@ function Pacientes({
 
             {pacienteSelecionado && clinicaAtivaId && (
               <>
-                {resumoMovel && <button type="button" className="pacientes-resumo-fundo" aria-label="Fechar resumo do paciente" onClick={fecharResumo} />}
-                <aside ref={resumoRef} className="pacientes-resumo" role={resumoMovel ? 'dialog' : 'complementary'} aria-modal={resumoMovel ? true : undefined} aria-label={`Resumo do cadastro de ${pacienteSelecionado.nome_completo}`}>
+                <dialog ref={resumoRef} className="pacientes-resumo" onCancel={(evento) => { evento.preventDefault(); fecharResumo() }} aria-label={`Resumo do cadastro de ${pacienteSelecionado.nome_completo}`}>
                   <div className="pacientes-resumo-cabecalho"><h2>Resumo do cadastro</h2><button ref={fecharResumoRef} type="button" aria-label="Fechar resumo" onClick={fecharResumo}>×</button></div>
-                  <button type="button" className="pacientes-botao-secundario" onClick={() => abrirEdicao(pacienteSelecionado)}>Editar cadastro</button>
+                  {alertaResultado}
                   <div className="pacientes-resumo-identidade">
                     <PacienteAvatar pacienteId={pacienteSelecionado.id} clinicaId={clinicaAtivaId} nome={pacienteSelecionado.nome_completo} caminho={pacienteSelecionado.foto_path} tamanho="resumo" />
                     <div><h3>{pacienteSelecionado.nome_completo}</h3><p>{idadeSelecionada !== null ? `${idadeSelecionada} anos` : 'Idade não informada'}</p><span className={`pacientes-status pacientes-status--${pacienteSelecionado.ativo ? 'ativo' : 'inativo'}`}>{pacienteSelecionado.ativo ? 'Ativo' : 'Inativo'}</span></div>
                   </div>
-                  <div className="pacientes-resumo-bloco"><h4>Dados do paciente</h4><dl><dt>Nascimento</dt><dd>{formatarData(pacienteSelecionado.data_nascimento)}</dd><dt>CPF</dt><dd>{carregandoResumo || resumo?.chave !== chaveResumo ? 'Consultando…' : resumo.erro ? 'Consulta indisponível' : resumo.cpfPendente ? 'Não informado' : 'Informado'}</dd><dt>Telefone / WhatsApp</dt><dd>{pacienteSelecionado.telefone ? formatarTelefoneBrasil(pacienteSelecionado.telefone) : 'Não informado'}</dd></dl>
+                  <div className="pacientes-resumo-editar"><button type="button" className="pacientes-botao-secundario" onClick={() => abrirEdicao(pacienteSelecionado)}><IconeLapis />Editar cadastro</button></div>
+                  <div className="pacientes-resumo-bloco"><h4>Identificação</h4><dl><dt>Nascimento</dt><dd>{formatarData(pacienteSelecionado.data_nascimento)}</dd><dt>CPF</dt><dd>{carregandoResumo || resumo?.chave !== chaveResumo ? 'Consultando…' : resumo.erro ? 'Consulta indisponível' : resumo.cpfPendente ? 'Não informado' : 'Informado'}</dd></dl>
                     {resumo?.chave === chaveResumo && resumo.cpfPendente === true && !mostrarAdicionarCpf && <button type="button" className="pacientes-link" onClick={() => setMostrarAdicionarCpf(true)}>Adicionar CPF</button>}
-                    {mostrarAdicionarCpf && <AvisoCpfPendente key={chaveResumo} pacienteId={pacienteSelecionado.id} pacienteNome={pacienteSelecionado.nome_completo} clinicaId={clinicaAtivaId} contexto="cadastro" onAdicionado={() => { setResumo((atual) => atual?.chave === chaveResumo ? { ...atual, cpfPendente: false } : atual); setMostrarAdicionarCpf(false) }} onLembrar={() => setMostrarAdicionarCpf(false)} />}
+                    {mostrarAdicionarCpf && resumo?.chave === chaveResumo && resumo.cpfPendente === true && <AvisoCpfPendente key={chaveResumo} pacienteId={pacienteSelecionado.id} pacienteNome={pacienteSelecionado.nome_completo} clinicaId={clinicaAtivaId} contexto="cadastro" onAdicionado={() => { lembreteResumoAdiado.current = chaveResumo; setResumo((atual) => atual?.chave === chaveResumo ? { ...atual, cpfPendente: false } : atual); setMostrarAdicionarCpf(false) }} onLembrar={() => { lembreteResumoAdiado.current = chaveResumo; setMostrarAdicionarCpf(false) }} />}
                   </div>
+                  <div className="pacientes-resumo-bloco"><h4>Contato</h4><dl><dt>Telefone / WhatsApp</dt><dd>{pacienteSelecionado.telefone ? formatarTelefoneBrasil(pacienteSelecionado.telefone) : 'Não informado'}</dd></dl></div>
                   <div className="pacientes-resumo-bloco"><h4>Responsável legal</h4>{carregandoResumo || resumo?.chave !== chaveResumo ? <p>Consultando…</p> : resumo.erro ? <p>Não foi possível consultar este vínculo.</p> : resumo.responsaveis.length ? <ul className="pacientes-responsaveis">{resumo.responsaveis.map((responsavel) => <li key={responsavel.id}><strong>{responsavel.nome_completo}</strong><span>{responsavel.vinculo} · {formatarTelefoneBrasil(responsavel.telefone)}</span>{responsavel.email && <span>{responsavel.email}</span>}</li>)}</ul> : <p>Nenhum responsável vinculado neste cadastro.</p>}{resumo?.erro && <button type="button" className="pacientes-link" onClick={() => setRevisaoResumo((atual) => atual + 1)}>Tentar novamente</button>}</div>
                   <div className="pacientes-resumo-bloco"><h4>Endereço</h4><p className="pacientes-endereco-literal">{pacienteSelecionado.endereco || 'Não informado'}</p></div>
                   <div className="pacientes-resumo-acoes"><button type="button" className="pacientes-botao-secundario" onClick={() => void abrirGerenciadorFoto(pacienteSelecionado)}>Gerenciar foto</button>{onIrParaAgenda && <button type="button" className="pacientes-botao-primario" onClick={onIrParaAgenda}><IconeCalendario /> Ir para Agenda</button>}</div>
-                </aside>
+                </dialog>
               </>
             )}
           </div>

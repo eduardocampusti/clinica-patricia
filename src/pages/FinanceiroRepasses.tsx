@@ -1,5 +1,6 @@
-import { useCallback, useRef, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react'
 import { ModalBase } from '../components/ModalBase'
+import { FeedbackAlert } from '../components/feedback/FeedbackAlert'
 import { useFinanceiroConsulta } from '../hooks/useFinanceiroConsulta'
 import { invalidarFinanceiro } from '../lib/financeiro/financeiro.cache'
 import { formatarDataFinanceira } from '../lib/financeiro/financeiro.date'
@@ -64,7 +65,7 @@ function DialogoRepasse({ repasse, clinicaId, usuarioId, onFechar, onConcluido }
         <p className="font-semibold">Líquido oficial: {moeda(repasse.valor_liquido)}</p>
       </div>
       {detalhe.resultado.estado === 'carregando' && <p role="status" className="text-sm">Carregando composição…</p>}
-      {detalhe.resultado.estado === 'erro' && <p role="alert" className="text-sm text-[var(--cor-erro)]">{detalhe.resultado.erro.message}</p>}
+      {detalhe.resultado.estado === 'erro' && <FeedbackAlert variant="destructive" title="Composição indisponível" description={detalhe.resultado.erro.message} urgent />}
       {detalhe.resultado.estado === 'sucesso' && <div className="max-h-48 overflow-y-auto rounded-xl border border-[var(--borda)] p-3">
         <h3 className="text-sm font-semibold">Itens quitados por este repasse</h3>
         <ul className="mt-2 divide-y divide-[var(--borda)] text-sm">{detalhe.resultado.dados.itens.map((item) => <li key={item.recebimento_id} className="flex flex-wrap justify-between gap-2 py-2">
@@ -72,7 +73,7 @@ function DialogoRepasse({ repasse, clinicaId, usuarioId, onFechar, onConcluido }
         </li>)}</ul>
         <p className="mt-2 text-xs text-[var(--texto-secundario)]">{detalhe.resultado.dados.aplicacoes.length} aplicação(ões) de ajustes neste repasse. Valores oficiais, sem recálculo na tela.</p>
       </div>}
-      <p className="rounded-lg bg-[var(--cor-alerta-suave)] p-3 text-sm">Registre aqui somente depois de realizar PIX ou transferência fora do sistema. A confirmação é terminal e não movimenta o caixa.</p>
+      <FeedbackAlert variant="warning" title="Confirmação definitiva" description="Registre somente depois de realizar PIX ou transferência fora do sistema. A confirmação não movimenta o caixa." />
       <label className="block text-sm font-medium">Meio do pagamento
         <select className={`${campo} mt-1`} value={meio} onChange={(e) => setMeio(e.target.value as 'pix' | 'transferencia')} disabled={ocupado || enviado}>
           <option value="pix">PIX</option><option value="transferencia">Transferência</option>
@@ -81,7 +82,7 @@ function DialogoRepasse({ repasse, clinicaId, usuarioId, onFechar, onConcluido }
         <input className={`${campo} mt-1`} value={referencia} onChange={(e) => setReferencia(e.target.value)} disabled={ocupado || enviado} maxLength={200} required /></label>
       <label className="block text-sm font-medium">Observação (opcional)
         <textarea className={`${campo} mt-1 py-2`} value={observacao} onChange={(e) => setObservacao(e.target.value)} disabled={ocupado || enviado} rows={2} /></label>
-      {erro && <p role="alert" className="text-sm text-[var(--cor-erro)]">{erro}</p>}
+      {erro && <FeedbackAlert variant="destructive" title="Repasse não confirmado" description={erro} urgent />}
       {enviado && erro && <p className="text-xs text-[var(--texto-secundario)]">A mesma chave e os dados foram preservados para uma repetição segura. Fechar abandona a intenção local.</p>}
       <div className="flex justify-end gap-2"><button type="button" className={botao} disabled={ocupado} onClick={fechar}>Cancelar</button>
         <button type="submit" className={primario} disabled={ocupado || detalhe.resultado.estado !== 'sucesso'}>{ocupado ? 'Confirmando…' : enviado ? 'Tentar novamente' : 'Confirmar pagamento externo'}</button></div>
@@ -94,6 +95,7 @@ export default function FinanceiroRepasses({ clinicaId, usuarioId }: { clinicaId
   const [status, setStatus] = useState<'todos' | StatusRepasse>('pendente')
   const [selecionado, setSelecionado] = useState<RepasseOperacional | null>(null)
   const [sucesso, setSucesso] = useState<string | null>(null)
+  useEffect(() => setSucesso(null), [clinicaId])
   const carregar = useCallback(() => listarRepasses(clinicaId, pagina, status), [clinicaId, pagina, status])
   const consulta = useFinanceiroConsulta(`${clinicaId}:${pagina}:${status}`, carregar, nuncaVazio,
     { clinicaId, leitura: 'repasses' })
@@ -104,9 +106,9 @@ export default function FinanceiroRepasses({ clinicaId, usuarioId }: { clinicaId
       <select className={`${campo} mt-1 block`} value={status} onChange={(e) => { setStatus(e.target.value as typeof status); setPagina(0) }}>
         <option value="pendente">Pendentes</option><option value="pago">Pagos</option><option value="ajustado">Ajustados a zero</option><option value="todos">Todos</option>
       </select></label><button type="button" className={botao} onClick={() => void consulta.recarregar()}>Atualizar</button></div>
-    {sucesso && <p role="status" className="rounded-lg bg-[var(--cor-sucesso-suave)] p-3 text-sm">{sucesso}</p>}
+    {sucesso && <FeedbackAlert variant="success" title="Repasse atualizado" description={sucesso} onClose={() => setSucesso(null)} autoDismissMs={6000} />}
     {consulta.resultado.estado === 'carregando' && <div role="status" aria-label="Carregando repasses" className={`${card} finance-skeleton`} />}
-    {consulta.resultado.estado === 'erro' && <div role="alert" className={card}><p>{consulta.resultado.erro.message}</p><button type="button" className={`${botao} mt-3`} onClick={() => void consulta.recarregar()}>Tentar novamente</button></div>}
+    {consulta.resultado.estado === 'erro' && <FeedbackAlert variant="destructive" title="Não foi possível carregar os repasses" description={consulta.resultado.erro.message} action={<button type="button" onClick={() => void consulta.recarregar()}>Tentar novamente</button>} urgent />}
     {dados && <section className={card}><h2 className="texto-titulo-secao">{status === 'pendente' ? 'Aguardando pagamento' : 'Histórico de repasses'}</h2>
       {!dados.itens.length ? <div className="finance-empty"><strong>{status === 'pendente' ? 'Nenhum repasse pendente' : 'Nenhum repasse nesta seleção'}</strong><p>Quando houver valores nesta situação, eles aparecerão aqui.</p></div> :
         <ul className="finance-operational-list mt-3 divide-y divide-[var(--borda)]">{dados.itens.map((repasse) => <li key={repasse.id} className="flex flex-wrap items-center justify-between gap-3 py-4">

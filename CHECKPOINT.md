@@ -1,6 +1,6 @@
 # CHECKPOINT MESTRE — CLÍNICA PATRÍCIA
 
-Última atualização: 2026-09-24\
+Última atualização: 2026-09-30\
 Projeto local: `D:\PROJETOS SAAS\CLINICA PATRICIA`\
 Projeto Supabase: `xftnkusbyqzyvzrovroj`
 
@@ -13,6 +13,32 @@ Legenda operacional usada neste documento:
 - **PREPARADO, NÃO APLICADO**: está pronto localmente, mas não foi executado no remoto.
 - **PENDENTE**: ainda exige uma etapa futura controlada.
 - **BLOQUEADO**: existe código ou fluxo, mas uma dependência indispensável impede o uso atual.
+
+### Atualização vigente — aceite e e-mails (30/09/2026)
+
+### Continuidade Git/domínios/SMTP — 30/09/2026
+
+Decisões dos dois anexos lidas e registradas no relatório sistema/09-GITHUB-DOMINIOS-SMTP.md. Branch atual real: codex/resgate-local-2026-09-26; fetch remoto confirmado, main60 commits atrás. Domínios clinicabrotas.com.br e clinicaipupiara.com.br preparados na marca/CORS/redirect por unidade; Edge v6 ACTIVE/JWT obrigatório aplicada após preservar fontev5. Auth redirects/base local não substituídos, bases públicas específicas não ativadas. Hostinger autenticada consultada: planos Business/Unlimited existentes, nenhum site/e-mail das clínicas listado; DNS A ambos2.57.91.91, sem resposta MX. **Usuário revogou deploy Hostinger nesta rodada até nova autorização**: nenhum upload/DNS/site/SMTP/contratação. Templates locais preservados, pendentes caixa/remetente. Build/lint/unitários aprovados; suíte login tem timeout/paleta pendentes, hostname dirigido passou. Não repetir ensaio22. Git será sincronizado por commit normal e ref remoto verificado; estado final no relatório09.
+
+**Retomada específica dos e-mails:** texto final do convite e prévias Brotas/Ipupiara/conjunta concluídos; cópia original preservada e capturas sem dados reais disponíveis no relatório23. Painel autenticado reconfirmou Source/Save desabilitados: serviço padrão Free exige envio próprio ou Pro para personalizar assunto/corpo. Nenhum template remoto aplicado; não confundir com falta exclusiva de nome do remetente. Nenhuma contratação/config push/PATCH/SMTP/DNS, conta ou novo convite. Assunto/corpo refinados, gerador e conferência móvel aprovados. Ensaio encerrado/limpeza do relatório22 preservados. Aplicação3000 disponível.
+
+**Encerramento posterior:** titular enviou captura com recusa de acesso à Ipupiara por ausência de vínculo ativo, complementando o login Recepção/Brotas. Captura com credencial não foi armazenada/transcrita. Preflight de dependências e guarda transacional aprovados; membro, convite, idempotência, vínculos, usuário e conta Auth sintéticos removidos pelos IDs exatos do relatório 22. Verificação final: zero alvos/acessos/sessões, dois eventos de auditoria preservados. Ausência de papel administrativo confirmada por leitura de vínculos; não houve novo teste visual/RPC administrativo nessa sessão. Nenhum código/schema/migration alterado nesta continuação. Servidor3000 HTTP200. Templates personalizados continuam NÃO aplicados, conforme relatório23.
+
+Registro anterior à captura e à limpeza:
+
+Convite aceito/conta confirmados por leitura conectada; ficha da proprietária mostra Recepção somente Brotas. Titular confirmou novo login como recepcionista na porta 3000. Negativas Ipupiara/gestão na sessão comum e limpeza ainda pendentes (relatório 22). Edge Function equipe-acessos versão 5 ACTIVE/JWT obrigatório publicada para contexto visual determinístico. Templates portugueses/previews preparados, NÃO aplicados: painel Free/SMTP padrão bloqueia edição sem envio personalizado (relatório 23). Sem migration, novo envio, contratação ou alteração SMTP/redirects. Build/lint e 7 testes dirigidos aprovados. Servidor atual: `http://127.0.0.1:3000/acesso/brotas`.
+
+### Histórico — convite real de Equipe aguardando titular (30/09/2026)
+
+No projeto autorizado `xftnkusbyqzyvzrovroj`, foi confirmada a rota local `http://127.0.0.1:3000/acesso/brotas?convite=<UUID>`: o aplicativo valida o identificador, exige sessão e abre a tela de definição de senha/aceite. O secret da Edge Function e a Redirect URL exata do Auth foram configurados sem substituir o Site URL nem remover entradas existentes. Uma fixture sintética de recepção, somente em Brotas, foi criada pela interface da proprietária e recebeu um único convite no destinatário autorizado. O serviço aceitou o envio e a ficha mostra **Convite pendente**; leitura posterior confirmou conta Auth ainda não confirmada e zero acesso clínico ativo antes do aceite. Recebimento, aceite, novo login, isolamento final e limpeza aguardam a participação do titular. Relatório: `docs/modulos/equipe/22-CONVITE-REAL-E-ACEITE.md`.
+
+### Atualização vigente — correção de CPF legado pela interface (29/09/2026)
+
+No projeto autorizado `xftnkusbyqzyvzrovroj`, uma única fixture sintética de Brotas (ID `72704716-3834-44e1-a0c5-292926616003`) reproduziu CPF legado inválido com trigger de validação restaurado antes do `COMMIT`. Pela sessão HTTP autenticada de proprietária em `http://127.0.0.1:5173/acesso/brotas`, a ficha mostrou o aviso sem revelar o valor antigo, aceitou a correção com motivo e confirmação e, após fechar/recarregar/reabrir, exibiu o CPF sintético corrigido sem voltar ao estado inválido. A confirmação transitória “CPF atualizado” foi observada numa segunda correção da **mesma** fixture. Consulta de leitura confirmou duas atualizações auditadas pela proprietária, motivo, campos não relacionados preservados, CPF final persistido e zero CPF em claro na auditoria. Preflight de dependências retornou zero; a fixture foi removida pelo ID exato, deixando zero alvos, quatro eventos de auditoria preservados e os três pacientes preexistentes. O verificador de integridade passou e a lista de Brotas voltou a dois pacientes. Nenhum paciente real, inclusive o de Ipupiara, foi alterado. Relatório: `docs/modulos/pacientes/14-CPF-LEGADO-INVALIDO.md`. Sem alteração de código ou migration nesta continuação; testes locais e ensaios já aprovados não foram repetidos.
+
+### Marco anterior — Pacientes, CPF legado inválido (29/09/2026)
+
+As confirmações visíveis de criação e edição estão concluídas no escopo comprovado: sucesso por gravação conectada de fixture sintética e falhas por simulação interceptada. A migration seletiva `20260929210000_pacientes_cpf_legado_invalido.sql` foi aplicada e registrada **somente** no projeto autorizado `xftnkusbyqzyvzrovroj`; catálogo e `supabase/tools/verificar-integridade.sql` passaram. A ficha da proprietária distingue CPF legado inválido confirmado (`PC422`) de erro técnico/autorização negada e permite abrir a correção auditada sem revelar o número antigo. A leitura conectada da fixture sintética confirmou a mensagem e a abertura; ensaios SQL com identidade simulada e testes de interface interceptados cobriram negativas. A correção pela interface autenticada não foi submetida; a correção positiva SQL foi revertida por `ROLLBACK`. As duas fixtures foram removidas por IDs exatos após preflight sem dependências; zero alvos e quatro auditorias preservadas, com contagem agregada de três pacientes. O CPF real de Ipupiara não foi alterado e exige conferência documental. Evidências e limites estão em `docs/modulos/pacientes/14-CPF-LEGADO-INVALIDO.md`. O estado de Equipe continua no checkpoint próprio: cadastro/edição aplicado; correções posteriores da gestão de acessos ainda pendentes.
 
 ## 1. COMO USAR ESTE ARQUIVO
 
@@ -123,7 +149,7 @@ O projeto ainda não deve ser tratado como contendo dados clínicos reais de pro
 | Login | FUNDAÇÃO MULTI-CLÍNICA IMPLEMENTADA; DESIGN FINAL PENDENTE | Supabase Auth preservado; branding centralizado para Brotas/Ipupiara, domínio e preview local resolvidos, vínculo/papel revalidados e proprietária multi-clínica liberada para escolher as duas unidades. Imagens hero específicas configuradas e login genérico eliminado. |
 | Seleção de clínica | FUNCIONAL | O usuário pode ter vínculo com várias clínicas e a seleção é limitada por RLS. |
 | Dashboard | PLACEHOLDER | Os principais indicadores são fictícios; somente o próximo paciente usa dados reais do sistema. |
-| Pacientes | PARCIAL | Listagem e cadastro existem; as operações completas ainda não foram comprovadas ponta a ponta. |
+| Pacientes | PARCIAL | Listagem, cadastro, edição e confirmações visíveis foram verificadas localmente; persistência real não foi repetida nesta rodada. |
 | Agenda | FUNCIONAL NO FLUXO CLÍNICO VALIDADO | Agenda, exceções e lista de espera existem. A integração Agenda → Prontuário usa `iniciar_atendimento_agendado` e foi aprovada no E2E authenticated real com rollback em 20/09/2026. |
 | Cadastros e equipe | PARCIAL | Telas e ações existem; a validação ponta a ponta permanece pendente. |
 | Prontuário | INTEGRAÇÃO TÉCNICA APROVADA — SMOKE VISUAL PENDENTE | As oito RPCs passaram em E2E authenticated no Supabase real, incluindo round-trip e testes negativos. Os dados clínicos de teste foram revertidos por rollback. Frontend, typecheck, lint, build e inicialização da tela de login foram aprovados; a tela autenticada do Prontuário não foi aberta no smoke local. |
@@ -509,6 +535,12 @@ O release `20260915` foi concluído diretamente no Supabase remoto real `xftnkus
 - Estado final do Prontuário: **INTEGRAÇÃO TÉCNICA APROVADA — SMOKE VISUAL PENDENTE**.
 - Próximo módulo funcional prioritário: FINANCEIRO; auditoria técnica local inicial concluída, backend build e 10 testes unitários aprovados, infraestrutura/configuração privada ainda ausente.
 
+### Marco local — confirmações visíveis em Pacientes (29/09/2026)
+
+- A criação exibe `Paciente cadastrado com sucesso.` somente após retorno válido; a edição exibe um Alert com título `Alterações salvas` e descrição `O cadastro do paciente foi atualizado com sucesso.` após conferir ID, clínica e revisão nova.
+- Validações customizadas focam o primeiro campo aplicável e o cadastro bloqueia submissões repetidas. Testes sintéticos dirigidos, build e lint passaram; a evidência detalhada está em `docs/modulos/pacientes/13-CONFIRMACOES-VISIVEIS-CADASTRO.md`.
+- Naquela rodada específica, a sessão autenticada local foi usada somente para leitura em Brotas e Ipupiara. Nenhum paciente real foi criado ou alterado; naquele momento Equipe ainda aguardava sua migration. O estado vigente posterior está nos marcos de Equipe abaixo.
+
 ## 18. PRÓXIMO PASSO ÚNICO
 
 Criar e aprovar visualmente as duas telas de login: Clínica Brotas e Clínica Ipupiara. A fundação compartilhada já está preparada; não avançar para consolidação financeira nesta etapa.
@@ -610,3 +642,98 @@ $function$;
 Referências relacionadas, não alteradas pela 04: `clinicas_do_usuario()` tem owner `postgres`, SQL STABLE SECURITY DEFINER e `search_path=public`; consulta `usuarios_clinicas` por `auth.uid()` e vínculo ativo. `eh_proprietaria_ou_recepcao(uuid)` tem owner `postgres`, SQL STABLE SECURITY DEFINER e `proconfig=NULL`; consulta vínculo ativo de `proprietaria`/`recepcao`. Ambas possuem a mesma ACL anterior das funções CPF acima. Triggers relacionados capturados: `trg_calcular_hora_fim` em `agendamentos` (BEFORE INSERT OR UPDATE OF hora_inicio, profissional_id, chama `calcular_hora_fim_agendamento()`); `trg_audit_usuarios` em `usuarios` (AFTER INSERT OR DELETE OR UPDATE, chama `fn_auditoria()`). A 04 não altera esses triggers nem suas funções. As definições completas preexistentes também estão no checkpoint lógico de schema externo já registrado na seção 13.
 
 Este é um documento vivo e a fonte de continuidade operacional do projeto. Após cada marco técnico validado, atualizar ESTE MESMO arquivo. Não criar versões paralelas sem necessidade.
+
+## 2026-09-29 — Equipe aplicada e validada no Supabase atual
+
+Por autorização explícita registrada na entrega desta etapa, a migration `supabase/migrations/20260928153000_equipe_cadastro_edicao.sql` foi aplicada somente no projeto `Clinica Patrícia` (`xftnkusbyqzyvzrovroj`). O SHA-256 aplicado foi `F90E9278A46EC09DAE1A1F30B9B48AFC436B956AD42681946C358D7D503BB396`; nenhum projeto novo foi criado, nenhum plano foi alterado e o Site Geovana permaneceu fora do escopo.
+
+- Backup lógico protegido foi criado fora do Git e verificado por hash/cobertura; restauração não foi ensaiada.
+- Preflight e catálogo pós-migration confirmaram dependências, tabelas, coluna `profissionais.conselho_uf`, índices únicos, RLS, policies, grants mínimos, funções `SECURITY DEFINER` com `search_path` fixo, triggers e compatibilidade por chaves com Agenda/Financeiro.
+- O histórico remoto foi atualizado somente para `20260928153000` após a verificação catalogal; a migration de Pacientes `20260925130000`, que não é dependência desta etapa, continua pendente e não foi executada.
+- Com sessão autenticada de proprietária, foram criados/editados médico, recepção e apoio em Brotas e Ipupiara, conferida persistência após recarregar, CPF inválido, conflito de registro, mensagens de sucesso e negativas para médico/clinica não autorizados. Os três registros sintéticos foram removidos por UUID exato, sem dependências, mantendo auditoria.
+- Verificação final: profissionais existentes=1, vínculos profissionais=2, projeções de Equipe=1, vínculos de Equipe=2, idempotências=0; nenhum CPF em claro foi localizado em auditoria nova.
+
+Relatório completo: `docs/modulos/equipe/17-APLICACAO-E-VALIDACAO-NO-SUPABASE-ATUAL.md`. Cadastro e edição de Equipe estão liberados para a proprietária autorizada no principal; outras funções continuam submetidas às policies e aos fluxos existentes. A interface local permanece disponível em `http://127.0.0.1:5173/acesso/brotas` e `/acesso/ipupiara`.
+
+## 2026-09-29 — Validação de CPF e preservação do backup
+
+O relatório `docs/modulos/equipe/18-VALIDACAO-CPF-E-PRESERVACAO-BACKUP.md` registra a etapa dirigida de CPF após a aplicação da migration de Equipe.
+
+- O `backup.json` anterior foi preservado no caminho permanente externo `D:\PROJETOS SAAS\CLINICA PATRICIA_BACKUPS\20260929_EQUIPE_CPF_VALIDACAO\backup.json`; original, cópia e hash documentado conferem (`483329426102720E6F1276B3F2B1273776FB52A743C222E9A1CD827A601A240B`). A cópia tem ACL sem herança, limitada ao proprietário local e ao sistema.
+- O snapshot mantém a cobertura descrita no relatório 17, não representa backup completo do projeto e ainda não teve restauração validada.
+- Na sessão autorizada, CPF válido foi persistido para profissional e administrativo; a ficha exibiu somente CPF mascarado. Telefone foi alterado preservando CPF, o CPF do profissional foi corrigido e persistiu após recarregar, e o CPF administrativo foi removido explicitamente, confirmando a opcionalidade.
+- A RPC rejeitou CPF inválido com `22023` sem membro parcial em transação revertida. A duplicidade de conselho/registro/UF foi rejeitada com `23505` pela interface sem resíduo.
+- Limpeza por UUIDs exatos deixou zero alvos e zero idempotências, preservando cinco auditorias. Contagens finais: profissionais=1, vínculos profissionais=2, Equipe=1, vínculos de Equipe=2, auditoria=185.
+- `supabase/tools/verificar-integridade.sql` terminou sem erro (`qtd_pacientes=3`). Nenhum código, migration ou regra de CPF foi alterado.
+
+## 2026-09-29 — Teste específico de CPF duplicado
+
+O teste isolado solicitado foi executado pela sessão autenticada de proprietária no projeto `xftnkusbyqzyvzrovroj`, sem reaplicar migration. Um funcionário administrativo sintético, sem conselho/registro/UF, foi criado com CPF válido; um segundo administrativo, com nome diferente, repetiu o CPF usando nova chave de idempotência. A RPC retornou `23505`, o primeiro cadastro permaneceu íntegro e não houve membro, vínculo ou idempotência parcial para o segundo.
+
+A interface inicialmente apresentava a mensagem genérica usada para qualquer unicidade. Isso foi corrigido somente na tradução de erros de `src/pages/cadastros/Equipe.tsx`: os metadados internos identificam o índice de CPF ou de registro profissional, mas nenhum detalhe técnico ou CPF é exibido. Após repetir o caso afetado, a mensagem específica ficou `Já existe um funcionário cadastrado com este CPF.`. O caso anterior de conselho/registro/UF permanece documentado separadamente e não é tratado como prova de CPF duplicado.
+
+Os alvos foram removidos pelos UUIDs exatos após preflight sem dependências; a auditoria foi preservada. Contagens finais: profissionais `1`, vínculos profissionais `2`, membros de Equipe `1`, vínculos de Equipe `2`, idempotências `0`, auditoria `186`; `supabase/tools/verificar-integridade.sql` terminou sem erro. Build, lint e `8/8` testes de Equipe passaram. O histórico completo está em `docs/modulos/equipe/18-VALIDACAO-CPF-E-PRESERVACAO-BACKUP.md`.
+
+## Gestão de acessos da Equipe — implementação local preparada — 29/09/2026
+
+O prompt de gestão de acessos foi lido integralmente e confrontado com o código atual. O cadastro/edição de pessoa permanece separado do login e preserva a migration de Equipe já aplicada. Foram implementados localmente, sem escrita remota:
+
+- painel na ficha da pessoa com e-mail de login confirmado somente quando o serviço o retorna, estados `Sem acesso`, `Convite pendente`, `Acesso ativo`, `Acesso suspenso` e `Conta inativa`, por clínica;
+- convite de conta nova, vinculação de conta existente por confirmação, escolha de papel existente (`proprietaria`, `medico`, `recepcao`), concessão, suspensão, reativação, alteração de papel e reenvio sujeito a cooldown;
+- página de aceite com validação de sessão, definição opcional de senha e aceite transacional; nenhuma senha, token ou chave administrativa passa pelo frontend;
+- migration aditiva `20260929120000_equipe_gestao_acessos.sql`, com tabela de convites, RPCs `SECURITY DEFINER`, `search_path=''`, RLS sem grants diretos, execução apenas por `service_role`, validação de solicitante/ação/alvo/clínica, idempotência, auditoria e proteção da última administradora;
+- Edge Function `supabase/functions/equipe-acessos/index.ts`, que autentica o JWT do chamador, usa a chave administrativa somente no servidor, limita o redirect de convite e traduz falhas sem expor detalhes técnicos.
+
+Build, lint e os 8 testes determinísticos de Equipe passaram. O harness Playwright sintético atualizado passou 5/5 em desktop e 5/5 em mobile, incluindo estados de acesso; são respostas interceptadas, não persistência real. O snapshot prévio usado nesta etapa contém somente metadados, foi salvo fora do Git em `D:\PROJETOS SAAS\CLINICA PATRICIA_BACKUPS\20260929_EQUIPE_ACESSOS_PRE\snapshot-metadados.json` (SHA-256 `9EA912438BF67A92EA1B6DABFDF1C88326431039DB218F050E881053AE6F633A`); dump completo não foi usado porque dependeria de Docker e exportaria dados pessoais.
+
+A tentativa de aplicar a nova migration remota foi bloqueada pela proteção de execução antes de confirmação efetiva; uma leitura posterior do catálogo confirmou que `equipe_acesso_convites` e as RPCs novas continuam ausentes, sem alteração nas contagens agregadas. A publicação da Edge Function, a configuração segura de `EQUIPE_INVITE_REDIRECT_URL`, `supabase/tools/verificar-integridade.sql` pós-migration e os testes Auth/RLS reais continuam pendentes. Até essas verificações, o painel mostra que a gestão de acessos está indisponível e não libera mutações no principal; cadastro/edição de membros da migration anterior permanecem preservados conforme o relatório 18.
+
+Relatório vigente: `docs/modulos/equipe/19-GESTAO-DE-ACESSOS.md`.
+
+## 2026-09-29 — Gestão de acessos aplicada e conferida parcialmente
+
+Por autorização específica do responsável, a migration `20260929120000_equipe_gestao_acessos.sql` foi aplicada somente no projeto Supabase `xftnkusbyqzyvzrovroj` em transação; o histórico remoto foi registrado como aplicado após a confirmação catalogal. O hash local/aplicado é `297593FF12A4CE621A5CB5DBD96955381E9705CB55D9D2B3C49C8DF2244F22D6`. A Edge Function `equipe-acessos` foi publicada com `status=ACTIVE`, versão 1 e verificação JWT habilitada. Nenhuma migration de outro módulo, projeto, plano ou Site Geovana foi alterado.
+
+Catálogo pós-aplicação: tabela de convites presente, RLS ativo, 10 funções `SECURITY DEFINER` com `search_path` vazio, 0 execuções para `anon`/`authenticated`, 8 para `service_role` e nenhum privilégio direto de tabela para usuários comuns. `supabase/tools/verificar-integridade.sql` terminou sem erro e registrou `qtd_pacientes=3`.
+
+Conferência autenticada real: a proprietária consultou a lista e a ficha do membro existente em Brotas; o serviço confirmou conta Auth e acesso ativo por clínica. No registro sintético existente, a proprietária alterou o papel Médico → Recepção, suspendeu e reativou o acesso e restaurou Médico; o fechamento/reabertura da ficha confirmou o estado final persistido. Ipupiara foi selecionada e mostrou estado vazio, sem dados de Brotas. Não foram enviados convites, OTPs ou e-mails, nem executadas negativas com perfil não proprietário, porque ainda não há URL de redirect allowlisted e conta/destinatário temporário expressamente autorizado. Não foram criados registros temporários; a auditoria das ações foi preservada.
+
+Leitura agregada pós-testes, sem dados pessoais, confirmou 1 membro, 2 vínculos ativos, 6 acessos ativos, 0 convites e 0 idempotências; não restaram artefatos temporários.
+
+Snapshot de metadados fora do Git: `D:\PROJETOS SAAS\CLINICA PATRICIA_BACKUPS\20260929_EQUIPE_ACESSOS_PRE\snapshot-metadados-20260929.json`, SHA-256 `A5D5D86F663A27671E500925ED794BAB802C746733FB7CABC4E15A362638B726`. O Windows recusou a alteração de ACL/read-only; a limitação está no relatório 19. Build/lint, 8/8 determinísticos e Playwright 15/15 em desktop, tablet e mobile permanecem aprovados. O fluxo completo de gestão permanece pendente até configurar o redirect seguro e executar as sessões negativas/convite com autorização explícita.
+
+## 2026-09-29 — Correções locais da gestão de acessos
+
+Registro histórico da tentativa de 29/09: o relatório `docs/modulos/equipe/20-CORRECOES-GESTAO-DE-ACESSOS.md` identificou e corrigiu localmente consulta com gravação, reserva de envio, expiração/idempotência, sincronização Equipe/Profissionais, lookup Auth, confirmação de e-mail, redirect e escopo por clínica. Naquela tentativa, a ferramenta recusou a nova alteração antes de qualquer envio. Esse estado foi superado pela aplicação e publicação autorizadas de 30/09 registradas ao final deste checkpoint.
+
+## 2026-09-29 — Confirmação visível após salvar paciente
+
+O fluxo local de edição de pacientes foi revisado sem alterar banco, migrations, RLS, Auth, CPF, foto ou endereço. A resposta da RPC continua sendo validada por paciente, clínica, revisão nova e campos mínimos antes do sucesso. O alerta agora usa o título `Alterações salvas` e a descrição `O cadastro do paciente foi atualizado com sucesso.`, permanece no estado da página por aproximadamente seis segundos com pausa durante interação e oferece fechamento acessível.
+
+- A edição iniciada pela tabela não reabre o resumo automaticamente; assim, o Alert permanece na página após o fechamento do formulário. Quando a edição começa no resumo, o mesmo estado compartilhado é renderizado dentro da superfície já aberta, sem duplicação.
+- Falhas preservam o formulário e os dados digitados; o estado `Salvando…` e a trava de envio impedem repetição. Se apenas a releitura da lista falhar, a mensagem informa o salvamento confirmado e oferece `Atualizar lista`.
+- Verificações de interface usam dados sintéticos e respostas interceptadas; não são prova de uma nova gravação no Supabase. O servidor oficial local desta entrega é `http://127.0.0.1:3000/acesso/brotas`.
+
+## 2026-09-29 — Confirmações de Pacientes: Jev e validação conectada
+
+Foi realizada uma revisão auxiliar real com o Jev, usando somente fatos técnicos sanitizados e sem integrar IA ao formulário. O retorno foi conferido contra o código e não substituiu evidência. A sessão autorizada em Brotas comprovou, pelo fluxo real, criação de fixture sintética, edição iniciada pela tabela, edição iniciada pelo resumo, alerta verde único e persistência após recarregar. A fixture foi removida por ID/clínica exatos após preflight sem dependências; zero paciente, responsável e foto do alvo permaneceram, e a auditoria append-only foi preservada.
+
+Os cenários de erro de serviço e de falha posterior da lista seguem comprovados somente por interceptação sintética; não houve indisponibilidade provocada no Supabase. Em Ipupiara, a consulta de CPF continua explicitamente indisponível, não ausente: catálogo e diagnóstico sem retorno do CPF mostraram RPC/grants presentes, descriptografia e hash consistentes e dígitos legados inválidos. A correção do cadastro depende de decisão específica e não foi automatizada.
+
+Relatório detalhado: `docs/modulos/pacientes/13-CONFIRMACOES-VISIVEIS-CADASTRO.md`. URLs locais: sessão `http://127.0.0.1:5173/acesso/brotas`; conferência oficial `http://127.0.0.1:3000/acesso/brotas`. Gestão de acessos da Equipe e seus checkpoints foram preservados.
+
+## 2026-09-30 — Correções remotas da gestão de acessos concluídas
+
+Com autorização específica para o Supabase `xftnkusbyqzyvzrovroj`, foi aplicada somente a migration `20260929190000_equipe_gestao_acessos_correcoes.sql` e publicada a Edge Function `equipe-acessos` versão 2, ativa e com JWT obrigatório. Catálogo, grants, índices, histórico e integridade foram confirmados; nenhuma migration de outro módulo foi executada.
+
+A sessão autenticada de proprietária confirmou consulta somente leitura em Brotas e isolamento ao alternar para Ipupiara. Um ensaio conectado com `ROLLBACK` comprovou recusa de usuário comum, papel/suspensão/reativação, isolamento entre clínicas, aceite confirmado e idempotente, sincronização Equipe/Profissionais, reserva exclusiva de reenvio e autobloqueio. O rollback deixou convites `0`, idempotências `0` e as contagens de Equipe inalteradas; auditorias históricas foram preservadas.
+
+O snapshot protegido pré-correção permanece em `D:\PROJETOS SAAS\CLINICA PATRICIA_BACKUPS\20260929_EQUIPE_ACESSOS_CORRECAO_PRE\snapshot-vinculos-papeis-20260929.json`, SHA-256 `9A502C91A9CE9D94B8022A59BB06E2A3750147E2BF589DE3DC84652094175D15`. Build, lint, 8/8 testes determinísticos e 24/24 cenários Playwright foram aprovados. A regressão corrigiu uma queda do painel quando o serviço devolvia contrato incompleto; a ficha agora mostra indisponibilidade. A única pendência delimitada é a entrega e o aceite real por e-mail: não há `EQUIPE_INVITE_REDIRECT_URL` nem caixa de teste autorizada, e nenhum convite/OTP foi enviado. Relatório: `docs/modulos/equipe/20-CORRECOES-GESTAO-DE-ACESSOS.md`.
+
+## 2026-09-30 — Convites vencidos, recuperação Auth e suspensão com token antigo
+
+No Supabase autorizado `xftnkusbyqzyvzrovroj`, foi aplicada somente a migration `20260930100000_equipe_convites_expiracao_recuperacao.sql` e publicada a Edge Function `equipe-acessos` versão 3, ativa e com JWT obrigatório. A função publicada foi baixada e comparada com a fonte local; ambas coincidem. A nova ação de preparo encerra convites vencidos antes de criar outro, preserva histórico/idempotência e impede finalização atrasada de reabrir convite cancelado ou aceito. O reenvio registra a conta devolvida pelo Auth e recupera falha parcial por igualdade exata de e-mail sem conceder acesso antes do aceite.
+
+Chamadas autenticadas reais de **Cadastros → Equipe & acessos → Ver cadastro** passaram nas origens locais 5173 e 3000. Com duas contas temporárias autenticadas, a leitura protegida funcionou antes da suspensão; depois da suspensão pela administradora, a mesma sessão e o mesmo token foram recusados no servidor; a reativação recuperou o acesso. As contas, usuários, vínculos e membro sintéticos foram removidos por IDs exatos e dois eventos de auditoria foram preservados. Pós-limpeza: membros `1`, vínculos ativos `2`, acessos ativos `6`, convites `0`, idempotências `0`; integridade `qtd_pacientes=3`.
+
+Snapshot mínimo protegido: `D:\PROJETOS SAAS\CLINICA PATRICIA_BACKUPS\20260930_EQUIPE_CONVITES_PRE\snapshot-equipe-convites-20260930.json`, SHA-256 `4065DFCA9C752029EB1FCD1A1EDB67BAE940810BBF11A7046EFEA1614B5C4D57`. Não é backup completo e não teve restauração testada. O ciclo de e-mail continua aguardando redirect allowlisted e caixa de teste autorizada. Relatório: `docs/modulos/equipe/21-AJUSTES-FINAIS-CONVITES-E-SUSPENSAO.md`.

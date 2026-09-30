@@ -12,10 +12,11 @@ Antes de propor código, migrations, alterações de banco ou mudanças de arqui
 2. Identifique o módulo em `docs/modulos/`.
 3. Leia o `00-README-<MODULO>.md` do módulo.
 4. Se a tarefa envolver cadastro ou formulário de pessoa/entidade, leia `padroes/PADRAO-PREENCHIMENTO-CADASTROS-BR.md` sem substituir as regras específicas do módulo.
-5. Leia os documentos marcados como **FONTE DE VERDADE**.
-6. Use auditorias e relatórios de estado apenas para entender a implementação atual.
-7. Não trate uma auditoria técnica como especificação do produto.
-8. Se houver conflito, a decisão funcional aprovada mais recente prevalece sobre rascunhos ou código legado.
+5. Se a tarefa envolver mensagens, estados operacionais ou ações destrutivas, leia `padroes/PADRAO-MENSAGENS-SISTEMA.md`.
+6. Leia os documentos marcados como **FONTE DE VERDADE**.
+7. Use auditorias e relatórios de estado apenas para entender a implementação atual.
+8. Não trate uma auditoria técnica como especificação do produto.
+9. Se houver conflito, a decisão funcional aprovada mais recente prevalece sobre rascunhos ou código legado.
 
 ## Estrutura
 

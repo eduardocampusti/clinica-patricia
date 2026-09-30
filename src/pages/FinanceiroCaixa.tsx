@@ -1,5 +1,6 @@
-import { useCallback, useRef, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react'
 import { ModalBase } from '../components/ModalBase'
+import { FeedbackAlert } from '../components/feedback/FeedbackAlert'
 import { rotuloPapel } from '../lib/papelApresentacao'
 import { useFinanceiroConsulta } from '../hooks/useFinanceiroConsulta'
 import {
@@ -156,7 +157,7 @@ function OperacaoCaixa({ acao, caixa, clinicaId, usuarioId, onFechar, onConcluid
           onChange={(e) => setMotivo(e.target.value)} disabled={ocupado || enviado}
           required={Boolean(precisaMotivo || exigeJustificativa || (acao.tipo === 'revisar_fechamento' && acao.decisao === 'devolver'))} />
       </label>}
-      {erro && <p role="alert" className="rounded-lg bg-[var(--cor-erro-suave)] p-3 text-sm text-[var(--cor-erro)]">{erro}</p>}
+      {erro && <FeedbackAlert variant="destructive" title="Operação não concluída" description={erro} urgent />}
       {enviado && erro && <p className="text-xs text-[var(--texto-secundario)]">Os dados foram preservados. Tentar novamente reutiliza a mesma chave; cancelar abandona esta tentativa.</p>}
       <div className="flex flex-wrap justify-end gap-2">
         <button type="button" className={botao} onClick={fechar} disabled={ocupado}>Cancelar</button>
@@ -175,6 +176,7 @@ export default function FinanceiroCaixa({ clinicaAtivaId, carregandoClinica, usu
 }) {
   const [acao, setAcao] = useState<Acao | null>(null)
   const [sucesso, setSucesso] = useState<string | null>(null)
+  useEffect(() => setSucesso(null), [clinicaAtivaId])
   const autorizado = papel === 'proprietaria' || papel === 'recepcao'
   const carregar = useCallback(async (): Promise<EstadoTela> => {
     const atual = await consultarCaixaAtual(clinicaAtivaId!)
@@ -199,13 +201,11 @@ export default function FinanceiroCaixa({ clinicaAtivaId, carregandoClinica, usu
         <p>Dinheiro disponível, movimentações e fechamento da clínica.</p></div>
       {autorizado && <button type="button" className={botao} onClick={() => void consulta.recarregar()} disabled={consulta.resultado.estado === 'carregando'}>Atualizar</button>}
     </header>
-    {sucesso && <p role="status" className="rounded-lg border border-[var(--cor-sucesso-borda)] bg-[var(--cor-sucesso-suave)] p-3 text-sm text-[var(--texto-principal)]">{sucesso}</p>}
+    {sucesso && <FeedbackAlert variant="success" title="Operação confirmada" description={sucesso} onClose={() => setSucesso(null)} autoDismissMs={6000} />}
     {(carregandoClinica || carregandoPapel || consulta.resultado.estado === 'carregando') && <div role="status" aria-label="Carregando caixa" className={`${card} finance-skeleton`} />}
     {!carregandoClinica && !clinicaAtivaId && <p className={card}>Selecione uma clínica para consultar o caixa.</p>}
     {!carregandoPapel && clinicaAtivaId && !autorizado && <p className={card}>O caixa operacional é restrito aos perfis {rotuloPapel('proprietaria')} e {rotuloPapel('recepcao')}.</p>}
-    {consulta.resultado.estado === 'erro' && <div className={card} role="alert">
-      <p>{consulta.resultado.erro.message}</p><button type="button" className={`${botao} mt-3`} onClick={() => void consulta.recarregar()}>Tentar novamente</button>
-    </div>}
+    {consulta.resultado.estado === 'erro' && <FeedbackAlert variant="destructive" title="Não foi possível carregar o caixa" description={consulta.resultado.erro.message} action={<button type="button" onClick={() => void consulta.recarregar()}>Tentar novamente</button>} urgent />}
     {atual?.tipo === 'legado' && <section className={card} role="status">
       <h2 className="texto-titulo-secao">Caixa antigo em aberto</h2>
       <p className="mt-2 text-sm text-[var(--texto-secundario)]">Valor inicial {moeda(atual.valorAbertura)}. Este caixa histórico precisa de uma transição acompanhada antes de usar as novas operações financeiras.</p>

@@ -1,5 +1,6 @@
-import { useCallback, useRef, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react'
 import { ModalBase } from '../components/ModalBase'
+import { FeedbackAlert } from '../components/feedback/FeedbackAlert'
 import { useFinanceiroConsulta } from '../hooks/useFinanceiroConsulta'
 import type { Papel } from '../hooks/usePapelNaClinica'
 import { invalidarFinanceiro } from '../lib/financeiro/financeiro.cache'
@@ -90,7 +91,7 @@ function DialogoSolicitar({ recebimento, clinicaId, usuarioId, onFechar, onConcl
         <textarea className={`${campo} mt-1 py-3`} rows={3} value={motivo} onChange={(e) => setMotivo(e.target.value)}
           disabled={ocupado || enviado} required />
       </label>
-      {erro && <p role="alert" className="rounded-lg bg-[var(--cor-erro-suave)] p-3 text-sm text-[var(--cor-erro)]">{erro}</p>}
+      {erro && <FeedbackAlert variant="destructive" title="Estorno não solicitado" description={erro} urgent />}
       {enviado && erro && <p className="text-xs text-[var(--texto-secundario)]">Os dados e a chave foram preservados para nova tentativa. Cancelar abandona a intenção local.</p>}
       <div className="flex justify-end gap-2"><button type="button" className={botao} disabled={ocupado} onClick={fechar}>Cancelar</button>
         <button type="submit" className={primario} disabled={ocupado}>{ocupado ? 'Processando…' : enviado ? 'Tentar novamente' : 'Solicitar'}</button></div>
@@ -128,11 +129,11 @@ function DialogoRevisar({ estorno, clinicaId, decisao, onFechar, onConcluido }: 
       <p className="text-sm text-[var(--texto-secundario)]">Pagamento original {moeda(estorno.valorOriginal)}. Estorno solicitado {moeda(estorno.valor_total)}.</p>
       <ul className="text-sm text-[var(--texto-secundario)]">{estorno.pagamentos.map((pagamento) => <li key={pagamento.forma_pagamento}>{rotulos[pagamento.forma_pagamento]}: {moeda(pagamento.valor)}</li>)}</ul>
       <p className="text-sm">Motivo: {estorno.motivo}</p>
-      {decisao === 'aprovar' && <p className="rounded-lg bg-[var(--cor-alerta-suave)] p-3 text-sm">A aprovação efetiva o estorno, ajusta o caixa e preserva o recebimento original. Confira os dados antes de confirmar.</p>}
+      {decisao === 'aprovar' && <FeedbackAlert variant="warning" title="Aprovação com efeito financeiro" description="A aprovação efetiva o estorno, ajusta o caixa e preserva o recebimento original. Confira os dados antes de confirmar." />}
       <label className="block text-sm font-medium">Observação da revisão
         <textarea className={`${campo} mt-1 py-3`} rows={3} value={observacao} onChange={(e) => setObservacao(e.target.value)} disabled={ocupado} />
       </label>
-      {erro && <p role="alert" className="rounded-lg bg-[var(--cor-erro-suave)] p-3 text-sm text-[var(--cor-erro)]">{erro}</p>}
+      {erro && <FeedbackAlert variant="destructive" title="Decisão não confirmada" description={erro} urgent />}
       <div className="flex justify-end gap-2"><button type="button" className={botao} onClick={onFechar} disabled={ocupado}>Cancelar</button>
         <button type="submit" className={primario} disabled={ocupado}>{ocupado ? 'Processando…' : 'Confirmar decisão'}</button></div>
     </form>
@@ -145,6 +146,7 @@ export default function FinanceiroEstornos({ clinicaId, usuarioId, papel }: { cl
   const [selecionado, setSelecionado] = useState<RecebimentoParaEstorno | null>(null)
   const [revisao, setRevisao] = useState<{ estorno: EstornoPendente; decisao: 'aprovar' | 'rejeitar' } | null>(null)
   const [sucesso, setSucesso] = useState<string | null>(null)
+  useEffect(() => setSucesso(null), [clinicaId])
   const carregar = useCallback(async () => {
     const [recebimentos, pendentes] = await Promise.all([
       listarRecebimentosParaEstorno(clinicaId, pagina),
@@ -163,10 +165,9 @@ export default function FinanceiroEstornos({ clinicaId, usuarioId, papel }: { cl
     <header className="finance-page-intro"><div><h1 className="texto-titulo-tela">Estornos</h1>
       <p>Solicite, revise e acompanhe estornos sem perder o histórico do recebimento.</p></div>
       <button type="button" className={botao} onClick={() => void consulta.recarregar()}>Atualizar</button></header>
-    {sucesso && <p role="status" className="rounded-lg bg-[var(--cor-sucesso-suave)] p-3 text-sm">{sucesso}</p>}
+    {sucesso && <FeedbackAlert variant="success" title="Estorno atualizado" description={sucesso} onClose={() => setSucesso(null)} autoDismissMs={6000} />}
     {consulta.resultado.estado === 'carregando' && <div role="status" aria-label="Carregando estornos" className={`${card} finance-skeleton`} />}
-    {consulta.resultado.estado === 'erro' && <div className={card} role="alert"><p>{consulta.resultado.erro.message}</p>
-      <button type="button" className={`${botao} mt-3`} onClick={() => void consulta.recarregar()}>Tentar novamente</button></div>}
+    {consulta.resultado.estado === 'erro' && <FeedbackAlert variant="destructive" title="Não foi possível carregar os estornos" description={consulta.resultado.erro.message} action={<button type="button" onClick={() => void consulta.recarregar()}>Tentar novamente</button>} urgent />}
     {papel === 'proprietaria' && dados && <section className={card}>
       <div className="finance-card-heading"><h2 className="texto-titulo-secao">Aguardando sua revisão</h2><span className="finance-status" data-tone={dados.pendentes.length ? 'warning' : 'success'}>{dados.pendentes.length} solicitações</span></div>
       {!dados.pendentes.length ? <div className="finance-empty"><strong>Nenhum estorno aguardando revisão</strong><p>Novas solicitações da recepção aparecerão aqui.</p></div> :

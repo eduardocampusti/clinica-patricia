@@ -1,14 +1,25 @@
 import { calcularIdade } from './pacienteIdade'
 import { apenasDigitos, cpfValido } from './cpf'
+import { comporEnderecoPaciente, normalizarEspacos, type EnderecoPacienteFormulario } from './pacienteFormulario'
 
 export const CAMPOS_EDICAO = ['nome_completo', 'data_nascimento', 'sexo', 'telefone', 'email', 'endereco', 'observacoes'] as const
 export type CampoEdicao = typeof CAMPOS_EDICAO[number]
 export type DadosEdicao = Record<CampoEdicao, string | null>
 export interface PacienteEdicao extends DadosEdicao {
   id: string; clinica_id: string; updated_at: string; foto_path: string | null; ativo: boolean; created_at: string
+  cep?: string | null; logradouro?: string | null; numero?: string | null; complemento?: string | null
+  bairro?: string | null; cidade?: string | null; uf?: string | null; endereco_historico?: string | null
 }
 export interface ResponsavelEdicao { nome_completo: string; vinculo: string; telefone: string; cpf: string; email: string }
 export const RESPONSAVEL_VAZIO: ResponsavelEdicao = { nome_completo: '', vinculo: '', telefone: '', cpf: '', email: '' }
+export const CAMPOS_ENDERECO_EDICAO = ['cep', 'logradouro', 'numero', 'complemento', 'bairro', 'cidade', 'uf'] as const
+
+export function alteracoesEnderecoEstruturado(original: EnderecoPacienteFormulario, atual: EnderecoPacienteFormulario): Record<string, string | null> {
+  if (!CAMPOS_ENDERECO_EDICAO.some((campo) => original[campo] !== atual[campo])) return {}
+  const patch: Record<string, string | null> = { endereco: comporEnderecoPaciente(atual) }
+  for (const campo of CAMPOS_ENDERECO_EDICAO) patch[campo] = normalizarEspacos(atual[campo]) || null
+  return patch
+}
 
 /** Whitelist e diferenças: nunca envia dados protegidos ou valores não carregados. */
 export function alteracoesAdministrativas(original: DadosEdicao, atual: DadosEdicao): Partial<DadosEdicao> {
@@ -37,5 +48,5 @@ export function mensagemErroEdicao(codigo?: string): string {
   if (codigo === 'PGRST202' || codigo === '42883') return 'O salvamento seguro da edição ainda não está disponível neste ambiente. Nenhuma alteração foi confirmada. A instalação do contrato de edição depende de revisão técnica.'
   if (codigo === '42501' || codigo === 'P0002') return 'Não foi possível autorizar a edição deste paciente nesta clínica.'
   if (codigo === '23514') return 'Confira o nascimento e o responsável legal. A alteração não foi concluída.'
-  return 'Não foi possível confirmar o salvamento. Os dados digitados foram mantidos; confira a versão atual antes de repetir.'
+  return 'Suas alterações não foram salvas. Tente novamente.'
 }

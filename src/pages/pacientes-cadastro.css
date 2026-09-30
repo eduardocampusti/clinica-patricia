@@ -120,8 +120,10 @@
 .paciente-foto-reserva button { width: 100%; padding: 8px 9px; color: #31516d; background: #fff; border: 1px solid #cbd6e3; border-radius: 9px; }
 .paciente-foto-reserva button:hover:not(:disabled) { border-color: #72aecd; background: #f8fbff; }
 .paciente-foto-acoes { display: grid; width: 100%; gap: 7px; }
+.paciente-foto-conteudo { display: contents; }
 .paciente-arquivo-oculto { position: absolute !important; width: 1px !important; height: 1px !important; min-height: 0 !important; padding: 0 !important; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0 !important; }
-.paciente-foto-reserva .paciente-foto-confirmar { color: #fff; background: var(--cadastro-verde); border-color: var(--cadastro-verde); }
+.paciente-foto-reserva .paciente-foto-confirmar { color: #fff; background: var(--cadastro-azul, #006194); border-color: var(--cadastro-azul, #006194); }
+.paciente-foto-reserva .paciente-foto-confirmar:hover:not(:disabled) { color: #fff; background: #004d76; border-color: #004d76; }
 .paciente-foto-reserva .paciente-foto-remover { color: #a22b2b; }
 .paciente-foto-erro { color: #a22b2b !important; }
 .paciente-avatar { display: grid; width: 76px; height: 76px; margin-bottom: 8px; place-items: center; color: #236a94; font-size: 1.5rem; font-weight: 700; background: #d9ebf8; border: 4px solid #b5d8ef; border-radius: 50%; }
@@ -180,12 +182,29 @@
 .paciente-cancelar { margin-right: auto; }
 .paciente-acao-foto { color: var(--cor-primaria); font-size: .78rem; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
 .paciente-foto-modal-backdrop { z-index: 90; }
-.paciente-foto-modal { width: min(430px, calc(100vw - 28px)); padding: 22px; background: #fff; border: 1px solid #dfe5ef; border-radius: 18px; box-shadow: 0 24px 70px rgb(11 28 48 / 28%); }
-.paciente-foto-modal > header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+.paciente-foto-modal { --cadastro-azul: #006194; width: min(480px, calc(100vw - 28px)); max-height: calc(100dvh - 28px); margin: auto; padding: 0; color: var(--texto-principal); background: var(--fundo-card); border: 0; border-radius: 14px; overflow: auto; }
+.paciente-foto-modal[open] { display: flex; flex-direction: column; }
+.paciente-foto-modal::backdrop { background: rgb(11 28 48 / 55%); }
+.paciente-foto-modal > header { display: flex; flex: none; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 20px 24px; border-bottom: 1px solid var(--borda); }
 .paciente-foto-modal h2 { margin: 0; font-size: 1.2rem; }
-.paciente-foto-modal header p { margin: 3px 0 0; color: #667384; font-size: .82rem; }
+.paciente-foto-modal header p { margin: 5px 0 0; color: var(--texto-secundario); font-size: .875rem; overflow-wrap: anywhere; }
 .paciente-foto-modal header button { width: 38px; height: 38px; font-size: 1.7rem; line-height: 1; border-radius: 10px; }
 .paciente-foto-modal .paciente-foto-reserva { min-height: 0; }
+.paciente-foto-modal .paciente-foto-editor-administrativo { display: flex; align-items: stretch; padding: 0; border: 0; border-radius: 0; background: transparent; overflow: hidden; }
+.paciente-foto-editor-administrativo .paciente-foto-conteudo { display: flex; flex-direction: column; align-items: center; padding: 24px; overflow-y: auto; min-height: 0; }
+.paciente-foto-editor-administrativo .paciente-avatar { width: 112px; height: 112px; flex: none; margin: 0 0 12px; background: var(--fundo-pagina); color: var(--cadastro-azul); }
+.paciente-foto-editor-administrativo .paciente-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.paciente-foto-editor-administrativo .paciente-foto-acoes { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 8px; }
+.paciente-foto-editor-administrativo .paciente-foto-acoes > button:nth-last-child(1):nth-child(even) { grid-column: 1 / -1; }
+.paciente-foto-editor-administrativo p { color: var(--texto-secundario); font-size: .8125rem; line-height: 1.5; margin: 10px 0 0; }
+.paciente-foto-editor-administrativo button { min-height: 44px; font: inherit; font-size: .875rem; color: var(--texto-principal); background: var(--fundo-card); border-color: var(--borda); }
+.paciente-foto-editor-administrativo button:hover:not(:disabled) { background: var(--fundo-pagina); }
+.paciente-foto-editor-administrativo button:disabled { opacity: 1; cursor: not-allowed; color: var(--texto-secundario); background: var(--fundo-pagina); border-color: var(--borda); }
+.paciente-foto-editor-administrativo .paciente-foto-confirmar:disabled { color: #46566a; background: #e0e7ee; border-color: #e0e7ee; }
+.paciente-foto-editor-administrativo button:focus-visible, .paciente-foto-modal header button:focus-visible { outline: 3px solid #3189b5; outline-offset: 2px; }
+.paciente-foto-rodape { display: flex; gap: 12px; flex: none; padding: 16px 24px; border-top: 1px solid var(--borda); background: var(--fundo-card); }
+.paciente-foto-editor-administrativo .paciente-foto-sucesso { color: var(--cor-sucesso); }
+[data-theme="escuro"] .paciente-foto-modal .paciente-foto-erro, [data-theme="escuro"] .paciente-foto-modal .paciente-foto-remover { color: #ffabab !important; }
 .paciente-foto-carregando, .paciente-foto-alerta { padding: 14px; font-size: .82rem; border-radius: 10px; }
 .paciente-foto-carregando { color: #31516d; background: #eff4ff; }
 .paciente-foto-alerta { margin-top: 12px; color: #8b2c2c; background: #fff0f0; }

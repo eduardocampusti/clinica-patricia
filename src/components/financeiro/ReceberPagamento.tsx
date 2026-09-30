@@ -7,6 +7,7 @@ import { invalidarFinanceiro } from '../../lib/financeiro/financeiro.cache'
 import { mensagemErroFinanceiro } from '../../lib/financeiro/financeiro.errors'
 import { decimalBancoParaCentavos, formatarCentavos, textoMonetarioParaCentavos } from '../../lib/financeiro/financeiro.money'
 import { FORMAS_PAGAMENTO, type FormaPagamento, type PagamentoCentavos, type ResultadoRecebimento, type StatusFiscal, type StatusRecebimento } from '../../lib/financeiro/financeiro.types'
+import { FeedbackAlert } from '../feedback/FeedbackAlert'
 
 export interface ConsultaParaReceber {
   agendamentoId: string
@@ -43,7 +44,7 @@ export function ReceberPagamento({ consulta, usuarioId, onFechar, onRecebido }: 
   const [resultado, setResultado] = useState<ResultadoRecebimento | null>(null)
   const [valores, setValores] = useState<Record<FormaPagamento, string>>({ dinheiro: '', pix: '', cartao_credito: '' })
   const trava = useRef(false)
-  const erroRef = useRef<HTMLParagraphElement>(null)
+  const erroRef = useRef<HTMLDivElement>(null)
   const [reconsulta, setReconsulta] = useState(0)
 
   useEffect(() => {
@@ -106,7 +107,7 @@ export function ReceberPagamento({ consulta, usuarioId, onFechar, onRecebido }: 
         <div><dt className="text-[var(--texto-secundario)]">Clínica</dt><dd>{consulta.clinica}</dd></div>
         <div><dt className="text-[var(--texto-secundario)]">Data e horário</dt><dd>{consulta.data.split('-').reverse().join('/')} · {consulta.horario.slice(0, 5)}</dd></div>
       </dl>
-      {erro && <p ref={erroRef} tabIndex={-1} role="alert" className="rounded-lg border border-[var(--cor-erro-borda)] bg-[var(--cor-erro-suave)] p-3 text-sm text-[var(--texto-principal)]">{erro}</p>}
+      {erro && <div ref={erroRef} tabIndex={-1}><FeedbackAlert variant="destructive" title="Pagamento não confirmado" description={erro} urgent /></div>}
       {carregando && <p role="status">Consultando valor da consulta…</p>}
       {!carregando && preco === null && <button type="button" className={botao} onClick={() => setReconsulta((valor) => valor + 1)}>Consultar novamente</button>}
       {resultado ? <>

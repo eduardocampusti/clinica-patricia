@@ -11,6 +11,7 @@ import { assinarInvalidacaoFinanceira } from '../lib/financeiro/financeiro.cache
 import { mensagemErroFinanceiro } from '../lib/financeiro/financeiro.errors'
 import { consultarCpfPendentePaciente } from '../lib/pacienteCpf'
 import { AvisoCpfPendente } from '../components/pacientes/AvisoCpfPendente'
+import { FeedbackAlert } from '../components/feedback/FeedbackAlert'
 
 type StatusAgendamento = 'agendado' | 'confirmado' | 'aguardando' | 'em_atendimento' | 'concluido' | 'cancelado'
 type TipoExcecao = 'folga' | 'horario_especial'
@@ -609,7 +610,9 @@ function Agenda({
     }
   }
 
-  const carregando = carregandoClinica || carregandoPapel || carregandoGrade || chaveContextoCarregado !== chaveContextoAtual
+  // Uma atualização da grade na mesma clínica não desmonta diálogos já abertos.
+  // A superfície inteira continua bloqueada na carga inicial e em toda troca de contexto.
+  const carregando = carregandoClinica || carregandoPapel || chaveContextoCarregado !== chaveContextoAtual
 
   if (carregando) {
     return (
@@ -691,40 +694,16 @@ function Agenda({
         </div>
       </div>
 
-      {erroIniciarAtendimento && (
-        <p role="alert" className="rounded-lg border border-[var(--cor-erro-borda)] bg-[var(--cor-erro-suave)] px-3.5 py-2.5 text-sm text-[var(--cor-erro)]">
-          {erroIniciarAtendimento}
-        </p>
-      )}
+      {erroIniciarAtendimento && <FeedbackAlert variant="destructive" title="Atendimento não iniciado" description={erroIniciarAtendimento} urgent />}
 
-      {erroRecebimentos && (
-        <p
-          role="status"
-          className="flex items-center justify-between gap-3 rounded-lg border border-[var(--cor-alerta-borda)] bg-[var(--cor-alerta-suave)] px-3.5 py-2.5 text-sm text-[var(--cor-alerta)]"
-        >
-          Não foi possível consultar os recebimentos da Agenda. {erroRecebimentos}
-          <button
-            type="button"
-            onClick={() => setRevisaoRecebimentos((valor) => valor + 1)}
-            className="flex-none font-medium transition hover:opacity-70"
-          >
-            Tentar novamente
-          </button>
-        </p>
-      )}
+      {erroRecebimentos && <FeedbackAlert variant="warning" title="Recebimentos indisponíveis" description={`Não foi possível consultar os recebimentos da Agenda. ${erroRecebimentos}`} action={<button type="button" onClick={() => setRevisaoRecebimentos((valor) => valor + 1)}>Tentar novamente</button>} />}
 
-      {carregando ? (
+      {carregandoGrade && !consultaReceber ? (
         <div className="rounded-[18px] bg-[var(--fundo-card)] p-8 text-center text-sm text-[var(--texto-secundario)]" style={{ boxShadow: 'var(--sombra-neutra)' }}>
           Carregando...
         </div>
       ) : erroCarregamento ? (
-        <div role="alert" className="rounded-[18px] border border-[var(--cor-erro-borda)] bg-[var(--cor-erro-suave)] p-8 text-center text-sm text-[var(--cor-erro)]">
-          <p>{erroCarregamento}</p>
-          <button type="button" onClick={() => void recarregarTudo()}
-            className="mt-3 min-h-11 rounded-lg border border-[var(--cor-erro-borda)] px-4 py-2 font-semibold">
-            Tentar novamente
-          </button>
-        </div>
+        <FeedbackAlert variant="destructive" title="Não foi possível carregar a Agenda" description={erroCarregamento} action={<button type="button" onClick={() => void recarregarTudo()}>Tentar novamente</button>} urgent />
       ) : !clinicaAtivaId ? (
         <div className="rounded-[18px] bg-[var(--fundo-card)] p-8 text-center text-sm text-[var(--texto-secundario)]" style={{ boxShadow: 'var(--sombra-neutra)' }}>
           Nenhuma clínica vinculada ao seu usuário.
@@ -1278,11 +1257,7 @@ function ModalNovoAgendamento({
           />
         </div>
 
-        {erro && (
-          <p role="alert" className="rounded-lg border border-[var(--cor-erro-borda)] bg-[var(--cor-erro-suave)] px-3 py-2 text-sm text-[var(--cor-erro)]">
-            {erro}
-          </p>
-        )}
+        {erro && <FeedbackAlert variant="destructive" title="Não foi possível criar o agendamento" description={erro} urgent />}
 
         <div className="flex justify-end gap-3 pt-1">
           <button
@@ -1435,11 +1410,7 @@ function ModalExcecao({ clinicaAtivaId, profissionalId, dataInicial, onFechar, o
           />
         </div>
 
-        {erro && (
-          <p role="alert" className="rounded-lg border border-[var(--cor-erro-borda)] bg-[var(--cor-erro-suave)] px-3 py-2 text-sm text-[var(--cor-erro)]">
-            {erro}
-          </p>
-        )}
+        {erro && <FeedbackAlert variant="destructive" title="Não foi possível salvar a exceção" description={erro} urgent />}
 
         <div className="flex justify-end gap-3 pt-1">
           <button
@@ -1563,11 +1534,7 @@ function ModalListaEspera({ clinicaAtivaId, pacientes, profissionais, onFechar, 
           />
         </div>
 
-        {erro && (
-          <p role="alert" className="rounded-lg border border-[var(--cor-erro-borda)] bg-[var(--cor-erro-suave)] px-3 py-2 text-sm text-[var(--cor-erro)]">
-            {erro}
-          </p>
-        )}
+        {erro && <FeedbackAlert variant="destructive" title="Não foi possível atualizar a lista de espera" description={erro} urgent />}
 
         <div className="flex justify-end gap-3 pt-1">
           <button

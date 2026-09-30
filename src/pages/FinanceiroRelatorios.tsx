@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type SyntheticEvent } from 'react'
+import { FeedbackAlert } from '../components/feedback/FeedbackAlert'
 import type { Papel } from '../hooks/usePapelNaClinica'
 import { carregarDashboardProfissional, carregarDashboardProprietaria } from '../lib/financeiro/financeiro.dashboard'
 import { intervaloPorDias, TIMEZONE_FINANCEIRO_PADRAO } from '../lib/financeiro/financeiro.date'
@@ -359,7 +360,7 @@ export default function FinanceiroRelatorios({ clinicaId, papel }: { clinicaId: 
         <button type="button" className={botao} disabled={carregandoPrevia || !previa.pagina.pagina.tem_mais} onClick={() => void mudarPagina('proxima')}>Próxima</button></div>}
     </section>
     {progresso && <p role="status" className={card}>{progresso}</p>}
-    {erro && <p role="alert" className={`${card} text-[var(--cor-erro)]`}>{erro}</p>}
-    {sucesso && <p role="status" className={`${card} text-[var(--cor-sucesso)]`}>{sucesso}</p>}
+    {erro && <FeedbackAlert variant="destructive" title="Não foi possível gerar o relatório" description={erro} urgent />}
+    {sucesso && <FeedbackAlert variant="success" title="Arquivo preparado" description={sucesso} onClose={() => setSucesso(null)} autoDismissMs={6000} />}
   </div>
 }

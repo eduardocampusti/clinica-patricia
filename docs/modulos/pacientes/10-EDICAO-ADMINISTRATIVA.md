@@ -1,5 +1,17 @@
 # Edição administrativa — árvore original
 
+## Continuação autenticada — 27/09/2026
+
+Na prévia da árvore original na porta 3000, a sessão existente de Proprietário(a) confirmou edição pela tabela, nova leitura após recarga e foto sintética em Brotas/Ipupiara. Em Brotas, também confirmou conflito real de revisão entre duas abas, sem sucesso falso e com rascunho preservado. Fixtures preexistentes foram reutilizadas e restauradas; nenhuma pessoa, paciente ou responsável novo foi criado. A remoção das fotos terminou sem alerta pela interface, mas não foi feita contagem independente de objetos Storage. O registro detalhado, destinos e limites estão em `08-CHECKPOINT.md`, seção “Comprovação conectada de edição e foto”.
+
+CPF preenchido permaneceu protegido. Inclusão positiva de CPF, falha de transporte de upload e negativas autenticadas de outros papéis não estão comprovadas por essa sessão. A correção desta continuação trata resposta não booleana da consulta de CPF como indisponibilidade, em vez de afirmar que o CPF foi informado. As seções abaixo preservam o histórico da preparação e não substituem a instalação registrada em `11-EDICAO-APLICACAO-CONTROLADA.md`.
+
+## Revisão de acesso às ações separadas — 27/09/2026
+
+O editor passou a oferecer botões próprios para abrir o gerenciador de foto privada e, quando a consulta `paciente_cpf_pendente` confirma ausência, o formulário existente de inclusão de CPF no resumo. Ambos continuam operações separadas de `paciente_editar_administrativo`; não entram no patch dos sete campos. Ao sair com campos administrativos modificados, o usuário precisa confirmar o descarte antes de abrir a ação. O gerenciamento de foto reutiliza `EditorFotoPaciente` e `pacienteFoto.ts`, com prévia, validação de tipo/tamanho, andamento, erro e limpeza já previstos. A inclusão de CPF reutiliza `AvisoCpfPendente`; CPF preenchido não pode ser corrigido por essa RPC. A consulta falha sem presumir que o CPF esteja ausente.
+
+Contato do paciente permanece editável na segunda etapa. O primeiro responsável pode ser vinculado atomicamente quando o nascimento identifica menor sem vínculo; responsáveis existentes são apenas apresentados (inclusive e-mail quando disponível). Alteração de vínculo existente, novos responsáveis e correção de CPF já informado continuam fora desta entrega, dependentes das decisões e contratos próprios registrados no Documento Funcional e no plano de iterações. A revisão não mudou SQL, policies ou Storage. Seus testes de interface com backend simulado não comprovam sessão autenticada real.
+
 Data: 26/09/2026. Implementação local em validação; não publicada.
 
 ## Contratos examinados e limite de entrega

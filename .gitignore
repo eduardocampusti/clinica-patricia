@@ -27,6 +27,11 @@ dist-ssr
 .env
 .env.local
 .env.*.local
+.env.*
+!.env.example
+!server/.env.example
+*.dump
+*.bak
 
 # Configuracao local do Claude Code (especifica desta maquina)
 .claude/

@@ -116,6 +116,20 @@ body {
   --cor-alerta-suave: color-mix(in srgb, var(--cor-alerta) 12%, transparent);
   --cor-alerta-borda: color-mix(in srgb, var(--cor-alerta) 30%, transparent);
 
+  /* Feedback compartilhado (Alert / AlertDialog, adaptado do shadcn/ui). */
+  --feedback-sucesso-fundo: #F0FDF4;
+  --feedback-sucesso-borda: #BBF7D0;
+  --feedback-sucesso-texto: #166534;
+  --feedback-alerta-fundo: #FFF7ED;
+  --feedback-alerta-borda: #FED7AA;
+  --feedback-alerta-texto: #9A3412;
+  --feedback-erro-fundo: #FEF2F2;
+  --feedback-erro-borda: #FECACA;
+  --feedback-erro-texto: #991B1B;
+  --feedback-info-fundo: #EFF6FF;
+  --feedback-info-borda: #BFDBFE;
+  --feedback-info-texto: #1E40AF;
+
   /* Sobreposição do drawer mobile */
   --sobreposicao: rgba(0, 0, 0, 0.4);
 
@@ -208,6 +222,19 @@ body {
   --cor-sucesso: #4ade80;
   --cor-alerta: #fbbf24;
 
+  --feedback-sucesso-fundo: #10281B;
+  --feedback-sucesso-borda: #256C42;
+  --feedback-sucesso-texto: #86EFAC;
+  --feedback-alerta-fundo: #2B1D0E;
+  --feedback-alerta-borda: #7C4A16;
+  --feedback-alerta-texto: #FDBA74;
+  --feedback-erro-fundo: #2D1517;
+  --feedback-erro-borda: #7F3038;
+  --feedback-erro-texto: #FCA5A5;
+  --feedback-info-fundo: #14233D;
+  --feedback-info-borda: #28558D;
+  --feedback-info-texto: #93C5FD;
+
   --dourado: #d4a64f;
   --dourado-texto: #e8c77a;
   --dourado-fundo: color-mix(in srgb, #b8873d 20%, transparent);
@@ -255,4 +282,68 @@ body {
   --status-cancelado-texto: color-mix(in srgb, #b91c1c 70%, white);
   --status-cancelado-badge-fundo: color-mix(in srgb, #b91c1c 30%, transparent);
   --status-cancelado-badge-texto: color-mix(in srgb, #b91c1c 78%, white);
+}
+
+/* Componentes de feedback source-owned conforme composição shadcn/ui. */
+.app-alert {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid;
+  border-radius: 12px;
+  background: var(--feedback-info-fundo);
+  border-color: var(--feedback-info-borda);
+  color: var(--feedback-info-texto);
+}
+.app-alert[data-variant="success"] { background: var(--feedback-sucesso-fundo); border-color: var(--feedback-sucesso-borda); color: var(--feedback-sucesso-texto); }
+.app-alert[data-variant="warning"] { background: var(--feedback-alerta-fundo); border-color: var(--feedback-alerta-borda); color: var(--feedback-alerta-texto); }
+.app-alert[data-variant="destructive"] { background: var(--feedback-erro-fundo); border-color: var(--feedback-erro-borda); color: var(--feedback-erro-texto); }
+.app-alert-icon { display: inline-flex; width: 20px; height: 20px; margin-top: 1px; }
+.app-alert-icon svg, .app-alert-dialog-icon svg { width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.app-alert-copy { min-width: 0; }
+.app-alert-title { margin: 0; color: currentColor; font-size: .9rem; font-weight: 650; line-height: 1.4; }
+.app-alert-description { margin-top: 2px; color: currentColor; font-size: .84rem; line-height: 1.5; opacity: .92; }
+.app-alert-description p { margin: 0; }
+.app-alert-action { display: flex; align-items: center; gap: 6px; }
+.app-alert-action > button:not(.app-alert-close), .app-alert-action > a {
+  min-height: 36px; padding: 7px 10px; border: 1px solid currentColor; border-radius: 8px; color: inherit; font-size: .8rem; font-weight: 650;
+}
+.app-alert-close { width: 36px; height: 36px; border-radius: 8px; color: currentColor; font-size: 1.25rem; line-height: 1; }
+.app-alert-close:hover, .app-alert-action > button:hover, .app-alert-action > a:hover { background: color-mix(in srgb, currentColor 9%, transparent); }
+.app-alert button:focus-visible, .app-alert a:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+
+.app-alert-dialog-overlay { position: fixed; inset: 0; z-index: 120; background: var(--sobreposicao); animation: feedback-fade-in 160ms ease-out; }
+.app-alert-dialog-content {
+  position: fixed; z-index: 121; top: 50%; left: 50%; width: min(92vw, 480px); transform: translate(-50%, -50%);
+  border: 1px solid var(--borda); border-radius: 16px; background: var(--fundo-card); color: var(--texto-principal);
+  padding: 20px; box-shadow: var(--sombra-alta); animation: feedback-dialog-in 180ms ease-out;
+}
+.app-alert-dialog-header { display: grid; grid-template-columns: 42px 1fr; align-items: start; gap: 12px; }
+.app-alert-dialog-icon { display: grid; place-items: center; width: 42px; height: 42px; padding: 10px; border-radius: 12px; }
+.app-alert-dialog-icon[data-tone="warning"] { background: var(--feedback-alerta-fundo); color: var(--feedback-alerta-texto); }
+.app-alert-dialog-icon[data-tone="danger"] { background: var(--feedback-erro-fundo); color: var(--feedback-erro-texto); }
+.app-alert-dialog-title { margin: 1px 0 0; font-size: 1.05rem; font-weight: 650; line-height: 1.4; }
+.app-alert-dialog-description { margin: 5px 0 0; color: var(--texto-secundario); font-size: .88rem; line-height: 1.55; }
+.app-alert-dialog-footer { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+.app-alert-dialog-button { min-height: 42px; padding: 9px 14px; border-radius: 9px; font-size: .86rem; font-weight: 650; }
+.app-alert-dialog-cancel { border: 1px solid var(--borda); background: var(--fundo-card); color: var(--texto-principal); }
+.app-alert-dialog-action[data-tone="warning"] { background: var(--feedback-alerta-texto); color: white; }
+.app-alert-dialog-action[data-tone="danger"] { background: var(--feedback-erro-texto); color: white; }
+.app-alert-dialog-button:hover { filter: brightness(.94); }
+.app-alert-dialog-button:focus-visible { outline: 2px solid var(--cor-primaria); outline-offset: 2px; }
+.app-alert-dialog-button:disabled { opacity: .55; cursor: wait; }
+@keyframes feedback-fade-in { from { opacity: 0; } }
+@keyframes feedback-dialog-in { from { opacity: 0; transform: translate(-50%, calc(-50% + 6px)) scale(.985); } }
+@media (max-width: 520px) {
+  .app-alert { grid-template-columns: 20px minmax(0, 1fr); }
+  .app-alert-action { grid-column: 1 / -1; padding-left: 30px; flex-wrap: wrap; }
+  .app-alert-dialog-content { padding: 18px; }
+  .app-alert-dialog-footer { flex-direction: column-reverse; }
+  .app-alert-dialog-button { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-alert-dialog-overlay, .app-alert-dialog-content { animation: none; }
 }

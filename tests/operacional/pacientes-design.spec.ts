@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test'
 
 test('capturas do cadastro de pacientes inspirado no Stitch', async ({ page }, info) => {
+  test.setTimeout(90_000) // O Vite pode demorar a servir o harness durante a suíte integral.
   if (info.project.name === 'desktop') await page.setViewportSize({ width: 1600, height: 1280 })
   await page.route('**/*', async (route) => {
     const url = new URL(route.request().url())

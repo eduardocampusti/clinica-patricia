@@ -1,6 +1,7 @@
-import { useId, useState } from 'react'
+import { useId, useRef, useState } from 'react'
 import { apenasDigitos, cpfValido, formatarCpf } from '../../lib/cpf'
 import { definirCpfPaciente, mensagemErroDefinirCpf } from '../../lib/pacienteCpf'
+import { FeedbackAlert } from '../feedback/FeedbackAlert'
 
 interface AvisoCpfPendenteProps {
   pacienteId: string
@@ -20,12 +21,14 @@ export function AvisoCpfPendente({
   contexto = 'operacional',
 }: AvisoCpfPendenteProps) {
   const campoId = useId()
+  const enviando = useRef(false)
   const [editando, setEditando] = useState(false)
   const [cpf, setCpf] = useState('')
   const [salvando, setSalvando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
 
   async function salvar() {
+    if (enviando.current) return
     setErro(null)
     const digitos = apenasDigitos(cpf)
     if (!cpfValido(digitos)) {
@@ -33,6 +36,7 @@ export function AvisoCpfPendente({
       return
     }
 
+    enviando.current = true
     setSalvando(true)
     try {
       await definirCpfPaciente(pacienteId, clinicaId, digitos)
@@ -40,21 +44,16 @@ export function AvisoCpfPendente({
     } catch (falha) {
       setErro(mensagemErroDefinirCpf(falha))
     } finally {
+      enviando.current = false
       setSalvando(false)
     }
   }
 
   return (
-    <section
-      aria-label={`CPF pendente de ${pacienteNome}`}
-      className="rounded-lg border border-[var(--cor-alerta-borda)] bg-[var(--cor-alerta-suave)] p-3.5"
-    >
-      <p className="text-sm font-semibold text-[var(--texto-principal)]">CPF ainda não informado</p>
-      <p className="mt-1 text-sm text-[var(--texto-secundario)]">
-        {contexto === 'cadastro'
-          ? 'Se o documento estiver disponível, ele pode ser acrescentado agora. A ausência dele não bloqueia o cadastro ou o atendimento.'
-          : 'Se o documento estiver disponível, ele pode ser acrescentado agora. O agendamento ou a chegada não serão bloqueados.'}
-      </p>
+    <section aria-label={`CPF pendente de ${pacienteNome}`}>
+      <FeedbackAlert variant="warning" title="CPF não informado" description={contexto === 'cadastro'
+        ? 'Você pode continuar o cadastro e o atendimento e completar essa informação depois.'
+        : 'Você pode continuar o agendamento ou a chegada e completar essa informação depois.'} />
 
       {!editando ? (
         <div className="mt-3 flex flex-wrap gap-2">
@@ -70,7 +69,7 @@ export function AvisoCpfPendente({
             onClick={onLembrar}
             className="min-h-11 rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3.5 py-2 text-sm font-medium text-[var(--texto-principal)] transition hover:bg-[var(--fundo-pagina)]"
           >
-            Lembrar na próxima visita
+            Informar depois
           </button>
         </div>
       ) : (
@@ -93,7 +92,8 @@ export function AvisoCpfPendente({
               className="w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 py-2.5 text-[var(--texto-principal)] outline-none transition focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60"
             />
           </div>
-          {erro && <p role="alert" className="text-sm text-[var(--cor-erro)]">{erro}</p>}
+          <FeedbackAlert variant="warning" title="Confira o CPF com atenção" description="Confira os 11 dígitos com o documento do paciente antes de salvar. Essa informação é importante para identificar corretamente o paciente em notas fiscais e relatórios." />
+          {erro && <FeedbackAlert variant="destructive" title="CPF não salvo" description={erro} urgent />}
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
@@ -109,7 +109,7 @@ export function AvisoCpfPendente({
               onClick={onLembrar}
               className="min-h-11 rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3.5 py-2 text-sm font-medium text-[var(--texto-principal)] disabled:opacity-60"
             >
-              Lembrar na próxima visita
+              Informar depois
             </button>
           </div>
         </div>

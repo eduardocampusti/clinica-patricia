@@ -1,7 +1,11 @@
 -- PROPOSTA PARA REVISÃO. NÃO EXECUTADA. NÃO É MIGRATION.
--- Vive em supabase/review/ até ensaio local + Supabase real com ROLLBACK e
--- autorização explícita. Só então é copiada para supabase/migrations/ com
--- timestamp e registro em supabase_migrations.schema_migrations.
+-- HISTÓRICO: NÃO APLICAR. A leitura individual e a correção foram implantadas
+-- pela migration 20260927100000_pacientes_cpf_leitura_correcao.sql. Esta
+-- proposta antiga inclui também paciente_cpf_disponivel(), não implantada.
+-- Revisão 27/09: correção só por proprietária; motivo sem documento; restaura
+-- contexto de auditoria depois do UPDATE. Não habilitar UI antes da implantação.
+-- Permanece em supabase/review/ apenas como histórico de desenho. Não copiar
+-- para supabase/migrations/: a migration 20260927100000 é o contrato aplicado.
 --
 -- Dependências: baseline 20260915010002, hardening 20260915010004, RPC de CPF
 -- pendente 20260924120000, edição administrativa 20260926100000 e correção de
@@ -95,6 +99,12 @@ begin
     return false;
   end if;
 
+  if p_paciente_id is not null and not exists (
+    select 1 from public.pacientes p where p.id = p_paciente_id and p.clinica_id = p_clinica_id
+  ) then
+    raise exception 'Operação não autorizada.' using errcode = '42501';
+  end if;
+
   v_hash := public.cpf_hash(v_cpf);
 
   -- Não revela id/nome. Retorno é booleano puro.
@@ -123,10 +133,11 @@ declare
   v_motivo text := btrim(coalesce(p_motivo, ''));
   v_hash text;
   v_atual public.pacientes%rowtype;
+  v_motivo_anterior text;
 begin
-  -- Autorização idêntica a paciente_editar_administrativo.
+  -- Decisão vigente: complementação aceita recepção; correção só proprietária.
   if auth.uid() is null
-     or not public.eh_proprietaria_ou_recepcao(p_clinica_id)
+     or not public.eh_proprietaria(p_clinica_id)
      or not exists (select 1 from public.usuarios u
                     where u.id = auth.uid() and u.ativo)
      or (public.clinica_ativa() is not null
@@ -139,6 +150,13 @@ begin
   -- Motivo é obrigatório nesta operação: 10..500 caracteres depois de btrim.
   if char_length(v_motivo) < 10 or char_length(v_motivo) > 500 then
     raise exception 'Motivo obrigatório entre 10 e 500 caracteres.'
+      using errcode = '22023';
+  end if;
+
+  -- Não copiar documento digitado no motivo para auditoria em texto claro.
+  -- Rejeita também sequências longas com pontuação/espaços entre os dígitos.
+  if v_motivo ~ '[0-9]([[:space:]./-]*[0-9]){10}' then
+    raise exception 'Não inclua documentos ou sequências numéricas longas no motivo.'
       using errcode = '22023';
   end if;
 
@@ -194,16 +212,20 @@ begin
 
   -- Motivo escoa via GUC local: só o trigger enxerga; fora desta transação
   -- o GUC não existe mais.
+  v_motivo_anterior := current_setting('audit.motivo', true);
   perform set_config('audit.motivo', v_motivo, true);
 
   update public.pacientes
      set cpf_encrypted = public.cpf_encrypt(v_cpf),
-         cpf_hash = v_hash
+         cpf_hash = v_hash,
+         updated_at = clock_timestamp()
    where id = p_paciente_id
      and clinica_id = p_clinica_id;
   if not found then
     raise exception 'Correção não concluída.' using errcode = 'P0002';
   end if;
+  -- Não atribuir o motivo desta correção a outra escrita na mesma transação.
+  perform set_config('audit.motivo', coalesce(v_motivo_anterior, ''), true);
 exception
   when unique_violation then
     -- Corrida com outra transação que preencheu o mesmo hash entre a checagem

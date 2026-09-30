@@ -4,6 +4,10 @@
 
 ## Comportamento solicitado
 
+### Decisão de publicação — 30/09/2026
+
+Sincronizar o repositório existente sem force push, mudança de visibilidade ou perda do trabalho. Brotas usa clinicabrotas.com.br e Ipupiara clinicaipupiara.com.br, mesma base/Supabase, hostname apenas visual e permissões no servidor. Não comprar clinicaipupiara.com, planos ou VPS. Preserve Site Geovana, MX/SPF/DKIM/DMARC e configurações existentes. Remetente institucional depende de escolha/autorização e serviço real; destinatário de teste não é remetente. Decisão posterior do usuário nesta execução: **não fazer deploy na Hostinger sem nova autorização**. Preparar/consultar é permitido; não publicar, criar site ou alterar DNS ali.
+
 - Mostrar o papel visual “Proprietário(a)” e “Visão de proprietário(a)” sem mudar o identificador interno `proprietaria` nem autorização.
 - Dar acesso a “Sobre o sistema” pela navegação secundária. Mostrar clínica ativa, versão do build e ambiente sem confundir compilação com lançamento. A versão inicial desta fase é `0.1.0`, identificada como “Em desenvolvimento” até lançamento efetivo.
 - Exibir dados institucionais por clínica e créditos gerais somente quando confirmados. Usuário autenticado não identifica proprietária, autoria ou suporte. Foram aprovados Vencer Digital como empresa de desenvolvimento, Eduardo Campos como desenvolvedor, WhatsApp `(77) 99129-0375` e Instagram `@vencerdigital.ia`; os respectivos links são contatos abertos apenas pelo usuário, sem envio automático de dados.

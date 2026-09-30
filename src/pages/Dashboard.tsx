@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { iniciais } from '../lib/texto'
+import { FeedbackAlert } from '../components/feedback/FeedbackAlert'
 
 function paraISODate(data: Date): string {
   const ano = data.getFullYear()
@@ -79,7 +80,7 @@ function Dashboard({ clinicaAtivaId }: DashboardProps) {
     </header>
     <section className="rounded-[18px] bg-[var(--fundo-card)] px-5 py-4 shadow-[var(--sombra-neutra)]">
       {carregandoProximo ? <p role="status" className="text-sm text-[var(--texto-secundario)]">Carregando próximo paciente…</p>
-        : erroProximo ? <p role="alert" className="text-sm text-[var(--cor-erro)]">Não foi possível consultar o próximo paciente.</p>
+        : erroProximo ? <FeedbackAlert variant="warning" title="Próximo paciente indisponível" description="Não foi possível consultar o próximo paciente." />
           : proximoPaciente ? <div className="flex items-center gap-3.5">
             <div className="flex h-[38px] w-[38px] flex-none items-center justify-center rounded-full bg-[var(--cor-primaria-suave)] text-sm font-semibold text-[var(--cor-primaria)]">
               {iniciais(proximoPaciente.nome)}

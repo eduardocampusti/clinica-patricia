@@ -168,21 +168,27 @@ test('endereços locais diretos isolam as marcas Brotas e Ipupiara', async ({ pa
   await expect(page).toHaveURL(/\/acesso\/ipupiara$/)
 })
 
-test('hostnames de produção dependem de configuração e hostname desconhecido é rejeitado', async ({ page }, info) => {
+test('hostnames aprovados identificam a unidade sem autorizar hostname desconhecido', async ({ page }, info) => {
   test.skip(info.project.name !== 'desktop')
-  await page.goto('/acesso/brotas')
+  await page.goto('/tests/login/login.html')
   const resolucoes = await page.evaluate(async () => {
     const { CLINIC_BRANDS, resolveClinicBrand } = await import('/src/config/clinicBrands.ts')
     return {
       brotasConfigurado: CLINIC_BRANDS.brotas.hostname,
       ipupiaraConfigurado: CLINIC_BRANDS.ipupiara.hostname,
       desconhecido: resolveClinicBrand('clinica-nao-configurada.example', '/login'),
+      brotas: resolveClinicBrand('clinicabrotas.com.br', '/').brand?.slug,
+      ipupiara: resolveClinicBrand('clinicaipupiara.com.br', '/acesso/brotas').brand?.slug,
+      www: resolveClinicBrand('www.clinicaipupiara.com.br', '/').brand?.slug,
     }
   })
   expect(resolucoes.brotasConfigurado ?? '').not.toMatch(/example/i)
   expect(resolucoes.ipupiaraConfigurado ?? '').not.toMatch(/example/i)
   expect(resolucoes.desconhecido.brand).toBeNull()
   expect(resolucoes.desconhecido.origem).toBe('dominio-invalido')
+  expect(resolucoes.brotas).toBe('brotas')
+  expect(resolucoes.ipupiara).toBe('ipupiara')
+  expect(resolucoes.www).toBe('ipupiara')
 })
 
 test('domínio de preview não concede acesso a outra clínica', async ({ page }, info) => {

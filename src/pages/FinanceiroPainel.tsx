@@ -8,6 +8,7 @@ import { listarEstornosPendentes, listarRecebimentosParaEstorno } from '../lib/f
 import { formatarDataFinanceira, intervaloPorDias, TIMEZONE_FINANCEIRO_PADRAO } from '../lib/financeiro/financeiro.date'
 import type { DashboardProfissional, DashboardProprietaria, EstadoCarregamento, ResumoDashboardProprietaria } from '../lib/financeiro/financeiro.types'
 import { FinanceCard, FinanceEmptyState, FinanceIcon, FinanceMetric, FinancePaymentsChart, FinancePendingItem, FinanceReceiptsChart, MoneyValue } from '../components/financeiro/FinanceVisual'
+import { FeedbackAlert } from '../components/feedback/FeedbackAlert'
 
 type Destino = 'caixa' | 'estornos' | 'repasses' | 'fiscal' | 'relatorios'
 const nuncaVazio = () => false
@@ -110,9 +111,9 @@ export default function FinanceiroPainel({ clinicaId, papel, onNavegar, periodHo
     </form>
   return <div className="finance-overview">
     {periodHost ? <>{createPortal(periodo, periodHost)}{!proprietaria && <h2 className="finance-overview-title">Meu financeiro</h2>}</> : <div className="finance-overview-toolbar"><h2>{proprietaria ? 'Visão geral' : 'Meu financeiro'}</h2>{periodo}</div>}
-    {erroFiltro && <p role="alert" className="text-sm text-[var(--cor-erro)]">{erroFiltro}</p>}
+    {erroFiltro && <FeedbackAlert variant="destructive" title="Período inválido" description={erroFiltro} urgent />}
     {consulta.resultado.estado === 'carregando' && <div role="status" aria-label="Carregando indicadores" className="finance-stat-grid">{[0, 1, 2, 3].map((i) => <div key={i} className="finance-skeleton" />)}</div>}
-    {consulta.resultado.estado === 'erro' && <div role="alert" className="finance-surface"><p>{consulta.resultado.erro.message}</p><button type="button" className="finance-button mt-3" onClick={() => void consulta.recarregar()}>Tentar novamente</button></div>}
+    {consulta.resultado.estado === 'erro' && <FeedbackAlert variant="destructive" title="Indicadores indisponíveis" description={consulta.resultado.erro.message} action={<button type="button" onClick={() => void consulta.recarregar()}>Tentar novamente</button>} urgent />}
     {dados && resumo && <>
       <div className="finance-stat-grid">
         <FinanceMetric label="Recebido no período" value={<MoneyValue value={resumo.producao.bruto} />} note={`${resumo.producao.quantidade} recebimentos`} icon="money" tone="green" />

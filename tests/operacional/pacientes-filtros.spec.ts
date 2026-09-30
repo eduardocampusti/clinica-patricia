@@ -73,8 +73,12 @@ test('ordenação, filtros aplicados, teclado, resumo e capturas responsivas', a
     await expect(page.locator('[aria-sort]')).toHaveCount(0)
     await page.locator('.pacientes-lista-identidade').filter({ hasText: 'Beatriz Modelo' }).click()
     await expect(page.getByRole('heading', { name: 'Resumo do cadastro' })).toBeVisible()
+    // O resumo agora é modal também no desktop: controles de fundo ficam inertes.
+    await page.getByRole('button', { name: 'Fechar resumo', exact: true }).click()
     await ordenar.selectOption('nome_desc')
+    await page.getByRole('button', { name: 'Ver resumo de Beatriz Modelo' }).click()
     await expect(page.getByRole('heading', { name: 'Resumo do cadastro' })).toBeVisible()
+    await page.getByRole('button', { name: 'Fechar resumo', exact: true }).click()
   }
   await ordenar.selectOption('nome_asc')
   // Captura da lista inteira, não somente do modal.
@@ -107,6 +111,7 @@ test('ordenação, filtros aplicados, teclado, resumo e capturas responsivas', a
   await expect(page.getByText('1 paciente encontrado')).toBeVisible()
   if (info.project.name === 'desktop') {
     await page.getByRole('button', { name: 'Ver resumo de Álvaro Exemplo' }).click()
+    await page.getByRole('button', { name: 'Fechar resumo', exact: true }).click()
     await page.getByLabel('Data de nascimento', { exact: true }).selectOption('ausente')
     await page.getByRole('button', { name: 'Aplicar filtros' }).click()
     await expect(page.getByText('Nenhum resultado nesta clínica')).toBeVisible()

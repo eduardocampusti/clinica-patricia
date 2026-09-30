@@ -4,6 +4,7 @@ import type { Papel } from '../hooks/usePapelNaClinica'
 import { rotuloPapel } from '../lib/papelApresentacao'
 import { carregarAcessosClinicas, type AcessoClinica } from '../lib/clinicAccess'
 import { clinicaCorrespondeAoBrand, resolveClinicBrand } from '../config/clinicBrands'
+import { FeedbackAlert } from '../components/feedback/FeedbackAlert'
 import './login.css'
 
 function Icon({ children }: { children: ReactNode }) {
@@ -206,7 +207,7 @@ export default function Login({ authenticatedUserId, onBeginAuth, onAccessGrante
           <div className="login-options-row"><label className="login-remember"><input type="checkbox" checked={lembrar} onChange={event => setLembrar(event.target.checked)} disabled={loading} /><span>Lembrar meu acesso neste dispositivo seguro</span></label><a href="#ajuda-acesso" onClick={() => setAjudaAberta(true)}>Ajuda no Acesso</a></div>
           <p className="login-field-hint login-remember-hint">Guarda apenas a unidade escolhida neste navegador; nunca o e-mail ou a senha.</p>
           <details id="ajuda-acesso" className="login-help" open={ajudaAberta} onToggle={event => setAjudaAberta(event.currentTarget.open)}><summary>Orientações para acesso</summary><p>Se esqueceu sua senha ou ainda não tem acesso, entre em contato com a administração da clínica para recuperar sua conta. Não compartilhe sua senha.</p></details>
-          {(error || accessError) && <p id="login-error" className="login-error" role="alert">{error || accessError}</p>}
+          {(error || accessError) && <div id="login-error"><FeedbackAlert variant="destructive" title="Não foi possível entrar" description={error || accessError} urgent /></div>}
           <button className="login-submit" type="submit" disabled={loading} aria-live="polite"><span>{loading ? 'Validando acesso…' : etapa === 'sessao' ? `Continuar na ${brand.nome}` : 'Acessar Sistema Integrado'}</span><Icon><path d="M14 4h6v16h-6M3 12h12m-4-4 4 4-4 4" /></Icon></button>
           {etapa === 'sessao' && <button type="button" className="login-switch-account" onClick={() => void trocarConta()}>Entrar com outra conta</button>}
           <p className="login-certificate">Acessar com Certificado Digital <span>Indisponível neste sistema</span></p>
