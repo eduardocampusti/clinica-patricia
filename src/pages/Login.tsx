@@ -20,13 +20,14 @@ const perfis: { valor: Papel | 'laboratorio'; rotulo: string }[] = [
 ]
 type EscolhaAcesso = { clinicaId: string; papel: Papel; lembrar: boolean }
 type LoginProps = {
+  acessoAutomatico?: boolean
   authenticatedUserId?: string
-  onBeginAuth?: () => void
+  onBeginAuth?: (lembrar?: boolean) => void
   onAccessGranted?: (escolha: EscolhaAcesso) => void
   accessError?: string | null
 }
 
-export default function Login({ authenticatedUserId, onBeginAuth, onAccessGranted, accessError }: LoginProps) {
+export default function Login({ acessoAutomatico = false, authenticatedUserId, onBeginAuth, onAccessGranted, accessError }: LoginProps) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [perfil, setPerfil] = useState<Papel | 'laboratorio'>('medico')
@@ -94,10 +95,10 @@ export default function Login({ authenticatedUserId, onBeginAuth, onAccessGrante
   }, [accessError])
 
   useEffect(() => {
-    if (authenticatedUserId && brand) void prepararAcessos(authenticatedUserId)
+    if (!acessoAutomatico && authenticatedUserId && brand) void prepararAcessos(authenticatedUserId)
   // O ref impede consultas duplicadas no StrictMode; a resolução de marca é imutável nesta montagem.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authenticatedUserId])
+  }, [authenticatedUserId, acessoAutomatico])
 
   useEffect(() => {
     document.title = `${nomeMarca} — Acesso`
@@ -125,13 +126,13 @@ export default function Login({ authenticatedUserId, onBeginAuth, onAccessGrante
     submitting.current = true
     setError(null)
     setLoading(true)
-    onBeginAuth?.()
+    onBeginAuth?.(lembrar)
     try {
       const { data, error: authError } = await supabase.auth.signInWithPassword({ email: email.trim(), password })
       if (authError) {
         setError(authError.status === 429 ? 'Muitas tentativas. Aguarde um momento antes de tentar novamente.' : authError.status === 400 || authError.status === 401 || authError.status === 422 ? 'E-mail ou senha inválidos. Confira seus dados e tente novamente.' : 'Não foi possível acessar o sistema. Verifique sua conexão e tente novamente.')
       } else if (data.user) {
-        await prepararAcessos(data.user.id)
+        if (!acessoAutomatico) await prepararAcessos(data.user.id)
       } else {
         setError('Não foi possível confirmar a autenticação. Tente novamente.')
       }

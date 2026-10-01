@@ -16,7 +16,8 @@ export async function carregarAcessosClinicas(usuarioId: string): Promise<Acesso
     .eq('usuario_id', usuarioId)
     .eq('ativo', true)
 
-  if (erroVinculos || !acessos?.length) throw new Error('Vínculos indisponíveis')
+  if (erroVinculos) throw new Error('Não foi possível consultar seus vínculos. Verifique a conexão e tente novamente.')
+  if (!acessos?.length) return []
 
   const ids = [...new Set(acessos.map(acesso => acesso.clinica_id))]
   const { data: clinicas, error: erroClinicas } = await supabase
@@ -25,7 +26,8 @@ export async function carregarAcessosClinicas(usuarioId: string): Promise<Acesso
     .in('id', ids)
     .order('nome', { ascending: true })
 
-  if (erroClinicas || !clinicas?.length) throw new Error('Unidades indisponíveis')
+  if (erroClinicas) throw new Error('Não foi possível consultar suas unidades. Verifique a conexão e tente novamente.')
+  if (!clinicas?.length) return []
 
   return clinicas.flatMap(clinica => acessos
     .filter(acesso => acesso.clinica_id === clinica.id && PAPEIS_SUPORTADOS.includes(acesso.papel as Papel))

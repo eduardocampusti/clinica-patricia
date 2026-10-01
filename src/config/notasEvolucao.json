@@ -30,6 +30,7 @@
       "Equipe: a gestão de acessos por clínica foi instalada no Supabase autorizado e publicada na Edge Function, com consulta real de acesso em Brotas e estado vazio correto em Ipupiara; convite e aceite aguardam redirect allowlisted e conta de teste autorizada."
     ],
     "correcoes": [
+      "Navegação: sessão autorizada retorna automaticamente à área interna; Agenda, Pacientes e clínica selecionada são restauradas pela URL após recarregar, sem novo clique em Continuar.",
       "Equipe: após confirmar o convite, Continuar para o sistema responde imediatamente e recarrega os vínculos autorizados, sem permanecer parado na tela de sucesso.",
       "Publicação: o build agora inclui a regra de rotas da Hostinger, preservando arquivos estáticos, o endereço de acesso e os parâmetros dos links de autenticação.",
       "Equipe: cadastro e edição receberam validações adicionais de permissão, repetição de envio, vínculos inativos, CPF, conselho por UF (inclusive troca ou remoção isolada), registro profissional e estado real de acesso por clínica.",

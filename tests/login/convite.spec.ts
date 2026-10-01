@@ -20,7 +20,8 @@ for (const unidade of ['brotas', 'ipupiara']) {
       const path = new URL(route.request().url()).pathname
       if (path.endsWith('/usuarios_clinicas')) {
         leiturasVinculos++
-        return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(aceito ? [{clinica_id:clinic.id,papel:'recepcao'}] : []) })
+        const singular = route.request().headers().accept?.includes('object')
+        return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(aceito ? singular ? {papel:'recepcao'} : [{clinica_id:clinic.id,papel:'recepcao'}] : singular ? null : []) })
       }
       return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(aceito && path.endsWith('/clinicas') ? [clinic] : []) })
     })
@@ -33,9 +34,8 @@ for (const unidade of ['brotas', 'ipupiara']) {
     await page.getByRole('button', {name:'Confirmar acesso',exact:true}).click()
     await expect(page.getByText('Acesso confirmado',{exact:true})).toBeVisible()
     await page.getByRole('button', {name:'Continuar para o sistema',exact:true}).click()
-    await expect(page.getByRole('heading',{name:'Sessão ativa'})).toBeVisible({timeout:5000})
-    await expect(page.getByText(/como.*Recepção/)).toBeVisible()
-    await expect(page.getByRole('button',{name: unidade === 'brotas' ? 'Continuar na Clínica Brotas' : 'Continuar na Clínica Ipupiara'})).toBeVisible()
+    await expect(page.locator('.app-shell')).toBeVisible({timeout:10000})
+    await expect(page).toHaveURL(new RegExp(`/sistema/${unidade}/dashboard$`))
     expect(new URL(page.url()).search).toBe('')
     expect(leiturasVinculos).toBeGreaterThan(0)
     expect(aceitaChamadas).toBe(1)

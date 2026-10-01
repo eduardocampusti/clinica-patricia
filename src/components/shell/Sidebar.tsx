@@ -3,7 +3,7 @@ import type { ClinicaAtiva } from '../../hooks/useClinicaAtiva'
 import type { Papel } from '../../hooks/usePapelNaClinica'
 import { iniciais } from '../../lib/texto'
 import { rotuloPapel, rotuloVisao } from '../../lib/papelApresentacao'
-import { TITULOS_TELA, type Tela } from './types'
+import { TELAS_POR_PAPEL, TITULOS_TELA, type Tela } from './types'
 import {
   IconeCadeado,
   IconeCalendario,
@@ -45,12 +45,6 @@ const ITENS_MENU: { chave: Tela; Icone: typeof IconeGrid }[] = [
   { chave: 'financeiro', Icone: IconeDinheiro },
   { chave: 'equipe', Icone: IconeEquipe },
 ]
-
-const TELAS_POR_PAPEL: Record<Papel, readonly Tela[]> = {
-  proprietaria: ['dashboard', 'agenda', 'pacientes', 'prontuario', 'financeiro', 'equipe'],
-  recepcao: ['dashboard', 'agenda', 'pacientes', 'financeiro', 'equipe'],
-  medico: ['dashboard', 'agenda', 'prontuario', 'financeiro'],
-}
 
 interface SidebarProps {
   tela: Tela

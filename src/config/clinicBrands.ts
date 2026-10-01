@@ -102,7 +102,7 @@ export function resolveClinicBrand(
   if (porHostname) return { brand: porHostname, origem: 'hostname' }
 
   if (ehHostLocal(host)) {
-    const acesso = pathname.match(/^\/acesso\/(brotas|ipupiara)\/?$/i)?.[1]?.toLowerCase() as ClinicBrandSlug | undefined
+    const acesso = pathname.match(/^\/(?:acesso|sistema)\/(brotas|ipupiara)(?:\/[a-z]+)?\/?$/i)?.[1]?.toLowerCase() as ClinicBrandSlug | undefined
     if (acesso) return { brand: CLINIC_BRANDS[acesso], origem: 'preview-local' }
 
     const loginLegado = pathname.match(/^\/login\/(brotas|ipupiara)\/?$/i)?.[1]?.toLowerCase() as ClinicBrandSlug | undefined

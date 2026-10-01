@@ -1,10 +1,12 @@
 # CHECKPOINT MESTRE — CLÍNICA PATRÍCIA
 
-Última atualização: 2026-09-30\
+Última atualização: 2026-10-01\
 Projeto local: `D:\PROJETOS SAAS\CLINICA PATRICIA`\
 Projeto Supabase: `xftnkusbyqzyvzrovroj`
 
 Este documento é a fonte mestre de continuidade do projeto. Ele registra somente fatos comprovados no código, no Git, nos relatórios de validação, no checkpoint lógico e nas auditorias remotas somente leitura.
+
+**01/10 — restauração de sessão após F5:** corrigidos acesso e página dependentes de memória mantendo endereço do login. Rotas internas validadas, consulta de vínculo/papel e entrada automática; convite/recuperação/logout preservados. 15 cenários sintéticos e build/lint aprovados; publicação/conferência real registradas em `docs/modulos/sistema/10-RESTAURACAO-SESSAO-E-ROTAS.md`. Nenhuma alteração de banco, senha ou SMTP. O ensaio institucional e sua limpeza continuam separados no relatório23.
 
 Legenda operacional usada neste documento:
 
@@ -15,6 +17,8 @@ Legenda operacional usada neste documento:
 - **BLOQUEADO**: existe código ou fluxo, mas uma dependência indispensável impede o uso atual.
 
 ### Estado vigente — e-mails e recuperação publicados (30/09/2026)
+
+**01/10 — continuação do convite corrigida e publicada:** commit `b904a77eb1c3151c2dae0996bdec12f937333847`, mesma branch autorizada, builds Hostinger completed nas duas clínicas. Botão confirma visualmente “Abrindo sistema…” antes da navegação efetiva e remonta consultas autorizadas. Dois testes sintéticos dirigidos aprovados, build/lint aprovados. Navegador confirmou páginas públicas atualizadas: Brotas preservou a sessão existente da proprietária, Ipupiara mostrou seu login. Isso não substitui a conferência da conta sintética pelo titular após a correção. Aceite real persistido confirmado; novo login/recuperação da conta de teste e limpeza permanecem pendentes. Não reenviar o convite já aceito. Ambiente local preservado/restabelecido em http://127.0.0.1:3000. Relatório23 contém IDs dos builds e limites. Os registros anteriores abaixo são histórico, não estado vigente.
 
 **Estado posterior01/10 — aceite institucional real confirmado:** titular definiu senha pessoalmente, captura Acesso confirmado; SELECT exato confirmou conviteaceito/mesma conta/tentativas2/um acesso ativo. Defeito Continuar reproduzido sinteticamente: replaceState com setters iguais não navega; corrigido por navegação efetiva e feedback Abrindo sistema…, remontando consultas autorizadas. Dois testes sintéticos dirigidos desktopBrotas/móvelIpupiara e build/lint aprovados; relatório23 distingue aceite real de correção local. Publicação/conferência do botão, login posterior, recuperação e limpeza ainda a registrar. Senhas, permissões, migrations, SMTP e módulos alheios intactos.
 

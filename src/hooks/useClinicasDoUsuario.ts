@@ -5,15 +5,17 @@ import type { ClinicaAtiva } from './useClinicaAtiva'
 // Lista TODAS as clínicas vinculadas ao usuário logado (RLS: clinicas_do_usuario()).
 // Fonte única de dados para o useClinicaAtiva (seleção) e para o dropdown da
 // sidebar.
-export function useClinicasDoUsuario(habilitado: boolean) {
+export function useClinicasDoUsuario(usuarioId: string | undefined) {
+  const habilitado = !!usuarioId
   const [clinicas, setClinicas] = useState<ClinicaAtiva[]>([])
   const [carregando, setCarregando] = useState(true)
+  const [erro, setErro] = useState(false)
   const [versaoSessao, setVersaoSessao] = useState(0)
 
   useEffect(() => {
     if (!habilitado) return
     const { data: { subscription } } = supabase.auth.onAuthStateChange((evento) => {
-      if (evento === 'SIGNED_IN' || evento === 'SIGNED_OUT' || evento === 'USER_UPDATED') {
+      if (evento === 'USER_UPDATED') {
         setVersaoSessao((versao) => versao + 1)
       }
     })
@@ -34,13 +36,15 @@ export function useClinicasDoUsuario(habilitado: boolean) {
 
     let cancelado = false
     setCarregando(true)
+    setErro(false)
 
     supabase
       .from('clinicas')
       .select('id, nome, cor_primaria, cor_secundaria, cor_menu')
       .order('nome', { ascending: true })
-      .then(({ data }) => {
+      .then(({ data, error }) => {
         if (cancelado) return
+        setErro(!!error)
         setClinicas(data ?? [])
         setCarregando(false)
       })
@@ -48,7 +52,7 @@ export function useClinicasDoUsuario(habilitado: boolean) {
     return () => {
       cancelado = true
     }
-  }, [habilitado, versaoSessao])
+  }, [habilitado, usuarioId, versaoSessao])
 
-  return { clinicas, carregando }
+  return { clinicas, carregando, erro }
 }
