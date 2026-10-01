@@ -11,7 +11,7 @@ const CLINICAS: ClinicaAtiva[] = [
 ]
 
 export function AgendaContexto() {
-  const [indice, setIndice] = useState(0)
+  const [indice, setIndice] = useState(() => new URLSearchParams(location.search).get('unidade') === 'ipupiara' ? 1 : 0)
   const [cadastroAberto, setCadastroAberto] = useState(false)
   const [pacienteCriado, setPacienteCriado] = useState<PacienteCriadoAgenda | null>(null)
   const clinica = CLINICAS[indice]

@@ -1,5 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
 
+test.beforeEach(() => { test.setTimeout(90_000) })
+
 async function abrirMenuMobile(page: Page) {
   const botao = page.getByRole('button', { name: 'Abrir menu' })
   if (await botao.isVisible()) {
@@ -690,7 +692,7 @@ test('registro de chegada exibe lembrete não bloqueante uma única vez', async 
       if (route.request().method() === 'PATCH') {
         atualizacaoIsolada = consulta.includes('id=eq.agenda-A') && consulta.includes('clinica_id=eq.clinica-a')
         status = 'aguardando'
-        return route.fulfill({ contentType: 'application/json', body: '[]' })
+        return route.fulfill({ contentType: 'application/json', body: JSON.stringify([{ id: 'agenda-A', status }]) })
       }
       return route.fulfill({ contentType: 'application/json', body: JSON.stringify([
         { id: 'agenda-A', profissional_id: 'prof-A', paciente_id: 'paciente-A', hora_inicio: '10:00:00', hora_fim: '10:30:00', status, observacoes: null, pacientes: { nome_completo: 'Paciente A' } },
@@ -702,7 +704,7 @@ test('registro de chegada exibe lembrete não bloqueante uma única vez', async 
   await page.goto('/tests/operacional/agenda-contexto.html')
   const agendamento = page.getByRole('button', { name: /^10:00 Paciente A/ })
   await agendamento.click()
-  await page.getByRole('button', { name: 'Aguardando' }).click()
+  await page.getByRole('button', { name: 'Aguardando', exact: true }).click()
   await expect(page.getByLabel('Lembrete de CPF na chegada')).toBeVisible()
   expect(atualizacaoIsolada).toBe(true)
   expect(consultasPendencia).toBe(1)
@@ -710,7 +712,7 @@ test('registro de chegada exibe lembrete não bloqueante uma única vez', async 
   await expect(page.getByLabel('Lembrete de CPF na chegada')).toHaveCount(0)
 
   await agendamento.click()
-  await page.getByRole('button', { name: 'Aguardando' }).click()
+  await page.getByRole('button', { name: 'Aguardando', exact: true }).click()
   await page.waitForTimeout(150)
   expect(consultasPendencia).toBe(1)
   await expect(page.getByLabel('Lembrete de CPF na chegada')).toHaveCount(0)

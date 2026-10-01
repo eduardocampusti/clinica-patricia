@@ -209,6 +209,19 @@ function Agenda({
   clinicaAtivaIdRef.current = clinicaAtivaId
 
   const [menuStatusId, setMenuStatusId] = useState<string | null>(null)
+  const [atualizandoStatus, setAtualizandoStatus] = useState(false)
+  const atualizacaoStatusEmCurso = useRef(false)
+  const contextoStatusAtual = useRef(chaveContextoAtual)
+  const revisaoContextoStatus = useRef(0)
+  if (contextoStatusAtual.current !== chaveContextoAtual) revisaoContextoStatus.current++
+  contextoStatusAtual.current = chaveContextoAtual
+  const [feedbackStatus, setFeedbackStatus] = useState<{
+    contexto: string
+    sucesso: boolean
+    titulo: string
+    descricao: string
+  } | null>(null)
+  useEffect(() => { setFeedbackStatus(null) }, [chaveContextoAtual])
   const [modalAberto, setModalAberto] = useState<'agendamento' | 'excecao' | 'espera' | null>(null)
   const [prefillAgendamento, setPrefillAgendamento] = useState<{ pacienteId: string; profissionalId: string } | null>(
     null,
@@ -581,32 +594,54 @@ function Agenda({
   }, [clinicaAtivaId])
 
   async function mudarStatus(agendamento: Agendamento, novoStatus: StatusAgendamento) {
+    if (!clinicaAtivaId || !chaveContextoAtual || !podeEscrever || atualizacaoStatusEmCurso.current) return
     setMenuStatusId(null)
-    if (!clinicaAtivaId) return
-
-    const { error } = await supabase
-      .from('agendamentos')
-      .update({ status: novoStatus })
-      .eq('id', agendamento.id)
-      .eq('clinica_id', clinicaAtivaId)
-
-    await recarregarTudo()
-
-    if (!error && novoStatus === 'aguardando' && podeEscrever && !lembretesChegadaExibidos.current.has(agendamento.id)) {
-      lembretesChegadaExibidos.current.add(agendamento.id)
-      void consultarCpfPendentePaciente(agendamento.paciente_id, clinicaAtivaId)
-        .then((cpfPendente) => {
-          if (cpfPendente && clinicaAtivaIdRef.current === clinicaAtivaId) {
-            setLembreteCpfChegada({
-              agendamentoId: agendamento.id,
-              pacienteId: agendamento.paciente_id,
-              pacienteNome: agendamento.paciente_nome,
-            })
-          }
-        })
-        .catch(() => {
-          // A falha do lembrete não pode impedir o registro de chegada.
-        })
+    const contexto = chaveContextoAtual
+    const revisao = revisaoContextoStatus.current
+    const contextoVigente = () => contextoStatusAtual.current === contexto && revisaoContextoStatus.current === revisao
+    atualizacaoStatusEmCurso.current = true
+    setAtualizandoStatus(true)
+    setFeedbackStatus(null)
+    try {
+      const { data, error } = await supabase
+        .from('agendamentos')
+        .update({ status: novoStatus })
+        .eq('id', agendamento.id)
+        .eq('clinica_id', clinicaAtivaId)
+        .select('id, status')
+        .maybeSingle()
+      if (!contextoVigente()) return
+      if (error || data?.id !== agendamento.id || data?.status !== novoStatus) {
+        throw new Error('Atualização não confirmada')
+      }
+      setFeedbackStatus({ contexto, sucesso: true,
+        titulo: novoStatus === 'aguardando' ? 'Chegada registrada' : 'Situação atualizada',
+        descricao: novoStatus === 'aguardando' ? 'O paciente está aguardando atendimento na Agenda.' : 'A situação do agendamento foi atualizada.' })
+      await recarregarTudo()
+      if (!contextoVigente()) return
+      if (novoStatus === 'aguardando' && !lembretesChegadaExibidos.current.has(agendamento.id)) {
+        lembretesChegadaExibidos.current.add(agendamento.id)
+        void consultarCpfPendentePaciente(agendamento.paciente_id, clinicaAtivaId)
+          .then((cpfPendente) => {
+            if (cpfPendente && contextoVigente()) {
+              setLembreteCpfChegada({
+                agendamentoId: agendamento.id,
+                pacienteId: agendamento.paciente_id,
+                pacienteNome: agendamento.paciente_nome,
+              })
+            }
+          })
+          .catch(() => {
+            // A falha do lembrete não pode impedir o registro de chegada.
+          })
+      }
+    } catch {
+      if (contextoVigente()) setFeedbackStatus({ contexto, sucesso: false,
+        titulo: 'Não foi possível atualizar a situação',
+        descricao: 'A atualização não foi confirmada. Confira a Agenda e tente novamente.' })
+    } finally {
+      atualizacaoStatusEmCurso.current = false
+      setAtualizandoStatus(false)
     }
   }
 
@@ -695,6 +730,14 @@ function Agenda({
       </div>
 
       {erroIniciarAtendimento && <FeedbackAlert variant="destructive" title="Atendimento não iniciado" description={erroIniciarAtendimento} urgent />}
+      {atualizandoStatus && <p role="status">Atualizando situação...</p>}
+      {feedbackStatus?.contexto === chaveContextoAtual && <FeedbackAlert
+        key={`${feedbackStatus.contexto}:${feedbackStatus.titulo}`}
+        variant={feedbackStatus.sucesso ? 'success' : 'destructive'}
+        title={feedbackStatus.titulo} description={feedbackStatus.descricao}
+        urgent={!feedbackStatus.sucesso} onClose={() => setFeedbackStatus(null)}
+        autoDismissMs={feedbackStatus.sucesso ? 6000 : undefined}
+      />}
 
       {erroRecebimentos && <FeedbackAlert variant="warning" title="Recebimentos indisponíveis" description={`Não foi possível consultar os recebimentos da Agenda. ${erroRecebimentos}`} action={<button type="button" onClick={() => setRevisaoRecebimentos((valor) => valor + 1)}>Tentar novamente</button>} />}
 
@@ -803,13 +846,14 @@ function Agenda({
                             focoRecebimento.current = ag.id
                             if (podeEscrever || souMedico) setMenuStatusId((atual) => (atual === ag.id ? null : ag.id))
                           }}
-                          aria-label={`${formatarHoraCurta(ag.hora_inicio)} ${ag.paciente_nome}${recebidos.has(ag.id) ? ' — Recebimento registrado' : ''}`}
+                          aria-label={`${formatarHoraCurta(ag.hora_inicio)} ${ag.paciente_nome} — ${STATUS_LABEL[ag.status]}${recebidos.has(ag.id) ? ' — Recebimento registrado' : ''}`}
                           ref={(node) => { if (node) botoesAgendamento.current.set(ag.id, node); else botoesAgendamento.current.delete(ag.id) }}
                           className="h-full w-full overflow-hidden rounded-lg border-l-[3px] px-2 py-1 text-left transition"
                           style={{ backgroundColor: estilo.fundo, borderColor: estilo.borda }}
                         >
-                          <div className="numero-tabular truncate text-[11px] font-medium" style={{ color: estilo.texto }}>
-                            {formatarHoraCurta(ag.hora_inicio)}
+                          <div className="numero-tabular flex gap-2 text-[11px] font-medium" style={{ color: estilo.texto }}>
+                            <span>{formatarHoraCurta(ag.hora_inicio)}</span>
+                            <span className="truncate">{STATUS_LABEL[ag.status]}</span>
                           </div>
                           <div className="truncate text-xs font-semibold" style={{ color: estilo.texto }}>
                             {ag.paciente_nome}
@@ -851,6 +895,7 @@ function Agenda({
                                     <button
                                       key={status}
                                       type="button"
+                                      disabled={atualizandoStatus}
                                       onClick={() => mudarStatus(ag, status)}
                                       className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-xs font-medium transition hover:bg-[var(--fundo-pagina)]"
                                     >
