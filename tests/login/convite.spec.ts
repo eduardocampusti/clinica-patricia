@@ -10,10 +10,11 @@ for (const unidade of ['brotas', 'ipupiara']) {
     let aceitaChamadas = 0
     let leiturasVinculos = 0
     await page.route('**/*', route => new URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort())
-    await page.route('**/acesso/**', async route => {
-      if (aceito && route.request().isNavigationRequest()) await new Promise(resolve => setTimeout(resolve, 700))
-      await route.continue()
-    })
+    // Captura somente estado visual sintético antes de a navegação desmontar a tela.
+    await page.addInitScript(() => window.addEventListener('beforeunload', () => {
+      const button = [...document.querySelectorAll('button')].find(el => el.textContent === 'Abrindo sistema…')
+      if (button) sessionStorage.setItem('synthetic-continuacao-busy', String(button.disabled && button.getAttribute('aria-busy') === 'true'))
+    }))
     await page.route('**/auth/v1/user', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(user) }))
     await page.route('**/rest/v1/**', route => {
       const path = new URL(route.request().url()).pathname
@@ -32,13 +33,13 @@ for (const unidade of ['brotas', 'ipupiara']) {
     await page.getByRole('button', {name:'Confirmar acesso',exact:true}).click()
     await expect(page.getByText('Acesso confirmado',{exact:true})).toBeVisible()
     await page.getByRole('button', {name:'Continuar para o sistema',exact:true}).click()
-    await expect(page.getByRole('button',{name:'Abrindo sistema…'})).toBeDisabled()
     await expect(page.getByRole('heading',{name:'Sessão ativa'})).toBeVisible({timeout:5000})
     await expect(page.getByText(/como.*Recepção/)).toBeVisible()
     await expect(page.getByRole('button',{name: unidade === 'brotas' ? 'Continuar na Clínica Brotas' : 'Continuar na Clínica Ipupiara'})).toBeVisible()
     expect(new URL(page.url()).search).toBe('')
     expect(leiturasVinculos).toBeGreaterThan(0)
     expect(aceitaChamadas).toBe(1)
+    expect(await page.evaluate(() => sessionStorage.getItem('synthetic-continuacao-busy'))).toBe('true')
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy()
   })
 }
