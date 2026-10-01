@@ -29,6 +29,35 @@ async function fixture(page: Page, unidade: string, modo: 'ativo' | 'sem-vinculo
 }
 
 for (const unidade of ['brotas','ipupiara']) {
+  test(`Recepção: URL e conteúdo preservados com vínculos e papel atrasados — ${unidade}`, async ({page}) => {
+    await fixture(page,unidade)
+    // Só o serviço sintético sofre atraso; não altera banco ou rede de produção.
+    await page.route('**/rest/v1/usuarios_clinicas**', async route => {
+      await new Promise(resolve => setTimeout(resolve, 700))
+      const singular = route.request().headers().accept?.includes('object')
+      await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(singular ? {papel:'recepcao'} : [{clinica_id:'22222222-2222-4222-8222-222222222222',papel:'recepcao'}])})
+    })
+    await page.goto(`/acesso/${unidade}`)
+    await expect(page.locator('.app-shell')).toBeVisible()
+    for (const destino of ['pacientes','agenda']) {
+      await page.getByRole('button',{name:destino === 'pacientes' ? 'Pacientes' : 'Agenda',exact:true}).click()
+      const url = page.url()
+      await page.reload()
+      await expect(page.locator('.app-shell')).toBeVisible()
+      expect(page.url()).toBe(url)
+      await expect(page.locator('.app-shell-header p').first()).toHaveText(destino === 'pacientes' ? 'Pacientes' : 'Agenda')
+    }
+    await page.goBack()
+    await expect(page).toHaveURL(new RegExp(`/sistema/${unidade}/pacientes$`))
+    await expect(page.locator('.app-shell-header p').first()).toHaveText('Pacientes')
+    await page.goForward()
+    await expect(page.locator('.app-shell-header p').first()).toHaveText('Agenda')
+    await page.goto(`/sistema/${unidade}/pacientes`)
+    await expect(page.locator('.app-shell-header p').first()).toHaveText('Pacientes')
+  })
+}
+
+for (const unidade of ['brotas','ipupiara']) {
   test(`restauração, rotas, F5 repetido e logout — ${unidade}`, async ({page}) => {
     const state = await fixture(page,unidade)
     await page.goto(`/acesso/${unidade}`)
@@ -85,6 +114,47 @@ test('sessão expirada recusada pelo Auth não restaura área protegida',async({
 test('destino não oferecido ao perfil permanece bloqueado',async({page})=>{
   await fixture(page,'brotas')
   await page.goto('/sistema/brotas/prontuario')
-  await expect(page.locator('.app-shell-header')).toContainText('Dashboard')
-  await expect(page).toHaveURL(/\/dashboard$/)
+  await expect(page.getByRole('alert')).toContainText('Página não autorizada')
+  await expect(page).toHaveURL(/\/prontuario$/)
+})
+
+test('restauração deve priorizar URL válida atual, não destino capturado antes da consulta',async({page})=>{
+  await fixture(page,'brotas')
+  let liberar!: () => void
+  const consultaPendente = new Promise<void>(resolve => { liberar = resolve })
+  await page.route('**/rest/v1/usuarios_clinicas**',async route=>{
+    await consultaPendente
+    const singular = route.request().headers().accept?.includes('object')
+    await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(singular ? {papel:'recepcao'} : [{clinica_id:'22222222-2222-4222-8222-222222222222',papel:'recepcao'}])})
+  })
+  await page.goto('/acesso/brotas')
+  await expect(page.getByRole('status')).toContainText('Verificando')
+  // Reproduz isoladamente divergência URL/estado durante a consulta, não um
+  // evento observado na sessão real do usuário. Não simula clique nem autorização.
+  await page.evaluate(()=>history.replaceState({},'', '/sistema/brotas/pacientes'))
+  liberar()
+  await expect(page.locator('.app-shell-header p').first()).toHaveText('Pacientes')
+  await expect(page).toHaveURL(/\/pacientes$/)
+})
+
+test('unidade alterada na URL durante consulta exige validação do novo contexto',async({page})=>{
+  await fixture(page,'brotas')
+  const clinics = [{id:'22222222-2222-4222-8222-222222222222',nome:'Clínica Brotas'},{id:'44444444-4444-4444-8444-444444444444',nome:'Clínica Ipupiara'}]
+  let liberar!: () => void
+  const pendente = new Promise<void>(resolve=>{liberar=resolve})
+  await page.route('**/rest/v1/clinicas**',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(clinics)}))
+  await page.route('**/rest/v1/usuarios_clinicas**',async route=>{
+    await pendente
+    const singular = route.request().headers().accept?.includes('object')
+    const filtro = new URL(route.request().url()).searchParams.get('clinica_id')
+    const vinculos = clinics.filter(clinica=>!filtro || filtro === `eq.${clinica.id}`).map(clinica=>({clinica_id:clinica.id,papel:'recepcao'}))
+    await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(singular ? {papel:'recepcao'} : vinculos)})
+  })
+  await page.goto('/acesso/brotas')
+  await expect(page.getByRole('status')).toContainText('Verificando')
+  await page.evaluate(()=>history.replaceState({},'', '/sistema/ipupiara/pacientes'))
+  liberar()
+  await expect(page.locator('.app-shell-header p').first()).toHaveText('Pacientes')
+  await expect(page.locator('.app-shell-header')).toContainText('Clínica Ipupiara')
+  await expect(page).toHaveURL(/\/sistema\/ipupiara\/pacientes$/)
 })

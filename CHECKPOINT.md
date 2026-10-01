@@ -6,6 +6,10 @@ Projeto Supabase: `xftnkusbyqzyvzrovroj`
 
 Este documento é a fonte mestre de continuidade do projeto. Ele registra somente fatos comprovados no código, no Git, nos relatórios de validação, no checkpoint lógico e nas auditorias remotas somente leitura.
 
+**Reabertura01/10 — Recepção/Pacientes/F5:** relato real retornando ao Dashboard após64e22df; conferência anterior de proprietária não aprova Recepção. Confirmada sinteticamente divergência URL/estado durante consulta pendente; corrigida fonte única de navegação e tratamento explícito de rota não autorizada. Sessão Recepção solicitada para conferência pública. Testes/publicação/evidências finais no relatório10; preservar conclusões anteriores com seus limites e ensaio de e-mail separado.
+
+**Resultado vigente01/10 — F5 corrigido e publicado:** commit `64e22df`, duas implantações completed e bundles públicos conferidos. Sessão real proprietária/Brotas entrou automaticamente e manteve Agenda/Pacientes após F5, recarga repetida e rota direta, sem Continuar. Ipupiara sem sessão própria carregou login/rota interna corretamente; F5 autenticado Ipupiara e conta Recepção real dependem de conferência do titular. 15 cenários sintéticos finais/build/lint aprovados. Sem banco, SMTP, senha ou cadastro alterados. Relatório de evidência: `docs/modulos/sistema/10-RESTAURACAO-SESSAO-E-ROTAS.md`. Ensaio institucional, recuperação e limpeza anteriores permanecem separados no relatório23.
+
 **01/10 — restauração de sessão após F5:** corrigidos acesso e página dependentes de memória mantendo endereço do login. Rotas internas validadas, consulta de vínculo/papel e entrada automática; convite/recuperação/logout preservados. 15 cenários sintéticos e build/lint aprovados; publicação/conferência real registradas em `docs/modulos/sistema/10-RESTAURACAO-SESSAO-E-ROTAS.md`. Nenhuma alteração de banco, senha ou SMTP. O ensaio institucional e sua limpeza continuam separados no relatório23.
 
 Legenda operacional usada neste documento:

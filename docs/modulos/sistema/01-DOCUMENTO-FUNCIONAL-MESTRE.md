@@ -6,6 +6,8 @@
 
 ### Restauração autorizada após recarga — 01/10/2026
 
+Refinamento aprovado após relato de Recepção: a URL interna válida é a fonte única da página ativa e prevalece sobre destinos capturados antes das consultas. Dashboard somente sem destino interno válido; rota fora do perfil recebe aviso explícito, sem descarte silencioso. Carregamento de vínculo/papel não equivale a negativa de permissão. Histórico, menu e conteúdo devem permanecer sincronizados.
+
 Com sessão válida e vínculo ativo confirmado pelos serviços existentes, entrar automaticamente na área interna; restaurar página e clínica por rota validada após F5. Não usar preferência local como autorização nem persistir formulários/dados pessoais para isso. Convite e recuperação têm prioridade. Sem sessão mostrar login; falta de vínculo e indisponibilidade técnica são estados distintos, com nova tentativa/troca de conta. Logout impede restauração indevida. Referência de implementação/evidências: `10-RESTAURACAO-SESSAO-E-ROTAS.md`.
 
 ### Remetente institucional aprovado — 30/09/2026

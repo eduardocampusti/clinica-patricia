@@ -1,5 +1,9 @@
 # Sistema — índice
 
+Revisão01/10/Recepção: titular relatou F5 Pacientes → Dashboard após64e22df. Conferência anterior de proprietária não é prova de Recepção. Corrigida concorrência entre URL e estado capturado na consulta; URL passa a ser fonte única, sem Dashboard silencioso em rota não autorizada. Testes/publicação/sessões reais registrados no relatório10. Preservados os fatos e limites históricos abaixo.
+
+**Publicado01/10:** restauração automática/rotas internas no commit `64e22df`, builds completed nas duas clínicas. Conferência conectada de proprietária/Brotas aprovou entrada automática, Agenda/Pacientes após F5, recarga repetida e rota direta. Ipupiara sem sessão própria mostrou login correto/recarga da rota interna. Recepção real/Brotas e F5 autenticado/Ipupiara pendentes; 15 testes sintéticos cobrem os cenários restantes. Relatório10 contém evidências, arquivos e limites; histórico abaixo preservado.
+
 01/10 — restauração de sessão e rotas internas implementada/testada localmente: entrada automática somente após consulta autorizada, F5 recupera página/clínica pela URL, convite/recuperação preservados. 15 testes dirigidos sintéticos e build/lint aprovados. Publicação/conferência conectada registradas em `10-RESTAURACAO-SESSAO-E-ROTAS.md`; não confundir com conclusão dos ensaios de e-mail. Histórico abaixo preservado.
 
 **Vigente30/09 — recuperação publicada em ambos os domínios:** commit4c89c13/branch atual, builds completed pelo MCP e abertura/recarga do login e recuperação conferidas no navegador. SMTP habilitado, templates institucionais e retornos públicos configurados; senha não consultada. Testes sintéticos4/4/build/lint aprovados; recebimento, aceite e recuperação reais ainda não comprovados. Relatórios09/23 registram pendências de participação normal do titular. Histórico anterior abaixo preservado.

@@ -21,7 +21,7 @@ import PlaceholderScreen from './components/shell/PlaceholderScreen'
 import { TELAS_POR_PAPEL, TITULOS_TELA, type Tela } from './components/shell/types'
 import { carregarAcessosClinicas } from './lib/clinicAccess'
 import { CLINIC_BRANDS, clinicaCorrespondeAoBrand, resolveClinicBrand } from './config/clinicBrands'
-import { caminhoInterno, lerRotaInterna, marcaDaRota } from './lib/appRoute'
+import { caminhoInterno, lerRotaInterna, marcaDaRota, navegarPara, useCaminhoAtual } from './lib/appRoute'
 import { FeedbackAlert } from './components/feedback/FeedbackAlert'
 
 function App() {
@@ -34,7 +34,8 @@ function App() {
   const [acessoValidado, setAcessoValidado] = useState(false)
   const [usuarioValidado, setUsuarioValidado] = useState<string | null>(null)
   const [erroAcesso, setErroAcesso] = useState<string | null>(null)
-  const [tela, definirTela] = useState<Tela>(() => lerRotaInterna()?.tela ?? 'dashboard')
+  const caminhoAtual = useCaminhoAtual()
+  const tela: Tela = lerRotaInterna(caminhoAtual)?.tela ?? 'dashboard'
   const [tentativaAcesso, setTentativaAcesso] = useState(0)
   const [restaurandoAcesso, setRestaurandoAcesso] = useState(true)
   const preferenciaNovoLogin = useRef<boolean | null>(null)
@@ -60,8 +61,7 @@ function App() {
     if (!papel || !TELAS_POR_PAPEL[papel].includes(destino)) return
     const marca = Object.values(CLINIC_BRANDS).find(item => clinicaAtiva && clinicaCorrespondeAoBrand(clinicaAtiva, item))
     if (!marca) return
-    window.history.pushState({}, '', caminhoInterno(marca.slug, destino))
-    definirTela(destino)
+    navegarPara(caminhoInterno(marca.slug, destino))
   }
 
   // Auth restaura a sessão; os serviços existentes confirmam vínculo/papel.
@@ -102,7 +102,6 @@ function App() {
       const clinica = clinicasDoUsuario.find(item => clinicaCorrespondeAoBrand(item, CLINIC_BRANDS[rota.unidade]))
       if (!clinica) { window.location.replace(window.location.href); return }
       selecionarClinica(clinica.id, false, true)
-      definirTela(rota.tela)
     }
     window.addEventListener('popstate', voltarNaRota)
     return () => window.removeEventListener('popstate', voltarNaRota)
@@ -136,9 +135,15 @@ function App() {
       return
     }
     const marca = Object.values(CLINIC_BRANDS).find(item => clinicaAtiva && clinicaCorrespondeAoBrand(clinicaAtiva, item))
-    const destino = TELAS_POR_PAPEL[escolhaAcesso.papel].includes(tela) ? tela : 'dashboard'
-    definirTela(destino)
-    if (marca) window.history.replaceState({}, '', caminhoInterno(marca.slug, destino))
+    // A URL atual prevalece sobre qualquer destino anterior ao retorno da
+    // consulta. Permissão recusada é explícita, nunca um Dashboard silencioso.
+    const solicitada = lerRotaInterna()
+    if (marca && solicitada && marca.slug !== solicitada.unidade) {
+      setEscolhaAcesso(null)
+      setTentativaAcesso(valor => valor + 1)
+      return
+    }
+    if (marca) navegarPara(solicitada ? caminhoInterno(solicitada.unidade, solicitada.tela) : caminhoInterno(marca.slug, 'dashboard'), true)
     setEscolhaAcesso(null)
     setAcessoValidado(true)
     setUsuarioValidado(session.user.id)
@@ -195,8 +200,7 @@ function App() {
   async function handleSignOut() {
     await supabase.auth.signOut()
     const marca = marcaDaRota() ?? resolveClinicBrand().brand
-    window.history.replaceState({}, '', `/acesso/${marca?.slug ?? 'brotas'}`)
-    definirTela('dashboard')
+    navegarPara(`/acesso/${marca?.slug ?? 'brotas'}`, true)
     setEscolhaAcesso(null)
     setEscolhaAplicada(false)
     setAcessoValidado(false)
@@ -257,7 +261,7 @@ function App() {
         const marca = Object.values(CLINIC_BRANDS).find(item => clinica && clinicaCorrespondeAoBrand(clinica, item))
         if (!marca) return
         selecionarClinica(id)
-        window.history.replaceState({}, '', caminhoInterno(marca.slug, tela))
+        navegarPara(caminhoInterno(marca.slug, tela), true)
       }}
       emailUsuario={session.user.email ?? ''}
       papel={papel}

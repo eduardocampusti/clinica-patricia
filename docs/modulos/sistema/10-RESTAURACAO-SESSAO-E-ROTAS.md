@@ -1,6 +1,24 @@
 # Restauração da sessão e navegação após F5
 
-Data: 01/10/2026. Estado: EM VALIDAÇÃO — publicação e conferência pública registradas ao final conforme execução.
+## Revisão após relato de Recepção — 01/10/2026
+
+O titular relatou Dashboard → Pacientes → F5 → Dashboard após o commit64e22df. A validação conectada anterior foi de proprietária/Brotas; **não comprova Recepção**. O relato reabre a conferência desse perfil, sem invalidar ou ampliar o escopo das evidências anteriores.
+
+Investigação: menu chama `setTela`, que atualizava history e um estado React separado. Na conclusão da consulta, App escolhia o destino usando o estado capturado (`tela`), não a URL atual, e substituía history. Um teste dirigido com consulta pendente e atualização da URL reproduziu Pacientes → Dashboard na versão anterior. É reprodução **sintética da divergência**, não correlação definitiva com o evento real do titular. Outro teste demonstrou que rota válida fora do perfil era descartada silenciosamente para Dashboard. Não foram atribuídos cache ou erro do usuário.
+
+Novos testes Recepção com atraso de700ms nas respostas sintéticas de vínculos e papel: ambas as unidades passaram já antes da correção. Logo, atraso sozinho não explicou o relato. Para comprová-lo no domínio, foi solicitada sessão Recepção no navegador controlado; a disponível era de proprietária/Brotas. Nenhuma credencial solicitada ou conta criada.
+
+Correção local: `useCaminhoAtual` observa a URL com `useSyncExternalStore`; menu, histórico e conteúdo usam a mesma localização. `navegarPara` centraliza push/replace e notifica React. Ao confirmar autorização, App relê a URL vigente; Dashboard só é padrão quando não há rota interna válida. Rota não autorizada mantém destino e mostra erro explícito. Se a unidade solicitada mudou durante a consulta, a autorização é refeita para essa unidade; não reutiliza a clínica anterior. Token/foco não escolhem página padrão. Convite/recuperação preservados; nenhum dado pessoal/formulário armazenado, nenhuma mudança de banco/permissões.
+
+Arquivos desta revisão: `src/App.tsx`, `src/lib/appRoute.ts`, `src/config/notasEvolucao.json`, `tests/login/navigation.spec.ts` e documentação/checkpoints. Resultado final dos testes, publicação e eventual conferência real serão registrados abaixo conforme execução; não declarar o fluxo Recepção aprovado somente pelo teste sintético.
+
+Verificações locais efetivas: suíte de18 cenários aprovada (1,1min), build/lint aprovados com avisos históricos. Ensaio adicional de troca de unidade durante consulta inicialmente falhou porque a simulação retornava dois vínculos apesar do filtro de clínica; corrigido somente o harness para respeitar o contrato `maybeSingle`. Nova execução dos quatro cenários afetados (atraso nas duas unidades, prioridade da URL e mudança de unidade) passou4/4 em20,9s. Total19 cenários distintos aprovados. Dois testes de regressão falharam antes da correção: URL vigente substituída por Dashboard e rota não autorizada redirecionada silenciosamente.
+
+URLs nos testes sintéticos de Recepção, em contextos separados Brotas/Ipupiara: autenticação restaurada `/sistema/<unidade>/dashboard`; clique Pacientes `/sistema/<unidade>/pacientes`; imediatamente antes do F5 igual; após carregamento a mesma URL e cabeçalho Pacientes. Agenda preservou `/sistema/<unidade>/agenda`. Voltar/Avançar mantiveram URL/conteúdo, acesso direto passou; logout/F5 foi coberto pela suíte. Não são evidências de sessão Recepção conectada em produção. TypeSafe consultada novamente (skill/índice): sem pertinência para roteamento determinístico, sem API/chave.
+
+### Histórico da entrega 64e22df
+
+Data: 01/10/2026. Estado: PUBLICADO — conferência autenticada Brotas executada; sessão própria Ipupiara/Recepção pendente conforme limites abaixo.
 
 ## Causa comprovada
 
@@ -33,4 +51,19 @@ Build e lint aprovados. Avisos preexistentes: Fast Refresh ThemeProvider e taman
 
 Local preservado: http://127.0.0.1:3000/acesso/brotas e http://127.0.0.1:3000/acesso/ipupiara. Público: https://clinicabrotas.com.br/acesso/brotas e https://clinicaipupiara.com.br/acesso/ipupiara.
 
-Publicação e evidências conectadas: pendentes até os registros finais abaixo. Não apresentar testes interceptados como validação integral de produção.
+## Publicação efetiva e evidências conectadas
+
+Commit `64e22dfe6b626b71dc152b4a91664bbb607d13bc`, branch `codex/resgate-local-2026-09-26`, push normal, sem main/force push. Hostinger confirmou builds `completed`: Brotas `01a0f711-4816-712c-8897-ab1e5a9b66d2`, 10:46:52 UTC; Ipupiara `01a0f711-4891-72a0-aece-40d5bac982a1`, 10:46:57 UTC. Navegador confirmou bundles servidos `index-QOJO83ek.js` e `index-CR26p8vz.js`, respectivamente.
+
+Antes da ativação, observação conectada do bundle anterior: clicar Continuar abria shell, mas URL continuava `/acesso/brotas`. Depois da ativação, na sessão real já autorizada de proprietária em Brotas:
+
+- Recarga do acesso encaminhou automaticamente a `/sistema/brotas/dashboard`.
+- Menu Agenda mudou a URL para `/sistema/brotas/agenda`; recarga preservou essa URL e o cabeçalho Agenda, sem botão Continuar.
+- Pacientes seguido de recarga preservou `/sistema/brotas/pacientes` e o cabeçalho Pacientes. Nova recarga repetida permaneceu na mesma página, sem loop.
+- Navegação direta para a URL interna de Agenda recuperou a área interna e a página correta.
+
+Somente navegação/leitura; não foram abertos formulários nem alterados registros, credenciais ou permissões. Não expostos dados de pacientes ou tokens nas evidências registradas. Sem fixtures novas, portanto nenhuma limpeza de banco nesta tarefa; a fixture anterior do ensaio de e-mails continua pendente de seu próprio encerramento.
+
+Ipupiara: sem sessão autenticada nesse domínio no navegador controlado. Rota direta `/sistema/ipupiara/agenda` e recarga carregaram login com identidade Ipupiara, bundle novo e nenhuma área protegida. Não se presume sessão compartilhada com Brotas. F5 autenticado e login normal em Ipupiara precisam do titular em sua sessão própria. Recepção real em Brotas também não foi usada pelo agente; o perfil foi coberto nos testes sintéticos, não deve ser apresentado como conferência conectada desse perfil. Logout real da proprietária não executado para preservar sua sessão; logout/F5, expiração, negativas, convite e recuperação foram verificados sinteticamente, sem novos envios ou alterações de senha real.
+
+Execução final dos 15 testes: todos aprovados em46,9s; build/lint finais aprovados, somente avisos históricos. Documentação/checkpoints atualizados após publicação sem novo deploy de código. Ambiente local mantido em3000, HTTP200 para acesso Ipupiara. Próximo passo de conferência pessoal: F5 em Agenda/Pacientes com a conta Recepção em Brotas e sessão autorizada própria em Ipupiara. Não exige novo convite.
