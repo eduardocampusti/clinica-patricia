@@ -30,6 +30,7 @@
       "Equipe: a gestão de acessos por clínica foi instalada no Supabase autorizado e publicada na Edge Function, com consulta real de acesso em Brotas e estado vazio correto em Ipupiara; convite e aceite aguardam redirect allowlisted e conta de teste autorizada."
     ],
     "correcoes": [
+      "Agenda: agendamentos permanecem acessíveis sem expediente e há correção de data e horário com motivo e histórico; após chegada, somente horário na mesma data, preservando situação e vínculos.",
       "Agenda: mudança de situação e registro de chegada exibem andamento, confirmação somente após retorno do registro atualizado e erro com possibilidade de nova tentativa; respostas de outro contexto não exibem mensagens atrasadas.",
       "Navegação: a URL solicitada passa a ser a fonte única da página ativa durante a restauração; destinos não autorizados exibem aviso em vez de voltar silenciosamente ao Dashboard.",
       "Navegação: sessão autorizada retorna automaticamente à área interna; Agenda, Pacientes e clínica selecionada são restauradas pela URL após recarregar, sem novo clique em Continuar.",

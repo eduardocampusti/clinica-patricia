@@ -278,6 +278,27 @@ crítico. Isso não substitui testes funcionais e autenticados.
 
 ---
 
+## Verificação isolada de Agenda — 01/10/2026, 15:16 -03:00
+
+Migration 20261001120000 executada apenas em PostgreSQL portátil sintético 127.0.0.1:55442,
+com baseline/Financeiro fase1. Catálogo da Agenda, concorrência e cenários dirigidos
+aprovados; Auth claim simulado, RLS do baseline ativa. Script oficial de integridade
+executado parcialmente: sem schemas supabase_migrations/Storage nem migrations posteriores
+de Pacientes no laboratório. Ausências não são falhas do principal, que não foi consultado/
+alterado nesta continuação. Instância encerrada; pacientes reais preservados.
+Detalhes: [Agenda 12](../agenda/12-EDICAO-DATA-HORARIO.md).
+
+## Aplicação de Agenda — 01/10/2026, 15:37 -03:00
+
+Somente migration 20261001120000 aplicada no ref xftnkusbyqzyvzrovroj, pela exceção de
+canal autorizada nesta tarefa. Conferidos pg_proc, assinaturas, grants, triggers e RLS
+da Agenda; corpo registrado corresponde ao arquivo local normalizando formatação.
+Todas as consultas do script oficial verificar-integridade.sql executadas sem erro.
+Consulta de contagem agregada não é acesso a documentos/prontuários nem prova completa
+de integridade. Nenhuma escrita em Pacientes ou agendamentos reais, nenhum CPF consultado.
+Catálogo técnico preservado; proteção não inclui dados/Auth/Storage nem restauração testada.
+Detalhes e limitações: [Agenda 12](../agenda/12-EDICAO-DATA-HORARIO.md).
+
 ## 8. Referências cruzadas
 
 - `AGENTS.md` — instruções para agentes IA que operam neste

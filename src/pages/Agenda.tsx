@@ -12,6 +12,7 @@ import { mensagemErroFinanceiro } from '../lib/financeiro/financeiro.errors'
 import { consultarCpfPendentePaciente } from '../lib/pacienteCpf'
 import { AvisoCpfPendente } from '../components/pacientes/AvisoCpfPendente'
 import { FeedbackAlert } from '../components/feedback/FeedbackAlert'
+import { EditarAgendamento, type AgendamentoEditavel } from '../components/agenda/EditarAgendamento'
 
 type StatusAgendamento = 'agendado' | 'confirmado' | 'aguardando' | 'em_atendimento' | 'concluido' | 'cancelado'
 type TipoExcecao = 'folga' | 'horario_especial'
@@ -50,6 +51,8 @@ interface Agendamento {
   hora_fim: string
   status: StatusAgendamento
   observacoes: string | null
+  data: string
+  updated_at: string
 }
 
 interface PacienteOpcao {
@@ -209,6 +212,10 @@ function Agenda({
   clinicaAtivaIdRef.current = clinicaAtivaId
 
   const [menuStatusId, setMenuStatusId] = useState<string | null>(null)
+  const [editandoAgendamento, setEditandoAgendamento] = useState<AgendamentoEditavel | null>(null)
+  const [correcaoSalva, setCorrecaoSalva] = useState<{ clinicaId: string; data: string } | null>(null)
+  useEffect(() => { setEditandoAgendamento(null) }, [chaveContextoAtual])
+  useEffect(() => { setCorrecaoSalva(null) }, [clinicaAtivaId])
   const [atualizandoStatus, setAtualizandoStatus] = useState(false)
   const atualizacaoStatusEmCurso = useRef(false)
   const contextoStatusAtual = useRef(chaveContextoAtual)
@@ -374,7 +381,7 @@ function Agenda({
         .eq('data', dataISO),
       supabase
         .from('agendamentos')
-        .select('id, profissional_id, paciente_id, hora_inicio, hora_fim, status, observacoes, pacientes(nome_completo)')
+        .select('id, profissional_id, paciente_id, data, updated_at, hora_inicio, hora_fim, status, observacoes, pacientes(nome_completo)')
         .eq('clinica_id', clinicaId)
         .eq('data', dataISO),
     ])
@@ -400,6 +407,8 @@ function Agenda({
       hora_fim: string
       status: StatusAgendamento
       observacoes: string | null
+      data: string
+      updated_at: string
       pacientes: { nome_completo: string } | { nome_completo: string }[] | null
     }
     const linhas = (respAgendamentos.data ?? []) as unknown as LinhaAgendamento[]
@@ -415,6 +424,8 @@ function Agenda({
           hora_fim: l.hora_fim,
           status: l.status,
           observacoes: l.observacoes,
+          data: l.data ?? dataISO,
+          updated_at: l.updated_at,
         }
       }),
     )
@@ -578,9 +589,9 @@ function Agenda({
       profissionais.filter((p) => {
         const temDisponibilidade = disponibilidades.some((d) => d.profissional_id === p.id)
         const temExcecao = excecoes.some((e) => e.profissional_id === p.id)
-        return temDisponibilidade || temExcecao
+        return temDisponibilidade || temExcecao || agendamentos.some(a => a.profissional_id === p.id)
       }),
-    [profissionais, disponibilidades, excecoes],
+    [profissionais, disponibilidades, excecoes, agendamentos],
   )
 
   function abrirNovoAgendamento(prefill?: { pacienteId: string; profissionalId: string }) {
@@ -730,6 +741,25 @@ function Agenda({
       </div>
 
       {erroIniciarAtendimento && <FeedbackAlert variant="destructive" title="Atendimento não iniciado" description={erroIniciarAtendimento} urgent />}
+      {correcaoSalva?.clinicaId === clinicaAtivaId && <FeedbackAlert variant="success" title="Agendamento atualizado"
+        description="Data e horário corrigidos. Os demais dados e vínculos foram preservados."
+        onClose={() => setCorrecaoSalva(null)} autoDismissMs={6000}
+        action={correcaoSalva.data !== paraISODate(dataSelecionada) ? <button type="button" onClick={() => setDataSelecionada(new Date(`${correcaoSalva.data}T12:00:00`))}>Ver na nova data</button> : undefined} />}
+      {!carregando && !carregandoGrade && agendamentos.length > 0 && <section aria-label="Agendamentos do dia" className="space-y-3 rounded-xl bg-[var(--fundo-card)] p-4">
+        <h2 className="texto-titulo-secao">Agendamentos do dia</h2>
+        <p className="text-sm text-[var(--texto-secundario)]">Registros existentes, independentes da lista de espera e do expediente atual.</p>
+        {agendamentos.filter(a => !buscaPaciente.trim() || a.paciente_nome.toLowerCase().includes(buscaPaciente.toLowerCase())).map(ag => {
+          const prof = profissionais.find(p => p.id === ag.profissional_id)
+          const janelas = janelasPorProfissional.get(ag.profissional_id) ?? []
+          const fora = !janelas.some(j => minutosDesdeMeiaNoite(ag.hora_inicio) >= j.inicioMin && minutosDesdeMeiaNoite(ag.hora_fim) <= j.fimMin)
+          return <article key={ag.id} className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--borda)] pb-3 text-sm">
+            <div><p className="font-semibold">{formatarHoraCurta(ag.hora_inicio)} · {ag.paciente_nome} · {STATUS_LABEL[ag.status]}</p><p>{prof?.nome_completo ?? 'Profissional do agendamento indisponível no cadastro ativo'}</p>
+              {fora && <p className="text-[var(--cor-alerta)]">Expediente ausente ou incompatível com este horário. O agendamento foi preservado.</p>}</div>
+            {podeEscrever && <button type="button" disabled={!['agendado', 'confirmado', 'aguardando'].includes(ag.status)}
+              onClick={() => { setMenuStatusId(null); setEditandoAgendamento(ag) }} className="min-h-11 rounded-lg border border-[var(--borda)] px-3 disabled:opacity-60">Editar agendamento</button>}
+          </article>
+        })}
+      </section>}
       {atualizandoStatus && <p role="status">Atualizando situação...</p>}
       {feedbackStatus?.contexto === chaveContextoAtual && <FeedbackAlert
         key={`${feedbackStatus.contexto}:${feedbackStatus.titulo}`}
@@ -875,6 +905,9 @@ function Agenda({
                                 </button>
                               )}
                               {recebidos.has(ag.id) && <p className="px-2.5 py-2 text-xs">Recebimento registrado</p>}
+                              {podeEscrever && ['agendado', 'confirmado', 'aguardando'].includes(ag.status) && <button type="button"
+                                onClick={() => { setMenuStatusId(null); setEditandoAgendamento(ag) }}
+                                className="min-h-11 w-full rounded-lg px-2.5 py-2 text-left text-xs font-semibold">Editar agendamento</button>}
                               {souMedico &&
                                 ag.profissional_id === meuProfissionalId &&
                                 ag.status !== 'cancelado' &&
@@ -961,6 +994,13 @@ function Agenda({
         )}
       </div>
 
+      {editandoAgendamento && clinicaAtivaId && podeEscrever && <EditarAgendamento key={`${chaveContextoAtual}:${editandoAgendamento.id}`}
+        agendamento={editandoAgendamento} clinicaId={clinicaAtivaId} clinicaNome={clinicaAtiva?.nome ?? 'Clínica'}
+        profissionalNome={profissionais.find(p => p.id === editandoAgendamento.profissional_id)?.nome_completo ?? 'Profissional indisponível'}
+        duracao={profissionais.find(p => p.id === editandoAgendamento.profissional_id)?.duracao_consulta_minutos ?? null}
+        onFechar={() => setEditandoAgendamento(null)} onSalvo={data => {
+          setEditandoAgendamento(null); setCorrecaoSalva({ clinicaId: clinicaAtivaId, data }); void recarregarTudo()
+        }} />}
       {modalAberto === 'agendamento' && clinicaAtivaId && (
         <ModalNovoAgendamento
           clinicaAtivaId={clinicaAtivaId}
