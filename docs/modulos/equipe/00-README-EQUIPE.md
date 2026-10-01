@@ -1,5 +1,15 @@
 # Equipe — índice do módulo
 
+Continuação01/10: aceite institucional real confirmado; correção do botão Continuar para o sistema com navegação efetiva/feedback imediato e nova leitura autorizada. Dois testes sintéticos dirigidos e build/lint aprovados; publicação/conferência, login posterior, recuperação e limpeza acompanhados no relatório23.
+
+**Vigente30/09 — configuração institucional aplicada:** SMTP habilitado após salvamento pelo titular; templates convite/magic link/recuperação efetivamente salvos no Supabase e retornos/bases públicas por unidade configurados. Recuperação publicada nas duas aplicações no commit4c89c13, builds completed e telas públicas conferidas. Entrega real ainda pendente; nenhum envio/fixture nesta atualização. Relatório23 separa aplicação/testes sintéticos de recebimento/aceite. Cadastro/edição e gestão existentes preservados. Parágrafos abaixo são histórico da preparação, não estado remoto atual.
+
+Estado posterior30/09: ambas as caixas administracao@ confirmadas ativas. Remetente compartilhado aprovado administracao@clinicabrotas.com.br, nome Clínicas Brotas e Ipupiara. Formulário SMTP preenchido sem senha e sem salvar; aplicação dos templates, retornos e entrega real ainda pendentes (relatório23). A proposta acesso@ e os inventários sem caixas abaixo são históricos.
+
+Reconsulta final de SMTP30/09: Brotas tem trial Hostinger ativo até30/09/2027,199seats e zero caixas, com DNS de e-mail presente. Ipupiara segue sem pedido. Supabase permanece SMTP padrão/retornos locais; proposta de remetente conjunto no relatório23 atualizada. Esse estado supera a observação inicial de benefícios não ativados abaixo; autoria da ativação durante a consulta não determinada.
+
+Preparação SMTP pós-publicação em30/09: relatório23 contém inventário real, benefícios Hostinger12meses não ativados, ausência de caixas/DNS de e-mail e configuração Auth ainda local. Proposta de remetente conjunto/SMTP/retorno por clínica preparada somente em documentação; templates existentes preservados, não configurados nem validados por entrega institucional. Nenhum envio ou conta criada nesta consulta.
+
 Continuidade vigente: `22-CONVITE-REAL-E-ACEITE.md` (aceite/login confirmados, recusa de Ipupiara pela conta comum e limpeza concluída; limites da verificação administrativa explícitos) e `23-EMAILS-INSTITUCIONAIS.md` (templates preparados, bloqueio remoto Free/SMTP padrão; contexto visual publicado na Edge Function versão 5).
 
 Retomada do relatório23: texto e prévias finais concluídos; Source/Save remotos novamente confirmados desabilitados. Restrição de personalização do serviço padrão Free afeta corpo/assunto, não somente remetente. Nenhum template personalizado aplicado, contratação ou nova conta.

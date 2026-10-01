@@ -141,10 +141,10 @@ function App() {
 
   if (session && conviteId && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/iu.test(conviteId)) {
     return <ConviteEquipe conviteId={conviteId} session={session} onConcluido={() => {
-      window.history.replaceState({}, document.title, window.location.pathname)
-      setEscolhaAcesso(null)
-      setEscolhaAplicada(false)
-      setAcessoValidado(false)
+      // O aceite mudou os vínculos no servidor. Uma nova montagem evita reutilizar
+      // listas pré-aceite; replaceState + setters com valores iguais não navegavam.
+      // A sessão é preservada e Login verifica novamente os vínculos autorizados.
+      window.location.replace(window.location.pathname)
     }} />
   }
 

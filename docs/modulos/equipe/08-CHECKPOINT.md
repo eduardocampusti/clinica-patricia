@@ -2,7 +2,21 @@
 
 **Estado:** implementação local e homologação Supabase principal concluídas em 29/09/2026; cadastro e edição autenticados de Equipe disponíveis para perfis autorizados. Sem publicação de frontend em produção.
 
-## Estado vigente — aceite e e-mails — 30/09/2026
+## Estado vigente — e-mails institucionais — 30/09/2026
+
+Estado posterior01/10: aceite real recebido pelo titular e persistido confirmado por SELECT exato; mesmo Auth/convite, um acesso ativo. Correção local de Continuar: navegação efetiva e feedback imediato, evitando tela parada/cache de vínculos anteriores. Dois cenários sintéticos desktop/móvel aprovados; build/lint aprovados. Publicação/conferência pelo titular, login posterior, recuperação e limpeza continuam pendentes de evidência. Relatório23 atualizado; não alterados permissões, senhas ou banco.
+
+Continuação01/10: titular informou ausência de parâmetro convite. Prova pública de rota com UUID fictício preservou query e exibiu senha, sem salvar; chamada publicada de envio conferida. Um único reenvio da mesma fixture, pela sessão proprietária pública, aceito pelo serviço; leitura confirmou tentativas2, mesma conta/convite e zero acesso ativo. Não declarar causa final nem aceite; titular deve abrir mensagem mais recente em sessão separada e definir senha pessoalmente. Sem código/deploy/configuração/conta nova; limpeza após ensaio. Relatório23 contém evidência.
+
+Atualização posterior: recebimento, remetente institucional/nome conjunto e conteúdo Brotas em português confirmados por titular/captura. Retorno ao login sem definição de senha em investigação. Conta sintética confirmou e-mail; convite permanece enviado/sem aceite/não expirado. Logs mostram verificação/login seguida de logout e recusas posteriores de link inválido/expirado. Allowlist/construção de retorno remotas reconferidas, falta evidência da query da primeira navegação. Nenhum reenvio, alteração ou limpeza; não declarar fluxo concluído. Evidências no relatório23.
+
+Continuação pública: recuperação da administradora recebida/concluída informada pelo titular e sessão pública Proprietário(a)/Brotas confirmada pelo agente. Novo ensaio institucional, distinto do22 encerrado: preflight zero conta/membro/convite do destinatário; fixture específica criada na interface pública; um convite aceito pelo serviço, statusenviado/tentativas1, conta não confirmada e zero acesso ativo. Papel previstoRecepção somente Brotas. Recebimento/aceite/login/recuperação sintética/limpeza ainda pendentes da participação do titular. IDs exatos/estado e evidências no relatório23, sem senhas/tokens. Nenhum reenvio, mudança de código/SMTP ou repetição de build/testes.
+
+SMTP personalizado habilitado após salvamento pelo titular; três templates profissionais efetivamente aplicados e conferidos na prévia remota sem texto inglês anterior. Remetente/usuário aprovados administracao@clinicabrotas.com.br, nome conjunto, smtp.hostinger.com465; senha não consultada. Retornos Auth públicos e bases Edge por clínica configurados preservando local. Recuperação implementada/publicada no commit4c89c13, builds completed nas duas aplicações e telas públicas conferidas; quatro testes sintéticos/build/lint aprovados. Não alterados cadastro de Equipe, permissões ou dados preexistentes. Relatório23 separa configuração salva de entrega real.
+
+Novo ensaio institucional autorizado ainda não enviado: Auth buscado pelo endereço de teste retornou zero contas; membro/conflito deve ser conferido na aplicação após login normal da proprietária, sessão ainda indisponível. Nenhuma fixture, senha ou limpeza nesta execução; auditoria preservada. O ensaio22 encerrado permanece preservado. Login/F5 autenticado público e recebimento/aceite/recuperação real continuam pendentes de participação do titular. Aplicação local correta3000 disponível.
+
+## Histórico — aceite e preparação de e-mails — 30/09/2026
 
 Retomada exclusiva de e-mails: relatório23 complementado, texto exato do convite e prévias finais das três identidades conferidos; originais preservados. Nenhum template remoto aplicado: painel Free/serviço padrão mantém Source/Save desabilitados, oferecendo envio próprio ou Pro. Sem contratação/SMTP/DNS/contas ou repetição do ensaio. Gerador/check sintático e móvel390px aprovados; capturas em evidencias-emails.
 
