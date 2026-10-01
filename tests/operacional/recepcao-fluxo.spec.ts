@@ -18,6 +18,7 @@ async function preparar(page: Page, unidade: string, falhaChegada = false, semRe
     const metodo = route.request().method()
     if (metodo === 'GET' && url.searchParams.has('clinica_id') && url.searchParams.get('clinica_id') !== `eq.${clinica}` && !url.pathname.endsWith('/usuarios_clinicas')) return json([])
     if (url.pathname.endsWith('/usuarios_clinicas')) return json({ papel: 'recepcao' })
+    if (url.pathname.endsWith('/rpc/agenda_manual_disponivel')) return json(true)
     if (url.pathname.endsWith('/profissionais_clinicas')) return json([{ profissionais: { id: profissionalId, nome_completo: 'Profissional Sintético', duracao_consulta_minutos: 30, valor_consulta: 200, especialidades: { nome: 'Clínica geral' } } }])
     if (url.pathname.endsWith('/pacientes')) {
       if (metodo === 'POST') {
@@ -34,13 +35,13 @@ async function preparar(page: Page, unidade: string, falhaChegada = false, semRe
       expect(route.request().postDataJSON().p_clinica_id).toBe(clinica)
       return json(true)
     }
-    if (url.pathname.endsWith('/agendamentos')) {
-      if (metodo === 'POST') {
+    if (url.pathname.endsWith('/rpc/agenda_manual_criar')) {
         const payload = route.request().postDataJSON()
-        expect(payload).toMatchObject({ clinica_id: clinica, paciente_id: pacienteId, profissional_id: profissionalId, hora_inicio: '10:00', status: 'agendado' })
-        agenda = { ...payload, id: 'agenda-recepcao', hora_fim: '10:30:00', pacientes: { nome_completo: paciente?.nome_completo } }
-        return json(null, 201)
-      }
+        expect(payload).toMatchObject({ p_clinica_id: clinica, p_paciente_id: pacienteId, p_profissional_id: profissionalId, p_inicio: '10:00' })
+        agenda = { clinica_id: clinica, paciente_id: pacienteId, profissional_id: profissionalId, data: payload.p_data, hora_inicio: '10:00:00', status: 'agendado', id: 'agenda-recepcao', hora_fim: '10:30:00', pacientes: { nome_completo: paciente?.nome_completo } }
+        return json(agenda)
+    }
+    if (url.pathname.endsWith('/agendamentos')) {
       if (metodo === 'PATCH') {
         escritasChegada++
         expect(url.searchParams.get('id')).toBe('eq.agenda-recepcao')

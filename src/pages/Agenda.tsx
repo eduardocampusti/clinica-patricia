@@ -13,6 +13,8 @@ import { consultarCpfPendentePaciente } from '../lib/pacienteCpf'
 import { AvisoCpfPendente } from '../components/pacientes/AvisoCpfPendente'
 import { FeedbackAlert } from '../components/feedback/FeedbackAlert'
 import { EditarAgendamento, type AgendamentoEditavel } from '../components/agenda/EditarAgendamento'
+import { useDisponibilidadeAgenda } from '../hooks/useDisponibilidadeAgenda'
+import { sugestoesHorarioAgenda, horaAgenda, minutosAgenda } from '../lib/agendaDisponibilidade'
 
 type StatusAgendamento = 'agendado' | 'confirmado' | 'aguardando' | 'em_atendimento' | 'concluido' | 'cancelado'
 type TipoExcecao = 'folga' | 'horario_especial'
@@ -1014,6 +1016,7 @@ function Agenda({
           onFechar={() => setModalAberto(null)}
           onSalvo={async () => {
             setModalAberto(null)
+            if (chaveContextoAtual) setFeedbackStatus({ contexto: chaveContextoAtual, sucesso: true, titulo: 'Agendamento criado', descricao: 'A marcação foi confirmada pelo servidor.' })
             await recarregarTudo()
           }}
         />
@@ -1134,6 +1137,24 @@ function ModalNovoAgendamento({
   const [data, setData] = useState(paraISODate(dataInicial))
   const [horaInicio, setHoraInicio] = useState('')
   const [observacoes, setObservacoes] = useState('')
+  const [confirmadoManual, setConfirmadoManual] = useState(false)
+  const [capacidadeManual, setCapacidadeManual] = useState(false)
+  const envioManual = useRef(false)
+  const vigenteManual = useRef(true)
+  const [resultadoIncerto, setResultadoIncerto] = useState(false)
+  const duracao = profissionais.find(p => p.id === profissionalId)?.duracao_consulta_minutos ?? null
+  const disponibilidade = useDisponibilidadeAgenda(clinicaAtivaId, profissionalId, data, horaInicio, duracao)
+  const sugestoes = sugestoesHorarioAgenda(duracao, disponibilidade.janelas, disponibilidade.ocupacoes, '')
+  useEffect(() => { vigenteManual.current = true; return () => { vigenteManual.current = false } }, [])
+  useEffect(() => {
+    let atual = true
+    setCapacidadeManual(false)
+    void Promise.resolve(supabase.rpc('agenda_manual_disponivel', { p_clinica_id: clinicaAtivaId }))
+      .then(({ data: pronta, error }) => { if (atual) setCapacidadeManual(!error && pronta === true) })
+      .catch(() => { if (atual) setCapacidadeManual(false) })
+    return () => { atual = false }
+  }, [clinicaAtivaId])
+  useEffect(() => { setConfirmadoManual(false) }, [clinicaAtivaId, profissionalId, data, horaInicio])
   const [salvando, setSalvando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
   const [cpfPendente, setCpfPendente] = useState(false)
@@ -1181,6 +1202,7 @@ function ModalNovoAgendamento({
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    if (envioManual.current || resultadoIncerto || !capacidadeManual || disponibilidade.bloqueio || (disponibilidade.aviso && !confirmadoManual)) return
     setErro(null)
 
     if (!pacienteId) {
@@ -1196,33 +1218,31 @@ function ModalNovoAgendamento({
       return
     }
 
+    envioManual.current = true
     setSalvando(true)
-    const { error } = await supabase.from('agendamentos').insert({
-      clinica_id: clinicaAtivaId,
-      paciente_id: pacienteId,
-      profissional_id: profissionalId,
-      data,
-      hora_inicio: horaInicio,
-      status: 'agendado',
-      observacoes: observacoes.trim() || null,
-    })
-
-    if (error) {
-      if (error.code === '23P01') {
-        setErro('Esse profissional já tem um agendamento nesse horário.')
-      } else {
-        setErro('Não foi possível criar o agendamento. Tente novamente.')
+    try {
+      const { data: retorno, error } = await supabase.rpc('agenda_manual_criar', {
+        p_clinica_id: clinicaAtivaId, p_paciente_id: pacienteId, p_profissional_id: profissionalId,
+        p_data: data, p_inicio: horaInicio, p_observacoes: observacoes.trim() || null,
+        p_confirmacao_manual: confirmadoManual,
+      })
+      if (!vigenteManual.current) return
+      if (error) {
+        if (!error.code) setResultadoIncerto(true)
+        setErro(error.code === 'PGRST202' ? 'Serviço incompatível ou em atualização. Preserve seu preenchimento e atualize a página antes de tentar novamente. Nenhuma gravação alternativa será realizada.' : error.code === '23P01' ? 'Esse profissional já tem um agendamento nesse horário.' : error.code === '42501' ? 'Você não tem autorização para agendar nesta clínica.' : error.code === 'P0001' ? 'O servidor recusou a marcação. Confira bloqueios, duração e confirmação manual.' : 'Não foi possível criar o agendamento. Os dados foram mantidos. Confira a Agenda antes de tentar novamente.')
+        return
       }
-      setSalvando(false)
-      return
-    }
-
-    setSalvando(false)
-    onSalvo()
+      if (!retorno?.id || retorno?.data !== data || retorno?.hora_inicio?.slice(0, 5) !== horaInicio || retorno?.profissional_id !== profissionalId || retorno?.paciente_id !== pacienteId || retorno?.clinica_id !== clinicaAtivaId) {
+        setResultadoIncerto(true); setErro('Resultado não confirmado. Não repita o envio; confira a Agenda por leitura.'); return
+      }
+      onSalvo()
+    } catch {
+      if (vigenteManual.current) { setResultadoIncerto(true); setErro('Resultado indisponível. Não repita o envio; confira a Agenda por leitura.') }
+    } finally { envioManual.current = false; if (vigenteManual.current) setSalvando(false) }
   }
 
   return (
-    <ModalBase titulo="Novo agendamento" onFechar={onFechar} suspenso={suspenso}>
+    <ModalBase titulo="Novo agendamento" onFechar={onFechar} suspenso={suspenso} ocupado={salvando}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <div className="mb-1.5 flex items-center justify-between gap-3">
@@ -1342,6 +1362,16 @@ function ModalNovoAgendamento({
           />
         </div>
 
+        {!capacidadeManual && <FeedbackAlert variant="warning" title="Agenda manual ainda indisponível" description="Não foi possível confirmar o serviço e a autorização nesta sessão. Em caso de atualização, preserve seu preenchimento e atualize a página. Não será utilizada a operação antiga como alternativa." />}
+        {profissionalId && <>
+          {disponibilidade.estado === 'carregando' ? <p role="status">Verificando disponibilidade...</p> : disponibilidade.estado === 'erro' ? <FeedbackAlert variant="destructive" title="Falha ao consultar disponibilidade" description={disponibilidade.bloqueio ?? ''} action={<button type="button" onClick={disponibilidade.repetir}>Tentar novamente</button>} /> : disponibilidade.bloqueio && <FeedbackAlert variant="warning" title="Revise o horário" description={disponibilidade.bloqueio} />}
+          <label className="block text-sm" htmlFor="sugestoes-criacao">Horários sugeridos</label>
+          <select id="sugestoes-criacao" className="w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 py-2.5 text-[var(--texto-principal)] disabled:opacity-60" value={sugestoes.includes(horaInicio) ? horaInicio : ''} disabled={salvando || !sugestoes.length} onChange={e => { if (e.target.value) setHoraInicio(e.target.value) }}>
+            <option value="">{sugestoes.length ? 'Selecione um horário habitual' : 'Sem sugestão habitual; informe o horário manual'}</option>
+            {sugestoes.map(h => <option key={h} value={h}>{h}–{horaAgenda(minutosAgenda(h) + (duracao ?? 0))}</option>)}
+          </select>
+          {disponibilidade.aviso && <><FeedbackAlert variant="warning" title="Marcação manual" description={disponibilidade.aviso} /><label className="flex items-start gap-2 text-sm"><input type="checkbox" checked={confirmadoManual} disabled={salvando} onChange={e => setConfirmadoManual(e.target.checked)} />Conferi os avisos e confirmo a marcação manual.</label></>}
+        </>}
         {erro && <FeedbackAlert variant="destructive" title="Não foi possível criar o agendamento" description={erro} urgent />}
 
         <div className="flex justify-end gap-3 pt-1">
@@ -1355,7 +1385,7 @@ function ModalNovoAgendamento({
           </button>
           <button
             type="submit"
-            disabled={salvando}
+            disabled={salvando || resultadoIncerto || !capacidadeManual || !!disponibilidade.bloqueio || (!!disponibilidade.aviso && !confirmadoManual)}
             className="rounded-xl bg-[var(--cor-primaria)] px-5 py-2.5 font-medium text-white transition hover:bg-[var(--cor-primaria-hover)] disabled:cursor-not-allowed disabled:opacity-70"
           >
             {salvando ? 'Salvando...' : 'Agendar'}

@@ -1,6 +1,62 @@
 # Correção de data e horário — comportamento aprovado e limites
 
-Estado: APROVADO no escopo dos pedidos de 01/10/2026, incluindo regra explícita após chegada.
+Estado: núcleo e política manual comum APROVADOS pelo usuário em 01/10/2026.
+Implementação local concluída; nova política no servidor depende da migration incremental,
+não aplicada no principal nesta etapa.
+
+## Decisão vigente — agenda manual, 01/10/2026
+
+Recepção e Proprietária com vínculo ativo podem criar/corrigir data e horário sem
+expediente cadastrado. Ausência ou intervalo fora da faixa habitual gera aviso laranja
+e exige confirmação explícita, na interface e no servidor. Não é autorização de
+sobreposição: duração completa, conflitos, perfil/clínica e integridade continuam obrigatórios.
+Folga/bloqueio explícito impedem. Horário especial é uma restrição explícita da data:
+o intervalo completo deve caber nela; terminar exatamente no fim é permitido.
+Erro ao consultar disponibilidade bloqueia e permite tentar a leitura novamente,
+sem apagar o formulário; não equivale a ausência de expediente.
+Criação e edição reutilizam `avaliarAgendaManual`/`useDisponibilidadeAgenda` e a guarda
+SQL `agenda_validar_manual`. Não criar/configurar expedientes para passar testes.
+Paciente, profissional, clínica, observações, chegada, situação e vínculos financeiros
+são preservados na correção. Antes da chegada, data/horário; após chegada, só horário
+na mesma data e antes do atendimento. Demais restrições abaixo permanecem.
+Migration anterior intacta; proposta 20261001173000 substituída pelas fases
+20261001193000 (compatibilidade temporária) e 20261001194000 (encerramento após
+verificar os dois sites). Aplicação/publicação autorizadas na tarefa de transição;
+durante a fase aditiva o legado conserva as proteções anteriores, sem confirmação
+inventada, e a política nova ainda não está integralmente ativa. Estado efetivo no relatório 12.
+Evidências e limites no [relatório 12](12-EDICAO-DATA-HORARIO.md).
+
+## Histórico de esclarecimento antes da aprovação manual — 01/10/2026
+
+O usuário esclareceu que não definiu/não conhece o intervalo do profissional de teste.
+O padrão de terça-feira encontrado no banco é configuração de ensaio histórico, não
+decisão de negócio atual. Não pedir intervalo inventado nem cadastrar horário especial
+para contornar o bloqueio.
+
+O pedido de correção exigiu validação de disponibilidade, mas não definiu explicitamente
+a mesma política para criação e edição quando não há expediente. A proibição absoluta
+implementada na edição não comprova essa aprovação geral. Texto anterior APROVADO não
+é evidência suficiente para transformar uma interpretação técnica em decisão do usuário.
+Os limites abaixo sobre cobertura/folga descrevem a implementação existente, preservada
+até a decisão, não uma nova decisão para o fluxo de criação.
+
+Decisão necessária (não executada):
+
+- **Agenda controlada por expediente:** criação e edição só permitem intervalos completos
+  em disponibilidade válida, com conflito, duração, autorização e auditoria no servidor.
+- **Agenda manual:** criação e edição permitem horários sem expediente, com avisos de
+  disponibilidade e conflitos obrigatórios. Duração, autorização, auditoria, concorrência,
+  restrições clínicas/financeiras e regras antes/depois da chegada continuam preservadas.
+
+A criação atual funciona de forma manual; a edição atual é controlada por expediente.
+Nenhuma opção já rege ambos coerentemente. Histórico de padrão semanal e exceções
+não decide, por si só, se ausência de padrão deve impedir a marcação.
+Depois da escolha, implementar uma política compartilhada sem alterar registros de teste:
+na opção controlada, ajustar criação/servidor; na manual, ajustar edição/servidor por
+nova migration específica, sem reescrever a aplicada. Aplicação remota exige etapa autorizada.
+Origem e evidências no [relatório 12](12-EDICAO-DATA-HORARIO.md).
+
+## Núcleo preservado e comportamento atualmente implementado
 
 Recepção e Proprietária com vínculo ativo na clínica podem corrigir data e início de
 agendamento elegível, mantendo ID, paciente, profissional, clínica, observações, situação
@@ -10,8 +66,14 @@ o pagamento permanece válido conforme Financeiro, sem novo recebimento ou cálc
 Exigir motivo, comparação de horário anterior/novo, confirmação explícita, disponibilidade
 e ausência de conflito. O próprio agendamento não é conflito. Servidor é autoridade:
 operação atômica, revisão concorrente e auditoria de autor/instante/antes/depois/motivo.
-Sem encaixe fora do expediente: não há regra específica aprovada para autorizá-lo neste
-fluxo. Folga impede; horário especial substitui o padrão. Duração vem do profissional.
+Agenda manual aprovada: fora do expediente habitual exige aviso e confirmação, não
+proibição absoluta. Folga impede; horário especial substitui o padrão e seus limites
+continuam explícitos. Duração vem do profissional.
+Apresentar faixas e sugestões de horários, sem criar regra nova de múltiplos de duração;
+nas sugestões e no horário especial o intervalo completo deve caber em uma janela,
+inclusive podendo terminar exatamente no fim. Separar carregamento, falha de consulta
+e consulta sem disponibilidade. Junto ao
+botão explicar todas as pendências, inclusive quando faltar somente confirmação.
 
 Agendamentos continuam acessíveis quando expediente foi removido/alterado ou profissional
 não aparece no cadastro ativo; indicar inconsistência sem apagar. Falta de profissional/

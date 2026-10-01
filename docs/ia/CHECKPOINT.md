@@ -1,5 +1,18 @@
 # Checkpoint operacional — Clínica Patrícia
 
+## Agenda manual: fase aditiva instalada — 01/10/2026, 19:31 -03:00
+
+Transição autorizada em fases, branch codex/resgate-local-2026-09-26, base 490ebca.
+Proposta 173000 substituída por 193000 e 194000. Fase 193000 aplicada no principal
+xftnkusbyqzyvzrovroj pelo SQL Editor excepcionalmente autorizado; catálogo confirmou
+funções e ACLs. Sem escrita operacional de teste. Legado temporariamente preservado,
+sem confirmação fabricada; política integral só após encerramento. SQL isolado com
+Auth simulado confirmou concorrência antigo/RPC, restrições e recusa final do legado.
+Build/lint e 9 testes interceptados novos aprovados. Próximo marco: publicar/conferir
+cliente RPC nas duas clínicas; somente depois aplicar 194000. Não reverter frontend
+antigo depois do encerramento. Gravação real/persistência e Ipupiara autenticada pendentes.
+Detalhes e recuperação: docs/modulos/agenda/12-EDICAO-DATA-HORARIO.md.
+
 Atualizado: 2026-10-01 09:37:06 -03:00 (America/Bahia).
 Estado: memória consolidada; recuperação documental demonstrada nesta conversa.
 Sessão independente limpa, Claude Code e Antigravity: não verificados.
