@@ -1,5 +1,14 @@
 # CLÍNICA PATRÍCIA — CONVENÇÕES DE DOCUMENTAÇÃO
 
+## Continuidade entre agentes
+
+[AGENTS.md](../AGENTS.md) é a instrução comum; [memória](ia/INDICE.md) contém índice,
+checkpoint curto e decisões transversais. Checkpoint raiz conserva histórico; relatórios
+dos módulos conservam detalhes/evidências. Não duplicar regras funcionais nesse resumo.
+Atualizar após etapa relevante, decisão/bloqueio, antes de troca planejada e ao encerrar,
+relendo alterações recentes. Identificar relato/código/teste local/conectado/publicado/pendente
+com data e limites; reabrir cenário de falha posterior relatada. Não incluir dados sensíveis.
+
 ## Objetivo
 
 Padronizar a documentação de cada módulo para permitir recuperação de contexto por pessoas e IAs.

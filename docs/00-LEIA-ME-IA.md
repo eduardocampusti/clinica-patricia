@@ -1,5 +1,12 @@
 # CLÍNICA PATRÍCIA — DOCUMENTAÇÃO OFICIAL DO PROJETO
 
+## Entrada de continuidade compartilhada
+
+Leia [AGENTS.md](../AGENTS.md) e [checkpoint curto](ia/CHECKPOINT.md).
+O [índice compartilhado](ia/INDICE.md) leva às fontes por assunto/módulo.
+Checkpoint raiz preserva histórico técnico, não segundo estado atual independente.
+Esta entrada não altera fontes funcionais nem autoriza execução por si só.
+
 ## Objetivo
 
 Esta pasta `docs/` organiza a documentação funcional e técnica da Clínica Patrícia para que qualquer pessoa ou IA consiga recuperar o contexto do projeto sem depender do histórico de conversas.

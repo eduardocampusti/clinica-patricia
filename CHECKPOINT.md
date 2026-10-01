@@ -1,5 +1,31 @@
 # CHECKPOINT MESTRE — CLÍNICA PATRÍCIA
 
+## Entrada de retomada compartilhada — 01/10/2026
+
+**Leitura histórica:** o conteúdo deste arquivo registra situações nas respectivas
+datas. Expressões antigas como “vigente”, “concluído” ou “pendente” pertencem à etapa
+em que foram registradas, não necessariamente ao presente. O **estado operacional
+atual está em [docs/ia/CHECKPOINT.md](docs/ia/CHECKPOINT.md)**; use seus links para
+consultar evidências e pendências. O histórico abaixo foi preservado, sem atualizar
+retroativamente resultados antigos.
+
+Consolidação documental em 01/10/2026: recuperação de contexto demonstrada nesta
+conversa por leitura dos arquivos e comparação com Git. Não há comprovação técnica
+de sessão independente limpa; Claude Code e Antigravity continuam não verificados.
+Autorizado somente commit local da memória, sem push/publicação. A pendência de
+Recepção/Pacientes/F5 permanece aberta e não foi investigada nesta consolidação.
+
+Validação documental em 01/10/2026 09:20 -03:00: branch/HEAD coincidem com resumo,
+instruções recebidas/leituras dirigidas distinguidas e pendência F5 Recepção mantida.
+CLI independente iniciada, mas modelo configurado recusado antes do diagnóstico;
+não declarar retomada limpa aprovada. Claude/Antigravity: carga não verificada.
+Evidências e limites: [validação de memória](docs/ia/VALIDACAO-RETOMADA.md).
+
+Comece por [checkpoint operacional](docs/ia/CHECKPOINT.md) e [índice](docs/ia/INDICE.md).
+Este arquivo conserva histórico técnico geral/evidências; o resumo curto aponta para
+detalhes, não mantém fonte independente. Nesta rodada só documentação/instruções,
+sem código, banco ou publicação. Recepção/Pacientes/F5 segue pendente de confirmação real.
+
 Última atualização: 2026-10-01\
 Projeto local: `D:\PROJETOS SAAS\CLINICA PATRICIA`\
 Projeto Supabase: `xftnkusbyqzyvzrovroj`

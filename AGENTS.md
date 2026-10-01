@@ -1,4 +1,54 @@
-# Regras permanentes do projeto
+# Clínica Patrícia — instruções compartilhadas para agentes
+
+Responda em português claro. Execute o pedido autorizado, sem ampliar seu escopo.
+Preserve instruções globais/locais aplicáveis; não contorne controles da ferramenta.
+Compatibilidade entre ferramentas: [guia](docs/ia/COMPATIBILIDADE-AGENTES.md).
+
+## Iniciar ou retomar
+
+1. Leia as instruções aplicáveis, inclusive overrides do diretório de trabalho.
+2. Leia [checkpoint operacional](docs/ia/CHECKPOINT.md) e [índice](docs/ia/INDICE.md).
+3. Siga a leitura obrigatória por módulo abaixo. Antes de implementar, leia também
+   [DEVELOPMENT_RULES.md](DEVELOPMENT_RULES.md); use o índice para referências pertinentes,
+   sem exigir toda a documentação em cada tarefa.
+4. Confira `git status --short`, branch, HEAD, diff e arquivos envolvidos. Preserve
+   alterações existentes; releia mudanças de outra sessão antes de editar.
+5. Compare pedido mais recente, decisões aprovadas e pendências. Informe entendimento,
+   próxima ação, risco, impacto e reversibilidade antes de mudar.
+
+Checkpoint é registro datado, não prova viva do ambiente. Investigue divergências entre
+documentação, código e comportamento; não altere regra de negócio para coincidir com código.
+Pedido posterior explícito pode substituir instrução histórica dentro de seu escopo.
+Não peça novamente autorização já válida nem a transforme em autorização permanente.
+
+## Memória, evidência e encerramento
+
+- [Checkpoint operacional](docs/ia/CHECKPOINT.md) é a entrada curta; [checkpoint raiz](CHECKPOINT.md)
+  conserva histórico técnico; relatórios dos módulos guardam detalhes. Atualize os registros
+  afetados juntos, sem fontes independentes conflitantes. [Decisões](docs/ia/DECISOES.md)
+  registra organização transversal, não duplica regras funcionais dos módulos.
+- Distinga **informado pelo usuário**, **observado no código**, **teste local**,
+  **verificação conectada**, **publicado** e **pendente de confirmação**. Registre data,
+  ambiente, escopo, resultado, limitações e, quando pertinente, papel e clínica.
+- Build não comprova produção; mocks não comprovam persistência; migration preparada
+  não significa aplicada; commit não significa implantado. Proprietária não comprova
+  Recepção; uma clínica não comprova outra.
+- Falha relatada após correção reabre cenário até evidência pertinente. Reprodução
+  sintética diferente do relato não confirma causa do evento real.
+- Atualize checkpoint após etapa relevante, decisão/bloqueio, antes de troca planejada
+  de sessão e ao encerrar. Releia-o e confira mudanças recentes para preservar outros trabalhos.
+  Registre próxima ação executável e autorização específica necessária. Não prometa
+  autosave em interrupção abrupta; registre progresso também durante tarefas longas.
+- Não registrar senhas, tokens, chaves, CPF, prontuários ou dados identificáveis de pacientes
+  na memória. Referências internas devem ser relativas. Preserve auditoria e outros sistemas,
+  incluindo Site Geovana. Não instalar serviços de memória/dependências para continuidade.
+- Avalie typesafe-ai pela descrição; leia integralmente se relevante ou explicitamente
+  solicitada. Não force IA para tarefas determinísticas; nunca solicite/exponha
+  TYPESAFE_API_KEY nem a inclua em frontend/arquivos versionados.
+- Antes de banco, confirme alvo/ambiente conforme [isolamento](04-ISOLAMENTO-DE-SISTEMAS.md)
+  e [banco oficial](00-BANCO-DE-DADOS-OFICIAL.md), dentro de autorização concreta.
+
+## Regras permanentes preservadas
 
 ## Documentação obrigatória por módulo
 

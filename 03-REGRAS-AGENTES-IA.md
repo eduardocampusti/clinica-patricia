@@ -1,5 +1,12 @@
 # 03 — REGRAS ESPECÍFICAS PARA AGENTES IA
 
+> **Esclarecimento de continuidade — 01/10/2026:** entrada vigente: [AGENTS.md](AGENTS.md)
+> e [índice](docs/ia/INDICE.md). Leitura integral, módulo por status antigo e nova confirmação
+> genérica abaixo são receitas históricas substituídas por leitura dirigida, pedido atual e
+> autorização concreta já concedida. Segurança compatível e DEVELOPMENT_RULES permanecem.
+> Não exigir método MCP inexistente; confirmar alvo por leitura disponível sem contornar controles.
+> [Decisões de continuidade](docs/ia/DECISOES.md) não autorizam banco, commit ou deploy.
+
 > **COMPLEMENTO ao `DEVELOPMENT_RULES.md`.**
 > Este arquivo NÃO substitui o `DEVELOPMENT_RULES.md` — LEIA AMBOS.
 > O `DEVELOPMENT_RULES.md` tem as regras gerais de desenvolvimento.

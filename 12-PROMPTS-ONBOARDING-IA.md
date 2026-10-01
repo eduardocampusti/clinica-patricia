@@ -1,5 +1,10 @@
 # 12 — PROMPTS DE ONBOARDING PARA AGENTES DE IA
 
+> **HISTÓRICO — entrada substituída em 01/10/2026:** prompts abaixo registram etapas
+> anteriores, não estado atual nem autorização para Docker. Para nova sessão, usar
+> [AGENTS.md](AGENTS.md), [checkpoint curto](docs/ia/CHECKPOINT.md) e [pedidos de retomada](docs/ia/INDICE.md).
+> Fontes funcionais permanecem conforme decisões posteriores; histórico preservado.
+
 > **Para que serve.** Sempre que abrir um agente novo (Codex, Claude Code, Cursor) para
 > trabalhar no Clínica Patrícia, cole o prompt correspondente ABAIXO. Ele obriga o agente
 > a carregar o contexto real, respeitar o isolamento de sistemas e propor o próximo passo
