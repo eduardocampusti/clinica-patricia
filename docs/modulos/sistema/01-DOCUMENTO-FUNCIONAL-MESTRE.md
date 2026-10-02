@@ -4,6 +4,16 @@
 
 ## Comportamento solicitado
 
+### Navegação compartilhada aprovada — 02/10/2026
+
+Usar Sidebar shadcn/ui Base UI no layout autenticado, com expansão desktop persistida
+somente como preferência visual e menu móvel independente. Identidade/unidade no topo,
+itens autorizados roláveis e usuário/perfil/logout no rodapé. URL determina item ativo;
+preservar guardas, vínculos, contexto e formulários ao recolher. Seletor reutiliza os
+vínculos e callbacks atuais inclusive recolhido; não concede autorização. Login,
+convite e recuperação mantêm layouts próprios. Implementação e limites locais no
+[relatório 12](12-SIDEBAR-COMPARTILHADO.md), que distingue implementação, testes e publicação.
+
 ### Restauração autorizada após recarga — 01/10/2026
 
 Refinamento aprovado após relato de Recepção: a URL interna válida é a fonte única da página ativa e prevalece sobre destinos capturados antes das consultas. Dashboard somente sem destino interno válido; rota fora do perfil recebe aviso explícito, sem descarte silencioso. Carregamento de vínculo/papel não equivale a negativa de permissão. Histórico, menu e conteúdo devem permanecer sincronizados.

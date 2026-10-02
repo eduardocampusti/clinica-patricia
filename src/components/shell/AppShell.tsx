@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { type ReactNode } from 'react'
 import type { ClinicaAtiva } from '../../hooks/useClinicaAtiva'
 import type { Papel } from '../../hooks/usePapelNaClinica'
 import { ThemeToggle } from '../../theme/ThemeToggle'
 import { rotuloPapel } from '../../lib/papelApresentacao'
 import Sidebar from './Sidebar'
 import { TITULOS_TELA, type Tela } from './types'
-import { IconeFechar, IconeMenuHamburguer } from './icons'
+import { SidebarProvider, SidebarInset, SidebarTrigger } from '../ui/sidebar'
 
 interface AppShellProps {
   tela: Tela
@@ -30,80 +30,21 @@ function AppShell({
   onSair,
   children,
 }: AppShellProps) {
-  const [drawerAberto, setDrawerAberto] = useState(false)
-  const [compacto, setCompacto] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 1023px)').matches)
-  const gatilhoMenu = useRef<HTMLButtonElement>(null)
-
-  useEffect(() => {
-    const media = window.matchMedia('(max-width: 1023px)')
-    const atualizar = () => { setCompacto(media.matches); if (!media.matches) setDrawerAberto(false) }
-    media.addEventListener('change', atualizar)
-    return () => media.removeEventListener('change', atualizar)
-  }, [])
-
-  useEffect(() => {
-    if (!drawerAberto || !compacto) return
-    const menu = document.getElementById('app-sidebar')
-    const primeiro = menu?.querySelector<HTMLElement>('button:not(:disabled), select:not(:disabled)')
-    primeiro?.focus()
-    const teclado = (evento: KeyboardEvent) => {
-      if (evento.key === 'Escape') { evento.preventDefault(); setDrawerAberto(false); return }
-      if (evento.key !== 'Tab' || !menu) return
-      const controles = Array.from(menu.querySelectorAll<HTMLElement>('button:not(:disabled), select:not(:disabled), a[href]'))
-        .filter((elemento) => elemento.getClientRects().length > 0)
-      if (!controles.length) return
-      const inicio = controles[0]
-      const fim = controles.at(-1)!
-      if (evento.shiftKey && (document.activeElement === inicio || !menu.contains(document.activeElement))) {
-        evento.preventDefault(); fim.focus()
-      } else if (!evento.shiftKey && (document.activeElement === fim || !menu.contains(document.activeElement))) {
-        evento.preventDefault(); inicio.focus()
-      }
-    }
-    document.addEventListener('keydown', teclado)
-    const gatilho = gatilhoMenu.current
-    return () => { document.removeEventListener('keydown', teclado); gatilho?.focus() }
-  }, [drawerAberto, compacto])
-
   return (
-    <div className={`app-shell flex min-h-screen bg-[var(--fundo-pagina)]${tela === 'financeiro' ? ' app-shell-finance' : ''}`}>
+    <SidebarProvider className={tela === 'financeiro' ? 'app-shell-finance' : ''}>
       <Sidebar
-        tela={tela}
         onNavegar={onNavegar}
         clinicaAtiva={clinicaAtiva}
         clinicasDoUsuario={clinicasDoUsuario}
         onSelecionarClinica={onSelecionarClinica}
         papel={papel}
         emailUsuario={emailUsuario}
-        aberta={drawerAberto}
-        compacto={compacto}
-        onFechar={() => setDrawerAberto(false)}
         onSair={onSair}
       />
 
-      {drawerAberto && (
-        <button
-          type="button"
-          aria-label="Fechar menu"
-          onClick={() => setDrawerAberto(false)}
-          className="fixed inset-0 z-30 bg-[var(--sobreposicao)] lg:hidden"
-        />
-      )}
-
-      <div className="flex min-w-0 flex-1 flex-col">
+      <SidebarInset>
         <header className="app-shell-header flex min-h-16 flex-none items-center gap-3 border-b border-[var(--borda)] bg-[var(--fundo-card)] px-4 sm:px-6 lg:px-8">
-          {/* Botão hambúrguer — só mobile */}
-          <button
-            type="button"
-            ref={gatilhoMenu}
-            onClick={() => setDrawerAberto((v) => !v)}
-            aria-label={drawerAberto ? 'Fechar menu' : 'Abrir menu'}
-            aria-controls="app-sidebar"
-            aria-expanded={drawerAberto}
-            className="flex h-11 w-11 items-center justify-center rounded-lg text-[var(--texto-principal)] transition hover:bg-[var(--fundo-pagina)] lg:hidden"
-          >
-            {drawerAberto ? <IconeFechar /> : <IconeMenuHamburguer />}
-          </button>
+          <SidebarTrigger />
 
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold text-[var(--texto-principal)]">{TITULOS_TELA[tela]}</p>
@@ -130,8 +71,8 @@ function AppShell({
         </header>
 
         <main className="min-w-0 flex-1 px-4 py-5 sm:px-6 lg:px-8 lg:py-7">{children}</main>
-      </div>
-    </div>
+      </SidebarInset>
+    </SidebarProvider>
   )
 }
 

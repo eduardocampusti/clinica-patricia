@@ -1,5 +1,5 @@
 import { createRoot } from 'react-dom/client'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import '../../src/index.css'
 import Agenda from '../../src/pages/Agenda'
 import { horaAgenda, minutosAgenda } from '../../src/lib/agendaDisponibilidade'
@@ -7,11 +7,13 @@ import AppShell from '../../src/components/shell/AppShell'
 import { ThemeProvider, useTheme } from '../../src/theme/ThemeProvider'
 import { TITULOS_TELA, type Tela } from '../../src/components/shell/types'
 import { CLINIC_BRANDS } from '../../src/config/clinicBrands'
+import { caminhoInterno, lerRotaInterna, navegarPara, useCaminhoAtual } from '../../src/lib/appRoute'
 
 // Apenas harness isolado. Nunca importado pelo aplicativo normal ou pelo build.
 if (!import.meta.env.DEV || import.meta.env.VITE_SUPABASE_URL !== 'https://operacional.synthetic.invalid') throw new Error('Esta prévia exige configuração sintética isolada.')
 const params = new URLSearchParams(location.search)
-const unidade = params.get('unidade') === 'ipupiara' ? 'ipupiara' : 'brotas'
+const unidade = lerRotaInterna()?.unidade ?? (params.get('unidade') === 'ipupiara' ? 'ipupiara' : 'brotas')
+if (!lerRotaInterna()) { params.set('previa', 'agenda'); navegarPara(`${caminhoInterno(unidade, 'agenda')}?${params}`, true) }
 const clinicaId = `clinica-${unidade}`
 const hoje = new Date().toLocaleDateString('en-CA')
 const profissionais = [
@@ -42,7 +44,7 @@ window.fetch = async (input, init) => {
   const resposta = (valor: unknown, status = 200) => Promise.resolve(new Response(JSON.stringify(valor), { status, headers: { 'Content-Type': 'application/json' } }))
   const p = init?.body ? JSON.parse(String(init.body)) : {}
   const caminho = url.pathname.split('/').at(-1)
-  if (caminho === 'usuarios_clinicas') return resposta({ papel: params.get('papel') === 'proprietaria' ? 'proprietaria' : 'recepcao' })
+  if (caminho === 'usuarios_clinicas') return resposta({ papel: params.get('papel') === 'medico' ? 'medico' : params.get('papel') === 'proprietaria' ? 'proprietaria' : 'recepcao' })
   if (caminho === 'profissionais_clinicas') return resposta(profissionais.map(profissionais => ({ profissionais })))
   if (caminho === 'pacientes') return resposta(pacientes)
   if (caminho === 'agenda_manual_disponivel') return resposta(true)
@@ -77,15 +79,21 @@ window.fetch = async (input, init) => {
   return resposta([])
 }
 export function Previa() {
-  const [tela, setTela] = useState<Tela>('agenda')
+  const caminho = useCaminhoAtual()
+  const tela = lerRotaInterna(caminho)?.tela ?? 'agenda'
+  function setTela(destino: Tela) {
+    const query = new URLSearchParams(location.search)
+    query.set('previa', 'agenda')
+    navegarPara(`${caminhoInterno(unidade, destino)}?${query}`)
+  }
   const { alternarTema, aplicarCoresClinica } = useTheme()
   const marca = CLINIC_BRANDS[unidade]
   useEffect(() => {
     aplicarCoresClinica({ cor_primaria: marca.cores.primaria, cor_secundaria: marca.cores.primariaHover, cor_menu: marca.cores.visual })
   }, [aplicarCoresClinica, marca])
-  const clinica = { id: clinicaId, nome: `${marca.nome} · Simulação`, cor_primaria: marca.cores.primaria, cor_secundaria: marca.cores.primariaHover, cor_menu: marca.cores.visual }
+  const clinica = { id: clinicaId, nome: marca.nome, cor_primaria: marca.cores.primaria, cor_secundaria: marca.cores.primariaHover, cor_menu: marca.cores.visual }
   return <AppShell tela={tela} onNavegar={setTela} clinicaAtiva={clinica} clinicasDoUsuario={[clinica]} onSelecionarClinica={() => undefined}
-    emailUsuario="recepcao@exemplo.invalid" papel={params.get('papel') === 'proprietaria' ? 'proprietaria' : 'recepcao'} onSair={() => setTela('dashboard')}>
+    emailUsuario="recepcao@exemplo.invalid" papel={params.get('papel') === 'medico' ? 'medico' : params.get('papel') === 'proprietaria' ? 'proprietaria' : 'recepcao'} onSair={() => setTela('dashboard')}>
     <div className="mb-4 flex flex-wrap justify-between gap-2 rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] p-3 text-xs"><p><strong>PRÉVIA SINTÉTICA ISOLADA</strong> · sem banco real · recarregar descarta alterações</p><button className="underline" onClick={alternarTema}>Alternar tema</button></div>
     {tela === 'agenda' ? <Agenda usuarioId="usuario-sintetico" clinicaAtiva={clinica} carregandoClinica={false} onAtendimentoIniciado={() => undefined} /> : <div className="space-y-3"><h1>{TITULOS_TELA[tela]}</h1><p>Esta demonstração isolada inclui somente a Agenda. O menu e o cabeçalho são os componentes reais; os demais módulos não foram conectados.</p><button className="underline" onClick={() => setTela('agenda')}>Voltar para Agenda</button></div>}
   </AppShell>

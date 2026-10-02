@@ -30,9 +30,7 @@ export function lerRotaInterna(pathname = window.location.pathname): { unidade: 
   return { unidade: match[1] as ClinicBrandSlug, tela: match[2] as Tela }
 }
 
-export function caminhoInterno(unidade: ClinicBrandSlug, tela: Tela) {
-  return `/sistema/${unidade}/${tela}`
-}
+export { caminhoInterno } from './routePaths'
 
 export function marcaDaRota() {
   const rota = lerRotaInterna()

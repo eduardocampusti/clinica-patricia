@@ -12,6 +12,7 @@
       "Página “Sobre o sistema” com versão em execução, créditos de desenvolvimento e contexto da clínica."
     ],
     "melhorias": [
+      "Navegação: menu compartilhado recolhível no computador e sobreposto no celular, com links sincronizados à URL, unidades autorizadas e preferência visual independente dos formulários.",
       "Agenda: lista cronológica compacta e grade temporal com horários alinhados, duração proporcional e sobreposições visíveis. Selecionar um horário prepara o formulário sem gravar. Painéis responsivos, resumo anterior/novo, avisos claros e confirmação de descarte; consultas curtas priorizam horário e paciente, com dados completos nos detalhes. Regras e serviços preservados.",
       "Publicação: identificação dos domínios clinicabrotas.com.br e clinicaipupiara.com.br preparada; a função de acessos aceita somente origens públicas explícitas e mantém o retorno do convite na unidade autorizada. O site público e o SMTP ainda não foram publicados/configurados.",
       "Equipe: convite real teve aceite, login de Recepção em Brotas e recusa de Ipupiara confirmados; dados e conta sintéticos foram removidos preservando auditoria. Modelos portugueses de e-mail estão preparados, mas dependem de envio personalizado para aplicação no Auth.",

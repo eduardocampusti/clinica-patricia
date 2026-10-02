@@ -1,6 +1,8 @@
 import { expect, test, type Page } from '@playwright/test'
+import { itensParaPapel } from '../../src/components/shell/navigation'
+import type { Papel } from '../../src/hooks/usePapelNaClinica'
 
-async function fixture(page: Page, unidade: string, modo: 'ativo' | 'sem-vinculo' | 'erro' | 'expirado' | 'anonimo' = 'ativo') {
+async function fixture(page: Page, unidade: string, modo: 'ativo' | 'sem-vinculo' | 'erro' | 'expirado' | 'anonimo' = 'ativo', papel: Papel = 'recepcao') {
   const user = { id: '11111111-1111-4111-8111-111111111111', email: 'teste@example.invalid', aud: 'authenticated' }
   const clinic = { id:'22222222-2222-4222-8222-222222222222', nome: unidade === 'brotas' ? 'Clínica Brotas' : 'Clínica Ipupiara' }
   const jwt = [Buffer.from('{"alg":"HS256","typ":"JWT"}').toString('base64url'), Buffer.from(JSON.stringify({sub:user.id,exp:Math.floor(Date.now()/1000)+3600,aud:'authenticated'})).toString('base64url'),'synthetic'].join('.')
@@ -16,7 +18,7 @@ async function fixture(page: Page, unidade: string, modo: 'ativo' | 'sem-vinculo
     const path = new URL(route.request().url()).pathname
     const singular = route.request().headers().accept?.includes('object')
     if (modo === 'erro') return route.fulfill({status:500,contentType:'application/json',body:'{"message":"synthetic"}'})
-    const data = modo === 'sem-vinculo' ? [] : path.endsWith('/usuarios_clinicas') ? singular ? {papel:'recepcao'} : [{clinica_id:clinic.id,papel:'recepcao'}] : path.endsWith('/clinicas') ? [clinic] : []
+    const data = modo === 'sem-vinculo' ? [] : path.endsWith('/usuarios_clinicas') ? singular ? {papel} : [{clinica_id:clinic.id,papel}] : path.endsWith('/clinicas') ? [clinic] : []
     return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(data)})
   })
   if (modo !== 'anonimo') await page.addInitScript(({jwt,user,expirado}) => {
@@ -27,6 +29,20 @@ async function fixture(page: Page, unidade: string, modo: 'ativo' | 'sem-vinculo
   }, {jwt,user,expirado:modo === 'expirado'})
   return { chamadas: () => chamadas }
 }
+
+for (const unidade of ['brotas', 'ipupiara'] as const) for (const papel of ['recepcao', 'medico', 'proprietaria'] as const) test(`Sidebar no App real, módulos e expansão — ${unidade}/${papel}`, async ({ page }) => {
+  await fixture(page, unidade, 'ativo', papel)
+  await page.goto(`/sistema/${unidade}/agenda`, { waitUntil: 'domcontentloaded' })
+  await expect(page.locator('.app-shell')).toBeVisible()
+  await page.getByRole('button', { name: 'Recolher menu' }).click()
+  for (const item of itensParaPapel(papel, unidade)) {
+    await page.getByRole('navigation', { name: 'Navegação principal' }).getByRole('link', { name: item.titulo, exact: true }).click()
+    await expect(page).toHaveURL(new RegExp(`${item.href}$`))
+    await expect(page.locator('.app-shell-header p').first()).toHaveText(item.titulo)
+    await expect(page.getByRole('link', { name: item.titulo, exact: true })).toHaveAttribute('aria-current', 'page')
+    await expect(page.getByRole('button', { name: 'Expandir menu' })).toBeVisible()
+  }
+})
 
 for (const unidade of ['brotas','ipupiara']) {
   test(`Recepção: URL e conteúdo preservados com vínculos e papel atrasados — ${unidade}`, async ({page}) => {
@@ -40,7 +56,7 @@ for (const unidade of ['brotas','ipupiara']) {
     await page.goto(`/acesso/${unidade}`)
     await expect(page.locator('.app-shell')).toBeVisible()
     for (const destino of ['pacientes','agenda']) {
-      await page.getByRole('button',{name:destino === 'pacientes' ? 'Pacientes' : 'Agenda',exact:true}).click()
+      await page.getByRole('link',{name:destino === 'pacientes' ? 'Pacientes' : 'Agenda',exact:true}).click()
       const url = page.url()
       await page.reload()
       await expect(page.locator('.app-shell')).toBeVisible()
@@ -64,7 +80,7 @@ for (const unidade of ['brotas','ipupiara']) {
     await expect(page.locator('.app-shell')).toBeVisible()
     await expect(page).toHaveURL(new RegExp(`/sistema/${unidade}/dashboard$`))
     for (const tela of ['agenda','pacientes']) {
-      await page.getByRole('button',{name:tela === 'agenda' ? 'Agenda' : 'Pacientes',exact:true}).click()
+      await page.getByRole('link',{name:tela === 'agenda' ? 'Agenda' : 'Pacientes',exact:true}).click()
       await expect(page).toHaveURL(new RegExp(`/sistema/${unidade}/${tela}$`))
       await page.reload()
       await expect(page.locator('.app-shell')).toBeVisible()
