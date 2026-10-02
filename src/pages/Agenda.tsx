@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import { supabase } from '../lib/supabase'
 import { iniciarAtendimentoAgendado } from '../lib/prontuarioRpc'
-import { iniciais } from '../lib/texto'
 import type { ClinicaAtiva } from '../hooks/useClinicaAtiva'
 import { usePapelNaClinica } from '../hooks/usePapelNaClinica'
 import { ModalBase } from '../components/ModalBase'
@@ -14,7 +13,11 @@ import { AvisoCpfPendente } from '../components/pacientes/AvisoCpfPendente'
 import { FeedbackAlert } from '../components/feedback/FeedbackAlert'
 import { EditarAgendamento, type AgendamentoEditavel } from '../components/agenda/EditarAgendamento'
 import { useDisponibilidadeAgenda } from '../hooks/useDisponibilidadeAgenda'
-import { sugestoesHorarioAgenda, horaAgenda, minutosAgenda } from '../lib/agendaDisponibilidade'
+import { PainelAgenda, ResumoHorario, campoAgenda, acaoAgenda } from '../components/agenda/PainelAgenda'
+import { SelecionarPaciente } from '../components/agenda/SelecionarPaciente'
+import { GradeTemporalAgenda } from '../components/agenda/GradeTemporalAgenda'
+import { useDescarteAgenda } from '../components/agenda/useDescarteAgenda'
+import { DisponibilidadeFormulario } from '../components/agenda/DisponibilidadeFormulario'
 
 type StatusAgendamento = 'agendado' | 'confirmado' | 'aguardando' | 'em_atendimento' | 'concluido' | 'cancelado'
 type TipoExcecao = 'folga' | 'horario_especial'
@@ -86,26 +89,6 @@ const STATUS_LABEL: Record<StatusAgendamento, string> = {
   cancelado: 'Cancelado',
 }
 
-const STATUS_ORDEM: StatusAgendamento[] = [
-  'agendado',
-  'confirmado',
-  'aguardando',
-  'em_atendimento',
-  'concluido',
-  'cancelado',
-]
-
-function estiloStatus(status: StatusAgendamento): { fundo: string; borda: string; texto: string } {
-  if (status === 'agendado') {
-    return { fundo: 'var(--fundo-card)', borda: 'var(--texto-terciario)', texto: 'var(--texto-principal)' }
-  }
-  const chave = status.replace(/_/g, '-')
-  return {
-    fundo: `var(--status-${chave}-fundo)`,
-    borda: `var(--status-${chave}-borda)`,
-    texto: `var(--status-${chave}-texto)`,
-  }
-}
 
 function badgeStatus(status: StatusAgendamento): { fundo: string; texto: string } {
   if (status === 'agendado') {
@@ -115,10 +98,6 @@ function badgeStatus(status: StatusAgendamento): { fundo: string; texto: string 
   return { fundo: `var(--status-${chave}-badge-fundo)`, texto: `var(--status-${chave}-badge-texto)` }
 }
 
-const GRID_INICIO_MIN = 7 * 60
-const GRID_FIM_MIN = 19 * 60
-const PX_POR_MINUTO = 2
-const ALTURA_GRID = (GRID_FIM_MIN - GRID_INICIO_MIN) * PX_POR_MINUTO
 
 function minutosDesdeMeiaNoite(hora: string): number {
   const [h, m] = hora.split(':').map(Number)
@@ -153,24 +132,6 @@ interface Janela {
   fimMin: number
 }
 
-// Segmentos "fora do expediente" dentro do grid (07:00–19:00), a partir das
-// janelas de trabalho do profissional naquele dia (já resolvidas: exceção
-// prevalece sobre disponibilidade_padrao).
-function segmentosForaExpediente(janelas: Janela[]): Janela[] {
-  const recortadas = janelas
-    .map((j) => ({ inicioMin: Math.max(j.inicioMin, GRID_INICIO_MIN), fimMin: Math.min(j.fimMin, GRID_FIM_MIN) }))
-    .filter((j) => j.fimMin > j.inicioMin)
-    .sort((a, b) => a.inicioMin - b.inicioMin)
-
-  const livres: Janela[] = []
-  let cursor = GRID_INICIO_MIN
-  for (const j of recortadas) {
-    if (j.inicioMin > cursor) livres.push({ inicioMin: cursor, fimMin: j.inicioMin })
-    cursor = Math.max(cursor, j.fimMin)
-  }
-  if (cursor < GRID_FIM_MIN) livres.push({ inicioMin: cursor, fimMin: GRID_FIM_MIN })
-  return livres
-}
 
 interface AgendaProps {
   clinicaAtiva: ClinicaAtiva | null
@@ -198,6 +159,8 @@ function Agenda({
 
   const [dataSelecionada, setDataSelecionada] = useState(() => new Date())
   const [buscaPaciente, setBuscaPaciente] = useState('')
+  const [visao, setVisao] = useState<'lista' | 'grade'>('lista')
+  const [filtroProfissional, setFiltroProfissional] = useState('')
 
   const [profissionais, setProfissionais] = useState<ProfissionalAgenda[]>([])
   const [disponibilidades, setDisponibilidades] = useState<Disponibilidade[]>([])
@@ -207,6 +170,7 @@ function Agenda({
   const [listaEspera, setListaEspera] = useState<EntradaListaEspera[]>([])
   const [carregandoGrade, setCarregandoGrade] = useState(true)
   const [erroCarregamento, setErroCarregamento] = useState<string | null>(null)
+  const [erroDisponibilidadeDia, setErroDisponibilidadeDia] = useState(false)
   const clinicaAtivaIdRef = useRef(clinicaAtivaId)
   const requisicaoGradeAtual = useRef(0)
   const chaveContextoAtual = clinicaAtivaId ? `${clinicaAtivaId}:${paraISODate(dataSelecionada)}` : null
@@ -232,7 +196,7 @@ function Agenda({
   } | null>(null)
   useEffect(() => { setFeedbackStatus(null) }, [chaveContextoAtual])
   const [modalAberto, setModalAberto] = useState<'agendamento' | 'excecao' | 'espera' | null>(null)
-  const [prefillAgendamento, setPrefillAgendamento] = useState<{ pacienteId: string; profissionalId: string } | null>(
+  const [prefillAgendamento, setPrefillAgendamento] = useState<{ pacienteId: string; profissionalId: string; inicio?: string } | null>(
     null,
   )
   const [profissionalParaExcecao, setProfissionalParaExcecao] = useState<string | null>(null)
@@ -366,6 +330,7 @@ function Agenda({
   const carregarGradeDoDia = useCallback(async (clinicaId: string, data: Date) => {
     const requisicao = ++requisicaoGradeAtual.current
     setCarregandoGrade(true)
+    setErroDisponibilidadeDia(false)
     const diaSemana = data.getDay()
     const dataISO = paraISODate(data)
 
@@ -389,7 +354,7 @@ function Agenda({
     ])
 
     if (clinicaAtivaIdRef.current !== clinicaId || requisicao !== requisicaoGradeAtual.current) return
-    if (respDisponibilidade.error || respExcecoes.error || respAgendamentos.error) {
+    if (respAgendamentos.error) {
       setDisponibilidades([])
       setExcecoes([])
       setAgendamentos([])
@@ -398,8 +363,10 @@ function Agenda({
       return
     }
 
-    setDisponibilidades(respDisponibilidade.data ?? [])
-    setExcecoes((respExcecoes.data ?? []) as Excecao[])
+    const falhaDisponibilidade = !!(respDisponibilidade.error || respExcecoes.error)
+    setErroDisponibilidadeDia(falhaDisponibilidade)
+    setDisponibilidades(falhaDisponibilidade ? [] : respDisponibilidade.data ?? [])
+    setExcecoes(falhaDisponibilidade ? [] : (respExcecoes.data ?? []) as Excecao[])
 
     type LinhaAgendamento = {
       id: string
@@ -492,6 +459,8 @@ function Agenda({
 
   useEffect(() => {
     setMenuStatusId(null)
+    setFiltroProfissional('')
+    setBuscaPaciente('')
     setModalAberto(null)
     setConsultaReceber(null)
     setPrefillAgendamento(null)
@@ -586,17 +555,8 @@ function Agenda({
     return mapa
   }, [profissionais, disponibilidades, excecoes])
 
-  const profissionaisVisiveis = useMemo(
-    () =>
-      profissionais.filter((p) => {
-        const temDisponibilidade = disponibilidades.some((d) => d.profissional_id === p.id)
-        const temExcecao = excecoes.some((e) => e.profissional_id === p.id)
-        return temDisponibilidade || temExcecao || agendamentos.some(a => a.profissional_id === p.id)
-      }),
-    [profissionais, disponibilidades, excecoes, agendamentos],
-  )
 
-  function abrirNovoAgendamento(prefill?: { pacienteId: string; profissionalId: string }) {
+  function abrirNovoAgendamento(prefill?: { pacienteId: string; profissionalId: string; inicio?: string }) {
     setPrefillAgendamento(prefill ?? null)
     setModalAberto('agendamento')
   }
@@ -678,439 +638,134 @@ function Agenda({
     )
   }
 
-  const contagem = {
-    hoje: agendamentos.length,
-    confirmados: agendamentos.filter((a) => a.status === 'confirmado').length,
-    emAtendimento: agendamentos.filter((a) => a.status === 'em_atendimento').length,
-    cancelados: agendamentos.filter((a) => a.status === 'cancelado').length,
-    listaEspera: listaEspera.length,
+  const registros = agendamentos
+    .filter(a => (!buscaPaciente.trim() || a.paciente_nome.toLocaleLowerCase().includes(buscaPaciente.trim().toLocaleLowerCase())) && (!filtroProfissional || a.profissional_id === filtroProfissional))
+    .sort((a, b) => a.hora_inicio.localeCompare(b.hora_inicio) || a.paciente_nome.localeCompare(b.paciente_nome))
+  const idsProfissionais = [...new Set([...profissionais.map(p => p.id), ...registros.map(a => a.profissional_id)])].filter(id => !filtroProfissional || id === filtroProfissional)
+  const selecionado = agendamentos.find(a => a.id === menuStatusId)
+  const nomeProfissional = (id: string) => profissionais.find(p => p.id === id)?.nome_completo ?? 'Profissional fora do cadastro ativo'
+  function textoDisponibilidade(ag: Agendamento) {
+    const faixas = janelasPorProfissional.get(ag.profissional_id) ?? []
+    const habitual = faixas.some(j => minutosDesdeMeiaNoite(ag.hora_inicio) >= j.inicioMin && minutosDesdeMeiaNoite(ag.hora_fim) <= j.fimMin)
+    const excecao = excecoes.find(e => e.profissional_id === ag.profissional_id)
+    return erroDisponibilidadeDia ? 'Disponibilidade não confirmada' : excecao?.tipo === 'folga' ? 'Folga cadastrada' : !profissionais.some(p => p.id === ag.profissional_id) ? 'Expediente não confirmado' : !habitual ? (faixas.length ? 'Fora da faixa habitual' : 'Sem expediente') : null
   }
-
-  const horas = Array.from({ length: (GRID_FIM_MIN - GRID_INICIO_MIN) / 60 + 1 }, (_, i) => 7 + i)
-
-  return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="texto-titulo-tela text-[var(--texto-principal)]">Agenda</h1>
-          <p className="text-sm text-[var(--texto-secundario)]">
-            {clinicaAtiva?.nome ?? 'Nenhuma clínica vinculada ao seu usuário.'}
-          </p>
-        </div>
-
-        {podeEscrever && (
-          <button
-            type="button"
-            onClick={() => abrirNovoAgendamento()}
-            disabled={!clinicaAtivaId}
-            className="rounded-xl bg-[var(--cor-primaria)] px-4 py-2.5 font-medium text-white transition hover:bg-[var(--cor-primaria-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--cor-primaria)] disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            + Novo agendamento
-          </button>
-        )}
+  function item(ag: Agendamento, temporal = false) {
+    const badge = badgeStatus(ag.status)
+    const duracaoRegistro = minutosDesdeMeiaNoite(ag.hora_fim) - minutosDesdeMeiaNoite(ag.hora_inicio)
+    const curto = temporal && duracaoRegistro <= 20
+    const disponibilidadeTexto = textoDisponibilidade(ag)
+    const elegivel = ['agendado', 'confirmado', 'aguardando'].includes(ag.status)
+    return <article key={ag.id} data-testid="registro-agenda" data-registro-id={ag.id} className={temporal ? `agenda-temporal-registro${curto ? ' agenda-temporal-curto' : ''}` : 'agenda-lista-linha'}>
+      <button type="button" onClick={() => { focoRecebimento.current = ag.id; setMenuStatusId(ag.id) }}
+        ref={node => { if (node) botoesAgendamento.current.set(ag.id, node); else botoesAgendamento.current.delete(ag.id) }}
+        aria-label={`${formatarHoraCurta(ag.hora_inicio)} ${ag.paciente_nome} — ${STATUS_LABEL[ag.status]}${recebidos.has(ag.id) ? ' — Recebimento registrado' : ''}${curto ? ` — até ${formatarHoraCurta(ag.hora_fim)}, ${duracaoRegistro} minutos${disponibilidadeTexto ? ` — ${disponibilidadeTexto}` : ''}. Abrir detalhes` : ''}`}
+        className="agenda-lista-consulta focus-visible:outline-2">
+        <span className="numero-tabular text-sm font-semibold">{formatarHoraCurta(ag.hora_inicio)}–{formatarHoraCurta(ag.hora_fim)}{!curto && <span className="block text-xs font-normal text-[var(--texto-secundario)]">{duracaoRegistro} min</span>}</span>
+        <span className="min-w-0 break-words font-semibold">{ag.paciente_nome}{!curto && recebidos.has(ag.id) && <span className="block text-xs font-medium">Recebimento registrado</span>}</span>
+        {!temporal && <span className="min-w-0 break-words text-sm text-[var(--texto-secundario)]">{nomeProfissional(ag.profissional_id)}</span>}
+        {!curto && <span><span className="inline-block rounded-md px-2 py-1 text-xs font-semibold" style={{ background: badge.fundo, color: badge.texto }}>{STATUS_LABEL[ag.status]}</span>{disponibilidadeTexto && <span className="mt-1 block text-xs text-[var(--texto-secundario)]">{disponibilidadeTexto}</span>}</span>}
+      </button>
+      {podeEscrever && !temporal && <div className="agenda-lista-acoes">
+        {['agendado', 'confirmado'].includes(ag.status) && <button type="button" className="agenda-acao-compacta" disabled={atualizandoStatus} onClick={() => void mudarStatus(ag, 'aguardando')}>Registrar chegada</button>}
+        {elegivel && <button type="button" className="agenda-acao-compacta" aria-label="Editar agendamento" onClick={() => { setMenuStatusId(null); setEditandoAgendamento(ag) }}>Editar</button>}
+      </div>}
+    </article>
+  }
+  return <div className="space-y-5">
+    <header className="flex flex-wrap items-center justify-between gap-3">
+      <div><h1 className="texto-titulo-tela">Agenda</h1><p className="text-sm text-[var(--texto-secundario)]"><span>{clinicaAtiva?.nome}</span><span> · agendamentos e atendimentos</span></p></div>
+      {podeEscrever && <button type="button" onClick={() => abrirNovoAgendamento()} disabled={!clinicaAtivaId}
+        className={`${acaoAgenda} bg-[var(--cor-primaria)] text-[var(--texto-sobre-primaria)]`}>+ Novo agendamento</button>}
+    </header>
+    <section aria-label="Controles da Agenda" className="space-y-3 rounded-xl border border-[var(--borda)] bg-[var(--fundo-card)] p-4">
+      <div className="flex flex-wrap items-center gap-2">
+        <button type="button" aria-label="Dia anterior" className={acaoAgenda} onClick={() => setDataSelecionada(d => adicionarDias(d, -1))}>‹</button>
+        <label className="sr-only" htmlFor="agenda-data">Data da Agenda</label>
+        <input id="agenda-data" className={`${campoAgenda} !w-auto max-w-full`} type="date" value={paraISODate(dataSelecionada)}
+          onChange={e => { if (e.target.value) setDataSelecionada(new Date(`${e.target.value}T12:00:00`)) }} />
+        <button type="button" aria-label="Próximo dia" className={acaoAgenda} onClick={() => setDataSelecionada(d => adicionarDias(d, 1))}>›</button>
+        <button type="button" className={acaoAgenda} onClick={() => setDataSelecionada(new Date())}>Hoje</button>
+        <p className="text-sm font-medium sm:ml-2">{formatarDataExtenso(dataSelecionada)}</p>
       </div>
-
-      <div className="flex flex-wrap items-center gap-3">
-        <input
-          type="text"
-          placeholder="Buscar paciente..."
-          value={buscaPaciente}
-          onChange={(e) => setBuscaPaciente(e.target.value)}
-          className="w-full max-w-xs rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 py-2.5 text-sm text-[var(--texto-principal)] outline-none transition focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)]"
-        />
-
-        <div className="flex items-center gap-2 rounded-xl bg-[var(--fundo-card)] px-2 py-1.5" style={{ boxShadow: 'var(--sombra-neutra)' }}>
-          <button
-            type="button"
-            onClick={() => setDataSelecionada((d) => adicionarDias(d, -1))}
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--texto-secundario)] transition hover:bg-[var(--fundo-pagina)] hover:text-[var(--texto-principal)]"
-            aria-label="Dia anterior"
-          >
-            ‹
-          </button>
-          <span className="min-w-[220px] text-center text-sm font-medium text-[var(--texto-principal)]">
-            {formatarDataExtenso(dataSelecionada)}
-          </span>
-          <button
-            type="button"
-            onClick={() => setDataSelecionada((d) => adicionarDias(d, 1))}
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--texto-secundario)] transition hover:bg-[var(--fundo-pagina)] hover:text-[var(--texto-principal)]"
-            aria-label="Próximo dia"
-          >
-            ›
-          </button>
+      <div className="grid gap-3 sm:grid-cols-[1fr_1fr_auto]">
+        <label className="text-sm">Busca na Agenda<input className={campoAgenda} placeholder="Buscar paciente..." value={buscaPaciente} onChange={e => setBuscaPaciente(e.target.value)} /></label>
+        <label className="text-sm">Filtrar profissional<select className={campoAgenda} value={filtroProfissional} onChange={e => setFiltroProfissional(e.target.value)}>
+          <option value="">Todos os profissionais</option>{[...new Set([...profissionais.map(p => p.id), ...agendamentos.map(a => a.profissional_id)])].map(id => <option key={id} value={id}>{nomeProfissional(id)}</option>)}</select></label>
+        <div role="group" aria-label="Visualização da Agenda" className="flex items-end gap-1">
+          <button type="button" aria-pressed={visao === 'lista'} className={`${acaoAgenda} ${visao === 'lista' ? 'bg-[var(--cor-primaria-suave)] text-[var(--cor-primaria)]' : ''}`} onClick={() => setVisao('lista')}>Lista</button>
+          <button type="button" aria-pressed={visao === 'grade'} className={`${acaoAgenda} ${visao === 'grade' ? 'bg-[var(--cor-primaria-suave)] text-[var(--cor-primaria)]' : ''}`} onClick={() => setVisao('grade')}>Grade por profissional</button>
         </div>
       </div>
-
-      {erroIniciarAtendimento && <FeedbackAlert variant="destructive" title="Atendimento não iniciado" description={erroIniciarAtendimento} urgent />}
-      {correcaoSalva?.clinicaId === clinicaAtivaId && <FeedbackAlert variant="success" title="Agendamento atualizado"
-        description="Data e horário corrigidos. Os demais dados e vínculos foram preservados."
-        onClose={() => setCorrecaoSalva(null)} autoDismissMs={6000}
-        action={correcaoSalva.data !== paraISODate(dataSelecionada) ? <button type="button" onClick={() => setDataSelecionada(new Date(`${correcaoSalva.data}T12:00:00`))}>Ver na nova data</button> : undefined} />}
-      {!carregando && !carregandoGrade && agendamentos.length > 0 && <section aria-label="Agendamentos do dia" className="space-y-3 rounded-xl bg-[var(--fundo-card)] p-4">
-        <h2 className="texto-titulo-secao">Agendamentos do dia</h2>
-        <p className="text-sm text-[var(--texto-secundario)]">Registros existentes, independentes da lista de espera e do expediente atual.</p>
-        {agendamentos.filter(a => !buscaPaciente.trim() || a.paciente_nome.toLowerCase().includes(buscaPaciente.toLowerCase())).map(ag => {
-          const prof = profissionais.find(p => p.id === ag.profissional_id)
-          const janelas = janelasPorProfissional.get(ag.profissional_id) ?? []
-          const fora = !janelas.some(j => minutosDesdeMeiaNoite(ag.hora_inicio) >= j.inicioMin && minutosDesdeMeiaNoite(ag.hora_fim) <= j.fimMin)
-          return <article key={ag.id} className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--borda)] pb-3 text-sm">
-            <div><p className="font-semibold">{formatarHoraCurta(ag.hora_inicio)} · {ag.paciente_nome} · {STATUS_LABEL[ag.status]}</p><p>{prof?.nome_completo ?? 'Profissional do agendamento indisponível no cadastro ativo'}</p>
-              {fora && <p className="text-[var(--cor-alerta)]">Expediente ausente ou incompatível com este horário. O agendamento foi preservado.</p>}</div>
-            {podeEscrever && <button type="button" disabled={!['agendado', 'confirmado', 'aguardando'].includes(ag.status)}
-              onClick={() => { setMenuStatusId(null); setEditandoAgendamento(ag) }} className="min-h-11 rounded-lg border border-[var(--borda)] px-3 disabled:opacity-60">Editar agendamento</button>}
-          </article>
-        })}
+    </section>
+    <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-[var(--texto-secundario)]" aria-label="Resumo do dia">
+      <span><strong className="text-[var(--texto-principal)]">{agendamentos.length}</strong> agendamentos na data</span>
+      <span><strong className="text-[var(--texto-principal)]">{agendamentos.filter(a => a.status === 'aguardando').length}</strong> aguardando atendimento</span>
+      <span><strong className="text-[var(--texto-principal)]">{listaEspera.length}</strong> aguardando vaga</span>
+    </div>
+    {correcaoSalva?.clinicaId === clinicaAtivaId && <FeedbackAlert variant="success" title="Agendamento atualizado" description="Data e horário corrigidos. Os demais dados e vínculos foram preservados." onClose={() => setCorrecaoSalva(null)} autoDismissMs={6000}
+      action={correcaoSalva.data !== paraISODate(dataSelecionada) ? <button type="button" onClick={() => setDataSelecionada(new Date(`${correcaoSalva.data}T12:00:00`))}>Ver na nova data</button> : undefined} />}
+    {feedbackStatus?.contexto === chaveContextoAtual && <FeedbackAlert variant={feedbackStatus.sucesso ? 'success' : 'destructive'} title={feedbackStatus.titulo} description={feedbackStatus.descricao} urgent={!feedbackStatus.sucesso} onClose={() => setFeedbackStatus(null)} autoDismissMs={feedbackStatus.sucesso ? 6000 : undefined} />}
+    {atualizandoStatus && <p role="status">Atualizando situação...</p>}
+    {erroIniciarAtendimento && <FeedbackAlert variant="destructive" title="Atendimento não iniciado" description={erroIniciarAtendimento} />}
+    {erroRecebimentos && <FeedbackAlert variant="warning" title="Recebimentos indisponíveis" description={mensagemErroFinanceiro(erroRecebimentos)} action={<button type="button" onClick={() => setRevisaoRecebimentos(v => v + 1)}>Tentar novamente</button>} />}
+    {erroDisponibilidadeDia && <FeedbackAlert variant="destructive" title="Falha ao consultar disponibilidade" description="Os agendamentos foram carregados, mas o expediente e os bloqueios não puderam ser confirmados. Isso não significa ausência de expediente. Criar e editar exigem uma consulta válida." action={<button type="button" onClick={() => void recarregarTudo()}>Tentar novamente</button>} />}
+    {erroCarregamento ? <FeedbackAlert variant="destructive" title="Não foi possível carregar a Agenda" description={erroCarregamento} action={<button type="button" onClick={() => void recarregarTudo()}>Tentar novamente</button>} />
+      : carregandoGrade ? <p role="status">Carregando agendamentos...</p>
+      : <section aria-label="Agendamentos do dia" className="overflow-hidden rounded-xl border border-[var(--borda)] bg-[var(--fundo-card)]">
+        <div className="flex flex-wrap justify-between gap-2 border-b border-[var(--borda)] px-4 py-3"><h2 className="text-base font-semibold">{visao === 'lista' ? 'Agendamentos do dia' : 'Agenda por profissional'}</h2><p className="text-sm text-[var(--texto-secundario)]">{registros.length} registro(s)</p></div>
+        {visao === 'lista' ? registros.length ? <><div className="agenda-lista-cabecalho" aria-hidden="true"><div className="agenda-lista-titulos"><span>Horário</span><span>Paciente</span><span>Profissional</span><span>Situação</span></div><span className="text-right">Ações</span></div>{registros.map(ag => item(ag))}</> : <p className="p-6 text-sm">Nenhum agendamento corresponde à data e aos filtros. Altere os filtros ou crie uma marcação.</p>
+          : <GradeTemporalAgenda registros={registros} profissionais={idsProfissionais.map(id => ({ id, nome: nomeProfissional(id) }))} contexto={chaveContextoAtual ?? ''} renderRegistro={ag => item(ag, true)}
+            onNovo={podeEscrever ? (id, inicio) => abrirNovoAgendamento({ pacienteId: '', profissionalId: id, inicio }) : undefined}
+            renderAcao={id => podeEscrever && profissionais.some(p => p.id === id) ? <button type="button" className="min-h-9 text-xs underline" title="Marcar folga / horário especial" onClick={() => { setProfissionalParaExcecao(id); setModalAberto('excecao') }}>Expediente</button> : null} />}
       </section>}
-      {atualizandoStatus && <p role="status">Atualizando situação...</p>}
-      {feedbackStatus?.contexto === chaveContextoAtual && <FeedbackAlert
-        key={`${feedbackStatus.contexto}:${feedbackStatus.titulo}`}
-        variant={feedbackStatus.sucesso ? 'success' : 'destructive'}
-        title={feedbackStatus.titulo} description={feedbackStatus.descricao}
-        urgent={!feedbackStatus.sucesso} onClose={() => setFeedbackStatus(null)}
-        autoDismissMs={feedbackStatus.sucesso ? 6000 : undefined}
-      />}
-
-      {erroRecebimentos && <FeedbackAlert variant="warning" title="Recebimentos indisponíveis" description={`Não foi possível consultar os recebimentos da Agenda. ${erroRecebimentos}`} action={<button type="button" onClick={() => setRevisaoRecebimentos((valor) => valor + 1)}>Tentar novamente</button>} />}
-
-      {carregandoGrade && !consultaReceber ? (
-        <div className="rounded-[18px] bg-[var(--fundo-card)] p-8 text-center text-sm text-[var(--texto-secundario)]" style={{ boxShadow: 'var(--sombra-neutra)' }}>
-          Carregando...
-        </div>
-      ) : erroCarregamento ? (
-        <FeedbackAlert variant="destructive" title="Não foi possível carregar a Agenda" description={erroCarregamento} action={<button type="button" onClick={() => void recarregarTudo()}>Tentar novamente</button>} urgent />
-      ) : !clinicaAtivaId ? (
-        <div className="rounded-[18px] bg-[var(--fundo-card)] p-8 text-center text-sm text-[var(--texto-secundario)]" style={{ boxShadow: 'var(--sombra-neutra)' }}>
-          Nenhuma clínica vinculada ao seu usuário.
-        </div>
-      ) : profissionaisVisiveis.length === 0 ? (
-        <div className="rounded-[18px] bg-[var(--fundo-card)] p-8 text-center text-sm text-[var(--texto-secundario)]" style={{ boxShadow: 'var(--sombra-neutra)' }}>
-          Nenhum profissional com expediente cadastrado para este dia.
-        </div>
-      ) : (
-        <div className="overflow-x-auto rounded-[18px] bg-[var(--fundo-card)]" style={{ boxShadow: 'var(--sombra-neutra)' }}>
-          <div
-            className="grid"
-            style={{ gridTemplateColumns: `64px repeat(${profissionaisVisiveis.length}, minmax(180px, 1fr))`, minWidth: 64 + profissionaisVisiveis.length * 180 }}
-          >
-            <div className="border-b border-[var(--borda)] px-2 py-3" />
-            {profissionaisVisiveis.map((prof) => (
-              <div key={prof.id} className="flex items-center gap-2.5 border-b border-l border-[var(--borda)] px-3 py-3">
-                <div className="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-[var(--cor-primaria-suave)] text-sm font-semibold text-[var(--cor-primaria)]">
-                  {iniciais(prof.nome_completo)}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="truncate text-sm font-semibold text-[var(--texto-principal)]">{prof.nome_completo}</div>
-                  <div className="truncate text-xs text-[var(--texto-secundario)]">{prof.especialidade_nome}</div>
-                </div>
-                {podeEscrever && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setProfissionalParaExcecao(prof.id)
-                      setModalAberto('excecao')
-                    }}
-                    className="flex-none text-xs text-[var(--texto-secundario)] transition hover:text-[var(--texto-principal)]"
-                    title="Marcar folga / horário especial"
-                  >
-                    ⋯
-                  </button>
-                )}
-              </div>
-            ))}
-
-            <div className="relative px-2" style={{ height: ALTURA_GRID }}>
-              {horas.map((h) => (
-                <div
-                  key={h}
-                  className="absolute right-2 -translate-y-1/2 text-xs text-[var(--texto-secundario)]"
-                  style={{ top: (h * 60 - GRID_INICIO_MIN) * PX_POR_MINUTO }}
-                >
-                  {String(h).padStart(2, '0')}:00
-                </div>
-              ))}
-            </div>
-
-            {profissionaisVisiveis.map((prof) => {
-              const janelas = janelasPorProfissional.get(prof.id) ?? []
-              const foraExpediente = segmentosForaExpediente(janelas)
-              const agendamentosDoProfissional = agendamentos.filter((a) => a.profissional_id === prof.id)
-
-              return (
-                <div key={prof.id} className="relative border-l border-[var(--borda)]" style={{ height: ALTURA_GRID }}>
-                  {horas.slice(1, -1).map((h) => (
-                    <div
-                      key={h}
-                      className="absolute inset-x-0 border-t border-[var(--borda)]"
-                      style={{ top: (h * 60 - GRID_INICIO_MIN) * PX_POR_MINUTO }}
-                    />
-                  ))}
-
-                  {foraExpediente.map((seg, i) => (
-                    <div
-                      key={i}
-                      className="agenda-fora-expediente absolute inset-x-0 flex items-center justify-center"
-                      style={{
-                        top: (seg.inicioMin - GRID_INICIO_MIN) * PX_POR_MINUTO,
-                        height: (seg.fimMin - seg.inicioMin) * PX_POR_MINUTO,
-                      }}
-                    >
-                      {seg.fimMin - seg.inicioMin >= 60 && (
-                        <span className="rotate-0 text-[11px] font-medium text-[var(--texto-terciario)]">
-                          Fora do expediente
-                        </span>
-                      )}
-                    </div>
-                  ))}
-
-                  {agendamentosDoProfissional.map((ag) => {
-                    const top = (minutosDesdeMeiaNoite(ag.hora_inicio) - GRID_INICIO_MIN) * PX_POR_MINUTO
-                    const altura = Math.max(
-                      (minutosDesdeMeiaNoite(ag.hora_fim) - minutosDesdeMeiaNoite(ag.hora_inicio)) * PX_POR_MINUTO,
-                      28,
-                    )
-                    const estilo = estiloStatus(ag.status)
-                    return (
-                      <div key={ag.id} className="absolute inset-x-1" style={{ top, height: altura }}>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            focoRecebimento.current = ag.id
-                            if (podeEscrever || souMedico) setMenuStatusId((atual) => (atual === ag.id ? null : ag.id))
-                          }}
-                          aria-label={`${formatarHoraCurta(ag.hora_inicio)} ${ag.paciente_nome} — ${STATUS_LABEL[ag.status]}${recebidos.has(ag.id) ? ' — Recebimento registrado' : ''}`}
-                          ref={(node) => { if (node) botoesAgendamento.current.set(ag.id, node); else botoesAgendamento.current.delete(ag.id) }}
-                          className="h-full w-full overflow-hidden rounded-lg border-l-[3px] px-2 py-1 text-left transition"
-                          style={{ backgroundColor: estilo.fundo, borderColor: estilo.borda }}
-                        >
-                          <div className="numero-tabular flex gap-2 text-[11px] font-medium" style={{ color: estilo.texto }}>
-                            <span>{formatarHoraCurta(ag.hora_inicio)}</span>
-                            <span className="truncate">{STATUS_LABEL[ag.status]}</span>
-                          </div>
-                          <div className="truncate text-xs font-semibold" style={{ color: estilo.texto }}>
-                            {ag.paciente_nome}
-                          </div>
-                          {recebidos.has(ag.id) && <span className="text-[11px] font-semibold" style={{ color: estilo.texto }}>Recebimento registrado</span>}
-                        </button>
-
-                        {menuStatusId === ag.id && (
-                          <>
-                            <div className="fixed inset-0 z-10" onClick={() => setMenuStatusId(null)} />
-                            <div
-                              className="absolute left-0 top-full z-20 mt-1 w-48 rounded-xl bg-[var(--fundo-card)] p-1.5"
-                              style={{ boxShadow: 'var(--sombra-neutra)' }}
-                            >
-                              {podeEscrever && podeReceberNaAgenda(papel, ag.status) && !recebidos.has(ag.id) && (
-                                <button type="button" onClick={() => abrirRecebimento(ag)}
-                                  className="mb-1 min-h-11 w-full rounded-lg bg-[var(--texto-principal)] px-2.5 py-2 text-left text-xs font-semibold text-[var(--fundo-card)]">
-                                  Receber pagamento
-                                </button>
-                              )}
-                              {recebidos.has(ag.id) && <p className="px-2.5 py-2 text-xs">Recebimento registrado</p>}
-                              {podeEscrever && ['agendado', 'confirmado', 'aguardando'].includes(ag.status) && <button type="button"
-                                onClick={() => { setMenuStatusId(null); setEditandoAgendamento(ag) }}
-                                className="min-h-11 w-full rounded-lg px-2.5 py-2 text-left text-xs font-semibold">Editar agendamento</button>}
-                              {souMedico &&
-                                ag.profissional_id === meuProfissionalId &&
-                                ag.status !== 'cancelado' &&
-                                paraISODate(dataSelecionada) === paraISODate(new Date()) && (
-                                  <button
-                                    type="button"
-                                    onClick={() => iniciarAtendimento(ag)}
-                                    disabled={iniciandoAtendimentoId === ag.id}
-                                    className="mb-1 flex w-full items-center gap-2 rounded-lg bg-[var(--cor-primaria-suave)] px-2.5 py-1.5 text-left text-xs font-semibold text-[var(--cor-primaria)] transition hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-60"
-                                  >
-                                    {iniciandoAtendimentoId === ag.id ? 'Iniciando...' : 'Iniciar atendimento'}
-                                  </button>
-                                )}
-                              {podeEscrever &&
-                                STATUS_ORDEM.map((status) => {
-                                  const badge = badgeStatus(status)
-                                  return (
-                                    <button
-                                      key={status}
-                                      type="button"
-                                      disabled={atualizandoStatus}
-                                      onClick={() => mudarStatus(ag, status)}
-                                      className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-xs font-medium transition hover:bg-[var(--fundo-pagina)]"
-                                    >
-                                      <span
-                                        className="rounded-full px-2 py-0.5"
-                                        style={{ backgroundColor: badge.fundo, color: badge.texto }}
-                                      >
-                                        {STATUS_LABEL[status]}
-                                      </span>
-                                    </button>
-                                  )
-                                })}
-                            </div>
-                          </>
-                        )}
-                      </div>
-                    )
-                  })}
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      )}
-
-      <div className="flex flex-wrap gap-3">
-        <CardResumo titulo="Hoje" valor={contagem.hoje} />
-        <CardResumo titulo="Confirmados" valor={contagem.confirmados} status="confirmado" />
-        <CardResumo titulo="Em atendimento" valor={contagem.emAtendimento} status="em_atendimento" />
-        <CardResumo titulo="Cancelados" valor={contagem.cancelados} status="cancelado" />
-        <CardResumo titulo="Lista de espera" valor={contagem.listaEspera} status="aguardando" />
-      </div>
-
-      <div className="rounded-2xl bg-[var(--fundo-card)] p-6" style={{ boxShadow: 'var(--sombra-neutra)' }}>
-        <h2 className="texto-titulo-secao mb-4 text-[var(--texto-principal)]">Lista de espera</h2>
-
-        {listaEspera.length === 0 ? (
-          <p className="text-sm text-[var(--texto-secundario)]">Ninguém na lista de espera no momento.</p>
-        ) : (
-          <ul className="divide-y divide-[var(--borda)]">
-            {listaEspera.map((entrada) => (
-              <li key={entrada.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
-                <div className="min-w-0">
-                  <p className="font-medium text-[var(--texto-principal)]">{entrada.paciente_nome}</p>
-                  <p className="text-sm text-[var(--texto-secundario)]">
-                    {entrada.profissional_nome} · desde{' '}
-                    {new Date(entrada.created_at).toLocaleDateString('pt-BR')}
-                  </p>
-                </div>
-                {podeEscrever && (
-                  <button
-                    type="button"
-                    onClick={() => abrirNovoAgendamento({ pacienteId: entrada.paciente_id, profissionalId: entrada.profissional_id })}
-                    className="flex-none rounded-full px-3.5 py-1.5 text-sm font-medium transition hover:opacity-80"
-                    style={{ backgroundColor: 'var(--categoria-pessoas-fundo)', color: 'var(--categoria-pessoas-label)' }}
-                  >
-                    Agendar
-                  </button>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-
-      {editandoAgendamento && clinicaAtivaId && podeEscrever && <EditarAgendamento key={`${chaveContextoAtual}:${editandoAgendamento.id}`}
-        agendamento={editandoAgendamento} clinicaId={clinicaAtivaId} clinicaNome={clinicaAtiva?.nome ?? 'Clínica'}
-        profissionalNome={profissionais.find(p => p.id === editandoAgendamento.profissional_id)?.nome_completo ?? 'Profissional indisponível'}
-        duracao={profissionais.find(p => p.id === editandoAgendamento.profissional_id)?.duracao_consulta_minutos ?? null}
-        onFechar={() => setEditandoAgendamento(null)} onSalvo={data => {
-          setEditandoAgendamento(null); setCorrecaoSalva({ clinicaId: clinicaAtivaId, data }); void recarregarTudo()
-        }} />}
-      {modalAberto === 'agendamento' && clinicaAtivaId && (
-        <ModalNovoAgendamento
-          clinicaAtivaId={clinicaAtivaId}
-          pacientes={pacientes}
-          profissionais={profissionais}
-          prefill={prefillAgendamento}
-          dataInicial={dataSelecionada}
-          onNovoPaciente={onNovoPaciente}
-          pacienteCriadoExternamente={pacienteCriadoExternamente}
-          suspenso={cadastroPacienteAberto}
-          onFechar={() => setModalAberto(null)}
-          onSalvo={async () => {
-            setModalAberto(null)
-            if (chaveContextoAtual) setFeedbackStatus({ contexto: chaveContextoAtual, sucesso: true, titulo: 'Agendamento criado', descricao: 'A marcação foi confirmada pelo servidor.' })
-            await recarregarTudo()
-          }}
-        />
-      )}
-
-      {modalAberto === 'excecao' && clinicaAtivaId && profissionalParaExcecao && (
-        <ModalExcecao
-          clinicaAtivaId={clinicaAtivaId}
-          profissionalId={profissionalParaExcecao}
-          dataInicial={dataSelecionada}
-          onFechar={() => setModalAberto(null)}
-          onSalvo={async () => {
-            setModalAberto(null)
-            await recarregarTudo()
-          }}
-        />
-      )}
-
-      {modalAberto === 'espera' && clinicaAtivaId && (
-        <ModalListaEspera
-          clinicaAtivaId={clinicaAtivaId}
-          pacientes={pacientes}
-          profissionais={profissionais}
-          onFechar={() => setModalAberto(null)}
-          onSalvo={async () => {
-            setModalAberto(null)
-            await recarregarTudo()
-          }}
-        />
-      )}
-
-      {consultaReceber && <ReceberPagamento key={consultaReceber.agendamentoId} consulta={consultaReceber} usuarioId={usuarioId}
-        onFechar={() => { setConsultaReceber(null); requestAnimationFrame(() => { if (focoRecebimento.current) botoesAgendamento.current.get(focoRecebimento.current)?.focus() }) }}
-        onRecebido={(resultado) => setRecebidos((anteriores) => new Set([...anteriores, resultado.agendamento_id]))} />}
-
-      {lembreteCpfChegada && clinicaAtivaId && (
-        <aside className="fixed bottom-4 right-4 z-30 w-[calc(100%-2rem)] max-w-md" aria-label="Lembrete de CPF na chegada">
-          <AvisoCpfPendente
-            pacienteId={lembreteCpfChegada.pacienteId}
-            pacienteNome={lembreteCpfChegada.pacienteNome}
-            clinicaId={clinicaAtivaId}
-            onAdicionado={() => setLembreteCpfChegada(null)}
-            onLembrar={() => setLembreteCpfChegada(null)}
-          />
-        </aside>
-      )}
-
-      {podeEscrever && clinicaAtivaId && (
-        <button
-          type="button"
-          onClick={() => setModalAberto('espera')}
-          className="rounded-xl border border-[var(--borda)] px-4 py-2.5 text-sm font-medium text-[var(--texto-principal)] transition hover:bg-[var(--fundo-pagina)]"
-        >
-          + Adicionar à lista de espera
-        </button>
-      )}
-    </div>
-  )
-}
-
-interface CardResumoProps {
-  titulo: string
-  valor: number
-  status?: 'confirmado' | 'em_atendimento' | 'cancelado' | 'aguardando'
-}
-
-function CardResumo({ titulo, valor, status }: CardResumoProps) {
-  const cores = status
-    ? (() => {
-        const chave = status.replace(/_/g, '-')
-        return { fundo: `var(--status-${chave}-fundo)`, texto: `var(--status-${chave}-texto)` }
-      })()
-    : { fundo: 'var(--fundo-card)', texto: 'var(--texto-principal)' }
-
-  return (
-    <div
-      className="min-w-[140px] flex-1 rounded-[14px] border border-[var(--borda)] px-4 py-3"
-      style={{ backgroundColor: cores.fundo }}
-    >
-      <div className="text-xs font-medium" style={{ color: cores.texto, opacity: 0.85 }}>
-        {titulo}
-      </div>
-      <div className="numero-tabular text-xl font-semibold" style={{ color: cores.texto }}>
-        {valor}
-      </div>
-    </div>
-  )
+    <section aria-label="Aguardando vaga" className="rounded-xl border border-[var(--borda)] bg-[var(--fundo-card)] p-4">
+      <div className="mb-2 flex flex-wrap items-center justify-between gap-3"><div><h2 className="texto-titulo-secao">Aguardando vaga</h2><p className="text-sm text-[var(--texto-secundario)]">Lista de espera · ainda não são agendamentos nem chegadas.</p></div>
+        {podeEscrever && <button type="button" className={acaoAgenda} onClick={() => setModalAberto('espera')}>+ Adicionar à lista de espera</button>}</div>
+      {!listaEspera.length ? <p className="py-3 text-sm">Ninguém aguardando vaga no momento.</p> : <ul className="divide-y divide-[var(--borda)]">{listaEspera.map(e => <li key={e.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
+        <div><p className="font-medium">{e.paciente_nome}</p><p className="text-sm text-[var(--texto-secundario)]">{e.profissional_nome} · aguardando vaga desde {new Date(e.created_at).toLocaleDateString('pt-BR')}</p></div>
+        {podeEscrever && <button type="button" className={acaoAgenda} onClick={() => abrirNovoAgendamento({ pacienteId: e.paciente_id, profissionalId: e.profissional_id })}>Agendar</button>}
+      </li>)}</ul>}
+    </section>
+    {selecionado && <PainelAgenda titulo="Consultar agendamento" onFechar={() => setMenuStatusId(null)} ocupado={atualizandoStatus}>
+      <div className="agenda-formulario"><div className="agenda-formulario-conteudo space-y-5">
+        <p className="text-sm text-[var(--texto-secundario)]">{clinicaAtiva?.nome} · {selecionado.data.split('-').reverse().join('/')}</p>
+        <h3 className="text-xl font-semibold">{selecionado.paciente_nome}</h3>
+        <p>{nomeProfissional(selecionado.profissional_id)}</p>
+        <ResumoHorario inicio={selecionado.hora_inicio.slice(0, 5)} duracao={minutosDesdeMeiaNoite(selecionado.hora_fim) - minutosDesdeMeiaNoite(selecionado.hora_inicio)} />
+        <p>Situação: <strong>{STATUS_LABEL[selecionado.status]}</strong></p>
+        {textoDisponibilidade(selecionado) && <p className="text-sm text-[var(--texto-secundario)]">Disponibilidade: {textoDisponibilidade(selecionado)}.</p>}
+        <p className="whitespace-pre-wrap text-sm">Observações: {selecionado.observacoes || 'Não cadastradas.'}</p>
+        {recebidos.has(selecionado.id) && <p>Recebimento registrado</p>}
+        {podeEscrever && <section className="space-y-3"><h3 className="font-semibold">Ações da recepção</h3>
+          <div className="flex flex-wrap gap-2">{selecionado.status === 'agendado' && <button type="button" disabled={atualizandoStatus} className={acaoAgenda} onClick={() => void mudarStatus(selecionado, 'confirmado')}>Confirmar agendamento</button>}
+            {['agendado', 'confirmado'].includes(selecionado.status) && <button type="button" disabled={atualizandoStatus} className={acaoAgenda} onClick={() => void mudarStatus(selecionado, 'aguardando')}>Registrar chegada</button>}
+            {['agendado', 'confirmado'].includes(selecionado.status) && <button type="button" disabled={atualizandoStatus} className={acaoAgenda} onClick={() => void mudarStatus(selecionado, 'cancelado')}>Cancelar agendamento</button>}</div>
+          {podeReceberNaAgenda(papel, selecionado.status) && !recebidos.has(selecionado.id) && <button type="button" className={acaoAgenda} onClick={() => abrirRecebimento(selecionado)}>Receber pagamento</button>}
+        </section>}
+        {souMedico && selecionado.profissional_id === meuProfissionalId && selecionado.status !== 'cancelado' && paraISODate(dataSelecionada) === paraISODate(new Date()) && <button type="button" className={acaoAgenda} disabled={iniciandoAtendimentoId === selecionado.id} onClick={() => void iniciarAtendimento(selecionado)}>Iniciar atendimento</button>}
+      </div><div className="agenda-formulario-rodape flex flex-wrap justify-end gap-2"><button type="button" className={acaoAgenda} disabled={atualizandoStatus} onClick={() => setMenuStatusId(null)}>Fechar consulta</button>
+        {podeEscrever && ['agendado', 'confirmado', 'aguardando'].includes(selecionado.status) && <button type="button" className={acaoAgenda} onClick={() => { setMenuStatusId(null); setEditandoAgendamento(selecionado) }}>Editar agendamento</button>}
+      </div></div>
+    </PainelAgenda>}
+    {editandoAgendamento && clinicaAtivaId && podeEscrever && <EditarAgendamento key={`${chaveContextoAtual}:${editandoAgendamento.id}`} agendamento={editandoAgendamento} clinicaId={clinicaAtivaId} clinicaNome={clinicaAtiva?.nome ?? 'Clínica'}
+      profissionalNome={nomeProfissional(editandoAgendamento.profissional_id)} duracao={profissionais.find(p => p.id === editandoAgendamento.profissional_id)?.duracao_consulta_minutos ?? null}
+      onFechar={() => setEditandoAgendamento(null)} onSalvo={data => { setEditandoAgendamento(null); setCorrecaoSalva({ clinicaId: clinicaAtivaId, data }); void recarregarTudo() }} />}
+    {modalAberto === 'agendamento' && clinicaAtivaId && <ModalNovoAgendamento clinicaAtivaId={clinicaAtivaId} pacientes={pacientes} profissionais={profissionais} prefill={prefillAgendamento} dataInicial={dataSelecionada}
+      onNovoPaciente={onNovoPaciente} pacienteCriadoExternamente={pacienteCriadoExternamente} suspenso={cadastroPacienteAberto} onFechar={() => setModalAberto(null)}
+      onSalvo={async () => { setModalAberto(null); if (chaveContextoAtual) setFeedbackStatus({ contexto: chaveContextoAtual, sucesso: true, titulo: 'Agendamento criado', descricao: 'A marcação foi confirmada pelo servidor.' }); await recarregarTudo() }} />}
+    {modalAberto === 'excecao' && clinicaAtivaId && profissionalParaExcecao && <ModalExcecao clinicaAtivaId={clinicaAtivaId} profissionalId={profissionalParaExcecao} dataInicial={dataSelecionada} onFechar={() => setModalAberto(null)} onSalvo={async () => { setModalAberto(null); await recarregarTudo() }} />}
+    {modalAberto === 'espera' && clinicaAtivaId && <ModalListaEspera clinicaAtivaId={clinicaAtivaId} pacientes={pacientes} profissionais={profissionais} onFechar={() => setModalAberto(null)} onSalvo={async () => { setModalAberto(null); await recarregarTudo() }} />}
+    {consultaReceber && <ReceberPagamento key={consultaReceber.agendamentoId} consulta={consultaReceber} usuarioId={usuarioId} onFechar={() => { setConsultaReceber(null); requestAnimationFrame(() => { if (focoRecebimento.current) botoesAgendamento.current.get(focoRecebimento.current)?.focus() }) }} onRecebido={r => setRecebidos(ids => new Set([...ids, r.agendamento_id]))} />}
+    {lembreteCpfChegada && clinicaAtivaId && <aside className="fixed bottom-4 right-4 z-30 w-[calc(100%-2rem)] max-w-md" aria-label="Lembrete de CPF na chegada"><AvisoCpfPendente pacienteId={lembreteCpfChegada.pacienteId} pacienteNome={lembreteCpfChegada.pacienteNome} clinicaId={clinicaAtivaId} onAdicionado={() => setLembreteCpfChegada(null)} onLembrar={() => setLembreteCpfChegada(null)} /></aside>}
+  </div>
 }
 
 interface ModalNovoAgendamentoProps {
   clinicaAtivaId: string
   pacientes: PacienteOpcao[]
   profissionais: ProfissionalAgenda[]
-  prefill: { pacienteId: string; profissionalId: string } | null
+  prefill: { pacienteId: string; profissionalId: string; inicio?: string } | null
   dataInicial: Date
   onFechar: () => void
   onSalvo: () => void
@@ -1131,31 +786,31 @@ function ModalNovoAgendamento({
   pacienteCriadoExternamente,
   suspenso = false,
 }: ModalNovoAgendamentoProps) {
-  const [buscaPaciente, setBuscaPaciente] = useState('')
   const [pacienteId, setPacienteId] = useState(prefill?.pacienteId ?? '')
   const [profissionalId, setProfissionalId] = useState(prefill?.profissionalId ?? '')
   const [data, setData] = useState(paraISODate(dataInicial))
-  const [horaInicio, setHoraInicio] = useState('')
+  const [horaInicio, setHoraInicio] = useState(prefill?.inicio ?? '')
   const [observacoes, setObservacoes] = useState('')
   const [confirmadoManual, setConfirmadoManual] = useState(false)
-  const [capacidadeManual, setCapacidadeManual] = useState(false)
+  const [capacidadeManual, setCapacidadeManual] = useState<'carregando' | 'pronta' | 'indisponivel'>('carregando')
   const envioManual = useRef(false)
   const vigenteManual = useRef(true)
   const [resultadoIncerto, setResultadoIncerto] = useState(false)
   const duracao = profissionais.find(p => p.id === profissionalId)?.duracao_consulta_minutos ?? null
   const disponibilidade = useDisponibilidadeAgenda(clinicaAtivaId, profissionalId, data, horaInicio, duracao)
-  const sugestoes = sugestoesHorarioAgenda(duracao, disponibilidade.janelas, disponibilidade.ocupacoes, '')
   useEffect(() => { vigenteManual.current = true; return () => { vigenteManual.current = false } }, [])
   useEffect(() => {
     let atual = true
-    setCapacidadeManual(false)
+    setCapacidadeManual('carregando')
     void Promise.resolve(supabase.rpc('agenda_manual_disponivel', { p_clinica_id: clinicaAtivaId }))
-      .then(({ data: pronta, error }) => { if (atual) setCapacidadeManual(!error && pronta === true) })
-      .catch(() => { if (atual) setCapacidadeManual(false) })
+      .then(({ data: pronta, error }) => { if (atual) setCapacidadeManual(!error && pronta === true ? 'pronta' : 'indisponivel') })
+      .catch(() => { if (atual) setCapacidadeManual('indisponivel') })
     return () => { atual = false }
   }, [clinicaAtivaId])
   useEffect(() => { setConfirmadoManual(false) }, [clinicaAtivaId, profissionalId, data, horaInicio])
   const [salvando, setSalvando] = useState(false)
+  const inicial = useRef({ pacienteId: prefill?.pacienteId ?? '', profissionalId: prefill?.profissionalId ?? '', data: paraISODate(dataInicial), inicio: prefill?.inicio ?? '' })
+  const descarte = useDescarteAgenda(pacienteId !== inicial.current.pacienteId || profissionalId !== inicial.current.profissionalId || data !== inicial.current.data || horaInicio !== inicial.current.inicio || !!observacoes || confirmadoManual, salvando, onFechar)
   const [erro, setErro] = useState<string | null>(null)
   const [cpfPendente, setCpfPendente] = useState(false)
   const [consultandoCpf, setConsultandoCpf] = useState(false)
@@ -1163,7 +818,6 @@ function ModalNovoAgendamento({
 
   useEffect(() => {
     if (!pacienteCriadoExternamente || pacienteCriadoExternamente.clinica_id !== clinicaAtivaId) return
-    setBuscaPaciente('')
     setPacienteId(pacienteCriadoExternamente.id)
   }, [clinicaAtivaId, pacienteCriadoExternamente])
 
@@ -1196,13 +850,20 @@ function ModalNovoAgendamento({
     }
   }, [clinicaAtivaId, pacienteId])
 
-  const pacientesFiltrados = buscaPaciente.trim()
-    ? pacientes.filter((p) => p.nome_completo.toLowerCase().includes(buscaPaciente.trim().toLowerCase()))
-    : pacientes
+  const pendenciasCriacao = [
+    salvando ? 'Aguarde o salvamento.' : null,
+    resultadoIncerto ? 'Confira a Agenda por leitura antes de outro envio.' : null,
+    capacidadeManual !== 'pronta' ? capacidadeManual === 'carregando' ? 'Aguarde a confirmação do serviço e da autorização.' : 'Serviço não confirmado: preserve os dados e atualize a página.' : null,
+    !pacienteId ? 'Selecione um paciente nos resultados da pesquisa.' : null,
+    !profissionalId ? 'Selecione o profissional.' : null,
+    !data || !horaInicio ? 'Informe data e início.' : null,
+    disponibilidade.bloqueio,
+    disponibilidade.aviso && !confirmadoManual ? 'Confirme a marcação manual após conferir o aviso.' : null,
+  ].filter((p): p is string => !!p)
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (envioManual.current || resultadoIncerto || !capacidadeManual || disponibilidade.bloqueio || (disponibilidade.aviso && !confirmadoManual)) return
+    if (envioManual.current || resultadoIncerto || capacidadeManual !== 'pronta' || disponibilidade.bloqueio || (disponibilidade.aviso && !confirmadoManual)) return
     setErro(null)
 
     if (!pacienteId) {
@@ -1242,44 +903,19 @@ function ModalNovoAgendamento({
   }
 
   return (
-    <ModalBase titulo="Novo agendamento" onFechar={onFechar} suspenso={suspenso} ocupado={salvando}>
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <PainelAgenda titulo="Novo agendamento" onFechar={descarte.solicitarFechar} suspenso={suspenso} ocupado={salvando}>
+      <form onSubmit={handleSubmit} className="agenda-formulario">
+        <div className="agenda-formulario-conteudo space-y-4">
         <div>
           <div className="mb-1.5 flex items-center justify-between gap-3">
-            <label htmlFor="novo-agendamento-paciente" className="block text-sm font-medium text-[var(--texto-principal)]">
-              Paciente <span className="text-[var(--cor-erro)]">*</span>
-            </label>
+            <p className="text-sm font-medium">Quem será atendido?</p>
             {onNovoPaciente && (
               <button type="button" onClick={onNovoPaciente} disabled={salvando} className="text-sm font-semibold text-[var(--cor-primaria)] underline-offset-4 hover:underline disabled:opacity-60">
                 + Novo paciente
               </button>
             )}
           </div>
-          <input
-            id="novo-agendamento-busca-paciente"
-            aria-label="Buscar paciente"
-            type="text"
-            placeholder="Buscar..."
-            value={buscaPaciente}
-            onChange={(e) => setBuscaPaciente(e.target.value)}
-            disabled={salvando}
-            className="mb-2 w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 py-2 text-sm text-[var(--texto-principal)] outline-none transition focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60"
-          />
-          <select
-            id="novo-agendamento-paciente"
-            required
-            value={pacienteId}
-            onChange={(e) => setPacienteId(e.target.value)}
-            disabled={salvando}
-            className="w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 py-2.5 text-[var(--texto-principal)] outline-none transition focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60"
-          >
-            <option value="">Selecione...</option>
-            {pacientesFiltrados.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.nome_completo}
-              </option>
-            ))}
-          </select>
+          <SelecionarPaciente pacientes={pacientes} value={pacienteId} onChange={setPacienteId} disabled={salvando} />
         </div>
 
         {consultandoCpf && <p role="status" className="text-xs text-[var(--texto-secundario)]">Verificando cadastro do paciente...</p>}
@@ -1362,22 +998,25 @@ function ModalNovoAgendamento({
           />
         </div>
 
-        {!capacidadeManual && <FeedbackAlert variant="warning" title="Agenda manual ainda indisponível" description="Não foi possível confirmar o serviço e a autorização nesta sessão. Em caso de atualização, preserve seu preenchimento e atualize a página. Não será utilizada a operação antiga como alternativa." />}
+        <ResumoHorario inicio={horaInicio} duracao={duracao} />
+        <section aria-label="Avisos e confirmação" className="space-y-3 border-t border-[var(--borda)] pt-3">
+        {capacidadeManual === 'carregando' && <p role="status">Verificando serviço e autorização...</p>}
+        {capacidadeManual === 'indisponivel' && <FeedbackAlert variant="warning" title="Agenda manual ainda indisponível" description="Não foi possível confirmar o serviço e a autorização nesta sessão. Em caso de atualização, preserve seu preenchimento e atualize a página. Não será utilizada a operação antiga como alternativa." />}
         {profissionalId && <>
-          {disponibilidade.estado === 'carregando' ? <p role="status">Verificando disponibilidade...</p> : disponibilidade.estado === 'erro' ? <FeedbackAlert variant="destructive" title="Falha ao consultar disponibilidade" description={disponibilidade.bloqueio ?? ''} action={<button type="button" onClick={disponibilidade.repetir}>Tentar novamente</button>} /> : disponibilidade.bloqueio && <FeedbackAlert variant="warning" title="Revise o horário" description={disponibilidade.bloqueio} />}
-          <label className="block text-sm" htmlFor="sugestoes-criacao">Horários sugeridos</label>
-          <select id="sugestoes-criacao" className="w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 py-2.5 text-[var(--texto-principal)] disabled:opacity-60" value={sugestoes.includes(horaInicio) ? horaInicio : ''} disabled={salvando || !sugestoes.length} onChange={e => { if (e.target.value) setHoraInicio(e.target.value) }}>
-            <option value="">{sugestoes.length ? 'Selecione um horário habitual' : 'Sem sugestão habitual; informe o horário manual'}</option>
-            {sugestoes.map(h => <option key={h} value={h}>{h}–{horaAgenda(minutosAgenda(h) + (duracao ?? 0))}</option>)}
-          </select>
-          {disponibilidade.aviso && <><FeedbackAlert variant="warning" title="Marcação manual" description={disponibilidade.aviso} /><label className="flex items-start gap-2 text-sm"><input type="checkbox" checked={confirmadoManual} disabled={salvando} onChange={e => setConfirmadoManual(e.target.checked)} />Conferi os avisos e confirmo a marcação manual.</label></>}
+          <DisponibilidadeFormulario consulta={disponibilidade} inicio={horaInicio} duracao={duracao} onInicio={setHoraInicio} ocupado={salvando} />
+          {disponibilidade.aviso && <label className="flex items-start gap-2 text-sm"><input type="checkbox" checked={confirmadoManual} disabled={salvando} onChange={e => setConfirmadoManual(e.target.checked)} />Conferi os avisos e confirmo a marcação manual.</label>}
         </>}
         {erro && <FeedbackAlert variant="destructive" title="Não foi possível criar o agendamento" description={erro} urgent />}
-
-        <div className="flex justify-end gap-3 pt-1">
+        </section>
+        </div>
+        <div className="agenda-formulario-rodape space-y-2">
+          <div id="pendencias-criacao" role="status" className="text-sm">
+            {pendenciasCriacao.length ? <><p>Para agendar:</p><ul className="list-inside list-disc">{pendenciasCriacao.map(p => <li key={p}>{p}</li>)}</ul></> : 'Pronto para agendar. O servidor verificará novamente as regras.'}
+          </div>
+          <div className="flex justify-end gap-3">
           <button
             type="button"
-            onClick={onFechar}
+            onClick={descarte.solicitarFechar}
             disabled={salvando}
             className="rounded-xl border border-[var(--borda)] px-4 py-2.5 font-medium text-[var(--texto-principal)] transition hover:bg-[var(--fundo-pagina)] disabled:opacity-60"
           >
@@ -1385,14 +1024,17 @@ function ModalNovoAgendamento({
           </button>
           <button
             type="submit"
-            disabled={salvando || resultadoIncerto || !capacidadeManual || !!disponibilidade.bloqueio || (!!disponibilidade.aviso && !confirmadoManual)}
+            aria-describedby="pendencias-criacao"
+            disabled={pendenciasCriacao.length > 0}
             className="rounded-xl bg-[var(--cor-primaria)] px-5 py-2.5 font-medium text-white transition hover:bg-[var(--cor-primaria-hover)] disabled:cursor-not-allowed disabled:opacity-70"
           >
             {salvando ? 'Salvando...' : 'Agendar'}
           </button>
+          </div>
         </div>
       </form>
-    </ModalBase>
+      {descarte.confirmacao}
+    </PainelAgenda>
   )
 }
 

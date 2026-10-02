@@ -2,6 +2,7 @@
 @import "./financeiro.css";
 
 html {
+  --texto-sobre-primaria: #FFFFFF;
   font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
 }
 
@@ -336,6 +337,50 @@ body {
 .app-alert-dialog-button:focus-visible { outline: 2px solid var(--cor-primaria); outline-offset: 2px; }
 .app-alert-dialog-button:disabled { opacity: .55; cursor: wait; }
 @keyframes feedback-fade-in { from { opacity: 0; } }
+/* Agenda: painel modal nativo, tela inteira no celular, ações fora da rolagem. */
+.painel-agenda[open] { display: flex; flex-direction: column; }
+.agenda-formulario { display: flex; flex: 1; flex-direction: column; min-height: 0; overflow: hidden; }
+.agenda-formulario-conteudo { flex: 1; min-height: 0; overflow-y: auto; padding: 20px; scroll-padding-block: 16px; }
+.agenda-formulario-conteudo :is(input, select, textarea, button, summary) { scroll-margin-block: 16px; }
+/* O foco do checkbox deve trazer também seu texto de confirmação para a área visível. */
+.agenda-formulario-conteudo input[type="checkbox"] { scroll-margin-bottom: 4rem; }
+.agenda-formulario-rodape { flex-shrink: 0; border-top: 1px solid var(--borda); background: var(--fundo-card); padding: 14px 20px max(14px, env(safe-area-inset-bottom)); }
+.agenda-lista-linha { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--borda-sutil); }
+.agenda-lista-linha:last-child { border-bottom: 0; }
+.agenda-lista-consulta { display: grid; gap: 6px; min-width: 0; text-align: left; border-radius: 6px; }
+.agenda-lista-cabecalho { display: none; }
+.agenda-lista-acoes { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.agenda-acao-compacta { display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-height: 40px; padding: 7px 10px; border: 1px solid var(--borda); border-radius: 8px; font-size: 12px; font-weight: 600; }
+.agenda-acao-compacta:hover { background: var(--fundo-pagina); }
+.agenda-acao-compacta:disabled { opacity: .5; }
+.agenda-temporal-rolagem { max-height: 620px; overflow: auto; position: relative; overscroll-behavior: contain; }
+.agenda-temporal { display: grid; min-width: 100%; width: max-content; }
+.agenda-temporal-cabecalho, .agenda-temporal-canto { position: sticky; top: 0; z-index: 3; background: var(--fundo-card); border-bottom: 1px solid var(--borda); padding: 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.agenda-temporal-canto { left: 0; z-index: 4; font-size: 12px; }
+.agenda-temporal-eixo { position: sticky; left: 0; z-index: 2; background: var(--fundo-card); }
+.agenda-temporal-eixo span { position: absolute; left: 6px; font-size: 11px; color: var(--texto-secundario); }
+.agenda-temporal-coluna { position: relative; border-left: 1px solid var(--borda); }
+.agenda-temporal-horario { position: absolute; left: 0; width: 100%; border-top: 1px solid var(--borda-sutil); text-align: left; }
+.agenda-temporal-horario:nth-child(odd) { border-top-color: var(--borda); }
+.agenda-temporal-horario span { opacity: 0; margin-left: 8px; font-size: 12px; }
+.agenda-temporal-horario:hover:not(:disabled), .agenda-temporal-horario:focus-visible { background: var(--cor-primaria-suave); }
+.agenda-temporal-horario:hover:not(:disabled) span, .agenda-temporal-horario:focus-visible span { opacity: 1; }
+.agenda-temporal-posicao { position: absolute; z-index: 1; min-width: 0; }
+.agenda-temporal-registro { height: 100%; overflow: auto; border: 1px solid var(--borda); border-radius: 6px; background: var(--cor-primaria-suave); padding: 6px 8px; }
+.agenda-temporal-registro .agenda-lista-consulta { grid-template-columns: minmax(0, 1fr); gap: 2px; width: 100%; font-size: 12px; line-height: 1.3; }
+.agenda-temporal-registro.agenda-temporal-curto { overflow: hidden; padding: 0; }
+.agenda-temporal-curto .agenda-lista-consulta { height: 100%; align-content: start; padding: 3px 6px; gap: 1px; }
+.agenda-temporal-curto .agenda-lista-consulta > span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 12px; }
+.agenda-temporal-registro .agenda-lista-acoes { margin-top: 3px; }
+.agenda-temporal-registro .agenda-acao-compacta { min-height: 28px; padding: 3px 5px; font-size: 11px; background: var(--fundo-card); }
+@media (min-width: 1100px) {
+  .agenda-lista-linha, .agenda-lista-cabecalho { grid-template-columns: minmax(0, 1fr) 220px; gap: 16px; align-items: center; }
+  .agenda-lista-consulta, .agenda-lista-titulos { grid-template-columns: 110px minmax(120px, 1.2fr) minmax(110px, 1fr) 120px; gap: 14px; align-items: center; }
+  .agenda-lista-cabecalho { display: grid; padding: 9px 16px; font-size: 12px; font-weight: 500; color: var(--texto-secundario); background: var(--fundo-pagina); border-bottom: 1px solid var(--borda); }
+  .agenda-lista-titulos { display: grid; }
+  .agenda-lista-acoes { justify-content: flex-end; }
+}
+@media (max-width: 639px) { .agenda-temporal-rolagem { max-height: 500px; } .agenda-formulario-conteudo { padding: 16px; } .agenda-formulario-rodape { padding-left: 16px; padding-right: 16px; } }
 @keyframes feedback-dialog-in { from { opacity: 0; transform: translate(-50%, calc(-50% + 6px)) scale(.985); } }
 @media (max-width: 520px) {
   .app-alert { grid-template-columns: 20px minmax(0, 1fr); }

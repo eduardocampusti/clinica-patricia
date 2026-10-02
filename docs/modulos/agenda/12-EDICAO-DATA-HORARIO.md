@@ -1,12 +1,63 @@
 # Edição de data e horário — implementação e publicação
 
-Estado: transição manual em execução autorizada; fase aditiva 20261001193000 aplicada
-no principal; 20261001194000 somente após verificar os dois novos deploys.
+Estado: transição manual concluída; fases 20261001193000 e 20261001194000 aplicadas
+no principal, com publicação/verificação dos dois novos clientes entre as fases.
 Proposta 173000 removida/substituída, jamais aplicada. Sem gravação operacional de teste.
-Gravação real/persistência pela interface pendentes. Atualizado em 01/10/2026, 18:14 -03:00 (America/Bahia).
-Branch `codex/resgate-local-2026-09-26`, HEAD publicado `490ebca2810e58f3eb0899ad4952e8b15f307dc3`.
+Gravação real/persistência pela interface pendentes. Atualizado em 01/10/2026, 19:43 -03:00 (America/Bahia).
+Branch `codex/resgate-local-2026-09-26`, HEAD publicado `b921a1c801f58cd91f0951366fcece18d720e35d`.
 Alterações anteriores preservadas. Cabeçalhos e blocos datados abaixo conservam os
 estados da implementação; a seção mais recente distingue publicação de validação real.
+
+## Entrega concluída — 01/10/2026, 19:43 -03:00
+
+Sequência efetiva: fase aditiva 193000 → push b921a1c → dois deploys/artefatos
+conferidos → fase final 194000. Migração antiga 173000 removida antes do commit;
+120000 não reaplicada. Ambas executadas em transações próprias no SQL Editor do
+projeto xftnkusbyqzyvzrovroj, exceção autorizada exclusivamente nesta tarefa.
+
+| Clínica | Build Hostinger | Resultado | Artefato JavaScript servido |
+| --- | --- | --- | --- |
+| Brotas | 01a0f99b-8db4-7373-9687-de68ead3528e | completed, 19:35:55 -03 | /assets/index-C9TWzOpt.js |
+| Ipupiara | 01a0f99b-8e28-708e-a4e8-c5e6b6864b9a | completed, 19:35:52 -03 | /assets/index-ClnKwZ3i.js |
+
+Os dois bundles retornaram 200 e contêm b921a1c, agenda_manual_criar e
+agenda_manual_corrigir_horario. Navegador abriu e recarregou diretamente as rotas
+/sistema/brotas/agenda e /sistema/ipupiara/agenda: login correto, sem 404.
+CSS /assets/index-ChkyGt6y.css e as duas rotas retornaram 200; logs de console
+capturados na abertura/recarga não apresentaram erros observáveis em ambos os sites.
+Não havia sessão pública autorizada; isso não comprova gravação nem sessão Ipupiara.
+Recepção/Brotas na prévia local: edição abriu, consulta da capability funcionou e
+ausência de expediente virou aviso manual com confirmação exigida. Cancelado sem salvar.
+
+Catálogo pós-fase final: história 120000/193000/194000, RLS ativa, cinco triggers,
+RPCs INVOKER executáveis por authenticated, não anon; guardas DEFINER com search_path
+pg_catalog/public e sem EXECUTE para authenticated/anon. Corpo normalizado final:
+MD5 0ac9e5b552c3deec3b9f1cab0e06e512, igual ao SQL isolado. Não depende apenas da história.
+Script oficial de integridade executado por leitura após ambas as mudanças, sem erro
+observado; interface exibiu resultado final e catálogo foi conferido separadamente.
+Não alegamos revisão exaustiva de cada resultado intermediário nem backup completo.
+
+Testes desta transição: SQL aditivo legado/RPC, confirmação, conflito e auditoria;
+concorrência mista com um vencedor e 23P01; edição concorrente com 40001;
+matriz SQL pós-fechamento incluindo restrições, outras clínicas e INSERT antigo recusado.
+Identidade Auth simulada no portátil, não sessão real Supabase. Fixtures isoladas
+removidas por rollback/IDs exatos e auditoria preservada. 9/9 novos testes interceptados
+da interface; build/lint sem erro, avisos preexistentes. Falha parcial de deploy não
+provocada: critério explícito impedia fase final se qualquer site falhasse.
+
+Abas antigas não se atualizam pelo deploy: devem recarregar. INSERT antigo recebe
+P0001 sem criação parcial; a versão antiga pode mostrar erro genérico. Novo cliente
+explica incompatibilidade, mantém rascunho e não volta ao INSERT nem repete gravação incerta.
+Versão anterior 490ebca é referência histórica, NÃO rollback seguro após fase final.
+Recuperar mantendo RPCs e cliente compatível/fix-forward; reabrir legado exigiria nova
+avaliação e migration compensatória, nunca reversão silenciosa de permissões.
+Snapshot limitado e hashes dos arquivos constam na seção de preparação abaixo.
+
+Conferência manual pendente: entrar na clínica/perfil autorizado, Agenda → Editar
+agendamento, corrigir somente uma operação legítima, conferir aviso/confirmação,
+“Agendamento atualizado” e persistência após F5. Não houve teste operacional remoto.
+Documentação final permanece local não commitada; implementação/migrations/testes
+foram enviados. Outros trabalhos preservados.
 
 ## Fase 1 aplicada — 01/10/2026, 19:31 -03:00
 

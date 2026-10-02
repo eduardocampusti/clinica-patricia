@@ -1,8 +1,29 @@
 # Correção de data e horário — comportamento aprovado e limites
 
 Estado: núcleo e política manual comum APROVADOS pelo usuário em 01/10/2026.
-Implementação local concluída; nova política no servidor depende da migration incremental,
-não aplicada no principal nesta etapa.
+Política manual aplicada/publicada no commit b921a1c, conforme relatório 12; gravação
+legítima e persistência ainda pendentes. Evolução visual posterior implementada somente
+localmente, conforme relatório 13; não confundir essa prévia com a versão publicada.
+
+## Experiência da recepção — direção aprovada em 01/10/2026
+
+Lista cronológica como visão inicial, alternativa compacta por profissional e mesmos
+agendamentos em ambas, inclusive sem expediente. Data, Hoje, navegação, pesquisa e filtro
+acima dos registros. Situações em texto e cor; aguardando atendimento é diferente de
+aguardando vaga. Não duplicar agendamentos em um bloco auxiliar.
+
+Consulta/criação/edição em painéis laterais com rodapé visível, tela inteira no celular,
+foco contido e fechamento por teclado. Seleção de paciente pesquisável e explícita;
+cadastrar novo paciente e voltar preserva o rascunho da marcação, sem persistir formulário
+não salvo. Exibir início/duração/término, sugestões baseadas em leitura autorizada e
+avisar que não são reservas ou garantia. Nunca inventar expediente.
+
+Reutilizar política manual, serviços/RPCs, revisão concorrente, motivo e auditoria
+existentes. Carregamento/erro/consulta sem expediente são estados distintos. Se a leitura
+de disponibilidade falhar, manter agendamentos lidos visíveis com indicação de informação
+não confirmada; falha não libera criar/editar. Explicar pendências junto às ações,
+proteger envio repetido e manter confirmação verde na página depois de fechar o painel.
+Detalhes e evidências locais: [experiência 13](13-EXPERIENCIA-RECEPCAO.md).
 
 ## Decisão vigente — agenda manual, 01/10/2026
 
@@ -95,3 +116,16 @@ orientando consulta da Agenda. Se data mudou, ação Ver na nova data.
 
 Interface depende da capacidade confirmada no servidor. RPC ausente/recusada bloqueia
 Salvar alterações; não utilizar UPDATE direto como alternativa. RLS e papéis preservados.
+
+## Experiência local da recepção — rodada 2, 01/10/2026
+
+Lista inicial compacta e grade temporal apresentam os mesmos registros, inclusive sem
+expediente. Eixo comum de horários, altura proporcional à duração e faixas laterais para
+interseções são apresentação, não autorização de sobreposição. Selecionar um horário
+somente preenche profissional, data e início; não reserva nem grava.
+Criação/edição mantêm identificação, início/duração/término, avisos concentrados, ações
+visíveis e explicação das pendências. Cancelar, fechar e Escape pedem confirmação quando
+há alterações não salvas. Troca de clínica continua descartando contexto antigo.
+Consulta oferece à recepção somente ações operacionais permitidas, não mudanças clínicas.
+Comportamento implementado/testado localmente; publicação e prova conectada distintas.
+Detalhes e limitações: [experiência da recepção](13-EXPERIENCIA-RECEPCAO.md).

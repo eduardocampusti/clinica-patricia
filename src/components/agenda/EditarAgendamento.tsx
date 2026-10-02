@@ -1,15 +1,17 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { supabase } from '../../lib/supabase'
-import { ModalBase } from '../ModalBase'
+import { PainelAgenda, ResumoHorario, campoAgenda } from './PainelAgenda'
 import { FeedbackAlert } from '../feedback/FeedbackAlert'
-import { horaAgenda, minutosAgenda, sugestoesHorarioAgenda } from '../../lib/agendaDisponibilidade'
+import { minutosAgenda } from '../../lib/agendaDisponibilidade'
 import { useDisponibilidadeAgenda } from '../../hooks/useDisponibilidadeAgenda'
+import { DisponibilidadeFormulario } from './DisponibilidadeFormulario'
+import { useDescarteAgenda } from './useDescarteAgenda'
 
 export interface AgendamentoEditavel {
   id: string; paciente_nome: string; profissional_id: string; paciente_id: string
   data: string; hora_inicio: string; hora_fim: string; status: string; updated_at: string
 }
-const campo = 'w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 py-2.5 text-[var(--texto-principal)] focus:outline-none focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60'
+const campo = campoAgenda
 const exibirData = (data: string) => data.split('-').reverse().join('/')
 
 export function EditarAgendamento({ agendamento, clinicaId, clinicaNome, profissionalNome, duracao,
@@ -25,9 +27,8 @@ export function EditarAgendamento({ agendamento, clinicaId, clinicaNome, profiss
   const consulta = useDisponibilidadeAgenda(clinicaId, agendamento.profissional_id, data, inicio, duracao, agendamento.id)
   const [salvando, setSalvando] = useState(false)
   const [resultadoIncerto, setResultadoIncerto] = useState(false)
-  const estadoConsulta = consulta.estado
   const validacao = consulta.bloqueio
-  const opcoes = estadoConsulta === 'pronta' ? sugestoesHorarioAgenda(duracao, consulta.janelas, consulta.ocupacoes, agendamento.id) : []
+  const descarte = useDescarteAgenda(data !== agendamento.data || inicio !== agendamento.hora_inicio.slice(0, 5) || !!motivo || confirmado, salvando, onFechar)
   const impedimentos = [
     salvando ? 'Aguarde o término do salvamento.' : null,
     resultadoIncerto ? 'Confira o resultado na Agenda antes de outro envio.' : null,
@@ -91,33 +92,28 @@ export function EditarAgendamento({ agendamento, clinicaId, clinicaNome, profiss
       }
     } finally { envio.current = false; if (vigente.current) setSalvando(false) }
   }
-  return <ModalBase titulo="Editar agendamento" onFechar={onFechar} ocupado={salvando}>
-    <form onSubmit={salvar} className="space-y-4">
-      <dl className="space-y-2 text-sm"><div><dt>Clínica</dt><dd className="font-semibold">{clinicaNome}</dd></div><div><dt>Paciente</dt><dd className="font-semibold">{agendamento.paciente_nome}</dd></div><div><dt>Profissional</dt><dd className="font-semibold">{profissionalNome}</dd></div><div><dt>Situação preservada</dt><dd>{agendamento.status === 'aguardando' ? 'Aguardando' : agendamento.status === 'confirmado' ? 'Confirmado' : 'Agendado'}</dd></div></dl>
-      <p className="text-sm">Horário anterior: <strong>{exibirData(agendamento.data)} às {agendamento.hora_inicio.slice(0, 5)}</strong></p>
+  return <PainelAgenda titulo="Editar agendamento" onFechar={descarte.solicitarFechar} ocupado={salvando}>
+    <form onSubmit={salvar} className="agenda-formulario"><div className="agenda-formulario-conteudo space-y-4">
+      <div className="space-y-1 border-b border-[var(--borda)] pb-3"><p className="text-xs text-[var(--texto-secundario)]">{clinicaNome} · {agendamento.status === 'aguardando' ? 'Aguardando' : agendamento.status === 'confirmado' ? 'Confirmado' : 'Agendado'}</p><h3 className="break-words text-lg font-semibold">{agendamento.paciente_nome}</h3><p className="text-sm text-[var(--texto-secundario)]">{profissionalNome}</p></div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <label className="text-sm">Nova data<input className={campo} type="date" required value={data} disabled={salvando || chegou} onChange={e => setData(e.target.value)} /></label>
         <label className="text-sm">Novo horário<input className={campo} type="time" required value={inicio} disabled={salvando} onChange={e => setInicio(e.target.value)} /></label>
       </div>
-      {estadoConsulta === 'pronta' && <section aria-label="Disponibilidade para a data" className="space-y-2 text-sm">
-        <p>Faixas habituais na data: {consulta.janelas.length ? consulta.janelas.map(j => `${j.hora_inicio?.slice(0, 5)}–${j.hora_fim?.slice(0, 5)}`).join(' / ') : 'sem expediente disponível'}. Agenda manual: as faixas orientam as sugestões; folgas e limites de horário especial continuam obrigatórios.</p>
-        <label className="block" htmlFor="horarios-correcao">Horários disponíveis</label><select id="horarios-correcao" className={campo} value={opcoes.includes(inicio) ? inicio : ''} disabled={salvando || !opcoes.length} onChange={e => { if (e.target.value) setInicio(e.target.value) }}>
-          <option value="">{opcoes.length ? 'Selecione um horário sugerido' : 'Nenhum horário sugerido disponível'}</option>
-          {opcoes.map(h => <option key={h} value={h}>{h}–{horaAgenda(minutosAgenda(h) + (duracao ?? 0))}</option>)}
-        </select>
-        <p>{opcoes.length ? 'Sugestões a cada 5 minutos. Você também pode digitar outro horário; duração, bloqueios e conflitos serão verificados.' : `Nenhuma sugestão habitual comporta ${duracao ?? '?'} minutos. Você pode digitar um horário manual, desde que não haja bloqueio ou conflito.`}</p>
-      </section>}
-      {chegou && <FeedbackAlert variant="warning" title="Chegada preservada" description="Após a chegada e antes do atendimento, somente o horário pode ser corrigido na mesma data. A chegada e a posição na fila serão mantidas. Para mudar a data, é necessário o fluxo específico de reagendamento." />}
-      <p className="text-sm">Novo horário: <strong>{exibirData(data)} às {inicio}</strong>{duracao ? ` · ${duracao} minutos` : ''}. Paciente, profissional, clínica, situação e pagamentos não serão trocados.</p>
+      <section aria-label="Comparação de horários" className="space-y-2"><div><p className="mb-1 text-xs font-medium">Horário anterior · {exibirData(agendamento.data)}</p><ResumoHorario label="Horário anterior" inicio={agendamento.hora_inicio.slice(0, 5)} duracao={minutosAgenda(agendamento.hora_fim) - minutosAgenda(agendamento.hora_inicio)} /></div>
+        <div><p className="mb-1 text-xs font-medium">Novo horário · {exibirData(data)}</p><ResumoHorario inicio={inicio} duracao={duracao} /></div></section>
       <label className="block text-sm">Motivo da correção<textarea className={campo} required minLength={5} maxLength={500} rows={3} value={motivo} disabled={salvando} onChange={e => setMotivo(e.target.value)} /><span className="text-xs">Descreva apenas a correção, sem documentos ou informações clínicas.</span></label>
+      <section aria-label="Avisos e confirmação" className="space-y-3 border-t border-[var(--borda)] pt-3">
       {capacidade === 'carregando' && <p role="status">Verificando recurso de correção...</p>}
       {capacidade === 'indisponivel' && <FeedbackAlert variant="warning" title="Correção ainda indisponível" description="Não foi possível confirmar a operação autorizada nesta sessão. Pode haver falha de serviço, permissão ou versão incompatível. Preserve seu preenchimento; consulte novamente ao reabrir ou atualize a página. Nenhuma gravação alternativa será realizada." />}
-      {estadoConsulta === 'carregando' ? <p role="status">Verificando disponibilidade...</p> : estadoConsulta === 'erro' ? <FeedbackAlert variant="destructive" title="Falha ao consultar disponibilidade" description={validacao ?? ''} action={<button type="button" onClick={consulta.repetir} disabled={salvando}>Tentar novamente</button>} /> : validacao && <FeedbackAlert variant="warning" title="Revise o horário" description={validacao} />}
-      {consulta.aviso && <FeedbackAlert variant="warning" title="Marcação manual" description={consulta.aviso} />}
+      <DisponibilidadeFormulario consulta={consulta} inicio={inicio} duracao={duracao} onInicio={setInicio} ocupado={salvando} proprioId={agendamento.id} edicao />
+      {chegou && <FeedbackAlert variant="warning" title="Chegada preservada" description="Corrija somente o horário na mesma data. Chegada e posição na fila serão mantidas; outra data exige o reagendamento específico." />}
       <label className="flex items-start gap-2 text-sm"><input type="checkbox" checked={confirmado} disabled={salvando} onChange={e => setConfirmado(e.target.checked)} />Conferi o horário anterior e o novo, os avisos de disponibilidade e confirmo a correção.</label>
       {erro && <FeedbackAlert variant={erro.atencao ? 'warning' : 'destructive'} title={erro.atencao ? 'Revisão necessária' : 'Não foi possível salvar'} description={erro.texto} urgent />}
+      </section>
+      </div><div className="agenda-formulario-rodape space-y-2">
       <div id="pendencias-correcao" role="status" className="text-sm">{impedimentos.length ? <><p>{impedimentos.length === 1 && !confirmado ? 'Só falta confirmar a correção para salvar.' : 'Para salvar:'}</p><ul className="list-inside list-disc">{impedimentos.map(p => <li key={p}>{p}</li>)}</ul></> : <p>Correção pronta para salvar. A disponibilidade será novamente validada pelo servidor.</p>}</div>
-      <div className="flex flex-wrap justify-end gap-3"><button type="button" onClick={onFechar} disabled={salvando} className="min-h-11 rounded-xl border border-[var(--borda)] px-4 py-2">Cancelar</button><button type="submit" aria-describedby="pendencias-correcao" disabled={impedimentos.length > 0} className="min-h-11 rounded-xl bg-[var(--cor-primaria)] px-4 py-2 font-semibold text-[var(--fundo-card)] disabled:opacity-60">{salvando ? 'Salvando…' : 'Salvar alterações'}</button></div>
-    </form>
-  </ModalBase>
+      <div className="flex flex-wrap justify-end gap-3"><button type="button" onClick={descarte.solicitarFechar} disabled={salvando} className="min-h-11 rounded-xl border border-[var(--borda)] px-4 py-2">Cancelar</button><button type="submit" aria-describedby="pendencias-correcao" disabled={impedimentos.length > 0} className="min-h-11 rounded-xl bg-[var(--cor-primaria)] px-4 py-2 font-semibold text-[var(--texto-sobre-primaria)] disabled:opacity-60">{salvando ? 'Salvando…' : 'Salvar alterações'}</button></div>
+    </div></form>
+    {descarte.confirmacao}
+  </PainelAgenda>
 }
