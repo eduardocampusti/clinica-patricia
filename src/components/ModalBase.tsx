@@ -1,7 +1,8 @@
 import { useEffect, useId, useRef, type ReactNode } from 'react'
 
-export function ModalBase({ titulo, onFechar, children, largura = 'md', ocupado = false, suspenso = false, apresentacao = 'modal' }: {
+export function ModalBase({ titulo, subtitulo, onFechar, children, largura = 'md', ocupado = false, suspenso = false, apresentacao = 'modal' }: {
   titulo: string
+  subtitulo?: string
   onFechar: () => void
   children: ReactNode
   largura?: 'md' | 'lg'
@@ -53,7 +54,10 @@ export function ModalBase({ titulo, onFechar, children, largura = 'md', ocupado 
       onCancel={(evento) => { evento.preventDefault(); if (!ocupado) onFechar() }}
       className={apresentacao === 'painel' ? 'painel-agenda ml-auto mr-0 h-dvh max-h-dvh w-full max-w-none overflow-hidden bg-[var(--fundo-card)] text-[var(--texto-principal)] backdrop:bg-[var(--sobreposicao)] sm:max-w-xl' : `m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] overflow-y-auto rounded-xl bg-[var(--fundo-card)] p-5 text-[var(--texto-principal)] backdrop:bg-[var(--sobreposicao)] sm:p-6 ${largura === 'lg' ? 'max-w-lg' : 'max-w-md'}`}>
       <div className={apresentacao === 'painel' ? 'flex shrink-0 items-center justify-between gap-3 border-b border-[var(--borda)] px-5 py-3' : 'mb-5 flex items-start justify-between gap-3'}>
-        <h2 id={id} ref={heading} tabIndex={-1} className="texto-titulo-secao outline-none">{titulo}</h2>
+        {subtitulo ? <div className="min-w-0">
+          <h2 id={id} ref={heading} tabIndex={-1} className="texto-titulo-secao outline-none">{titulo}</h2>
+          <p className="truncate text-sm text-[var(--texto-secundario)]">{subtitulo}</p>
+        </div> : <h2 id={id} ref={heading} tabIndex={-1} className="texto-titulo-secao outline-none">{titulo}</h2>}
         <button type="button" aria-label="Fechar" disabled={ocupado} onClick={onFechar}
           className="min-h-11 min-w-11 rounded-lg text-[var(--texto-secundario)] focus-visible:outline-2 disabled:opacity-40">✕</button>
       </div>

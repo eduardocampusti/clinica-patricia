@@ -5,7 +5,7 @@ import { horaAgenda, minutosAgenda } from '../../lib/agendaDisponibilidade'
 export const campoAgenda = 'w-full min-h-11 rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 py-2.5 text-sm text-[var(--texto-principal)] focus:outline-none focus:ring-2 focus:ring-[var(--cor-primaria)] disabled:opacity-60'
 export const acaoAgenda = 'min-h-11 rounded-lg border border-[var(--borda)] px-4 py-2 text-sm font-semibold focus-visible:outline-2 disabled:opacity-50'
 
-export function PainelAgenda(props: { titulo: string; onFechar: () => void; ocupado?: boolean; suspenso?: boolean; children: ReactNode }) {
+export function PainelAgenda(props: { titulo: string; subtitulo?: string; onFechar: () => void; ocupado?: boolean; suspenso?: boolean; children: ReactNode }) {
   return <ModalBase {...props} apresentacao="painel" />
 }
 

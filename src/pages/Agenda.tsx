@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react'
 import { supabase } from '../lib/supabase'
 import { iniciarAtendimentoAgendado } from '../lib/prontuarioRpc'
 import type { ClinicaAtiva } from '../hooks/useClinicaAtiva'
@@ -15,10 +15,15 @@ import { EditarAgendamento, type AgendamentoEditavel } from '../components/agend
 import { useDisponibilidadeAgenda } from '../hooks/useDisponibilidadeAgenda'
 import { PainelAgenda, ResumoHorario, campoAgenda, acaoAgenda } from '../components/agenda/PainelAgenda'
 import { SelecionarPaciente } from '../components/agenda/SelecionarPaciente'
-import { GradeTemporalAgenda } from '../components/agenda/GradeTemporalAgenda'
+import { GradeTemporalAgenda, type ColunaAgenda, type PedidoRolagemAgenda } from '../components/agenda/GradeTemporalAgenda'
+import { janelaVisivelAgenda } from '../lib/agendaTemporal'
+import { IconeCalendario } from '../components/shell/icons'
+import { MiniCalendarioAgenda } from '../components/agenda/MiniCalendarioAgenda'
 import { useDescarteAgenda } from '../components/agenda/useDescarteAgenda'
 import { DisponibilidadeFormulario } from '../components/agenda/DisponibilidadeFormulario'
 import { FaixaDiasAgenda } from '../components/agenda/FaixaDiasAgenda'
+import { EscolhaProfissional } from '../components/agenda/EscolhaProfissional'
+import { blocosHorarioAgenda, horaAgenda, janelasAgenda, minutosAgenda, type JanelaAgenda } from '../lib/agendaDisponibilidade'
 
 type StatusAgendamento = 'agendado' | 'confirmado' | 'aguardando' | 'em_atendimento' | 'concluido' | 'cancelado'
 type TipoExcecao = 'folga' | 'horario_especial'
@@ -92,9 +97,6 @@ const STATUS_LABEL: Record<StatusAgendamento, string> = {
 
 
 function badgeStatus(status: StatusAgendamento): { fundo: string; texto: string } {
-  if (status === 'agendado') {
-    return { fundo: 'var(--fundo-pagina)', texto: 'var(--texto-secundario)' }
-  }
   const chave = status.replace(/_/g, '-')
   return { fundo: `var(--status-${chave}-badge-fundo)`, texto: `var(--status-${chave}-badge-texto)` }
 }
@@ -118,8 +120,14 @@ function paraISODate(data: Date): string {
 }
 
 function formatarDataExtenso(data: Date): string {
-  const bruto = data.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' })
+  const bruto = data.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
   return bruto.charAt(0).toUpperCase() + bruto.slice(1)
+}
+
+function formatarDataCurta(data: Date): string {
+  const semana = data.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '')
+  const mes = data.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '')
+  return `${semana.charAt(0).toUpperCase()}${semana.slice(1)}, ${String(data.getDate()).padStart(2, '0')} ${mes}`
 }
 
 function adicionarDias(data: Date, dias: number): Date {
@@ -160,7 +168,12 @@ function Agenda({
 
   const [dataSelecionada, setDataSelecionada] = useState(() => new Date())
   const [buscaPaciente, setBuscaPaciente] = useState('')
-  const [visao, setVisao] = useState<'lista' | 'grade'>('lista')
+  // Computador (lg em diante) abre no modo Dia; tablet e celular, na Lista. Escolha posterior é do usuário.
+  const telaAmpla = () => typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia('(min-width: 1024px)').matches
+  const [visao, setVisao] = useState<'lista' | 'grade'>(() => telaAmpla() ? 'grade' : 'lista')
+  const [calendarioAberto, setCalendarioAberto] = useState(false)
+  const [diaInteiro, setDiaInteiro] = useState(false)
+  const [pedidoRolagem, setPedidoRolagem] = useState<PedidoRolagemAgenda>(null)
   const [filtroProfissional, setFiltroProfissional] = useState('')
 
   const [profissionais, setProfissionais] = useState<ProfissionalAgenda[]>([])
@@ -645,6 +658,47 @@ function Agenda({
   const idsProfissionais = [...new Set([...profissionais.map(p => p.id), ...registros.map(a => a.profissional_id)])].filter(id => !filtroProfissional || id === filtroProfissional)
   const selecionado = agendamentos.find(a => a.id === menuStatusId)
   const nomeProfissional = (id: string) => profissionais.find(p => p.id === id)?.nome_completo ?? 'Profissional fora do cadastro ativo'
+  // Expediente do dia por profissional, com as funções comuns da política; somente dados já carregados.
+  // Falha de disponibilidade nunca vira "sem expediente": fica explícita como não confirmada.
+  function expedienteDoDia(id: string): { janelas: JanelaAgenda[]; rotulo: string; confirmado: boolean } {
+    if (erroDisponibilidadeDia) return { janelas: [], rotulo: 'Disponibilidade não confirmada', confirmado: false }
+    if (!profissionais.some(p => p.id === id)) return { janelas: [], rotulo: 'Fora do cadastro ativo', confirmado: false }
+    const excecoesProf = excecoes.filter(e => e.profissional_id === id)
+    try {
+      const janelas = janelasAgenda(disponibilidades.filter(d => d.profissional_id === id), excecoesProf)
+      return { janelas, rotulo: excecoesProf.some(e => (e.tipo as string) === 'bloqueio') ? 'Bloqueio' : excecoesProf.some(e => e.tipo === 'folga') ? 'Folga' : 'Sem expediente', confirmado: true }
+    } catch { return { janelas: [], rotulo: 'Exceção inconsistente nesta data', confirmado: false } }
+  }
+  const livresDoDia = (id: string, janelas: JanelaAgenda[]) => blocosHorarioAgenda(profissionais.find(p => p.id === id)?.duracao_consulta_minutos ?? null, janelas,
+    agendamentos.filter(a => a.profissional_id === id)).filter(b => !b.ocupado).map(b => b.hora)
+  const colunas: ColunaAgenda[] = idsProfissionais.map(id => {
+    const { janelas, rotulo } = expedienteDoDia(id)
+    const livres = livresDoDia(id, janelas)
+    const faixas = janelas.filter(j => j.hora_inicio && j.hora_fim).map(j => [minutosAgenda(j.hora_inicio!), minutosAgenda(j.hora_fim!)]).sort((a, b) => a[0] - b[0])
+    const neutros = !faixas.length ? [{ inicio: 0, fim: 1440, rotulo }] : [...faixas.map(([, fim], i) => ({ inicio: fim, fim: faixas[i + 1]?.[0] ?? 1440, rotulo: 'Fora do expediente' })),
+      { inicio: 0, fim: faixas[0][0], rotulo: 'Fora do expediente' }].filter(n => n.fim > n.inicio)
+    const especialidade = profissionais.find(p => p.id === id)?.especialidade_nome
+    return { id, nome: nomeProfissional(id), detalhe: [especialidade && especialidade !== '—' ? especialidade : null, faixas.length ? `${livres.length} ${livres.length === 1 ? 'livre' : 'livres'}` : rotulo.toLocaleLowerCase('pt-BR')].filter(Boolean).join(' · '),
+      livres, duracao: profissionais.find(p => p.id === id)?.duracao_consulta_minutos ?? null, neutros }
+  })
+  // Janela compacta: do primeiro ao último horário relevante (expediente ou agendamento) das colunas visíveis.
+  const relevantes = [...colunas.flatMap(c => expedienteDoDia(c.id).janelas.flatMap(j => j.hora_inicio && j.hora_fim ? [minutosAgenda(j.hora_inicio), minutosAgenda(j.hora_fim)] : [])),
+    ...registros.flatMap(a => [minutosAgenda(a.hora_inicio), minutosAgenda(a.hora_fim)])]
+  const janelaGrade = relevantes.length ? { inicio: Math.floor(Math.min(...relevantes) / 60) * 60, fim: Math.min(1440, Math.ceil(Math.max(...relevantes) / 60) * 60) } : { inicio: 480, fim: 1080 }
+  // Indicadores do dia, sempre sobre todos os registros da data (sem filtros de tela).
+  const expedientes = profissionais.map(p => ({ id: p.id, ...expedienteDoDia(p.id) }))
+  const comExpediente = expedientes.filter(e => e.janelas.length)
+  const totalLivres = comExpediente.reduce((soma, e) => soma + livresDoDia(e.id, e.janelas).length, 0)
+  const profissionaisDoDia = new Set(agendamentos.map(a => a.profissional_id)).size
+  const indicadores = [
+    { rotulo: 'Agendamentos do dia', curto: 'Total', valor: String(agendamentos.length), apoio: `${profissionaisDoDia} ${profissionaisDoDia === 1 ? 'profissional' : 'profissionais'}` },
+    { rotulo: 'A confirmar', curto: 'A confirmar', valor: String(agendamentos.filter(a => a.status === 'agendado').length), apoio: 'ainda sem confirmação' },
+    { rotulo: 'Aguardando atendimento', curto: 'Aguardando', valor: String(agendamentos.filter(a => a.status === 'aguardando').length), apoio: 'chegada registrada' },
+    erroDisponibilidadeDia ? { rotulo: 'Horários livres', curto: 'Livres', valor: '—', apoio: 'disponibilidade não confirmada' }
+      : comExpediente.length ? { rotulo: 'Horários livres', curto: 'Livres', valor: String(totalLivres), apoio: `${comExpediente.length} ${comExpediente.length === 1 ? 'profissional com expediente' : 'profissionais com expediente'}` }
+        : { rotulo: 'Horários livres', curto: 'Livres', valor: '—', apoio: 'sem expediente cadastrado' },
+    { rotulo: 'Lista de espera', curto: 'Espera', valor: String(listaEspera.length), apoio: 'aguardando vaga' },
+  ]
   function textoDisponibilidade(ag: Agendamento) {
     const faixas = janelasPorProfissional.get(ag.profissional_id) ?? []
     const habitual = faixas.some(j => minutosDesdeMeiaNoite(ag.hora_inicio) >= j.inicioMin && minutosDesdeMeiaNoite(ag.hora_fim) <= j.fimMin)
@@ -657,53 +711,56 @@ function Agenda({
     const curto = temporal && duracaoRegistro <= 20
     const disponibilidadeTexto = textoDisponibilidade(ag)
     const elegivel = ['agendado', 'confirmado', 'aguardando'].includes(ag.status)
-    return <article key={ag.id} data-testid="registro-agenda" data-registro-id={ag.id} className={temporal ? `agenda-temporal-registro${curto ? ' agenda-temporal-curto' : ''}` : 'agenda-lista-linha'}>
-      <button type="button" onClick={() => { focoRecebimento.current = ag.id; setMenuStatusId(ag.id) }}
-        ref={node => { if (node) botoesAgendamento.current.set(ag.id, node); else botoesAgendamento.current.delete(ag.id) }}
-        aria-label={`${formatarHoraCurta(ag.hora_inicio)} ${ag.paciente_nome} — ${STATUS_LABEL[ag.status]}${recebidos.has(ag.id) ? ' — Recebimento registrado' : ''}${curto ? ` — até ${formatarHoraCurta(ag.hora_fim)}, ${duracaoRegistro} minutos${disponibilidadeTexto ? ` — ${disponibilidadeTexto}` : ''}. Abrir detalhes` : ''}`}
-        className="agenda-lista-consulta focus-visible:outline-2">
-        <span className="numero-tabular text-sm font-semibold">{formatarHoraCurta(ag.hora_inicio)}–{formatarHoraCurta(ag.hora_fim)}{!curto && <span className="block text-xs font-normal text-[var(--texto-secundario)]">{duracaoRegistro} min</span>}</span>
-        <span className="min-w-0 break-words font-semibold">{ag.paciente_nome}{!curto && recebidos.has(ag.id) && <span className="block text-xs font-medium">Recebimento registrado</span>}</span>
-        {!temporal && <span className="min-w-0 break-words text-sm text-[var(--texto-secundario)]">{nomeProfissional(ag.profissional_id)}</span>}
-        {!curto && <span><span className="inline-block rounded-md px-2 py-1 text-xs font-semibold" style={{ background: badge.fundo, color: badge.texto }}>{STATUS_LABEL[ag.status]}</span>{disponibilidadeTexto && <span className="mt-1 block text-xs text-[var(--texto-secundario)]">{disponibilidadeTexto}</span>}</span>}
+    const abrirConsulta = { type: 'button' as const, onClick: () => { focoRecebimento.current = ag.id; setMenuStatusId(ag.id) },
+      ref: (node: HTMLButtonElement | null) => { if (node) botoesAgendamento.current.set(ag.id, node); else botoesAgendamento.current.delete(ag.id) },
+      'aria-label': `${formatarHoraCurta(ag.hora_inicio)} ${ag.paciente_nome} — ${STATUS_LABEL[ag.status]}${recebidos.has(ag.id) ? ' — Recebimento registrado' : ''}${curto ? ` — até ${formatarHoraCurta(ag.hora_fim)}, ${duracaoRegistro} minutos${disponibilidadeTexto ? ` — ${disponibilidadeTexto}` : ''}. Abrir detalhes` : temporal && disponibilidadeTexto ? ` — ${disponibilidadeTexto}` : ''}`,
+      className: 'agenda-lista-consulta focus-visible:outline-2' }
+    // Grade: duas linhas fixas (nome e horário); textos completos no title e no nome acessível.
+    if (temporal) return <article key={ag.id} data-testid="registro-agenda" data-registro-id={ag.id} data-situacao={ag.status.replace(/_/g, '-')} className={`agenda-temporal-registro${curto ? ' agenda-temporal-curto' : ''}`}>
+      <button {...abrirConsulta} title={[ag.paciente_nome, STATUS_LABEL[ag.status], disponibilidadeTexto, recebidos.has(ag.id) ? 'Recebimento registrado' : null].filter(Boolean).join(' · ')}>
+        {curto ? <>
+          <span className="agenda-fonte-tecnica font-semibold">{formatarHoraCurta(ag.hora_inicio)}–{formatarHoraCurta(ag.hora_fim)}</span>
+          <span className="agenda-registro-nome font-semibold">{ag.paciente_nome}</span>
+        </> : <>
+          <span className="flex min-w-0 items-center justify-between gap-2"><span className="agenda-registro-nome text-[13px] font-semibold">{ag.paciente_nome}</span>
+            <span className="agenda-situacao"><span aria-hidden="true" className="agenda-situacao-ponto" /><span className="agenda-situacao-texto">{STATUS_LABEL[ag.status]}</span></span></span>
+          <span className="agenda-registro-nome agenda-fonte-tecnica">{formatarHoraCurta(ag.hora_inicio)}–{formatarHoraCurta(ag.hora_fim)} · {duracaoRegistro} min{recebidos.has(ag.id) ? ' · recebido' : ''}</span>
+        </>}
       </button>
-      {podeEscrever && !temporal && <div className="agenda-lista-acoes">
+    </article>
+    return <article key={ag.id} data-testid="registro-agenda" data-registro-id={ag.id} className="agenda-lista-linha">
+      <button {...abrirConsulta}>
+        <span className="numero-tabular text-sm font-semibold">{formatarHoraCurta(ag.hora_inicio)}–{formatarHoraCurta(ag.hora_fim)}<span className="block text-xs font-normal text-[var(--texto-secundario)]">{duracaoRegistro} min</span></span>
+        <span className="min-w-0 break-words font-semibold">{ag.paciente_nome}{recebidos.has(ag.id) && <span className="block text-xs font-medium">Recebimento registrado</span>}</span>
+        <span className="min-w-0 break-words text-sm text-[var(--texto-secundario)]">{nomeProfissional(ag.profissional_id)}</span>
+        <span><span className="inline-block rounded-md px-2 py-1 text-xs font-semibold" style={{ background: badge.fundo, color: badge.texto }}>{STATUS_LABEL[ag.status]}</span>{disponibilidadeTexto && <span className="mt-1 block text-xs text-[var(--texto-secundario)]">{disponibilidadeTexto}</span>}</span>
+      </button>
+      {podeEscrever && <div className="agenda-lista-acoes">
         {['agendado', 'confirmado'].includes(ag.status) && <button type="button" className="agenda-acao-compacta" disabled={atualizandoStatus} onClick={() => void mudarStatus(ag, 'aguardando')}>Registrar chegada</button>}
         {elegivel && <button type="button" className="agenda-acao-compacta" aria-label="Editar agendamento" onClick={() => { setMenuStatusId(null); setEditandoAgendamento(ag) }}>Editar</button>}
       </div>}
     </article>
   }
-  return <div className="space-y-5">
-    <header className="flex flex-wrap items-center justify-between gap-3">
-      <div><h1 className="texto-titulo-tela">Agenda</h1><p className="text-sm text-[var(--texto-secundario)]"><span>{clinicaAtiva?.nome}</span><span> · agendamentos e atendimentos</span></p></div>
+  const segmento = (ativo: boolean) => `min-h-11 rounded-md px-3 text-sm sm:px-4 font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cor-primaria)] ${ativo ? 'bg-[var(--fundo-card)] text-[var(--texto-principal)] shadow-[var(--sombra-baixa)] ring-1 ring-inset ring-[var(--borda)]' : 'text-[var(--texto-secundario)] hover:text-[var(--texto-principal)]'}`
+  const cartao = 'rounded-xl border border-[var(--borda)] bg-[var(--fundo-card)]'
+  const janelaExibida = janelaVisivelAgenda(janelaGrade, registros, diaInteiro)
+  return <div className="space-y-4">
+    <header className="flex items-end justify-between gap-3">
+      <div className="min-w-0"><h1 className="texto-titulo-tela">Agenda</h1><p className="text-sm text-[var(--texto-secundario)] sm:text-base">{formatarDataExtenso(dataSelecionada)}</p></div>
       {podeEscrever && <button type="button" onClick={() => abrirNovoAgendamento()} disabled={!clinicaAtivaId}
-        className={`${acaoAgenda} bg-[var(--cor-primaria)] text-[var(--texto-sobre-primaria)]`}>+ Novo agendamento</button>}
+        className={`${acaoAgenda} shrink-0 border-transparent bg-[var(--cor-primaria)] text-[var(--texto-sobre-primaria)] hover:bg-[var(--cor-primaria-hover)]`}>
+        <span aria-hidden="true" className="sm:hidden">+ Novo</span><span className="sr-only sm:not-sr-only">+ Novo agendamento</span>
+      </button>}
     </header>
-    <section aria-label="Controles da Agenda" className="space-y-3 rounded-xl border border-[var(--borda)] bg-[var(--fundo-card)] p-4">
-      <div className="flex flex-wrap items-center gap-2">
-        <button type="button" aria-label="Dia anterior" className={acaoAgenda} onClick={() => setDataSelecionada(d => adicionarDias(d, -1))}>‹</button>
-        <label className="sr-only" htmlFor="agenda-data">Data da Agenda</label>
-        <input id="agenda-data" className={`${campoAgenda} !w-auto max-w-full`} type="date" value={paraISODate(dataSelecionada)}
-          onChange={e => { if (e.target.value) setDataSelecionada(new Date(`${e.target.value}T12:00:00`)) }} />
-        <button type="button" aria-label="Próximo dia" className={acaoAgenda} onClick={() => setDataSelecionada(d => adicionarDias(d, 1))}>›</button>
-        <button type="button" className={acaoAgenda} onClick={() => setDataSelecionada(new Date())}>Hoje</button>
-        <p className="text-sm font-medium sm:ml-2">{formatarDataExtenso(dataSelecionada)}</p>
-      </div>
-      <div className="grid gap-3 sm:grid-cols-[1fr_1fr_auto]">
-        <label className="text-sm">Busca na Agenda<input className={campoAgenda} placeholder="Buscar paciente..." value={buscaPaciente} onChange={e => setBuscaPaciente(e.target.value)} /></label>
-        <label className="text-sm">Filtrar profissional<select className={campoAgenda} value={filtroProfissional} onChange={e => setFiltroProfissional(e.target.value)}>
-          <option value="">Todos os profissionais</option>{[...new Set([...profissionais.map(p => p.id), ...agendamentos.map(a => a.profissional_id)])].map(id => <option key={id} value={id}>{nomeProfissional(id)}</option>)}</select></label>
-        <div role="group" aria-label="Visualização da Agenda" className="flex items-end gap-1">
-          <button type="button" aria-pressed={visao === 'lista'} className={`${acaoAgenda} ${visao === 'lista' ? 'bg-[var(--cor-primaria-suave)] text-[var(--cor-primaria)]' : ''}`} onClick={() => setVisao('lista')}>Lista</button>
-          <button type="button" aria-pressed={visao === 'grade'} className={`${acaoAgenda} ${visao === 'grade' ? 'bg-[var(--cor-primaria-suave)] text-[var(--cor-primaria)]' : ''}`} onClick={() => setVisao('grade')}>Grade por profissional</button>
-        </div>
-      </div>
+    {/* Celular: faixa compacta (número e rótulo curto); demais telas: cartões com rótulo e apoio. */}
+    <section aria-label="Resumo do dia" className="grid grid-cols-5 gap-1 sm:grid-cols-3 sm:gap-3 lg:grid-cols-5">
+      {indicadores.map(i => <div key={i.rotulo} className={`${cartao} min-w-0 px-0.5 py-2 text-center sm:px-3 sm:py-2.5 sm:text-left`}>
+        <p className="sr-only text-[13px] leading-snug text-[var(--texto-secundario)] sm:not-sr-only">{i.rotulo}</p>
+        <p className="numero-tabular text-lg font-semibold leading-tight text-[var(--texto-principal)] sm:mt-0.5 sm:text-2xl">{i.valor}</p>
+        <p aria-hidden="true" className="truncate text-[11px] leading-tight text-[var(--texto-secundario)] sm:hidden">{i.curto}</p>
+        <p className="sr-only text-xs leading-tight text-[var(--texto-secundario)] sm:not-sr-only">{i.apoio}</p>
+      </div>)}
     </section>
-    <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-[var(--texto-secundario)]" aria-label="Resumo do dia">
-      <span><strong className="text-[var(--texto-principal)]">{agendamentos.length}</strong> agendamentos na data</span>
-      <span><strong className="text-[var(--texto-principal)]">{agendamentos.filter(a => a.status === 'aguardando').length}</strong> aguardando atendimento</span>
-      <span><strong className="text-[var(--texto-principal)]">{listaEspera.length}</strong> aguardando vaga</span>
-    </div>
     {correcaoSalva?.clinicaId === clinicaAtivaId && <FeedbackAlert variant="success" title="Agendamento atualizado" description="Data e horário corrigidos. Os demais dados e vínculos foram preservados." onClose={() => setCorrecaoSalva(null)} autoDismissMs={6000}
       action={correcaoSalva.data !== paraISODate(dataSelecionada) ? <button type="button" onClick={() => setDataSelecionada(new Date(`${correcaoSalva.data}T12:00:00`))}>Ver na nova data</button> : undefined} />}
     {feedbackStatus?.contexto === chaveContextoAtual && <FeedbackAlert variant={feedbackStatus.sucesso ? 'success' : 'destructive'} title={feedbackStatus.titulo} description={feedbackStatus.descricao} urgent={!feedbackStatus.sucesso} onClose={() => setFeedbackStatus(null)} autoDismissMs={feedbackStatus.sucesso ? 6000 : undefined} />}
@@ -711,23 +768,76 @@ function Agenda({
     {erroIniciarAtendimento && <FeedbackAlert variant="destructive" title="Atendimento não iniciado" description={erroIniciarAtendimento} />}
     {erroRecebimentos && <FeedbackAlert variant="warning" title="Recebimentos indisponíveis" description={mensagemErroFinanceiro(erroRecebimentos)} action={<button type="button" onClick={() => setRevisaoRecebimentos(v => v + 1)}>Tentar novamente</button>} />}
     {erroDisponibilidadeDia && <FeedbackAlert variant="destructive" title="Falha ao consultar disponibilidade" description="Os agendamentos foram carregados, mas o expediente e os bloqueios não puderam ser confirmados. Isso não significa ausência de expediente. Criar e editar exigem uma consulta válida." action={<button type="button" onClick={() => void recarregarTudo()}>Tentar novamente</button>} />}
-    {erroCarregamento ? <FeedbackAlert variant="destructive" title="Não foi possível carregar a Agenda" description={erroCarregamento} action={<button type="button" onClick={() => void recarregarTudo()}>Tentar novamente</button>} />
-      : carregandoGrade ? <p role="status">Carregando agendamentos...</p>
-      : <section aria-label="Agendamentos do dia" className="overflow-hidden rounded-xl border border-[var(--borda)] bg-[var(--fundo-card)]">
-        <div className="flex flex-wrap justify-between gap-2 border-b border-[var(--borda)] px-4 py-3"><h2 className="text-base font-semibold">{visao === 'lista' ? 'Agendamentos do dia' : 'Agenda por profissional'}</h2><p className="text-sm text-[var(--texto-secundario)]">{registros.length} registro(s)</p></div>
-        {visao === 'lista' ? registros.length ? <><div className="agenda-lista-cabecalho" aria-hidden="true"><div className="agenda-lista-titulos"><span>Horário</span><span>Paciente</span><span>Profissional</span><span>Situação</span></div><span className="text-right">Ações</span></div>{registros.map(ag => item(ag))}</> : <p className="p-6 text-sm">Nenhum agendamento corresponde à data e aos filtros. Altere os filtros ou crie uma marcação.</p>
-          : <GradeTemporalAgenda registros={registros} profissionais={idsProfissionais.map(id => ({ id, nome: nomeProfissional(id) }))} contexto={chaveContextoAtual ?? ''} renderRegistro={ag => item(ag, true)}
+    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_21rem] lg:items-start">
+      <section aria-label="Agendamentos do dia" className={`${cartao} min-w-0 overflow-hidden`}>
+        <h2 className="sr-only">Agendamentos do dia</h2>
+        <div aria-label="Controles da Agenda" role="group" className="flex flex-wrap items-center gap-x-2 gap-y-1.5 border-b border-[var(--borda)] px-3 py-2">
+          <div className="flex items-center gap-2">
+            <button type="button" aria-label="Dia anterior" className={`${acaoAgenda} min-w-11 px-0`} onClick={() => setDataSelecionada(d => adicionarDias(d, -1))}>‹</button>
+            <button type="button" className={acaoAgenda} onClick={() => setDataSelecionada(new Date())}>Hoje</button>
+            <button type="button" aria-label="Próximo dia" className={`${acaoAgenda} min-w-11 px-0`} onClick={() => setDataSelecionada(d => adicionarDias(d, 1))}>›</button>
+            <p className="sr-only whitespace-nowrap text-sm font-semibold sm:not-sr-only sm:ml-1">{formatarDataCurta(dataSelecionada)}</p>
+          </div>
+          <div role="group" aria-label="Visualização da Agenda" className="ml-auto inline-flex rounded-lg bg-[var(--fundo-pagina)] sm:ml-0">
+            <button type="button" aria-pressed={visao === 'grade'} className={segmento(visao === 'grade')} onClick={() => setVisao('grade')}>Dia</button>
+            <button type="button" aria-pressed={visao === 'lista'} className={segmento(visao === 'lista')} onClick={() => setVisao('lista')}>Lista</button>
+          </div>
+          {visao === 'grade' && !erroCarregamento && <div className="flex flex-wrap items-center gap-x-2 text-xs text-[var(--texto-secundario)]">
+            <span>{diaInteiro ? 'Dia inteiro' : `Horários relevantes · ${horaAgenda(janelaExibida.inicio)}–${horaAgenda(Math.min(janelaExibida.fim, 1440))}`}</span>
+            {diaInteiro && <>
+              <button type="button" className="min-h-11 underline" onClick={() => setPedidoRolagem(p => ({ alvo: 'inicio', vez: (p?.vez ?? 0) + 1 }))}>Início do dia</button>
+              <button type="button" className="min-h-11 underline" onClick={() => setPedidoRolagem(p => ({ alvo: 'primeiro', vez: (p?.vez ?? 0) + 1 }))}>{registros.length ? 'Primeiro agendamento' : 'Ir para 08h'}</button>
+            </>}
+            <button type="button" aria-pressed={diaInteiro} className="min-h-11 font-semibold text-[var(--cor-primaria)] underline-offset-4 hover:underline" onClick={() => setDiaInteiro(v => !v)}>
+              {diaInteiro ? 'Ver horários relevantes' : 'Ver dia inteiro'}
+            </button>
+          </div>}
+          <div className="grid w-full grid-cols-2 gap-2 lg:ml-auto lg:w-auto lg:grid-cols-[13rem_13rem]">
+            <label className="min-w-0"><span className="sr-only">Filtrar profissional</span><select className={campoAgenda} value={filtroProfissional} onChange={e => setFiltroProfissional(e.target.value)}>
+              <option value="">Todos os profissionais</option>{[...new Set([...profissionais.map(p => p.id), ...agendamentos.map(a => a.profissional_id)])].map(id => <option key={id} value={id}>{nomeProfissional(id)}</option>)}</select></label>
+            <label className="min-w-0"><span className="sr-only">Busca na Agenda</span><input className={campoAgenda} placeholder="Buscar paciente" value={buscaPaciente} onChange={e => setBuscaPaciente(e.target.value)} /></label>
+          </div>
+        </div>
+        {erroCarregamento ? <div className="p-4"><FeedbackAlert variant="destructive" title="Não foi possível carregar a Agenda" description={erroCarregamento} action={<button type="button" onClick={() => void recarregarTudo()}>Tentar novamente</button>} /></div>
+          : carregandoGrade ? <p role="status" className="p-5 text-sm">Carregando agendamentos...</p>
+          : visao === 'lista' ? <>
+            <p className="border-b border-[var(--borda)] px-4 py-2 text-xs text-[var(--texto-secundario)]">{registros.length} registro(s) com os filtros atuais</p>
+            {registros.length ? <><div className="agenda-lista-cabecalho" aria-hidden="true"><div className="agenda-lista-titulos"><span>Horário</span><span>Paciente</span><span>Profissional</span><span>Situação</span></div><span className="text-right">Ações</span></div>{registros.map(ag => item(ag))}</> : <p className="p-6 text-sm">Nenhum agendamento corresponde à data e aos filtros. Altere os filtros ou crie uma marcação.</p>}
+          </>
+          : <GradeTemporalAgenda registros={registros} colunas={colunas} janela={janelaGrade} diaInteiro={diaInteiro} pedidoRolagem={pedidoRolagem} contexto={chaveContextoAtual ?? ''} renderRegistro={ag => item(ag, true)}
             onNovo={podeEscrever ? (id, inicio) => abrirNovoAgendamento({ pacienteId: '', profissionalId: id, inicio }) : undefined}
-            renderAcao={id => podeEscrever && profissionais.some(p => p.id === id) ? <button type="button" className="min-h-9 text-xs underline" title="Marcar folga / horário especial" onClick={() => { setProfissionalParaExcecao(id); setModalAberto('excecao') }}>Expediente</button> : null} />}
-      </section>}
-    <section aria-label="Aguardando vaga" className="rounded-xl border border-[var(--borda)] bg-[var(--fundo-card)] p-4">
-      <div className="mb-2 flex flex-wrap items-center justify-between gap-3"><div><h2 className="texto-titulo-secao">Aguardando vaga</h2><p className="text-sm text-[var(--texto-secundario)]">Lista de espera · ainda não são agendamentos nem chegadas.</p></div>
-        {podeEscrever && <button type="button" className={acaoAgenda} onClick={() => setModalAberto('espera')}>+ Adicionar à lista de espera</button>}</div>
-      {!listaEspera.length ? <p className="py-3 text-sm">Ninguém aguardando vaga no momento.</p> : <ul className="divide-y divide-[var(--borda)]">{listaEspera.map(e => <li key={e.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
-        <div><p className="font-medium">{e.paciente_nome}</p><p className="text-sm text-[var(--texto-secundario)]">{e.profissional_nome} · aguardando vaga desde {new Date(e.created_at).toLocaleDateString('pt-BR')}</p></div>
-        {podeEscrever && <button type="button" className={acaoAgenda} onClick={() => abrirNovoAgendamento({ pacienteId: e.paciente_id, profissionalId: e.profissional_id })}>Agendar</button>}
-      </li>)}</ul>}
-    </section>
+            renderAcao={id => podeEscrever && profissionais.some(p => p.id === id) ? <button type="button" aria-label={`Expediente de ${nomeProfissional(id)}: marcar folga ou horário especial`} title="Marcar folga / horário especial"
+              className="flex size-11 shrink-0 items-center justify-center rounded-lg text-[var(--texto-secundario)] transition hover:bg-[var(--fundo-pagina)] hover:text-[var(--texto-principal)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cor-primaria)]"
+              onClick={() => { setProfissionalParaExcecao(id); setModalAberto('excecao') }}><IconeCalendario /></button> : null} />}
+      </section>
+      <aside aria-label="Calendário, lista de espera e situações" className="space-y-5">
+        <section aria-label="Calendário do mês" className={`${cartao} p-3`}>
+          <button type="button" aria-expanded={calendarioAberto} aria-controls="agenda-mini-calendario" onClick={() => setCalendarioAberto(v => !v)}
+            className="flex min-h-11 w-full items-center justify-between gap-2 text-sm font-semibold lg:hidden">
+            {calendarioAberto ? 'Ocultar calendário do mês' : 'Mostrar calendário do mês'}<span aria-hidden="true">{calendarioAberto ? '▴' : '▾'}</span>
+          </button>
+          <div id="agenda-mini-calendario" className={calendarioAberto ? 'mt-2 lg:mt-0' : 'hidden lg:block'}>
+            <MiniCalendarioAgenda data={dataSelecionada} onData={dia => setDataSelecionada(new Date(dia.getFullYear(), dia.getMonth(), dia.getDate(), 12))} />
+          </div>
+        </section>
+        <section aria-label="Lista de espera" className={`${cartao} p-4`}>
+          <div className="flex flex-wrap items-baseline justify-between gap-2"><h2 className="text-base font-semibold">Lista de espera</h2><p className="text-sm text-[var(--texto-secundario)]">{listaEspera.length} {listaEspera.length === 1 ? 'paciente' : 'pacientes'}</p></div>
+          <p className="text-xs text-[var(--texto-secundario)]">Ainda não são agendamentos nem chegadas.</p>
+          {!listaEspera.length ? <p className="py-3 text-sm">Ninguém aguardando vaga no momento.</p> : <ul className="mt-2 divide-y divide-[var(--borda)]">{listaEspera.map(e => <li key={e.id} className="flex items-center justify-between gap-3 py-3">
+            <div className="min-w-0"><p className="break-words font-medium">{e.paciente_nome}</p><p className="text-sm text-[var(--texto-secundario)]">{e.profissional_nome} · desde {new Date(e.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}</p></div>
+            {podeEscrever && <button type="button" className={`${acaoAgenda} shrink-0`} aria-label={`Encaixar ${e.paciente_nome}`} onClick={() => abrirNovoAgendamento({ pacienteId: e.paciente_id, profissionalId: e.profissional_id })}>Encaixar</button>}
+          </li>)}</ul>}
+          {podeEscrever && <button type="button" className="mt-2 min-h-11 text-sm font-semibold text-[var(--cor-primaria)] underline-offset-4 hover:underline" onClick={() => setModalAberto('espera')}>+ Adicionar à lista de espera</button>}
+        </section>
+        <section aria-label="Situação dos atendimentos" className={`${cartao} p-4`}>
+          <h2 className="mb-2 text-base font-semibold">Situação dos atendimentos</h2>
+          <ul className="space-y-1.5">{(Object.keys(STATUS_LABEL) as StatusAgendamento[]).map(s => <li key={s} className="flex items-center justify-between gap-2 text-sm">
+            <span className="flex items-center gap-2"><span aria-hidden="true" className="agenda-situacao-ponto" style={{ ['--situacao-ponto' as string]: `var(--status-${s.replace(/_/g, '-')}-ponto)` }} />{STATUS_LABEL[s]}</span>
+            <span className="numero-tabular font-medium">{agendamentos.filter(a => a.status === s).length}</span>
+          </li>)}</ul>
+        </section>
+      </aside>
+    </div>
     {selecionado && <PainelAgenda titulo="Consultar agendamento" onFechar={() => setMenuStatusId(null)} ocupado={atualizandoStatus}>
       <div className="agenda-formulario"><div className="agenda-formulario-conteudo space-y-5">
         <p className="text-sm text-[var(--texto-secundario)]">{clinicaAtiva?.nome} · {selecionado.data.split('-').reverse().join('/')}</p>
@@ -752,7 +862,7 @@ function Agenda({
     {editandoAgendamento && clinicaAtivaId && podeEscrever && <EditarAgendamento key={`${chaveContextoAtual}:${editandoAgendamento.id}`} agendamento={editandoAgendamento} clinicaId={clinicaAtivaId} clinicaNome={clinicaAtiva?.nome ?? 'Clínica'}
       profissionalNome={nomeProfissional(editandoAgendamento.profissional_id)} duracao={profissionais.find(p => p.id === editandoAgendamento.profissional_id)?.duracao_consulta_minutos ?? null}
       onFechar={() => setEditandoAgendamento(null)} onSalvo={data => { setEditandoAgendamento(null); setCorrecaoSalva({ clinicaId: clinicaAtivaId, data }); void recarregarTudo() }} />}
-    {modalAberto === 'agendamento' && clinicaAtivaId && <ModalNovoAgendamento clinicaAtivaId={clinicaAtivaId} pacientes={pacientes} profissionais={profissionais} prefill={prefillAgendamento} dataInicial={dataSelecionada}
+    {modalAberto === 'agendamento' && clinicaAtivaId && <ModalNovoAgendamento clinicaAtivaId={clinicaAtivaId} clinicaNome={clinicaAtiva?.nome ?? 'Clínica'} pacientes={pacientes} profissionais={profissionais} prefill={prefillAgendamento} dataInicial={dataSelecionada}
       onNovoPaciente={onNovoPaciente} pacienteCriadoExternamente={pacienteCriadoExternamente} suspenso={cadastroPacienteAberto} onFechar={() => setModalAberto(null)}
       onSalvo={async () => { setModalAberto(null); if (chaveContextoAtual) setFeedbackStatus({ contexto: chaveContextoAtual, sucesso: true, titulo: 'Agendamento criado', descricao: 'A marcação foi confirmada pelo servidor.' }); await recarregarTudo() }} />}
     {modalAberto === 'excecao' && clinicaAtivaId && profissionalParaExcecao && <ModalExcecao clinicaAtivaId={clinicaAtivaId} profissionalId={profissionalParaExcecao} dataInicial={dataSelecionada} onFechar={() => setModalAberto(null)} onSalvo={async () => { setModalAberto(null); await recarregarTudo() }} />}
@@ -764,6 +874,7 @@ function Agenda({
 
 interface ModalNovoAgendamentoProps {
   clinicaAtivaId: string
+  clinicaNome: string
   pacientes: PacienteOpcao[]
   profissionais: ProfissionalAgenda[]
   prefill: { pacienteId: string; profissionalId: string; inicio?: string } | null
@@ -777,6 +888,7 @@ interface ModalNovoAgendamentoProps {
 
 function ModalNovoAgendamento({
   clinicaAtivaId,
+  clinicaNome,
   pacientes,
   profissionais,
   prefill,
@@ -903,129 +1015,150 @@ function ModalNovoAgendamento({
     } finally { envioManual.current = false; if (vigenteManual.current) setSalvando(false) }
   }
 
+  // Rodapé: resumo quando profissional, data e início existem; o que falta em uma linha curta.
+  // A lista completa (pendenciasCriacao) segue para leitor de tela e descreve o botão.
+  const profissionalEscolhido = profissionais.find(p => p.id === profissionalId)
+  const faltas = [
+    resultadoIncerto ? 'conferir a Agenda' : null,
+    capacidadeManual !== 'pronta' ? 'confirmação do serviço' : null,
+    !pacienteId ? 'paciente' : null,
+    !profissionalId ? 'profissional' : null,
+    !data ? 'data' : null,
+    !horaInicio ? 'horário' : null,
+    profissionalId && data && horaInicio && disponibilidade.bloqueio ? disponibilidade.estado === 'pronta' ? 'ajuste do horário' : disponibilidade.estado === 'erro' ? 'consulta da disponibilidade' : 'verificação da disponibilidade' : null,
+    disponibilidade.aviso && !confirmadoManual ? 'confirmação manual' : null,
+  ].filter((f): f is string => !!f)
+  const textoFalta = faltas.length ? `Falta: ${faltas.length > 1 ? `${faltas.slice(0, -1).join(', ')} e ${faltas.at(-1)}` : faltas[0]}` : ''
+  const fimMinutos = /^\d{2}:\d{2}$/.test(horaInicio) && duracao ? minutosAgenda(horaInicio) + duracao : null
+  const resumoPronto = !!profissionalEscolhido && !!data && fimMinutos !== null && fimMinutos < 1440
+
   return (
-    <PainelAgenda titulo="Novo agendamento" onFechar={descarte.solicitarFechar} suspenso={suspenso} ocupado={salvando}>
+    <PainelAgenda titulo="Novo agendamento" subtitulo={clinicaNome} onFechar={descarte.solicitarFechar} suspenso={suspenso} ocupado={salvando}>
       <form onSubmit={handleSubmit} className="agenda-formulario">
-        <div className="agenda-formulario-conteudo space-y-4">
-        <div>
-          <div className="mb-1.5 flex items-center justify-between gap-3">
-            <p className="text-sm font-medium">Quem será atendido?</p>
-            {onNovoPaciente && (
-              <button type="button" onClick={onNovoPaciente} disabled={salvando} className="text-sm font-semibold text-[var(--cor-primaria)] underline-offset-4 hover:underline disabled:opacity-60">
-                + Novo paciente
-              </button>
-            )}
+        <div className="agenda-formulario-conteudo space-y-8">
+        <SecaoAgendamento id="novo-agendamento-secao-paciente" titulo="1. Paciente" acao={onNovoPaciente && (
+          <button type="button" onClick={onNovoPaciente} disabled={salvando} className="min-h-11 rounded-lg border border-[var(--borda)] px-4 text-sm font-semibold text-[var(--texto-principal)] transition hover:bg-[var(--fundo-pagina)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cor-primaria)] disabled:opacity-60">
+            + Novo paciente
+          </button>
+        )}>
+          <SelecionarPaciente pacientes={pacientes} value={pacienteId} onChange={setPacienteId} disabled={salvando} detalhe={`Paciente da ${clinicaNome}`} />
+          {consultandoCpf && <p role="status" className="text-xs text-[var(--texto-secundario)]">Verificando cadastro do paciente...</p>}
+          {cpfPendente && pacienteId && (
+            <AvisoCpfPendente
+              pacienteId={pacienteId}
+              pacienteNome={pacientes.find((paciente) => paciente.id === pacienteId)?.nome_completo ?? 'Paciente'}
+              clinicaId={clinicaAtivaId}
+              onAdicionado={() => setCpfPendente(false)}
+              onLembrar={() => {
+                lembretesCpfIgnorados.current.add(pacienteId)
+                setCpfPendente(false)
+              }}
+            />
+          )}
+        </SecaoAgendamento>
+
+        <SecaoAgendamento id="novo-agendamento-secao-profissional" titulo="2. Profissional">
+          <EscolhaProfissional profissionais={profissionais} value={profissionalId} onChange={setProfissionalId} disabled={salvando} rotuloId="novo-agendamento-secao-profissional" />
+        </SecaoAgendamento>
+
+        <SecaoAgendamento id="novo-agendamento-secao-horario" titulo="3. Data e horário">
+          {profissionalId
+            ? <FaixaDiasAgenda clinicaId={clinicaAtivaId} profissionalId={profissionalId} data={data} duracao={duracao} onData={setData} ocupado={salvando} />
+            : <p className="rounded-xl bg-[var(--fundo-pagina)] px-4 py-3 text-sm text-[var(--texto-secundario)]">Escolha o profissional para ver os dias e horários livres.</p>}
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-sm text-[var(--texto-secundario)]">{data ? <>Data escolhida: <span className="font-medium text-[var(--texto-principal)]">{rotuloDataAgendamento(data)}</span></> : 'Nenhuma data escolhida.'}</p>
+            <label className="flex items-center gap-2 text-sm font-medium text-[var(--texto-principal)]">
+              Outra data
+              <input
+                id="novo-agendamento-data"
+                type="date"
+                required
+                value={data}
+                onChange={(e) => setData(e.target.value)}
+                disabled={salvando}
+                className="min-h-11 rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-2 text-sm text-[var(--texto-principal)] outline-none transition focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60"
+              />
+            </label>
           </div>
-          <SelecionarPaciente pacientes={pacientes} value={pacienteId} onChange={setPacienteId} disabled={salvando} />
-        </div>
-
-        {consultandoCpf && <p role="status" className="text-xs text-[var(--texto-secundario)]">Verificando cadastro do paciente...</p>}
-        {cpfPendente && pacienteId && (
-          <AvisoCpfPendente
-            pacienteId={pacienteId}
-            pacienteNome={pacientes.find((paciente) => paciente.id === pacienteId)?.nome_completo ?? 'Paciente'}
-            clinicaId={clinicaAtivaId}
-            onAdicionado={() => setCpfPendente(false)}
-            onLembrar={() => {
-              lembretesCpfIgnorados.current.add(pacienteId)
-              setCpfPendente(false)
-            }}
-          />
-        )}
-
-        <div>
-          <label htmlFor="novo-agendamento-profissional" className="mb-1.5 block text-sm font-medium text-[var(--texto-principal)]">
-            Profissional <span className="text-[var(--cor-erro)]">*</span>
-          </label>
-          <select
-            id="novo-agendamento-profissional"
-            required
-            value={profissionalId}
-            onChange={(e) => setProfissionalId(e.target.value)}
-            disabled={salvando}
-            className="w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 py-2.5 text-[var(--texto-principal)] outline-none transition focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60"
-          >
-            <option value="">Selecione...</option>
-            {profissionais.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.nome_completo}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label htmlFor="novo-agendamento-data" className="mb-1.5 block text-sm font-medium text-[var(--texto-principal)]">
-            Data <span className="text-[var(--cor-erro)]">*</span>
-          </label>
-          <input
-            id="novo-agendamento-data"
-            type="date"
-            required
-            value={data}
-            onChange={(e) => setData(e.target.value)}
-            disabled={salvando}
-            className="w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 py-2.5 text-[var(--texto-principal)] outline-none transition focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60"
-          />
-        </div>
-
-        <section aria-label="Escolha do horário" className="space-y-3">
-          {profissionalId ? <>
-            <FaixaDiasAgenda clinicaId={clinicaAtivaId} profissionalId={profissionalId} data={data} duracao={duracao} onData={setData} ocupado={salvando} />
+          {profissionalId && <>
             <DisponibilidadeFormulario consulta={disponibilidade} inicio={horaInicio} duracao={duracao} onInicio={setHoraInicio} ocupado={salvando} />
             {disponibilidade.aviso && <label className="flex items-start gap-2 text-sm"><input type="checkbox" checked={confirmadoManual} disabled={salvando} onChange={e => setConfirmadoManual(e.target.checked)} />Conferi os avisos e confirmo a marcação manual.</label>}
-          </> : <p className="rounded-lg border border-dashed border-[var(--borda)] bg-[var(--fundo-pagina)] px-3 py-4 text-center text-sm text-[var(--texto-secundario)]">Selecione o profissional para ver os horários.</p>}
-        </section>
+          </>}
+        </SecaoAgendamento>
 
-        <ResumoHorario inicio={horaInicio} duracao={duracao} />
-
-        <div>
-          <label htmlFor="novo-agendamento-observacoes" className="mb-1.5 block text-sm font-medium text-[var(--texto-principal)]">
-            Observações
-          </label>
+        <SecaoAgendamento id="novo-agendamento-secao-observacoes" titulo="4. Observações" rotuloDoCampo="novo-agendamento-observacoes">
           <textarea
             id="novo-agendamento-observacoes"
             value={observacoes}
             onChange={(e) => setObservacoes(e.target.value)}
             disabled={salvando}
             rows={3}
-            className="w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 py-2.5 text-[var(--texto-principal)] outline-none transition focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60"
+            placeholder="Ex.: trazer exames anteriores"
+            className="w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 py-2.5 text-[var(--texto-principal)] outline-none transition placeholder:text-[var(--texto-terciario)] focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60"
           />
-        </div>
+        </SecaoAgendamento>
 
-        <section aria-label="Avisos" className="space-y-3 border-t border-[var(--borda)] pt-3 empty:hidden">
-        {capacidadeManual === 'carregando' && <p role="status">Verificando serviço e autorização...</p>}
+        <section aria-label="Avisos" className="space-y-3 empty:hidden">
+        {capacidadeManual === 'carregando' && <p role="status" className="text-sm text-[var(--texto-secundario)]">Verificando serviço e autorização...</p>}
         {capacidadeManual === 'indisponivel' && <FeedbackAlert variant="warning" title="Agenda manual ainda indisponível" description="Não foi possível confirmar o serviço e a autorização nesta sessão. Em caso de atualização, preserve seu preenchimento e atualize a página. Não será utilizada a operação antiga como alternativa." />}
         {erro && <FeedbackAlert variant="destructive" title="Não foi possível criar o agendamento" description={erro} urgent />}
         </section>
         </div>
-        <div className="agenda-formulario-rodape space-y-2">
-          <div id="pendencias-criacao" role="status" className="text-sm">
-            {pendenciasCriacao.length ? <><p>Para agendar:</p><ul className="list-inside list-disc">{pendenciasCriacao.map(p => <li key={p}>{p}</li>)}</ul></> : 'Pronto para agendar. O servidor verificará novamente as regras.'}
+        <div className="agenda-formulario-rodape">
+          <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
+            <div className="min-w-0 basis-full sm:basis-0 sm:flex-1">
+              {salvando ? <p className="text-sm text-[var(--texto-secundario)]">Salvando agendamento...</p>
+                : resumoPronto ? <div role="group" aria-label="Resumo do horário">
+                  <p className="break-words text-sm font-semibold text-[var(--texto-principal)]"><span className="agenda-fonte-tecnica">{rotuloDataAgendamento(data)} · {horaInicio}–{horaAgenda(fimMinutos!)}</span> · {profissionalEscolhido!.nome_completo}</p>
+                  <p className="text-sm text-[var(--texto-secundario)]">{duracao} min{textoFalta ? ` · ${textoFalta}` : ''}</p>
+                </div>
+                : <p className="text-sm text-[var(--texto-secundario)]">{textoFalta}</p>}
+            </div>
+            <div className="ml-auto flex shrink-0 gap-3">
+              <button
+                type="button"
+                onClick={descarte.solicitarFechar}
+                disabled={salvando}
+                className="min-h-11 rounded-lg border border-[var(--borda)] px-4 font-medium text-[var(--texto-principal)] transition hover:bg-[var(--fundo-pagina)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cor-primaria)] disabled:opacity-60"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                aria-describedby="pendencias-criacao"
+                disabled={pendenciasCriacao.length > 0}
+                className="min-h-11 rounded-lg bg-[var(--cor-primaria)] px-5 font-semibold text-[var(--texto-sobre-primaria)] transition hover:bg-[var(--cor-primaria-hover)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cor-primaria)] disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {salvando ? 'Salvando...' : 'Agendar'}
+              </button>
+            </div>
           </div>
-          <div className="flex justify-end gap-3">
-          <button
-            type="button"
-            onClick={descarte.solicitarFechar}
-            disabled={salvando}
-            className="rounded-xl border border-[var(--borda)] px-4 py-2.5 font-medium text-[var(--texto-principal)] transition hover:bg-[var(--fundo-pagina)] disabled:opacity-60"
-          >
-            Cancelar
-          </button>
-          <button
-            type="submit"
-            aria-describedby="pendencias-criacao"
-            disabled={pendenciasCriacao.length > 0}
-            className="rounded-xl bg-[var(--cor-primaria)] px-5 py-2.5 font-medium text-white transition hover:bg-[var(--cor-primaria-hover)] disabled:cursor-not-allowed disabled:opacity-70"
-          >
-            {salvando ? 'Salvando...' : 'Agendar'}
-          </button>
+          <div id="pendencias-criacao" role="status" className="sr-only">
+            {pendenciasCriacao.length ? `Para agendar: ${pendenciasCriacao.join(' ')}` : 'Pronto para agendar. O servidor verificará novamente as regras.'}
           </div>
         </div>
       </form>
       {descarte.confirmacao}
     </PainelAgenda>
   )
+}
+
+const rotuloDataAgendamento = (data: string) => {
+  const d = new Date(`${data}T12:00:00`)
+  const semana = d.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '')
+  return `${semana.charAt(0).toLocaleUpperCase('pt-BR')}${semana.slice(1)}, ${d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}`
+}
+
+// Seção numerada; com um único campo, o título é o próprio rótulo dele (sem região de mesmo nome).
+function SecaoAgendamento({ id, titulo, acao, rotuloDoCampo, children }: { id: string; titulo: string; acao?: ReactNode; rotuloDoCampo?: string; children: ReactNode }) {
+  const cabecalho = <div className="flex min-h-11 items-center justify-between gap-3">
+    {rotuloDoCampo
+      ? <label id={id} htmlFor={rotuloDoCampo} className="text-base font-medium text-[var(--texto-principal)]">{titulo}</label>
+      : <h3 id={id} className="text-base font-medium text-[var(--texto-principal)]">{titulo}</h3>}
+    {acao}
+  </div>
+  if (rotuloDoCampo) return <div className="space-y-3">{cabecalho}{children}</div>
+  return <section aria-labelledby={id} className="space-y-3">{cabecalho}{children}</section>
 }
 
 interface ModalExcecaoProps {

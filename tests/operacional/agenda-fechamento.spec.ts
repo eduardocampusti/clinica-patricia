@@ -1,10 +1,27 @@
+
+// Painel de criação: cartões de profissional (rádios nativos) ou select acima de seis.
+const radioProfissional = (escopo: Page | Locator, id: string) => escopo.locator(`input[name="novo-agendamento-profissional"][value="${id}"]`)
+const pacienteEscolhido = (escopo: Page | Locator) => escopo.getByRole('group', { name: 'Paciente selecionado' })
 import { expect, test, type Locator, type Page } from '@playwright/test'
+import { ESCALA_AGENDA } from '../../src/lib/agendaTemporal'
 
 const previa = '/tests/operacional/agenda-preview.html'
 const registro = (page: Page, id: string) => page.locator(`[data-registro-id="${id}"]`)
 async function abrir(page: Page, query = '', quantidade = 3) {
   await page.goto(previa + query, { waitUntil: 'domcontentloaded' })
   await expect(page.getByTestId('registro-agenda')).toHaveCount(quantidade)
+  // Computador abre no modo Dia; estes cenários usam as ações da lista.
+  await page.getByRole('button', { name: 'Lista', exact: true }).click()
+}
+
+// Fora do expediente não há cartão livre na grade: a marcação manual parte de “+ Novo agendamento”.
+async function abrirCriacaoManual(page: Page, inicio = '11:00') {
+  await page.getByRole('button', { name: '+ Novo agendamento', exact: true }).click()
+  const painel = page.getByRole('dialog', { name: 'Novo agendamento' })
+  await radioProfissional(painel, 'prof-2').check()
+  await painel.getByRole('button', { name: 'Outro horário', exact: true }).click()
+  await painel.getByLabel('Início', { exact: true }).fill(inicio)
+  return painel
 }
 async function geometria(painel: Locator) {
   const areas = await painel.evaluate(el => {
@@ -35,9 +52,7 @@ test('painéis: abertura no topo, confirmação inteira e foco sem cabeçalho/ro
   await visivelNoCorpo(painel, painel.getByRole('combobox', { name: 'Paciente', exact: true }))
   await page.screenshot({ path: `scratch/agenda-ux/fechamento/criacao-abertura-${info.project.name}.png`, animations: 'disabled' })
   await painel.getByRole('button', { name: 'Cancelar', exact: true }).click()
-  await page.getByRole('button', { name: 'Grade por profissional', exact: true }).click()
-  await page.getByRole('button', { name: 'Novo agendamento às 11:00 — Profissional Sintético — Cardiologia', exact: true }).click()
-  painel = page.getByRole('dialog', { name: 'Novo agendamento' })
+  painel = await abrirCriacaoManual(page)
   const confirmarCriacao = painel.getByRole('checkbox', { name: /confirmo a marcação manual/ })
   await confirmarCriacao.focus()
   await visivelNoCorpo(painel, confirmarCriacao.locator('..'))
@@ -91,13 +106,13 @@ for (const unidade of ['brotas', 'ipupiara']) {
   test(`consultas curtas ${unidade}: 15/20 min proporcionais, paciente legível e detalhes por teclado/toque`, async ({ page }, info) => {
     await abrir(page, `?unidade=${unidade}&curtas`, 5)
     const ids = await page.getByTestId('registro-agenda').evaluateAll(nodes => nodes.map(n => n.getAttribute('data-registro-id')).sort())
-    await page.getByRole('button', { name: 'Grade por profissional' }).click()
+    await page.getByRole('button', { name: 'Dia', exact: true }).click()
     expect(await page.getByTestId('registro-agenda').evaluateAll(nodes => nodes.map(n => n.getAttribute('data-registro-id')).sort())).toEqual(ids)
     for (const [id, minutos] of [['curta-15', 15], ['curta-20', 20]] as const) {
       const cartao = registro(page, id)
       await cartao.scrollIntoViewIfNeeded()
       const box = await cartao.boundingBox()
-      expect(box!.height).toBeCloseTo(minutos * 3, 0)
+      expect(box!.height).toBeCloseTo(minutos * ESCALA_AGENDA, 0)
       const nome = cartao.locator('button > span').nth(1)
       const b = await nome.boundingBox()
       expect(b!.y + b!.height).toBeLessThanOrEqual(box!.y + box!.height)
@@ -112,6 +127,7 @@ for (const unidade of ['brotas', 'ipupiara']) {
       await detalhes.getByRole('button', { name: 'Fechar consulta' }).click()
       await expect(botao).toBeFocused()
     }
+    await page.getByRole('button', { name: 'Ver dia inteiro' }).click()
     await page.getByRole('button', { name: 'Primeiro agendamento' }).click()
     await page.locator('.agenda-temporal-rolagem').evaluate(el => { el.scrollTop += 120 })
     await page.evaluate(() => window.scrollTo(0, 0))
@@ -123,17 +139,15 @@ test('capturas finais: painéis preenchidos e sucesso externo após retorno sint
   if (info.project.name === 'desktop') await page.setViewportSize({ width: 1440, height: 1180 })
   await abrir(page, '?complexa', 6)
   await page.screenshot({ path: `scratch/agenda-ux/fechamento/lista-final-${info.project.name}.png`, animations: 'disabled', fullPage: true })
-  await page.getByRole('button', { name: 'Grade por profissional' }).click()
-  await page.getByRole('button', { name: 'Novo agendamento às 11:00 — Profissional Sintético — Cardiologia', exact: true }).click()
-  let painel = page.getByRole('dialog', { name: 'Novo agendamento' })
+  let painel = await abrirCriacaoManual(page)
   await painel.getByRole('combobox', { name: 'Paciente', exact: true }).fill('Ana')
   await painel.getByRole('option', { name: 'Ana Exemplo Sintético', exact: true }).click()
   await painel.getByRole('checkbox', { name: /confirmo a marcação manual/ }).check()
   await expect(painel.getByRole('button', { name: 'Agendar', exact: true })).toBeEnabled()
   await painel.locator('.agenda-formulario-conteudo').evaluate(el => { el.scrollTop = 0 })
-  await painel.getByRole('combobox', { name: /^Profissional/ }).focus()
+  await radioProfissional(painel, 'prof-2').focus()
   await geometria(painel)
-  await visivelNoCorpo(painel, painel.getByRole('combobox', { name: 'Paciente', exact: true }))
+  await visivelNoCorpo(painel, pacienteEscolhido(painel))
   await page.screenshot({ path: `scratch/agenda-ux/fechamento/criacao-final-${info.project.name}.png`, animations: 'disabled' })
   await painel.getByRole('checkbox', { name: /confirmo a marcação manual/ }).focus()
   await visivelNoCorpo(painel, painel.getByRole('checkbox', { name: /confirmo a marcação manual/ }).locator('..'))

@@ -1,5 +1,8 @@
-import { expect, test, type Page } from '@playwright/test'
+import { expect, test, type Locator, type Page } from '@playwright/test'
 import { avaliarAgendaManual, diaSemanaAgenda, janelasAgenda, validarHorarioAgenda, sugestoesHorarioAgenda } from '../../src/lib/agendaDisponibilidade'
+
+// Painel de criação: cartões de profissional (rádios nativos) ou select acima de seis.
+const radioProfissional = (escopo: Page | Locator, id: string) => escopo.locator(`input[name="novo-agendamento-profissional"][value="${id}"]`)
 
 test.beforeEach(() => test.setTimeout(90_000))
 async function preparar(page: Page, papel = 'recepcao', erro?: string, semExpediente = false, recurso = true) {
@@ -36,6 +39,8 @@ async function preparar(page: Page, papel = 'recepcao', erro?: string, semExpedi
 }
 async function abrir(page: Page) {
   await page.goto('/tests/operacional/agenda-contexto.html')
+  // Computador abre no modo Dia; estes cenários usam as ações da lista.
+  await page.getByRole('button', { name: 'Lista', exact: true }).click()
   await page.getByRole('region', { name: 'Agendamentos do dia' }).getByRole('button', { name: 'Editar agendamento' }).click()
   await expect(page.getByRole('dialog')).toBeVisible()
 }
@@ -68,7 +73,7 @@ test('política manual: criação e edição sem expediente exigem confirmação
   await page.getByRole('button', { name: '+ Novo agendamento', exact: true }).click()
   await page.getByRole('combobox', { name: 'Paciente', exact: true }).click()
   await page.getByRole('listbox', { name: 'Pacientes encontrados' }).getByRole('option').first().click()
-  await page.getByRole('dialog').getByRole('combobox', { name: 'Profissional *', exact: true }).selectOption('prof-a')
+  await radioProfissional(page.getByRole('dialog'), 'prof-a').check()
   await page.getByRole('dialog').getByRole('button', { name: 'Outro horário', exact: true }).click()
   await page.getByRole('dialog').getByLabel('Início', { exact: false }).fill('11:00')
   await expect(page.getByRole('dialog').getByRole('button', { name: 'Agendar', exact: true })).toBeDisabled()
@@ -82,6 +87,8 @@ test('diagnóstico de política: médico não recebe ações de criação nem ed
   const estado = await preparar(page, 'medico', undefined, true)
   await page.goto('/tests/operacional/agenda-contexto.html')
   await expect(page.getByRole('region', { name: 'Agendamentos do dia' })).toBeVisible()
+  // Computador abre no modo Dia; estes cenários usam as ações da lista.
+  await page.getByRole('button', { name: 'Lista', exact: true }).click()
   await expect(page.getByRole('button', { name: 'Editar agendamento' })).toHaveCount(0)
   await expect(page.getByRole('button', { name: '+ Novo agendamento', exact: true })).toHaveCount(0)
   expect(estado.escritas()).toBe(0)
@@ -190,6 +197,8 @@ test('concluído não oferece edição habilitada', async ({ page }) => {
   const estado = await preparar(page)
   estado.mudarStatus('concluido')
   await page.goto('/tests/operacional/agenda-contexto.html')
+  // Computador abre no modo Dia; estes cenários usam as ações da lista.
+  await page.getByRole('button', { name: 'Lista', exact: true }).click()
   await expect(page.getByRole('region', { name: 'Agendamentos do dia' }).getByRole('button', { name: 'Editar agendamento' })).toHaveCount(0)
 })
 test('conflito local impede envio e distingue outro agendamento do próprio', async ({ page }) => {
@@ -293,7 +302,7 @@ test('criação manual: erro preserva dados; envio repetido não duplica e suces
   await page.getByRole('button', { name: '+ Novo agendamento', exact: true }).click()
   await page.getByRole('combobox', { name: 'Paciente', exact: true }).click()
   await page.getByRole('listbox', { name: 'Pacientes encontrados' }).getByRole('option').first().click()
-  await page.getByRole('combobox', { name: 'Profissional *', exact: true }).selectOption('prof-a')
+  await radioProfissional(page.getByRole('dialog'), 'prof-a').check()
   await page.getByRole('dialog').getByRole('button', { name: 'Outro horário', exact: true }).click()
   await page.getByLabel('Início', { exact: false }).fill('11:00')
   await page.getByLabel('Observações').fill('Rascunho sintético preservado')
@@ -321,7 +330,7 @@ for (const caso of ['folga', 'falha', 'conflito']) test(`criação manual bloque
   await page.getByRole('button', { name: '+ Novo agendamento', exact: true }).click()
   await page.getByRole('combobox', { name: 'Paciente', exact: true }).click()
   await page.getByRole('listbox', { name: 'Pacientes encontrados' }).getByRole('option').first().click()
-  await page.getByRole('combobox', { name: 'Profissional *', exact: true }).selectOption('prof-a')
+  await radioProfissional(page.getByRole('dialog'), 'prof-a').check()
   await page.getByRole('dialog').getByRole('button', { name: 'Outro horário', exact: true }).click()
   await page.getByLabel('Início', { exact: false }).fill(caso === 'conflito' ? '10:10' : '11:00')
   await expect(page.getByRole('dialog')).toContainText(caso === 'folga' ? 'folga ou bloqueio explícito' : caso === 'falha' ? 'Falha ao consultar disponibilidade' : 'Há outro agendamento')

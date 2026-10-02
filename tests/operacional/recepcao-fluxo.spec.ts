@@ -1,4 +1,8 @@
-import { expect, test, type Page } from '@playwright/test'
+
+// Painel de criação: cartões de profissional (rádios nativos) ou select acima de seis.
+const radioProfissional = (escopo: Page | Locator, id: string) => escopo.locator(`input[name="novo-agendamento-profissional"][value="${id}"]`)
+const pacienteEscolhido = (escopo: Page | Locator) => escopo.getByRole('group', { name: 'Paciente selecionado' })
+import { expect, test, type Locator, type Page } from '@playwright/test'
 
 test.beforeEach(() => { test.setTimeout(90_000) })
 
@@ -101,8 +105,8 @@ test('resposta atrasada da chegada não mostra sucesso na outra clínica', async
 
 async function cadastrarEAgendar(page: Page, unidade: string, profissionalId: string) {
   await page.goto(`/tests/operacional/agenda-contexto.html?unidade=${unidade}`, { waitUntil: 'domcontentloaded' })
-  await page.getByRole('button', { name: /Novo agendamento/ }).click()
-  await page.getByRole('combobox', { name: /^Profissional/ }).selectOption(profissionalId)
+  await page.getByRole('button', { name: '+ Novo agendamento', exact: true }).click()
+  await radioProfissional(page.getByRole('dialog'), profissionalId).check()
   await page.getByRole('dialog').getByRole('button', { name: 'Outro horário', exact: true }).click()
   await page.getByLabel(/^Início/).fill('10:00')
   await page.getByRole('button', { name: '+ Novo paciente' }).click()
@@ -110,7 +114,7 @@ async function cadastrarEAgendar(page: Page, unidade: string, profissionalId: st
   await page.getByLabel('Data de nascimento', { exact: true }).fill('1990-05-18')
   await page.getByRole('button', { name: /Avançar para Endereço/ }).click()
   await page.getByRole('button', { name: 'Salvar paciente' }).click()
-  await expect(page.getByRole('combobox', { name: /^Paciente/ })).toHaveValue('Paciente Recepção Sintética')
+  await expect(pacienteEscolhido(page)).toContainText('Paciente Recepção Sintética')
   await expect(page.getByLabel('CPF pendente de Paciente Recepção Sintética')).toBeVisible()
   await page.getByRole('button', { name: 'Informar depois' }).click()
   await page.getByRole('button', { name: 'Agendar', exact: true }).click()

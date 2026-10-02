@@ -1,5 +1,186 @@
 # Agenda — experiência da recepção
 
+## Redesenho visual da Agenda — publicação autorizada (02/10/2026)
+
+Estado em 02/10/2026 15:51 -03:00: **publicação autorizada em andamento** das três entregas abaixo
+(painel “Novo agendamento”, página principal e acabamento). Resultado do push/deploy registrado depois,
+fora deste commit, como nas publicações anteriores.
+
+### Conferência por leitura no principal — 02/10/2026 ~15:45–15:50 -03:00
+
+Aplicação local 127.0.0.1:3000 (principal xftnkusbyqzyvzrovroj), sessão autorizada Recepção/Brotas já
+aberta, profissional de teste da clínica. Somente leitura; nada salvo, criado, editado, chegada ou expediente.
+- Sexta 02/10 (sem expediente cadastrado): indicadores 2 agendamentos / 1 profissional, 2 a confirmar,
+  0 aguardando, horários livres “—” + “sem expediente cadastrado”, lista de espera 1. Dia e Lista com os
+  mesmos 2 registros; cartões “Agendado” com horário; coluna “Cardiologia Teste · sem expediente” com bloco
+  neutro e nenhum livre; janela 09:00–11:00 ajustada aos agendamentos; legenda Agendado 2, demais 0.
+- Terça 06/10 pelo mini calendário (dia marcado): 0 agendamentos, horários livres 20 / 1 profissional com
+  expediente, coluna “· 20 livres”, cartões “+ 08:00 livre” … “+ 17:30 livre”, janela 08:00–18:00.
+- Lista de espera: profissional · desde DD/MM, Encaixar e “+ Adicionar à lista de espera”.
+- Novo agendamento pelo livre 10:00: subtítulo da clínica, seções 1–4, profissional marcado “· 30 min”, faixa
+  com terça “20 livres” e demais “Sem expediente”, bloco 10:00 selecionado, rodapé “Ter, 06/10 · 10:00–10:30 ·
+  profissional | 30 min · Falta: paciente”; paciente escolhido no formulário mostrou o cartão (iniciais,
+  “Paciente da Clínica Brotas”, Trocar) e o rodapé completo. Fechado em Cancelar → Descartar, sem enviar.
+- Novo agendamento pelo botão: “Falta: paciente, profissional e horário”; fechado. Editar de agendamento
+  existente: Salvar desabilitado; fechado sem alteração.
+- Rede: 32 chamadas durante as conferências, todas HTTP 200, nenhuma de gravação (RPCs só de consulta:
+  agenda_manual_disponivel e paciente_cpf_pendente). Console: apenas os 2 erros 400 preexistentes na carga
+  da sessão (usuarios_clinicas com usuario_id vazio, usePapelNaClinica), sem relação com a Agenda.
+
+## Acabamento visual da página principal (LOCAL, 02/10/2026 15:43 -03:00)
+
+Estado: **implementado e testado localmente; sem commit, push, deploy ou banco.** HEAD 9fe8df8;
+soma-se às alterações locais da página principal e do painel “Novo agendamento” (seções abaixo).
+Somente apresentação; nenhuma alteração em banco, RPC, permissões, hooks, política, outros módulos,
+AppShell ou Sidebar.
+
+**Ajustes:** escala da grade Dia 3 → 1,6 px/min (constante ESCALA_AGENDA em src/lib/agendaTemporal.ts):
+30 min = 48 px, livre clicável = 44 px; duração/posição proporcionais. Acima da grade compactados:
+indicadores, espaçamentos, barra (seletor Dia|Lista sem folga, botões de 44 px mantidos), cabeçalho das
+colunas e rótulo do eixo. Resultado na prévia sintética (com a faixa de aviso da prévia, ausente no app real):
+em 1440×900 o rótulo 12:00 termina em 896 px. Cartões: nome e horário em uma linha cada com reticências;
+título (title) com nome, situação, disponibilidade e recebimento; nome acessível inalterado + disponibilidade;
+em cartão estreito (container query ≤ 170 px) some o texto da situação e fica o ponto; consultas curtas
+em linha única. Cabeçalho: nome em uma linha com reticências, “especialidade · N livres” na segunda,
+“Expediente” virou botão de ícone (IconeCalendario existente) com nome acessível e 44 px. Celular:
+indicadores em faixa de 5 itens (número + rótulo curto Total/A confirmar/Aguardando/Livres/Espera; rótulo
+completo e apoio para leitor de tela), botão “+ Novo” visível com nome acessível “+ Novo agendamento”,
+data curta da barra só para leitor de tela; primeiro agendamento em 473–667 px de 844. “Horários
+relevantes · HH:MM–HH:MM / Ver dia inteiro” (e Início do dia / Primeiro agendamento no dia inteiro) na barra.
+
+**Arquivos:** src/lib/agendaTemporal.ts (ESCALA_AGENDA, janelaVisivelAgenda), src/components/agenda/
+GradeTemporalAgenda.tsx (dia inteiro controlado pela página), src/pages/Agenda.tsx, src/index.css,
+src/config/notasEvolucao.json; testes agenda-pagina (3 verificações novas), agenda-refinamento e agenda-fechamento.
+
+**Testes (prévia sintética):** agenda-pagina 23/23 (+4 execuções puladas de propósito: verificações de
+1440×900 só no desktop e de 390×844 só no celular); novo-painel + horarios + experiencia + fechamento 81/81
+e refinamento 27/27 (3 telas); agenda-edicao + recepcao-fluxo 76/76; operacional.spec (Agenda) 12/12;
+build e lint sem erros novos (aviso de Fast Refresh evitado movendo janelaVisivelAgenda para src/lib).
+Ajustes de testes: escala fixa 3 → ESCALA_AGENDA (posição, alturas de 15/20 min, dia inteiro); rolagem
+do dia inteiro passou de “> 1400” para o valor exato (09:00 − 30 min) × escala; texto da janela na barra;
+cartões curtos verificados como linha única (flex, sem quebra) em vez de “uma coluna de grade”.
+Falha intermediária: essa última asserção (6 execuções) antes do ajuste.
+
+**Limites:** consultas de 15/20 min ficam com 24/32 px (abaixo de 44 px) pela proporcionalidade — o
+cartão inteiro continua clicável e a lista oferece alvo completo; no celular em modo Dia (não é o padrão)
+cartões sobrepostos ficam estreitos e muito abreviados, e uma consulta curta estreita mostra só o horário.
+Capturas: scratch/agenda-ux/pagina-acabamento/{desktop,tablet,celular}-{padrao,complexa}.png,
+desktop-complexa-escuro.png, primeira-tela-1440x900.png, primeira-tela-390x844.png, sobreposicao-*.png.
+Não validado: banco/sessão real, leitor de tela real, zoom nativo. Próxima ação: revisão e autorização de publicação.
+
+## Página principal conforme o mockup aprovado (LOCAL, 02/10/2026 12:21 -03:00)
+
+Estado: **implementado e testado localmente; sem commit, push, deploy ou banco.** Branch
+codex/resgate-local-2026-09-26, HEAD 9fe8df8; soma-se às alterações locais do painel “Novo
+agendamento” (seção abaixo), também não commitadas. O pedido do usuário chegou truncado após
+“sem rolagem horizontal da página (a grade pode”; testes/entrega seguiram o padrão das etapas anteriores.
+Somente apresentação e dados já carregados; nenhuma consulta nova, RPC, política, RLS ou banco.
+Não implementados (por instrução): visão Semana, Remarcar no topo, busca global, “Turno da manhã”;
+AppShell e Sidebar intactos.
+
+**Implementado:** título com data por extenso; 5 indicadores (agendamentos do dia, a confirmar =
+agendado, aguardando atendimento, horários livres = blocos livres por blocosHorarioAgenda/janelasAgenda
+dos profissionais com expediente — “—” com “sem expediente cadastrado” ou “disponibilidade não
+confirmada” —, lista de espera); duas colunas no computador (grade/lista + coluna de 21rem). Barra:
+dia anterior, Hoje, próximo, data curta, Dia | Lista, filtro e busca. Grade: cabeçalho com iniciais,
+nome e “especialidade · N livres”; cartão por situação (fundo, ponto + texto, “início–término · N min”
+monoespaçado); “+ HH:MM livre” tracejado só dentro do expediente (pré-seleção existente); blocos
+neutros “Sem expediente”, “Fora do expediente”, “Folga”, “Disponibilidade não confirmada”; escala
+3 px/min mantida; janela padrão do primeiro ao último horário relevante (sempre inclui todos os
+agendamentos) com “Ver dia inteiro” (Início do dia / Primeiro agendamento). Coluna direita: mini
+calendário (navegação de mês, dia escolhido na cor primária, recolhível no celular/tablet), lista de
+espera com “profissional · desde DD/MM”, Encaixar (mesma ação de Agendar) e “+ Adicionar à lista de
+espera”, e “Situação dos atendimentos” com ponto, nome e contagem. Computador abre em Dia; tablet e
+celular em Lista, com a coluna direita empilhada. Ações, consulta, filtros, busca, feedback, descarte de
+contexto antigo e distinção erro × ausência de expediente preservados.
+
+**Tokens:** criados --status-agendado-* e --status-faltou-* (claro/escuro) e --status-*-ponto para as
+7 situações. Medição com fundo composto sobre o cartão mostrou textos do escuro existentes entre
+3,5 e 4,2:1; ajustados (texto e etiqueta do escuro, etiquetas de confirmado/aguardando/em atendimento
+no claro) — todos ≥ 4,5:1 nos dois modos. Esses tokens só são usados pela Agenda. Ponto no escuro
+usa a cor do texto. “Faltou” não existe nos dados: tokens criados, legenda mostra só as 6 situações reais.
+
+**Arquivos:** novos src/components/agenda/MiniCalendarioAgenda.tsx e tests/operacional/agenda-pagina.spec.ts;
+alterados src/pages/Agenda.tsx (página principal), src/components/agenda/GradeTemporalAgenda.tsx (reescrito:
+colunas com livres/neutros e janela), src/index.css (tokens de situação e estilos da grade),
+src/config/notasEvolucao.json e seletores de testes.
+
+**Testes (prévia sintética):** agenda-pagina 18/18 (6 × 3 telas: estrutura e modo inicial, indicador
+sem expediente × falha, grade, coluna direita, Lista no computador, escuro + Ipupiara com contraste ≥ 4,5).
+Rodada final com o código definitivo: pagina + novo-painel + horarios + experiencia + refinamento +
+fechamento 126/126 (3 telas); agenda-edicao + recepcao-fluxo 76/76 (desktop/celular); operacional.spec
+(Agenda) 12/12 (3 telas). Build e lint sem erros novos. Falhas intermediárias corrigidas: alvos de toque
+abaixo de 44 px (setas do dia 38,6 px; dias do calendário 43,7 px) — produto ajustado; seletor
+/Novo agendamento/ ambíguo com os cartões livres; textos que mudaram de lugar; 1 timeout de compilação
+a frio no primeiro teste (não repetiu). Ajustes de testes (asserções preservadas): cenários de lista
+clicam “Lista” no computador; “Grade por profissional” → “Dia”; “Aguardando vaga”/“Agendar” →
+“Lista de espera”/“Encaixar”; criação fora do expediente via “+ Novo agendamento” → “Outro horário”
+(antes pelo clique na grade, hoje bloco neutro); rolagem/“23:30” verificados em “Ver dia inteiro”;
+nome da clínica (agora só no AppShell) → contexto da clínica B carregado.
+
+**Prévia e capturas:** http://127.0.0.1:4192/tests/operacional/agenda-preview.html (?complexa,
+?unidade=ipupiara, ?sem-expediente, ?falha). Capturas em scratch/agenda-ux/pagina: inicial, dia,
+lateral, lista, escuro-ipupiara × {desktop,tablet,mobile}.
+
+**Diferenças restantes em relação ao mockup:** linha “· serviço” virou “· N min” (sem dado de serviço);
+“Faltou” e “Finalizado” → situações reais (Concluído); “Almoço” → “Fora do expediente”; marcação fora
+do expediente não parte da grade; filtro/busca em segunda linha da barra; apoio dos indicadores
+adaptado aos dados; ação “Expediente” no cabeçalho preservada; links na cor primária com contraste
+baixo no escuro (regra do DS). Não validado: banco/sessão real, leitor de tela real, zoom nativo.
+Próxima ação: revisão do usuário; commit/publicação somente com autorização específica.
+
+## Fidelidade visual do painel “Novo agendamento” (LOCAL, 02/10/2026 11:32 -03:00)
+
+Estado: **implementado e testado localmente; sem commit, push, deploy ou banco.** Branch
+codex/resgate-local-2026-09-26, HEAD 9fe8df8; alterações não commitadas. Somente apresentação
+do painel de criação, guiada pelo mockup aprovado (imagem do painel enviada pelo usuário);
+tokens do projeto, sem cores/medidas da imagem. Tipo de atendimento e WhatsApp não implementados.
+
+**Implementado:** subtítulo com a clínica ativa (prop opcional em ModalBase/PainelAgenda; fechar
+já tinha 44 px); seções numeradas 1. Paciente, 2. Profissional, 3. Data e horário, 4. Observações;
+cartão do paciente (iniciais, nome, “Paciente da <clínica>”, ação Trocar que volta à pesquisa,
+foco acompanha a troca) usando só id/nome já carregados; profissionais em cartões (rádios nativos,
+setas/Espaço) até 6, select acima disso, duração junto ao escolhido; faixa de dias com número em
+JetBrains Mono e dia escolhido preenchido na cor primária, “Outra data” compacta e estado vazio
+dentro da seção; bloco Início/Duração/Término removido do meio; rodapé com resumo
+“Ter, 06/10 · 10:00–10:30 · Profissional” e duração, ou “Falta: …”; lista “Para agendar:” só
+para leitor de tela (status + aria-describedby do botão). Observações: o título é o rótulo do campo.
+Interpretação: com profissional, data e início definidos, o resumo aparece e pendências restantes
+seguem na 2ª linha (“30 min · Falta: confirmação manual”), para o término ficar visível antes de confirmar.
+
+**Arquivos:** novos src/components/agenda/EscolhaProfissional.tsx e
+tests/operacional/agenda-novo-painel.spec.ts; alterados src/pages/Agenda.tsx (só ModalNovoAgendamento),
+src/components/agenda/{SelecionarPaciente,FaixaDiasAgenda,PainelAgenda}.tsx, src/components/ModalBase.tsx
+(prop aditiva), src/index.css (.agenda-fonte-tecnica), src/config/notasEvolucao.json, harness
+agenda-preview.tsx (?muitos-profissionais) e seletores de testes. Edição, lista, grade, sidebar,
+DisponibilidadeFormulario, hooks, RPCs, política e banco não alterados.
+
+**Testes (prévia sintética, sem banco real):** agenda-novo-painel 21/21 (7 × desktop/tablet/celular);
+agenda-novo-painel + horarios + experiencia + refinamento + fechamento 108/108 (3 telas);
+agenda-edicao + recepcao-fluxo 76/76 (desktop/celular); operacional.spec seleção Agenda 12/12 (3 telas);
+refinamento + edicao reconfirmados 41/41 (desktop) após remover helper não usado. Rodada intermediária:
+14 falhas por getByLabel('Observações') ambíguo (região e campo com o mesmo nome) — corrigido no
+produto. Build e lint sem erros novos. Ajustes de seletores (asserções preservadas): select de
+profissional → rádio por valor; valor do combobox de paciente → cartão “Paciente selecionado”;
+“Data” → “Outra data”; “Limpar seleção” → “Trocar”; texto “Paciente selecionado:” → ausência do cartão.
+
+**Lacuna encontrada na Etapa 1 publicada (9fe8df8):** operacional.spec não estava na regressão daquela
+etapa; em worktree temporária no 9fe8df8, 2 de 4 testes de Agenda falharam (timeout em “Início”, atrás
+de “Outro horário”). Falha de teste, não da interface; corrigida nos testes locais desta tarefa.
+
+**Prévia e capturas:** http://127.0.0.1:4192/tests/operacional/agenda-preview.html?terca (Ipupiara:
+&unidade=ipupiara; ?sem-expediente; ?muitos-profissionais). Capturas em scratch/agenda-ux/fidelidade:
+painel-vazio, paciente-escolhido, profissional-blocos, horario-resumo, sem-expediente, escuro,
+escuro-topo, ipupiara-resumo × {desktop,tablet,mobile}.
+
+**Diferenças restantes em relação ao mockup:** ver lista entregue ao usuário nesta data (tipo de
+atendimento/WhatsApp excluídos; seção 2 “Profissional”; 7 dias; blocos/“Outro horário” do componente
+compartilhado com a edição; botão fechar sem borda; título no tamanho do DS; linha secundária do
+paciente sem idade/telefone/última consulta/lista de espera; “Data escolhida” extra; resumo sem rótulo
+“Resumo”). Não validado: sessão real, leitor de tela real, zoom nativo; contraste da cor primária
+como texto no modo escuro (regra do DS de cor igual nos dois modos) merece revisão.
+Próxima ação: revisão do usuário; publicação somente com autorização específica.
+
 ## Etapa 1 do redesenho — seletor visual de horários (02/10/2026)
 
 Estado em 02/10/2026 10:50 -03:00: **publicação autorizada em andamento.** Implementação de

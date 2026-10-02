@@ -1,4 +1,8 @@
-import { expect, test, type Page } from '@playwright/test'
+
+// Painel de criação: cartões de profissional (rádios nativos) ou select acima de seis.
+const radioProfissional = (escopo: Page | Locator, id: string) => escopo.locator(`input[name="novo-agendamento-profissional"][value="${id}"]`)
+const pacienteEscolhido = (escopo: Page | Locator) => escopo.getByRole('group', { name: 'Paciente selecionado' })
+import { expect, test, type Locator, type Page } from '@playwright/test'
 
 // Interface real com serviços sintéticos do harness. Não é autenticação nem banco real.
 const previa = '/tests/operacional/agenda-preview.html'
@@ -6,6 +10,8 @@ test.beforeEach(() => test.setTimeout(90_000))
 async function abrir(page: Page, query = '') {
   await page.goto(previa + query, { waitUntil: 'domcontentloaded' })
   await expect(page.getByTestId('registro-agenda')).toHaveCount(3)
+  // Computador abre no modo Dia; estes cenários usam as ações da lista.
+  await page.getByRole('button', { name: 'Lista', exact: true }).click()
 }
 async function semOverflow(page: Page) {
   const medidas = await page.evaluate(() => ({ largura: document.documentElement.scrollWidth, viewport: innerWidth }))
@@ -18,11 +24,11 @@ for (const unidade of ['brotas', 'ipupiara']) {
     await expect(page.getByRole('button', { name: 'Lista', exact: true })).toHaveAttribute('aria-pressed', 'true')
     const lista = await page.getByTestId('registro-agenda').allTextContents()
     expect(lista.map(s => s.match(/\d{2}:\d{2}/)?.[0])).toEqual(['09:00', '10:00', '16:00'])
-    await expect(page.getByRole('region', { name: 'Aguardando vaga' })).toContainText('Davi Exemplo Sintético')
+    await expect(page.getByRole('region', { name: 'Lista de espera' })).toContainText('Davi Exemplo Sintético')
     await expect(page.getByRole('region', { name: 'Agendamentos do dia' })).not.toContainText('Davi Exemplo Sintético')
     await semOverflow(page)
     if (unidade === 'brotas') await page.screenshot({ path: `scratch/agenda-ux/lista-${info.project.name}.png`, fullPage: true })
-    await page.getByRole('button', { name: 'Grade por profissional' }).click()
+    await page.getByRole('button', { name: 'Dia', exact: true }).click()
     expect((await page.getByTestId('registro-agenda').evaluateAll(nodes => nodes.map(n => n.getAttribute('data-registro-id')))).sort()).toEqual(['ag-1', 'ag-2', 'ag-3'])
     await semOverflow(page)
     if (unidade === 'brotas') await page.screenshot({ path: `scratch/agenda-ux/grade-${info.project.name}.png`, fullPage: true })
@@ -43,10 +49,10 @@ test('seleção explícita por teclado, criação manual e confirmação fora do
   const painel = page.getByRole('dialog', { name: 'Novo agendamento' })
   const paciente = painel.getByRole('combobox', { name: 'Paciente', exact: true })
   await paciente.fill('Ana')
-  await expect(painel.getByText(/^Paciente selecionado:/)).toHaveCount(0)
+  await expect(pacienteEscolhido(painel)).toHaveCount(0)
   await paciente.press('Enter')
-  await expect(paciente).toHaveValue('Ana Exemplo Sintético')
-  await painel.getByRole('combobox', { name: /^Profissional/ }).selectOption('prof-2')
+  await expect(pacienteEscolhido(painel)).toContainText('Ana Exemplo Sintético')
+  await radioProfissional(painel, 'prof-2').check()
   await painel.getByRole('button', { name: 'Outro horário', exact: true }).click()
   await painel.getByLabel(/^Início/).fill('11:00')
   await painel.getByLabel('Observações').fill('Observação exclusivamente sintética')
@@ -103,7 +109,7 @@ test('falha de leitura não esconde os registros nem autoriza marcação manual'
   const painel = page.getByRole('dialog', { name: 'Novo agendamento' })
   await painel.getByRole('combobox', { name: 'Paciente', exact: true }).fill('Ana')
   await painel.getByRole('option', { name: 'Ana Exemplo Sintético' }).click()
-  await painel.getByRole('combobox', { name: /^Profissional/ }).selectOption('prof-2')
+  await radioProfissional(painel, 'prof-2').check()
   await painel.getByRole('button', { name: 'Outro horário', exact: true }).click()
   await painel.getByLabel(/^Início/).fill('11:00')
   await expect(painel.getByRole('alert')).toContainText('Falha ao consultar disponibilidade')
@@ -123,10 +129,10 @@ test('consulta e espera usam fluxos distintos; chegada preserva edição na mesm
   await expect(edicao).toContainText('Chegada preservada')
   await page.keyboard.press('Escape')
   await expect(edicao).toHaveCount(0)
-  await page.getByRole('region', { name: 'Aguardando vaga' }).getByRole('button', { name: 'Agendar', exact: true }).click()
+  await page.getByRole('region', { name: 'Lista de espera' }).getByRole('button', { name: /^Encaixar/ }).click()
   const criacao = page.getByRole('dialog', { name: 'Novo agendamento' })
-  await expect(criacao.getByRole('combobox', { name: 'Paciente', exact: true })).toHaveValue('Davi Exemplo Sintético')
-  await expect(criacao.getByRole('combobox', { name: /^Profissional/ })).toHaveValue('prof-2')
+  await expect(pacienteEscolhido(criacao)).toContainText('Davi Exemplo Sintético')
+  await expect(radioProfissional(criacao, 'prof-2')).toBeChecked()
   await criacao.getByRole('button', { name: 'Outro horário', exact: true }).click()
   await expect(criacao.getByLabel(/^Início/)).toHaveValue('')
   await expect(criacao.getByRole('button', { name: 'Agendar', exact: true })).toBeDisabled()

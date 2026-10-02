@@ -23,12 +23,14 @@ export function FaixaDiasAgenda({ clinicaId, profissionalId, data, duracao, onDa
         const selecionado = dia.data === data
         const d = dataCivil(dia.data)
         const situacao = textoSituacao(dia, resumo.estado)
+        const fechado = dia.situacao === 'folga' || dia.situacao === 'sem-expediente'
+        const secundario = selecionado ? 'text-[var(--texto-sobre-primaria)]' : 'text-[var(--texto-secundario)]'
         return <button key={dia.data} type="button" aria-pressed={selecionado} disabled={ocupado} onClick={() => onData(dia.data)}
           aria-label={`${d.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })}${situacao && situacao !== '…' ? `: ${situacao}` : ''}`}
-          className={`flex min-h-16 flex-col items-center justify-center gap-0.5 rounded-lg border px-1 py-1.5 text-center transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cor-primaria)] disabled:opacity-60 ${selecionado ? 'border-[var(--cor-primaria)] bg-[var(--cor-primaria-suave)]' : 'border-[var(--borda)] bg-[var(--fundo-card)] hover:border-[var(--cor-primaria)]'}`}>
-          <span className="text-[11px] font-medium uppercase tracking-wide text-[var(--texto-secundario)]">{d.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '')}</span>
-          <span className={`numero-tabular text-base font-semibold leading-none ${selecionado ? 'text-[var(--cor-primaria)]' : 'text-[var(--texto-principal)]'}`}>{String(d.getDate()).padStart(2, '0')}</span>
-          <span className="min-h-4 text-[11px] leading-tight text-[var(--texto-secundario)]">{situacao}</span>
+          className={`flex min-h-20 flex-col items-center justify-center gap-1 rounded-xl border px-1 py-2 text-center transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cor-primaria)] disabled:opacity-60 ${selecionado ? 'border-[var(--cor-primaria)] bg-[var(--cor-primaria)]' : fechado ? 'border-transparent bg-[var(--fundo-pagina)] hover:border-[var(--borda)]' : 'border-[var(--borda)] bg-[var(--fundo-card)] hover:border-[var(--cor-primaria)]'}`}>
+          <span className={`text-xs font-medium capitalize ${secundario}`}>{d.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '')}</span>
+          <span className={`agenda-fonte-tecnica text-xl font-semibold leading-none ${selecionado ? 'text-[var(--texto-sobre-primaria)]' : fechado ? 'text-[var(--texto-secundario)]' : 'text-[var(--texto-principal)]'}`}>{String(d.getDate()).padStart(2, '0')}</span>
+          <span className={`min-h-4 text-[11px] leading-tight ${secundario}`}>{situacao}</span>
         </button>
       })}
     </div>

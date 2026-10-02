@@ -178,22 +178,41 @@ body {
   --status-confirmado-borda: #15803d;
   --status-confirmado-texto: #14532d;
   --status-confirmado-badge-fundo: #c9ead3;
-  --status-confirmado-badge-texto: #15803d;
+  --status-confirmado-badge-texto: #166534;
   --status-em-atendimento-fundo: #d6f3f3;
   --status-em-atendimento-borda: #0e7c86;
   --status-em-atendimento-texto: #0b4f55;
   --status-em-atendimento-badge-fundo: #bde8e8;
-  --status-em-atendimento-badge-texto: #0e7c86;
+  --status-em-atendimento-badge-texto: #0b5e66;
   --status-aguardando-fundo: #fdecd1;
   --status-aguardando-borda: #b45309;
   --status-aguardando-texto: #7c3a0a;
   --status-aguardando-badge-fundo: #fadfb3;
-  --status-aguardando-badge-texto: #b45309;
+  --status-aguardando-badge-texto: #92400e;
   --status-cancelado-fundo: #fbe1e1;
   --status-cancelado-borda: #b91c1c;
   --status-cancelado-texto: #7f1d1d;
   --status-cancelado-badge-fundo: #f7cfcf;
   --status-cancelado-badge-texto: #b91c1c;
+  /* Situações complementares da Agenda (v3): agendado (neutro) e faltou. */
+  --status-agendado-fundo: #eef1f5;
+  --status-agendado-borda: #64748b;
+  --status-agendado-texto: #334155;
+  --status-agendado-badge-fundo: #e2e8f0;
+  --status-agendado-badge-texto: #475569;
+  --status-faltou-fundo: #fde8ee;
+  --status-faltou-borda: #be123c;
+  --status-faltou-texto: #881337;
+  --status-faltou-badge-fundo: #fbd0dc;
+  --status-faltou-badge-texto: #9f1239;
+  /* Ponto indicador: acompanha a borda de cada situação nos dois modos. */
+  --status-agendado-ponto: var(--status-agendado-borda);
+  --status-confirmado-ponto: var(--status-confirmado-borda);
+  --status-aguardando-ponto: var(--status-aguardando-borda);
+  --status-em-atendimento-ponto: var(--status-em-atendimento-borda);
+  --status-concluido-ponto: var(--status-concluido-borda);
+  --status-faltou-ponto: var(--status-faltou-borda);
+  --status-cancelado-ponto: var(--status-cancelado-borda);
 }
 
 [data-theme="escuro"] {
@@ -260,29 +279,47 @@ body {
 
   --status-concluido-borda: color-mix(in srgb, #6b3fa0 85%, white);
   --status-concluido-fundo: color-mix(in srgb, #6b3fa0 22%, transparent);
-  --status-concluido-texto: color-mix(in srgb, #6b3fa0 70%, white);
+  --status-concluido-texto: color-mix(in srgb, #6b3fa0 50%, white);
   --status-concluido-badge-fundo: color-mix(in srgb, #6b3fa0 30%, transparent);
-  --status-concluido-badge-texto: color-mix(in srgb, #6b3fa0 78%, white);
+  --status-concluido-badge-texto: color-mix(in srgb, #6b3fa0 50%, white);
   --status-confirmado-borda: color-mix(in srgb, #15803d 85%, white);
   --status-confirmado-fundo: color-mix(in srgb, #15803d 22%, transparent);
-  --status-confirmado-texto: color-mix(in srgb, #15803d 70%, white);
+  --status-confirmado-texto: color-mix(in srgb, #15803d 50%, white);
   --status-confirmado-badge-fundo: color-mix(in srgb, #15803d 30%, transparent);
-  --status-confirmado-badge-texto: color-mix(in srgb, #15803d 78%, white);
+  --status-confirmado-badge-texto: color-mix(in srgb, #15803d 50%, white);
   --status-em-atendimento-borda: color-mix(in srgb, #0e7c86 85%, white);
   --status-em-atendimento-fundo: color-mix(in srgb, #0e7c86 22%, transparent);
-  --status-em-atendimento-texto: color-mix(in srgb, #0e7c86 70%, white);
+  --status-em-atendimento-texto: color-mix(in srgb, #0e7c86 50%, white);
   --status-em-atendimento-badge-fundo: color-mix(in srgb, #0e7c86 30%, transparent);
-  --status-em-atendimento-badge-texto: color-mix(in srgb, #0e7c86 78%, white);
+  --status-em-atendimento-badge-texto: color-mix(in srgb, #0e7c86 50%, white);
   --status-aguardando-borda: color-mix(in srgb, #b45309 85%, white);
   --status-aguardando-fundo: color-mix(in srgb, #b45309 22%, transparent);
-  --status-aguardando-texto: color-mix(in srgb, #b45309 70%, white);
+  --status-aguardando-texto: color-mix(in srgb, #b45309 50%, white);
   --status-aguardando-badge-fundo: color-mix(in srgb, #b45309 30%, transparent);
-  --status-aguardando-badge-texto: color-mix(in srgb, #b45309 78%, white);
+  --status-aguardando-badge-texto: color-mix(in srgb, #b45309 50%, white);
   --status-cancelado-borda: color-mix(in srgb, #b91c1c 85%, white);
   --status-cancelado-fundo: color-mix(in srgb, #b91c1c 22%, transparent);
-  --status-cancelado-texto: color-mix(in srgb, #b91c1c 70%, white);
+  --status-cancelado-texto: color-mix(in srgb, #b91c1c 50%, white);
   --status-cancelado-badge-fundo: color-mix(in srgb, #b91c1c 30%, transparent);
-  --status-cancelado-badge-texto: color-mix(in srgb, #b91c1c 78%, white);
+  --status-cancelado-badge-texto: color-mix(in srgb, #b91c1c 50%, white);
+  --status-agendado-borda: color-mix(in srgb, #64748b 85%, white);
+  --status-agendado-fundo: color-mix(in srgb, #64748b 22%, transparent);
+  --status-agendado-texto: color-mix(in srgb, #64748b 45%, white);
+  --status-agendado-badge-fundo: color-mix(in srgb, #64748b 30%, transparent);
+  --status-agendado-badge-texto: color-mix(in srgb, #64748b 50%, white);
+  --status-faltou-borda: color-mix(in srgb, #be123c 85%, white);
+  --status-faltou-fundo: color-mix(in srgb, #be123c 22%, transparent);
+  --status-faltou-texto: color-mix(in srgb, #be123c 50%, white);
+  --status-faltou-badge-fundo: color-mix(in srgb, #be123c 30%, transparent);
+  --status-faltou-badge-texto: color-mix(in srgb, #be123c 50%, white);
+  /* No escuro, o ponto usa a cor do texto da situação para manter contraste com o fundo suave. */
+  --status-agendado-ponto: var(--status-agendado-texto);
+  --status-confirmado-ponto: var(--status-confirmado-texto);
+  --status-aguardando-ponto: var(--status-aguardando-texto);
+  --status-em-atendimento-ponto: var(--status-em-atendimento-texto);
+  --status-concluido-ponto: var(--status-concluido-texto);
+  --status-faltou-ponto: var(--status-faltou-texto);
+  --status-cancelado-ponto: var(--status-cancelado-texto);
 }
 
 /* Componentes de feedback source-owned conforme composição shadcn/ui. */
@@ -337,6 +374,9 @@ body {
 .app-alert-dialog-button:focus-visible { outline: 2px solid var(--cor-primaria); outline-offset: 2px; }
 .app-alert-dialog-button:disabled { opacity: .55; cursor: wait; }
 @keyframes feedback-fade-in { from { opacity: 0; } }
+/* Agenda: números técnicos (dia da faixa, resumo do horário) em JetBrains Mono, como os rótulos técnicos v3. */
+.agenda-fonte-tecnica { font-family: 'JetBrains Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+
 /* Agenda: painel modal nativo, tela inteira no celular, ações fora da rolagem. */
 .painel-agenda[open] { display: flex; flex-direction: column; }
 .agenda-formulario { display: flex; flex: 1; flex-direction: column; min-height: 0; overflow: hidden; }
@@ -355,22 +395,40 @@ body {
 .agenda-acao-compacta:disabled { opacity: .5; }
 .agenda-temporal-rolagem { max-height: 620px; overflow: auto; position: relative; overscroll-behavior: contain; }
 .agenda-temporal { display: grid; min-width: 100%; width: max-content; }
-.agenda-temporal-cabecalho, .agenda-temporal-canto { position: sticky; top: 0; z-index: 3; background: var(--fundo-card); border-bottom: 1px solid var(--borda); padding: 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.agenda-temporal-cabecalho, .agenda-temporal-canto { position: sticky; top: 0; z-index: 3; background: var(--fundo-card); border-bottom: 1px solid var(--borda); padding: 2px 2px 2px 10px; display: flex; align-items: center; justify-content: space-between; gap: 4px; min-width: 0; }
 .agenda-temporal-canto { left: 0; z-index: 4; font-size: 12px; }
 .agenda-temporal-eixo { position: sticky; left: 0; z-index: 2; background: var(--fundo-card); }
-.agenda-temporal-eixo span { position: absolute; left: 6px; font-size: 11px; color: var(--texto-secundario); }
-.agenda-temporal-coluna { position: relative; border-left: 1px solid var(--borda); }
-.agenda-temporal-horario { position: absolute; left: 0; width: 100%; border-top: 1px solid var(--borda-sutil); text-align: left; }
-.agenda-temporal-horario:nth-child(odd) { border-top-color: var(--borda); }
-.agenda-temporal-horario span { opacity: 0; margin-left: 8px; font-size: 12px; }
-.agenda-temporal-horario:hover:not(:disabled), .agenda-temporal-horario:focus-visible { background: var(--cor-primaria-suave); }
-.agenda-temporal-horario:hover:not(:disabled) span, .agenda-temporal-horario:focus-visible span { opacity: 1; }
+.agenda-temporal-eixo span { position: absolute; left: 8px; margin-top: 2px; font-size: 11px; color: var(--texto-secundario); }
+/* Linhas a cada 30 minutos (--agenda-linha = 30 min × ESCALA_AGENDA), a partir do início da janela visível. */
+.agenda-temporal-coluna { position: relative; border-left: 1px solid var(--borda); background-image: repeating-linear-gradient(to bottom, color-mix(in srgb, var(--borda) 70%, transparent) 0 1px, transparent 1px var(--agenda-linha, 48px)); }
+.agenda-temporal-livre, .agenda-temporal-neutro { position: absolute; left: 4px; right: 4px; display: flex; justify-content: center; border-radius: 10px; font-size: 13px; color: var(--texto-secundario); }
+.agenda-temporal-livre { align-items: center; border: 1px dashed var(--borda); background: var(--fundo-card); }
+button.agenda-temporal-livre { cursor: pointer; transition: background-color .15s, border-color .15s, color .15s; }
+button.agenda-temporal-livre:hover, button.agenda-temporal-livre:focus-visible { border-color: var(--cor-primaria); color: var(--cor-primaria); background: var(--cor-primaria-suave); }
+button.agenda-temporal-livre:focus-visible { outline: 2px solid var(--cor-primaria); outline-offset: 2px; }
+/* Sem expediente, folga ou disponibilidade não confirmada: bloco neutro, sem ação. */
+.agenda-temporal-neutro { align-items: flex-start; padding: 14px 8px; background: var(--fundo-pagina); text-align: center; }
+.agenda-temporal-neutro span { position: sticky; top: 60px; }
 .agenda-temporal-posicao { position: absolute; z-index: 1; min-width: 0; }
-.agenda-temporal-registro { height: 100%; overflow: auto; border: 1px solid var(--borda); border-radius: 6px; background: var(--cor-primaria-suave); padding: 6px 8px; }
-.agenda-temporal-registro .agenda-lista-consulta { grid-template-columns: minmax(0, 1fr); gap: 2px; width: 100%; font-size: 12px; line-height: 1.3; }
+.agenda-temporal-registro { --situacao-fundo: var(--status-agendado-fundo); --situacao-texto: var(--status-agendado-texto); --situacao-ponto: var(--status-agendado-ponto);
+  height: 100%; overflow: auto; border-radius: 10px; background: var(--situacao-fundo); padding: 4px 8px; color: var(--texto-principal); container-type: inline-size; }
+.agenda-temporal-registro[data-situacao="confirmado"] { --situacao-fundo: var(--status-confirmado-fundo); --situacao-texto: var(--status-confirmado-texto); --situacao-ponto: var(--status-confirmado-ponto); }
+.agenda-temporal-registro[data-situacao="aguardando"] { --situacao-fundo: var(--status-aguardando-fundo); --situacao-texto: var(--status-aguardando-texto); --situacao-ponto: var(--status-aguardando-ponto); }
+.agenda-temporal-registro[data-situacao="em-atendimento"] { --situacao-fundo: var(--status-em-atendimento-fundo); --situacao-texto: var(--status-em-atendimento-texto); --situacao-ponto: var(--status-em-atendimento-ponto); }
+.agenda-temporal-registro[data-situacao="concluido"] { --situacao-fundo: var(--status-concluido-fundo); --situacao-texto: var(--status-concluido-texto); --situacao-ponto: var(--status-concluido-ponto); }
+.agenda-temporal-registro[data-situacao="faltou"] { --situacao-fundo: var(--status-faltou-fundo); --situacao-texto: var(--status-faltou-texto); --situacao-ponto: var(--status-faltou-ponto); }
+.agenda-temporal-registro[data-situacao="cancelado"] { --situacao-fundo: var(--status-cancelado-fundo); --situacao-texto: var(--status-cancelado-texto); --situacao-ponto: var(--status-cancelado-ponto); }
+.agenda-situacao { display: inline-flex; align-items: center; gap: 5px; flex-shrink: 0; font-size: 12px; font-weight: 600; color: var(--situacao-texto); }
+.agenda-situacao-ponto { width: 7px; height: 7px; flex-shrink: 0; border-radius: 9999px; background: var(--situacao-ponto); }
+.agenda-temporal-registro .agenda-lista-consulta { grid-template-columns: minmax(0, 1fr); gap: 1px; width: 100%; font-size: 12px; line-height: 1.3; }
+/* Nome sempre em uma linha; o nome completo fica no title e no nome acessível. */
+.agenda-registro-nome { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+/* Cartão estreito (sobreposição): some o texto da situação, fica o ponto; a situação segue no nome acessível. */
+@container (max-width: 170px) { .agenda-situacao-texto { display: none; } }
 .agenda-temporal-registro.agenda-temporal-curto { overflow: hidden; padding: 0; }
-.agenda-temporal-curto .agenda-lista-consulta { height: 100%; align-content: start; padding: 3px 6px; gap: 1px; }
+.agenda-temporal-curto .agenda-lista-consulta { display: flex; align-items: center; height: 100%; padding: 0 6px; gap: 6px; }
 .agenda-temporal-curto .agenda-lista-consulta > span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 12px; }
+.agenda-temporal-curto .agenda-lista-consulta > span:first-child { flex-shrink: 0; }
 .agenda-temporal-registro .agenda-lista-acoes { margin-top: 3px; }
 .agenda-temporal-registro .agenda-acao-compacta { min-height: 28px; padding: 3px 5px; font-size: 11px; background: var(--fundo-card); }
 @media (min-width: 1100px) {

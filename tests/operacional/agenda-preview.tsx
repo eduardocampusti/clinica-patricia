@@ -20,6 +20,8 @@ const profissionais = [
   { id: 'prof-1', nome_completo: 'Profissional Sintético — Clínica geral', duracao_consulta_minutos: 30, valor_consulta: null, especialidades: { nome: 'Clínica geral' } },
   { id: 'prof-2', nome_completo: 'Profissional Sintético — Cardiologia', duracao_consulta_minutos: 40, valor_consulta: null, especialidades: { nome: 'Cardiologia' } },
 ]
+// ?muitos-profissionais: acima de seis, o painel usa o select em vez de cartões.
+if (params.has('muitos-profissionais')) profissionais.push(...['Dermatologia', 'Pediatria', 'Ortopedia', 'Psicologia', 'Nutrição', 'Fisioterapia'].map((nome, i) => ({ id: `prof-extra-${i}`, nome_completo: `Profissional Sintético — ${nome}`, duracao_consulta_minutos: 30, valor_consulta: null, especialidades: { nome } })))
 const pacientes = ['Ana Exemplo Sintético', 'Bruno Exemplo Sintético', 'Clara Exemplo Sintético', 'Davi Exemplo Sintético', 'Paciente Exemplo Sintético de Nome Muito Longo para Conferência de Leitura e Expansão'].map((nome_completo, i) => ({ id: `pac-${i}`, nome_completo }))
 let registros = [
   { id: 'ag-1', profissional_id: 'prof-1', paciente_id: 'pac-1', hora_inicio: '09:00:00', hora_fim: '09:30:00', status: 'aguardando' },

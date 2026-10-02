@@ -11,7 +11,7 @@ async function abrirCriacao(page: Page, query = '', profissional = 'prof-1') {
   const painel = page.getByRole('dialog', { name: 'Novo agendamento' })
   await painel.getByRole('combobox', { name: 'Paciente', exact: true }).fill('Ana')
   await painel.getByRole('option', { name: 'Ana Exemplo Sintético', exact: true }).click()
-  await painel.getByRole('combobox', { name: /^Profissional/ }).selectOption(profissional)
+  await painel.locator(`input[name="novo-agendamento-profissional"][value="${profissional}"]`).check()
   await expect(painel.getByText('Verificando disponibilidade...', { exact: true })).toHaveCount(0)
   return painel
 }
@@ -46,7 +46,9 @@ for (const unidade of ['brotas', 'ipupiara']) test(`${unidade}: clicar bloco pre
   await expect(ocupado).toHaveCSS('text-decoration-line', 'line-through')
   await expect(grade.getByRole('button', { name: '10:00 ocupado', exact: true })).toBeDisabled()
   await ocupado.click({ force: true })
-  await expect(painel.getByLabel('Resumo do horário')).toContainText('—')
+  // Sem horário escolhido, o rodapé mostra só o que falta (o resumo aparece depois).
+  await expect(painel.getByLabel('Resumo do horário')).toHaveCount(0)
+  await expect(painel.locator('.agenda-formulario-rodape')).toContainText('Falta: horário')
   await alvoMinimo(grade.getByRole('button'))
   await alvoMinimo(faixa(painel).getByRole('button'))
   await alvoMinimo(painel.getByRole('button', { name: 'Outro horário', exact: true }))
@@ -128,7 +130,7 @@ test('faixa de dias: troca de data atualiza os blocos sem deslocar a janela', as
   const rotulo = (await terca.getAttribute('aria-label'))!
   await terca.click()
   await expect(terca).toHaveAttribute('aria-pressed', 'true')
-  const data = await painel.getByLabel(/^Data/).inputValue()
+  const data = await painel.getByLabel('Outra data').inputValue()
   expect(new Date(`${data}T12:00:00`).getDay()).toBe(2)
   await expect(painel.getByText('Verificando disponibilidade...', { exact: true })).toHaveCount(0)
   const livres = Number(/(\d+) livres?/.exec(rotulo)![1])
@@ -154,6 +156,8 @@ test('falha da leitura da faixa não bloqueia o formulário', async ({ page }) =
 
 test('edição usa os mesmos blocos, sem faixa de dias; próprio horário fica selecionado', async ({ page }, info) => {
   await page.goto(previa, { waitUntil: 'domcontentloaded' })
+  // Computador abre no modo Dia; estes cenários usam as ações da lista.
+  await page.getByRole('button', { name: 'Lista', exact: true }).click()
   await page.locator('[data-registro-id="ag-2"]').getByRole('button', { name: 'Editar agendamento' }).click()
   const painel = page.getByRole('dialog', { name: 'Editar agendamento' })
   await expect(painel.getByText('Verificando disponibilidade...', { exact: true })).toHaveCount(0)
@@ -175,7 +179,7 @@ test('modo escuro: blocos, faixa e seleção legíveis com tokens do tema', asyn
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'escuro')
   await page.getByRole('button', { name: '+ Novo agendamento', exact: true }).click()
   const painel = page.getByRole('dialog', { name: 'Novo agendamento' })
-  await painel.getByRole('combobox', { name: /^Profissional/ }).selectOption('prof-1')
+  await painel.locator('input[name="novo-agendamento-profissional"][value="prof-1"]').check()
   await faixa(painel).getByRole('button', { name: /^terça-feira/ }).click()
   await blocos(painel).getByRole('button', { name: '10:30', exact: true }).click()
   const cores = await blocos(painel).getByRole('button', { name: '10:30', exact: true }).evaluate(el => {
