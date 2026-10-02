@@ -25,5 +25,5 @@ export function useDisponibilidadeAgenda(clinicaId: string, profissionalId: stri
   }, [contexto, clinicaId, profissionalId, data, proprioId, tentativa])
   const estado = consulta.contexto === contexto ? consulta.estado : 'carregando'
   const politica = estado === 'pronta' ? avaliarAgendaManual(inicio, duracao, consulta.padrao, consulta.excecoes, consulta.ocupacoes, proprioId) : { janelas: [], aviso: null, bloqueio: estado === 'erro' ? 'Não foi possível consultar a disponibilidade. Os dados digitados foram mantidos.' : 'Verificando disponibilidade...' }
-  return { ...politica, estado, ocupacoes: consulta.ocupacoes, repetir: () => setTentativa(t => t + 1) }
+  return { ...politica, estado, ocupacoes: consulta.ocupacoes, excecoes: estado === 'pronta' ? consulta.excecoes : [], repetir: () => setTentativa(t => t + 1) }
 }

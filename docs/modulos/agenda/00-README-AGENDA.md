@@ -1,5 +1,9 @@
 # Agenda — correção de data e horário
 
+**Etapa 1 do redesenho (02/10/2026):** seletor visual de horários (blocos Manhã/Tarde/Noite,
+“Outro horário” manual e faixa de 7 dias na criação), somente interface. Leitura conferida no
+principal (Recepção/Brotas); publicação autorizada. Testes, limites e resultados no [relatório 13](13-EXPERIENCIA-RECEPCAO.md).
+
 Evolução visual posterior: lista cronológica compacta, grade temporal por profissional
 (eixo comum, duração proporcional e sobreposições visíveis), painéis laterais e confirmação
 de descarte implementados localmente em 01/10/2026, ainda sem commit/publicação. Testes sintéticos e

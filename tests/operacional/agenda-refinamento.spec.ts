@@ -140,6 +140,7 @@ test('avisos distintos: falha não é expediente ausente e conflito continua blo
   await abrir(page)
   await registro(page, 'ag-2').getByRole('button', { name: 'Editar agendamento' }).click()
   painel = page.getByRole('dialog', { name: 'Editar agendamento' })
+  await painel.getByRole('button', { name: 'Outro horário', exact: true }).click()
   await painel.getByLabel('Novo horário', { exact: true }).fill('09:15')
   await expect(painel.getByRole('region', { name: 'Disponibilidade para a data' }).getByRole('status')).toContainText('Há outro agendamento')
   await expect(painel.getByRole('button', { name: 'Salvar alterações' })).toBeDisabled()

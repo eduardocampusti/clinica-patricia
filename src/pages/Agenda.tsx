@@ -18,6 +18,7 @@ import { SelecionarPaciente } from '../components/agenda/SelecionarPaciente'
 import { GradeTemporalAgenda } from '../components/agenda/GradeTemporalAgenda'
 import { useDescarteAgenda } from '../components/agenda/useDescarteAgenda'
 import { DisponibilidadeFormulario } from '../components/agenda/DisponibilidadeFormulario'
+import { FaixaDiasAgenda } from '../components/agenda/FaixaDiasAgenda'
 
 type StatusAgendamento = 'agendado' | 'confirmado' | 'aguardando' | 'em_atendimento' | 'concluido' | 'cancelado'
 type TipoExcecao = 'folga' | 'horario_especial'
@@ -953,36 +954,30 @@ function ModalNovoAgendamento({
           </select>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="novo-agendamento-data" className="mb-1.5 block text-sm font-medium text-[var(--texto-principal)]">
-              Data <span className="text-[var(--cor-erro)]">*</span>
-            </label>
-            <input
-              id="novo-agendamento-data"
-              type="date"
-              required
-              value={data}
-              onChange={(e) => setData(e.target.value)}
-              disabled={salvando}
-              className="w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 py-2.5 text-[var(--texto-principal)] outline-none transition focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60"
-            />
-          </div>
-          <div>
-            <label htmlFor="novo-agendamento-inicio" className="mb-1.5 block text-sm font-medium text-[var(--texto-principal)]">
-              Início <span className="text-[var(--cor-erro)]">*</span>
-            </label>
-            <input
-              id="novo-agendamento-inicio"
-              type="time"
-              required
-              value={horaInicio}
-              onChange={(e) => setHoraInicio(e.target.value)}
-              disabled={salvando}
-              className="w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 py-2.5 text-[var(--texto-principal)] outline-none transition focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60"
-            />
-          </div>
+        <div>
+          <label htmlFor="novo-agendamento-data" className="mb-1.5 block text-sm font-medium text-[var(--texto-principal)]">
+            Data <span className="text-[var(--cor-erro)]">*</span>
+          </label>
+          <input
+            id="novo-agendamento-data"
+            type="date"
+            required
+            value={data}
+            onChange={(e) => setData(e.target.value)}
+            disabled={salvando}
+            className="w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 py-2.5 text-[var(--texto-principal)] outline-none transition focus:border-[var(--cor-primaria)] focus:ring-2 focus:ring-[var(--cor-primaria-suave)] disabled:opacity-60"
+          />
         </div>
+
+        <section aria-label="Escolha do horário" className="space-y-3">
+          {profissionalId ? <>
+            <FaixaDiasAgenda clinicaId={clinicaAtivaId} profissionalId={profissionalId} data={data} duracao={duracao} onData={setData} ocupado={salvando} />
+            <DisponibilidadeFormulario consulta={disponibilidade} inicio={horaInicio} duracao={duracao} onInicio={setHoraInicio} ocupado={salvando} />
+            {disponibilidade.aviso && <label className="flex items-start gap-2 text-sm"><input type="checkbox" checked={confirmadoManual} disabled={salvando} onChange={e => setConfirmadoManual(e.target.checked)} />Conferi os avisos e confirmo a marcação manual.</label>}
+          </> : <p className="rounded-lg border border-dashed border-[var(--borda)] bg-[var(--fundo-pagina)] px-3 py-4 text-center text-sm text-[var(--texto-secundario)]">Selecione o profissional para ver os horários.</p>}
+        </section>
+
+        <ResumoHorario inicio={horaInicio} duracao={duracao} />
 
         <div>
           <label htmlFor="novo-agendamento-observacoes" className="mb-1.5 block text-sm font-medium text-[var(--texto-principal)]">
@@ -998,14 +993,9 @@ function ModalNovoAgendamento({
           />
         </div>
 
-        <ResumoHorario inicio={horaInicio} duracao={duracao} />
-        <section aria-label="Avisos e confirmação" className="space-y-3 border-t border-[var(--borda)] pt-3">
+        <section aria-label="Avisos" className="space-y-3 border-t border-[var(--borda)] pt-3 empty:hidden">
         {capacidadeManual === 'carregando' && <p role="status">Verificando serviço e autorização...</p>}
         {capacidadeManual === 'indisponivel' && <FeedbackAlert variant="warning" title="Agenda manual ainda indisponível" description="Não foi possível confirmar o serviço e a autorização nesta sessão. Em caso de atualização, preserve seu preenchimento e atualize a página. Não será utilizada a operação antiga como alternativa." />}
-        {profissionalId && <>
-          <DisponibilidadeFormulario consulta={disponibilidade} inicio={horaInicio} duracao={duracao} onInicio={setHoraInicio} ocupado={salvando} />
-          {disponibilidade.aviso && <label className="flex items-start gap-2 text-sm"><input type="checkbox" checked={confirmadoManual} disabled={salvando} onChange={e => setConfirmadoManual(e.target.checked)} />Conferi os avisos e confirmo a marcação manual.</label>}
-        </>}
         {erro && <FeedbackAlert variant="destructive" title="Não foi possível criar o agendamento" description={erro} urgent />}
         </section>
         </div>

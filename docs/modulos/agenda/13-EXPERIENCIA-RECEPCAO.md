@@ -1,5 +1,95 @@
 # Agenda — experiência da recepção
 
+## Etapa 1 do redesenho — seletor visual de horários (02/10/2026)
+
+Estado em 02/10/2026 10:50 -03:00: **publicação autorizada em andamento.** Implementação de
+10:20 aprovada em testes sintéticos; conferência por leitura no principal concluída (abaixo).
+Resultado do commit/push/deploy registrado depois, fora deste commit, como nas etapas anteriores.
+
+### Conferência por leitura no principal — 02/10/2026 10:45 -03:00
+
+Aplicação local 127.0.0.1:3000 conectada ao principal xftnkusbyqzyvzrovroj, sessão autorizada
+Recepção/Brotas (login feito pelo usuário), profissional de teste da clínica. Somente leitura:
+painéis fechados em Cancelar/Descartar, sem salvar, criar ou editar; nenhum dado gravado.
+- Novo agendamento: faixa 02–08/10 com “20 livres” na terça 06/10 e “Sem expediente” nos
+  demais dias; sem aviso de contagem indisponível. Na terça: faixa habitual 08:00–18:00,
+  blocos de 30 min 08:00–17:30 (Manhã 8, Tarde 12), coerentes com a contagem.
+- Leituras por intervalo (disponibilidade_padrao ativo; agenda_excecoes e agendamentos
+  data gte/lte) e por data: todas HTTP 200. Duplicadas apenas pelo StrictMode do modo dev.
+- Editar de agendamento existente na sexta: estado vazio sem expediente, campo manual com o
+  horário atual, sem faixa de dias, Salvar desabilitado; fechado sem alterações.
+- Console: nenhum erro durante os fluxos da Agenda. Na inicialização da sessão, 2 respostas
+  400 de usuarios_clinicas: usePapelNaClinica consulta com usuario_id vazio antes de a sessão
+  carregar e repete com o ID (200). Preexistente, arquivo não alterado; fora desta etapa.
+
+### Implementação local (02/10/2026 10:20 -03:00)
+
+Branch codex/resgate-local-2026-09-26, HEAD de partida 2530dbc.
+Evolução exclusivamente de interface: política manual, RPCs, conflitos, folgas, regras após
+chegada e permissões inalteradas. TypeSafe avaliada: não aplicável (UI determinística).
+
+**Comportamento implementado**
+- DisponibilidadeFormulario (criação e edição): o select de sugestões deu lugar a blocos
+  clicáveis agrupados em Manhã (até 11:59), Tarde (12:00–17:59) e Noite (18:00+); grupos
+  vazios não aparecem. Passo igual à duração, alinhado ao início de cada faixa da data.
+  Ocupado (conflito com agendamento não cancelado): desabilitado, riscado, nome acessível
+  “HH:MM ocupado”, nunca removido. Selecionado: cor primária da clínica e aria-pressed.
+  O próprio agendamento não ocupa seu horário na edição.
+- Função pura blocosHorarioAgenda em src/lib/agendaDisponibilidade.ts, reutilizando
+  validarHorarioAgenda; demais funções da política não alteradas.
+- “Outro horário”: ação secundária que revela o campo digitável (Início/Novo horário),
+  avaliado por avaliarAgendaManual com os mesmos avisos e confirmação. Fica visível sozinho
+  quando o horário vigente não é um bloco livre (ex.: vindo da grade ou fora do passo).
+- Sem expediente: estado vazio “Sem expediente cadastrado nesta data” com “Outro horário”
+  em evidência; não é erro. Folga/bloqueio, erro de consulta e carregamento mantêm
+  mensagens e bloqueios anteriores (“Outro horário” continua disponível; a folga bloqueia).
+- Faixa de 7 dias só no novo agendamento: dia da semana, dia do mês e “N livres”, “Sem
+  expediente” ou “Folga”; clique troca a data. Hook useResumoDiasAgenda faz uma leitura por
+  intervalo nas mesmas tabelas (clinica_id + profissional_id) e descarta contexto antigo.
+  Falha mostra dias sem contagem e aviso discreto, sem bloquear o formulário. Decisão de UX:
+  a janela começa na data escolhida e só se desloca quando a data sai dela (evita saltos a
+  cada clique). Edição sem faixa nesta etapa. Resumo Início/Duração/Término preservado.
+- Somente tokens (var(--cor-primaria), --cor-primaria-suave, --texto-*, --fundo-*, --borda);
+  alvos ≥ 44 px; blocos/dias quebram em linhas no celular, sem rolagem horizontal.
+
+**Arquivos:** novos src/components/agenda/FaixaDiasAgenda.tsx, src/hooks/useResumoDiasAgenda.ts,
+src/lib/agendaDisponibilidade.test.ts, tests/operacional/agenda-horarios.spec.ts; alterados
+src/components/agenda/{DisponibilidadeFormulario,EditarAgendamento}.tsx, src/pages/Agenda.tsx
+(somente o painel de criação), src/lib/agendaDisponibilidade.ts (acréscimo),
+src/hooks/useDisponibilidadeAgenda.ts (retorno aditivo das exceções), src/config/notasEvolucao.json,
+harness tests/operacional/agenda-preview.tsx (intervalo de datas, ?terca, ?falha-faixa) e seletores
+de testes antigos. Sem banco, migration, RLS, grants, RPC, Auth, Sidebar ou ModalBase.
+
+**Testes executados (prévia sintética, sem banco real)**
+- Unitários blocosHorarioAgenda: 7/7 (faixa única, duas faixas, conflito, duração que não cabe,
+  sem expediente, cancelado/próprio não ocupam, períodos).
+- agenda-horarios.spec.ts: 24/24 em desktop/tablet/celular (Brotas e Ipupiara, clique preenche
+  início/término, ocupado não clicável, teclado/foco visível, Outro horário fora da faixa com aviso
+  e confirmação, dia sem expediente, troca de dia pela faixa, falha da faixa, edição, modo escuro).
+  Rodada final completa aprovada; na rodada anterior, 1 falha por compilação a frio do Vite na
+  primeira carga (sem relação com o componente) levou a tolerância de 30 s só nessa carga.
+- Regressão: agenda-edicao + recepcao-fluxo 76/76 (desktop/celular); agenda-experiencia +
+  agenda-refinamento + agenda-fechamento 63/63 (desktop/tablet/celular).
+- Ajustes de testes antigos (asserções preservadas): clicar “Outro horário” antes de digitar
+  horário em agenda-edicao, agenda-experiencia, agenda-refinamento e recepcao-fluxo; selectOption
+  do select removido virou clique no bloco 11:00; “select desabilitado” virou “nenhum bloco
+  escolhível + estado vazio”. npm run build e npm run lint sem erros novos (avisos preexistentes).
+
+**Prévias e capturas:** Brotas http://127.0.0.1:4192/tests/operacional/agenda-preview.html?terca ·
+Ipupiara http://127.0.0.1:4192/tests/operacional/agenda-preview.html?unidade=ipupiara&terca
+(sem ?terca, o harness mantém expediente 08–18 em todos os dias; também ?sem-expediente, ?folga,
+?falha-faixa). Capturas em scratch/agenda-ux/etapa1: blocos-, selecionado-{brotas,ipupiara}-,
+sem-expediente-, faixa-terca-, edicao-, escuro- × {desktop,tablet,mobile}.png.
+Observação: clinicBrands configura a mesma primária (#006194) para as duas clínicas.
+
+**Expediente semanal (leitura do código):** cadastrado em Equipe (menu) → aba Profissionais →
+“Horários de atendimento” de cada profissional (src/pages/cadastros/Profissionais.tsx), visível a
+proprietária e recepção; o salvamento apaga e reinsere as linhas de disponibilidade_padrao.
+
+**Não validado:** persistência/RLS reais, sessão autenticada pública, leitura por intervalo no
+Supabase real (filtros gte/lte só exercitados no harness), leitores de tela reais, zoom nativo e
+teclado virtual. A leitura por intervalo no principal foi conferida depois (seção acima).
+
 ## Publicação autorizada — preparação em 02/10/2026 08:00 -03:00
 
 Integrações consultadas pelo MCP Hostinger: ambas usam eduardocampusti/clinica-patricia,

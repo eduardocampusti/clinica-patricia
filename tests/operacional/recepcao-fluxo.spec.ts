@@ -103,6 +103,7 @@ async function cadastrarEAgendar(page: Page, unidade: string, profissionalId: st
   await page.goto(`/tests/operacional/agenda-contexto.html?unidade=${unidade}`, { waitUntil: 'domcontentloaded' })
   await page.getByRole('button', { name: /Novo agendamento/ }).click()
   await page.getByRole('combobox', { name: /^Profissional/ }).selectOption(profissionalId)
+  await page.getByRole('dialog').getByRole('button', { name: 'Outro horário', exact: true }).click()
   await page.getByLabel(/^Início/).fill('10:00')
   await page.getByRole('button', { name: '+ Novo paciente' }).click()
   await page.getByLabel('Nome completo').fill('Paciente Recepção Sintética')

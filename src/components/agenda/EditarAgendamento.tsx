@@ -95,17 +95,14 @@ export function EditarAgendamento({ agendamento, clinicaId, clinicaNome, profiss
   return <PainelAgenda titulo="Editar agendamento" onFechar={descarte.solicitarFechar} ocupado={salvando}>
     <form onSubmit={salvar} className="agenda-formulario"><div className="agenda-formulario-conteudo space-y-4">
       <div className="space-y-1 border-b border-[var(--borda)] pb-3"><p className="text-xs text-[var(--texto-secundario)]">{clinicaNome} · {agendamento.status === 'aguardando' ? 'Aguardando' : agendamento.status === 'confirmado' ? 'Confirmado' : 'Agendado'}</p><h3 className="break-words text-lg font-semibold">{agendamento.paciente_nome}</h3><p className="text-sm text-[var(--texto-secundario)]">{profissionalNome}</p></div>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <label className="text-sm">Nova data<input className={campo} type="date" required value={data} disabled={salvando || chegou} onChange={e => setData(e.target.value)} /></label>
-        <label className="text-sm">Novo horário<input className={campo} type="time" required value={inicio} disabled={salvando} onChange={e => setInicio(e.target.value)} /></label>
-      </div>
+      <label className="block text-sm">Nova data<input className={campo} type="date" required value={data} disabled={salvando || chegou} onChange={e => setData(e.target.value)} /></label>
+      <DisponibilidadeFormulario consulta={consulta} inicio={inicio} duracao={duracao} onInicio={setInicio} ocupado={salvando} proprioId={agendamento.id} edicao />
       <section aria-label="Comparação de horários" className="space-y-2"><div><p className="mb-1 text-xs font-medium">Horário anterior · {exibirData(agendamento.data)}</p><ResumoHorario label="Horário anterior" inicio={agendamento.hora_inicio.slice(0, 5)} duracao={minutosAgenda(agendamento.hora_fim) - minutosAgenda(agendamento.hora_inicio)} /></div>
         <div><p className="mb-1 text-xs font-medium">Novo horário · {exibirData(data)}</p><ResumoHorario inicio={inicio} duracao={duracao} /></div></section>
       <label className="block text-sm">Motivo da correção<textarea className={campo} required minLength={5} maxLength={500} rows={3} value={motivo} disabled={salvando} onChange={e => setMotivo(e.target.value)} /><span className="text-xs">Descreva apenas a correção, sem documentos ou informações clínicas.</span></label>
       <section aria-label="Avisos e confirmação" className="space-y-3 border-t border-[var(--borda)] pt-3">
       {capacidade === 'carregando' && <p role="status">Verificando recurso de correção...</p>}
       {capacidade === 'indisponivel' && <FeedbackAlert variant="warning" title="Correção ainda indisponível" description="Não foi possível confirmar a operação autorizada nesta sessão. Pode haver falha de serviço, permissão ou versão incompatível. Preserve seu preenchimento; consulte novamente ao reabrir ou atualize a página. Nenhuma gravação alternativa será realizada." />}
-      <DisponibilidadeFormulario consulta={consulta} inicio={inicio} duracao={duracao} onInicio={setInicio} ocupado={salvando} proprioId={agendamento.id} edicao />
       {chegou && <FeedbackAlert variant="warning" title="Chegada preservada" description="Corrija somente o horário na mesma data. Chegada e posição na fila serão mantidas; outra data exige o reagendamento específico." />}
       <label className="flex items-start gap-2 text-sm"><input type="checkbox" checked={confirmado} disabled={salvando} onChange={e => setConfirmado(e.target.checked)} />Conferi o horário anterior e o novo, os avisos de disponibilidade e confirmo a correção.</label>
       {erro && <FeedbackAlert variant={erro.atencao ? 'warning' : 'destructive'} title={erro.atencao ? 'Revisão necessária' : 'Não foi possível salvar'} description={erro.texto} urgent />}

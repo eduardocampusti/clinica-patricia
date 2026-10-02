@@ -40,6 +40,7 @@ async function abrir(page: Page) {
   await expect(page.getByRole('dialog')).toBeVisible()
 }
 async function preencher(page: Page) {
+  await page.getByRole('dialog').getByRole('button', { name: 'Outro horário', exact: true }).click()
   await page.getByLabel('Novo horário', { exact: true }).fill('11:00')
   await page.getByLabel('Motivo da correção').fill('Correção sintética de horário')
   await expect(page.getByText('Verificando disponibilidade...', { exact: true })).toHaveCount(0)
@@ -68,6 +69,7 @@ test('política manual: criação e edição sem expediente exigem confirmação
   await page.getByRole('combobox', { name: 'Paciente', exact: true }).click()
   await page.getByRole('listbox', { name: 'Pacientes encontrados' }).getByRole('option').first().click()
   await page.getByRole('dialog').getByRole('combobox', { name: 'Profissional *', exact: true }).selectOption('prof-a')
+  await page.getByRole('dialog').getByRole('button', { name: 'Outro horário', exact: true }).click()
   await page.getByRole('dialog').getByLabel('Início', { exact: false }).fill('11:00')
   await expect(page.getByRole('dialog').getByRole('button', { name: 'Agendar', exact: true })).toBeDisabled()
   await page.getByRole('dialog').getByRole('checkbox', { name: /confirmo a marcação manual/ }).check()
@@ -222,12 +224,13 @@ test('data civil coincide com DOW do servidor e faixas respeitam fim, intervalo 
 
 test('confirmação é a única pendência quando horário e motivo são válidos', async ({ page }) => {
   await preparar(page); await abrir(page)
-  await page.getByLabel('Horários disponíveis', { exact: true }).selectOption('11:00')
+  await page.getByRole('dialog').getByRole('group', { name: 'Horários disponíveis' }).getByRole('button', { name: '11:00', exact: true }).click()
   await page.getByLabel('Motivo da correção').fill('Correção sintética de horário')
   await expect(page.getByText('Só falta confirmar a correção para salvar.', { exact: true })).toBeVisible()
   await expect(page.getByRole('button', { name: 'Salvar alterações' })).toBeDisabled()
   await page.getByRole('checkbox', { name: /Conferi o horário/ }).check()
   await expect(page.getByRole('button', { name: 'Salvar alterações' })).toBeEnabled()
+  await page.getByRole('dialog').getByRole('button', { name: 'Outro horário', exact: true }).click()
   await page.getByLabel('Novo horário', { exact: true }).fill('11:05')
   await expect(page.getByRole('checkbox', { name: /Conferi o horário/ })).not.toBeChecked()
 })
@@ -236,6 +239,7 @@ test('fim exato permitido; ultrapassar faixa habitual exige confirmação manual
   await preparar(page)
   await page.route('**/rest/v1/disponibilidade_padrao?**', route => route.fulfill({ contentType: 'application/json', body: JSON.stringify([{ profissional_id: 'prof-a', hora_inicio: '14:00:00', hora_fim: '17:00:00' }]) }))
   await abrir(page)
+  await page.getByRole('dialog').getByRole('button', { name: 'Outro horário', exact: true }).click()
   await page.getByLabel('Novo horário', { exact: true }).fill('16:30')
   await page.getByLabel('Motivo da correção').fill('Correção sintética de horário')
   await expect(page.getByRole('region', { name: 'Disponibilidade para a data' })).toContainText('14:00–17:00')
@@ -290,6 +294,7 @@ test('criação manual: erro preserva dados; envio repetido não duplica e suces
   await page.getByRole('combobox', { name: 'Paciente', exact: true }).click()
   await page.getByRole('listbox', { name: 'Pacientes encontrados' }).getByRole('option').first().click()
   await page.getByRole('combobox', { name: 'Profissional *', exact: true }).selectOption('prof-a')
+  await page.getByRole('dialog').getByRole('button', { name: 'Outro horário', exact: true }).click()
   await page.getByLabel('Início', { exact: false }).fill('11:00')
   await page.getByLabel('Observações').fill('Rascunho sintético preservado')
   await page.getByRole('checkbox', { name: /confirmo a marcação manual/ }).check()
@@ -317,6 +322,7 @@ for (const caso of ['folga', 'falha', 'conflito']) test(`criação manual bloque
   await page.getByRole('combobox', { name: 'Paciente', exact: true }).click()
   await page.getByRole('listbox', { name: 'Pacientes encontrados' }).getByRole('option').first().click()
   await page.getByRole('combobox', { name: 'Profissional *', exact: true }).selectOption('prof-a')
+  await page.getByRole('dialog').getByRole('button', { name: 'Outro horário', exact: true }).click()
   await page.getByLabel('Início', { exact: false }).fill(caso === 'conflito' ? '10:10' : '11:00')
   await expect(page.getByRole('dialog')).toContainText(caso === 'folga' ? 'folga ou bloqueio explícito' : caso === 'falha' ? 'Falha ao consultar disponibilidade' : 'Há outro agendamento')
   await expect(page.getByRole('button', { name: 'Agendar', exact: true })).toBeDisabled()
@@ -330,6 +336,7 @@ test('falha de consulta não vira sem expediente e nova tentativa preserva rascu
     return route.fulfill({ status: falhar ? 503 : 200, contentType: 'application/json', body: JSON.stringify(falhar ? { message: 'Falha sintética' } : []) })
   })
   await abrir(page)
+  await page.getByRole('dialog').getByRole('button', { name: 'Outro horário', exact: true }).click()
   await page.getByLabel('Novo horário', { exact: true }).fill('11:00')
   await page.getByLabel('Motivo da correção').fill('Correção sintética de horário')
   // O SDK instalado repete GET 503; aguardar seu retorno definitivo, sem mexer no servidor.
@@ -355,7 +362,9 @@ test('carregamento e respostas antigas de outra data não liberam envio', async 
   await page.getByLabel('Nova data', { exact: true }).fill('2026-10-02')
   await expect(page.getByRole('button', { name: 'Salvar alterações' })).toBeDisabled()
   await expect(page.getByRole('region', { name: 'Disponibilidade para a data' })).toContainText('Sem expediente disponível')
-  await expect(page.getByLabel('Horários disponíveis', { exact: true })).toBeDisabled()
+  // Sem select: nenhum bloco escolhível e estado vazio explícito.
+  await expect(page.getByRole('dialog').getByRole('group', { name: 'Horários disponíveis' }).getByRole('button')).toHaveCount(0)
+  await expect(page.getByRole('dialog').getByRole('group', { name: 'Horários disponíveis' })).toContainText('Sem expediente cadastrado nesta data')
 })
 
 for (const timezoneId of ['America/Bahia', 'America/Los_Angeles', 'Pacific/Auckland']) test.describe(`data civil no navegador ${timezoneId}`, () => {
@@ -370,6 +379,7 @@ for (const timezoneId of ['America/Bahia', 'America/Los_Angeles', 'Pacific/Auckl
     await page.route('**/rest/v1/agenda_excecoes?**', route => route.fulfill({ contentType: 'application/json', body: JSON.stringify([{ tipo: 'horario_especial', hora_inicio: '14:00:00', hora_fim: '17:10:00' }]) }))
     await abrir(page)
     await page.getByLabel('Nova data', { exact: true }).fill('2026-10-01')
+    await page.getByRole('dialog').getByRole('button', { name: 'Outro horário', exact: true }).click()
     await page.getByLabel('Novo horário', { exact: true }).fill('16:40')
     await page.getByLabel('Motivo da correção').fill('Correção sintética de horário')
     await expect(page.getByRole('region', { name: 'Disponibilidade para a data' })).toContainText('14:00–17:10')

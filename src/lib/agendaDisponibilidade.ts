@@ -43,3 +43,20 @@ export function sugestoesHorarioAgenda(duracao: number | null, janelas: JanelaAg
   }
   return [...opcoes].sort()
 }
+export interface BlocoHorarioAgenda { hora: string; ocupado: boolean }
+// Blocos com passo igual à duração, alinhados ao início de cada faixa; conflitos continuam visíveis.
+export function blocosHorarioAgenda(duracao: number | null, janelas: JanelaAgenda[], ocupacoes: OcupacaoAgenda[], proprioId = ''): BlocoHorarioAgenda[] {
+  if (!duracao || duracao <= 0) return []
+  const blocos = new Map<string, boolean>()
+  for (const janela of janelas) {
+    if (!janela.hora_inicio || !janela.hora_fim) continue
+    for (let min = minutosAgenda(janela.hora_inicio); min + duracao <= minutosAgenda(janela.hora_fim) && min + duracao < 1440; min += duracao) {
+      const hora = horaAgenda(min)
+      const livre = !validarHorarioAgenda(hora, duracao, janelas, ocupacoes, proprioId)
+      blocos.set(hora, (blocos.get(hora) ?? false) || livre)
+    }
+  }
+  return [...blocos].sort(([a], [b]) => a.localeCompare(b)).map(([hora, livre]) => ({ hora, ocupado: !livre }))
+}
+export type PeriodoAgenda = 'Manhã' | 'Tarde' | 'Noite'
+export const periodoAgenda = (hora: string): PeriodoAgenda => minutosAgenda(hora) < 720 ? 'Manhã' : minutosAgenda(hora) < 1080 ? 'Tarde' : 'Noite'

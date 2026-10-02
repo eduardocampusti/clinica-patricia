@@ -44,13 +44,19 @@ window.fetch = async (input, init) => {
   const resposta = (valor: unknown, status = 200) => Promise.resolve(new Response(JSON.stringify(valor), { status, headers: { 'Content-Type': 'application/json' } }))
   const p = init?.body ? JSON.parse(String(init.body)) : {}
   const caminho = url.pathname.split('/').at(-1)
+  // Filtros de data por igualdade ou intervalo (faixa de dias); ?falha-faixa falha só a leitura por intervalo.
+  const filtrosData = url.searchParams.getAll('data')
+  const intervalo = filtrosData.some(f => f.startsWith('gte.'))
+  const naData = (data: string) => filtrosData.every(f => f.startsWith('eq.') ? data === f.slice(3) : f.startsWith('gte.') ? data >= f.slice(4) : f.startsWith('lte.') ? data <= f.slice(4) : true)
+  if (intervalo && params.has('falha-faixa')) return resposta({ code: '42501', message: 'Falha sintética da faixa de dias' }, 403)
   if (caminho === 'usuarios_clinicas') return resposta({ papel: params.get('papel') === 'medico' ? 'medico' : params.get('papel') === 'proprietaria' ? 'proprietaria' : 'recepcao' })
   if (caminho === 'profissionais_clinicas') return resposta(profissionais.map(profissionais => ({ profissionais })))
   if (caminho === 'pacientes') return resposta(pacientes)
   if (caminho === 'agenda_manual_disponivel') return resposta(true)
   if (caminho === 'paciente_cpf_pendente') return resposta(false)
-  if (caminho === 'disponibilidade_padrao') return resposta(params.has('sem-expediente') ? [] : [{ id: 'disp-1', profissional_id: 'prof-1', hora_inicio: '08:00:00', hora_fim: '18:00:00', dia_semana: new Date().getDay() }].filter(d => !url.searchParams.has('profissional_id') || url.searchParams.get('profissional_id') === `eq.${d.profissional_id}`))
-  if (caminho === 'agenda_excecoes') return params.has('falha') ? resposta({ code: '42501', message: 'Falha sintética de leitura' }, 403) : resposta((params.has('folga') ? [{ profissional_id: 'prof-2', tipo: 'folga', hora_inicio: null, hora_fim: null }] : []).filter(e => !url.searchParams.has('profissional_id') || url.searchParams.get('profissional_id') === `eq.${e.profissional_id}`))
+  // Padrão: expediente 08–18 em todos os dias; ?terca limita à terça-feira, como o ensaio histórico do principal.
+  if (caminho === 'disponibilidade_padrao') return resposta(params.has('sem-expediente') ? [] : (params.has('terca') ? [2] : [0, 1, 2, 3, 4, 5, 6]).map(dia_semana => ({ id: `disp-${dia_semana}`, profissional_id: 'prof-1', hora_inicio: '08:00:00', hora_fim: '18:00:00', dia_semana })).filter(d => (!url.searchParams.has('profissional_id') || url.searchParams.get('profissional_id') === `eq.${d.profissional_id}`) && (!url.searchParams.has('dia_semana') || url.searchParams.get('dia_semana') === `eq.${d.dia_semana}`)))
+  if (caminho === 'agenda_excecoes') return params.has('falha') ? resposta({ code: '42501', message: 'Falha sintética de leitura' }, 403) : resposta((params.has('folga') ? [{ profissional_id: 'prof-2', data: hoje, tipo: 'folga', hora_inicio: null, hora_fim: null }] : []).filter(e => (!url.searchParams.has('profissional_id') || url.searchParams.get('profissional_id') === `eq.${e.profissional_id}`) && (!intervalo || naData(e.data))))
   if (caminho === 'lista_espera') return resposta([{ id: 'esp-1', paciente_id: 'pac-3', profissional_id: 'prof-2', created_at: `${hoje}T08:00:00Z`, pacientes: { nome_completo: pacientes[3].nome_completo }, profissionais: { nome_completo: profissionais[1].nome_completo } }])
   if (caminho === 'agendamentos') {
     if (init?.method === 'PATCH') {
@@ -60,7 +66,7 @@ window.fetch = async (input, init) => {
       registro.status = p.status
       return resposta({ id: registro.id, status: registro.status })
     }
-    return resposta(registros.filter(a => (!url.searchParams.has('data') || url.searchParams.get('data') === `eq.${a.data}`) && (!url.searchParams.has('profissional_id') || url.searchParams.get('profissional_id') === `eq.${a.profissional_id}`)))
+    return resposta(registros.filter(a => naData(a.data) && (!url.searchParams.has('profissional_id') || url.searchParams.get('profissional_id') === `eq.${a.profissional_id}`)))
   }
   if (caminho === 'agenda_manual_criar' || caminho === 'agenda_manual_corrigir_horario') {
     document.documentElement.dataset.enviosSinteticos = String(Number(document.documentElement.dataset.enviosSinteticos ?? 0) + 1)
