@@ -1,5 +1,28 @@
 # Edição de data e horário — implementação e publicação
 
+## Remarcação — nova apresentação, 02/10/2026 (implementada às 18:31; publicação autorizada em andamento)
+
+Conferência por leitura no principal (Recepção/Brotas, sem gravação) aprovada; detalhes no relatório 13.
+Painel de edição apresentado como “Remarcar agendamento” (agendado, confirmado, aguardando), implementado e
+testado localmente, não commitado. Regras desta edição inalteradas: mesma RPC agenda_manual_corrigir_horario,
+revisão (p_revisao), situação, data/início anteriores, motivo 5–500 (agora também por opções rápidas que
+preenchem o mesmo p_motivo), confirmação explícita, política manual e, após a chegada, só horário na mesma
+data (sugestões restritas a essa data). Situações não remarcáveis mantêm o painel anterior. Sem banco,
+migration, RLS ou permissão. Detalhes, testes e investigação do histórico no [relatório 13](13-EXPERIENCIA-RECEPCAO.md).
+
+**Histórico do agendamento (investigação por leitura, nada implementado):** criação manual
+(trigger agenda_auditar_criacao_manual) e correção de data/horário (trigger agenda_auditar_correcao_horario)
+já gravam em public.auditoria (append-only): clinica_id, usuario_id, acao, entidade='agendamentos',
+entidade_id, dados_antes/dados_depois com data, hora_inicio, hora_fim e motivo, created_at. Mudanças de
+situação (confirmar, chegada, cancelar — UPDATE direto) não são auditadas ali. Leitura: RLS de
+public.auditoria só tem a política auditoria_leitura (SELECT para eh_proprietaria(clinica_id)); a Recepção
+não lê, e o cliente não consulta essa tabela. Necessário para exibir “Histórico deste agendamento” à
+Recepção: RPC SECURITY DEFINER somente leitura (ex.: agenda_historico(p_clinica_id, p_agendamento_id)) com
+checagem de vínculo ativo Recepção/Proprietária na clínica, retornando apenas data/hora da ação, tipo,
+data/horário antes/depois, motivo e nome de exibição do autor (não usuario_id cru); decidir se mudanças de
+situação passam a ser auditadas (novo trigger) e a política de exposição do motivo (texto livre, LGPD).
+O mockup também mostra “Confirmação enviada ao paciente”, que não existe no sistema (sem envio de mensagens).
+
 Estado: transição manual concluída; fases 20261001193000 e 20261001194000 aplicadas
 no principal, com publicação/verificação dos dois novos clientes entre as fases.
 Proposta 173000 removida/substituída, jamais aplicada. Sem gravação operacional de teste.

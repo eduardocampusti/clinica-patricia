@@ -37,6 +37,8 @@ if (params.has('curtas')) registros.push(...[
   { id: 'curta-15', profissional_id: 'prof-1', paciente_id: 'pac-4', hora_inicio: '10:45:00', hora_fim: '11:00:00', status: 'confirmado' },
   { id: 'curta-20', profissional_id: 'prof-2', paciente_id: 'pac-4', hora_inicio: '10:45:00', hora_fim: '11:05:00', status: 'agendado' },
 ].map(a => ({ ...a, data: hoje, clinica_id: clinicaId, updated_at: '2026-10-01T10:00:00Z', observacoes: 'Consulta curta exclusivamente sintética para verificar apresentação e acesso aos detalhes.', pacientes: { nome_completo: pacientes.find(p => p.id === a.paciente_id)!.nome_completo } })))
+// ?remarcacao: consulta confirmada às 11:00, cenário equivalente ao mockup do painel de remarcação.
+if (params.has('remarcacao')) registros.push({ id: 'ag-r', profissional_id: 'prof-1', paciente_id: 'pac-2', hora_inicio: '11:00:00', hora_fim: '11:30:00', status: 'confirmado', data: hoje, clinica_id: clinicaId, updated_at: '2026-10-01T10:00:00Z', observacoes: 'Registro exclusivamente sintético para conferir a remarcação.', pacientes: { nome_completo: pacientes[2].nome_completo } })
 if (params.has('vazio')) registros = []
 const fetchOriginal = window.fetch.bind(window)
 window.fetch = async (input, init) => {
@@ -72,6 +74,8 @@ window.fetch = async (input, init) => {
   }
   if (caminho === 'agenda_manual_criar' || caminho === 'agenda_manual_corrigir_horario') {
     document.documentElement.dataset.enviosSinteticos = String(Number(document.documentElement.dataset.enviosSinteticos ?? 0) + 1)
+    // Conteúdo do último envio, para os testes conferirem os parâmetros exatos da RPC.
+    document.documentElement.dataset.ultimoEnvio = JSON.stringify({ rpc: caminho, ...p })
     if (params.has('atraso')) await new Promise(resolve => setTimeout(resolve, 650))
     const anterior = registros.find(a => a.id === p.p_agendamento_id)
     const profissional = anterior?.profissional_id ?? p.p_profissional_id
@@ -79,7 +83,8 @@ window.fetch = async (input, init) => {
     const inicio = p.p_novo_inicio ?? p.p_inicio
     const data = p.p_nova_data ?? p.p_data
     const fim = horaAgenda(minutosAgenda(inicio) + profissionais.find(p => p.id === profissional)!.duracao_consulta_minutos)
-    if (registros.some(a => a.id !== anterior?.id && a.profissional_id === profissional && a.data === data && a.hora_inicio < fim && a.hora_fim > inicio)) return resposta({ code: '23P01' }, 400)
+    // Comparação em HH:MM: registros guardam segundos ('10:30:00'), o envio não ('10:30').
+    if (registros.some(a => a.id !== anterior?.id && a.profissional_id === profissional && a.data === data && a.hora_inicio.slice(0, 5) < fim && a.hora_fim.slice(0, 5) > inicio && a.status !== 'cancelado')) return resposta({ code: '23P01' }, 400)
     const novo = { ...anterior, id: anterior?.id ?? `ag-${registros.length + 1}`, clinica_id: clinicaId, profissional_id: profissional, paciente_id: paciente, data, hora_inicio: `${inicio}:00`, hora_fim: `${fim}:00`, status: anterior?.status ?? 'agendado', observacoes: anterior?.observacoes ?? p.p_observacoes, updated_at: '2026-10-01T11:00:00Z', pacientes: { nome_completo: pacientes.find(p => p.id === paciente)!.nome_completo } }
     registros = [...registros.filter(a => a.id !== novo.id), novo]
     return resposta(novo)

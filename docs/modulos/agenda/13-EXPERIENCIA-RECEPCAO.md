@@ -1,5 +1,89 @@
 # Agenda — experiência da recepção
 
+## Painel de remarcação conforme o mockup (02/10/2026)
+
+Implementado localmente às 18:31; publicação autorizada em andamento (abaixo).
+
+### Publicação autorizada — conferência por leitura no principal, 02/10/2026 ~19:35–19:50 -03:00
+
+Estado na preparação do commit: **publicação autorizada em andamento**; resultado do deploy registrado
+depois, fora do commit. Aplicação local 127.0.0.1:3000 (principal xftnkusbyqzyvzrovroj), sessão
+Recepção/Brotas já aberta, sem gravação. Agendamento existente (sexta 02/10, 09:00, agendado) em Editar:
+título “Remarcar agendamento”, horário atual 09:00–09:30 · Sex 02/10/2026 · profissional · 30 min, “Escolha
+um novo horário”. Sugestões coerentes com o único expediente cadastrado (terça 08:00–18:00) e com o horário
+(após 18h, nada “ainda hoje”): Ter 06/10 08:00, 08:30, 09:00 (Mesmo horário), 09:30; Ter 13/10 08:00, 09:00
+(Mesmo horário). Faixa com terça “20 livres” e demais “Sem expediente”; blocos da sexta em estado vazio; 4
+opções de motivo. Sugestão 06/10 09:00 + “Pedido do paciente” só no formulário: novo horário 09:00–09:30 ·
+Ter 06/10/2026, rodapé “Falta: confirmação”; confirmação NÃO marcada, botão desabilitado; Cancelar →
+Descartar. Rede: 23 chamadas HTTP 200, leitura de sugestões por intervalo 02/10–15/10 incluída, nenhuma
+gravação; console só com os 2 erros 400 preexistentes de usePapelNaClinica. Nova rodada de
+agenda-remarcacao: 24/24 em 79 s, sem travamento (terceira rodada completa seguida aprovada).
+Pendência registrada, não corrigida nesta tarefa: contagem “N livres” da faixa considera o próprio horário.
+
+Estado: **implementado e testado localmente; sem commit, push, deploy ou banco.** Branch
+codex/resgate-local-2026-09-26, HEAD 1d16cf9; alterações não commitadas. Somente apresentação do
+painel de edição; gravação exclusivamente por agenda_manual_corrigir_horario, envio único. WhatsApp e
+“Mesma especialidade” não implementados (por instrução).
+
+**Implementado (situações agendado, confirmado, aguardando):** título “Remarcar agendamento”, subtítulo
+paciente · duração; bloco de → para (“Horário atual” riscado, data, profissional; “Novo horário” com borda
+primária ou “Escolha um novo horário”; seta empilhada no celular); “Próximos horários livres” — até 6, mesmo
+profissional, hoje + 13 dias, função pura sugestoesRemarcacao (src/lib/agendaSugestoes.ts, sobre janelasAgenda e
+blocosHorarioAgenda, ignora o próprio agendamento, o horário atual e horários já passados de hoje) com leitura
+por intervalo (useSugestoesRemarcacao, mesmas três tabelas, contexto antigo descartado). Prioridade: até 2
+“Ainda hoje”, até 2 “Mesmo horário” em outro dia, o primeiro livre de cada dia seguinte e os demais; exibição
+cronológica; etiquetas Ainda hoje/Mesmo horário/Manhã/Tarde/Noite. Após a chegada: só a mesma data, sem faixa.
+Vazio: “Nenhum horário livre encontrado nos próximos 14 dias” + “Escolher data e horário manualmente”. Falha:
+aviso discreto, painel segue. “Escolher outra data”: FaixaDiasAgenda + “Nova data” + DisponibilidadeFormulario
+(blocos, Outro horário, avisos e confirmação manual). Motivo: Pedido do paciente / do profissional / Imprevisto
+da clínica preenchem o mesmo p_motivo; “Outro” abre o texto livre (5–500, mesma validação). Confirmação
+obrigatória, revisão anterior/novo, descarte, mensagens e regras inalteradas. Rodapé: “Falta: …” ou “O horário
+das HH:MM de … volta a ficar livre…”, Cancelar e “Confirmar remarcação”; lista completa para leitor de tela.
+Outras situações: painel anterior (“Editar agendamento”) preservado.
+
+**Arquivos:** novos src/lib/agendaSugestoes.ts (+ .test.ts), src/hooks/useSugestoesRemarcacao.ts,
+tests/operacional/agenda-remarcacao.spec.ts; alterados src/components/agenda/EditarAgendamento.tsx,
+src/config/notasEvolucao.json, prévia agenda-preview.tsx (?remarcacao; último envio em data-ultimo-envio;
+comparação de conflito em HH:MM — corrigido falso conflito por segundos, defeito antigo só da prévia) e
+seletores de testes. Componentes compartilhados, criação, página principal, AppShell e Sidebar não alterados.
+
+**Testes (prévia sintética, relógio fixo hoje 10:20 nos novos):** unitários 14/14 (7 novos de sugestões);
+agenda-remarcacao 24/24 (8 × 3 telas); regressão agenda-pagina + novo-painel + horarios + experiencia 86/86
+(+4 puladas por tela), refinamento + fechamento 45/45, agenda-edicao + recepcao-fluxo 76/76,
+operacional.spec (Agenda) 12/12; build/lint sem erros novos. Rodada intermediária: 3 falhas por leitura de
+texto do teste (textContent) e pelo falso conflito da prévia; 1 execução travou (tablet, “situação não
+editável”) — passou isolada e em duas rodadas completas seguintes, causa não identificada. Ajustes de testes
+antigos (asserções preservadas): diálogo “Editar agendamento” → “Remarcar agendamento”; botão “Salvar
+alterações” → “Confirmar remarcação”; motivo digitado após clicar “Outro”; edição agora com faixa de dias
+(asserção de ausência virou presença, conforme o pedido); abertura verifica o bloco “Horário anterior”
+visível em vez de “Nova data”.
+
+**Capturas:** scratch/agenda-ux/remarcacao/{abertura,sugestao-escolhida,motivo,revisao,sem-horarios,escuro}-
+{desktop,tablet,mobile}.png. Prévia: http://127.0.0.1:4192/tests/operacional/agenda-preview.html?remarcacao
+(Lista → Editar em 11:00 Clara; &sem-expediente; &falha-faixa).
+
+**Diferenças em relação ao mockup:** sem WhatsApp, “Mesma especialidade” e histórico (fora do escopo / sem
+leitura permitida); sem “Consulta” no subtítulo e especialidade nos cartões (dados não disponíveis no painel);
+“Escolher outra data” sempre aberto com faixa e blocos (pedido) em vez de link; checkbox de confirmação mantido;
+rodapé explica pendências; faixa de dias conta o próprio horário como ocupado (hook compartilhado com a criação
+não alterado; os blocos o mostram livre); prévia tem expediente aos fins de semana, por isso as sugestões
+mostram sábado/domingo; largura do painel é a dos demais painéis da Agenda.
+
+**Histórico do agendamento (investigação por leitura, nada implementado):** criação manual
+(trigger agenda_auditar_criacao_manual) e correção de data/horário (trigger agenda_auditar_correcao_horario)
+já gravam em public.auditoria (append-only): clinica_id, usuario_id, acao, entidade='agendamentos',
+entidade_id, dados_antes/dados_depois com data, hora_inicio, hora_fim e motivo, created_at. Mudanças de
+situação (confirmar, chegada, cancelar — UPDATE direto) não são auditadas ali. Leitura: RLS de
+public.auditoria só tem a política auditoria_leitura (SELECT para eh_proprietaria(clinica_id)); a Recepção
+não lê, e o cliente não consulta essa tabela. Necessário para exibir “Histórico deste agendamento” à
+Recepção: RPC SECURITY DEFINER somente leitura (ex.: agenda_historico(p_clinica_id, p_agendamento_id)) com
+checagem de vínculo ativo Recepção/Proprietária na clínica, retornando apenas data/hora da ação, tipo,
+data/horário antes/depois, motivo e nome de exibição do autor (não usuario_id cru); decidir se mudanças de
+situação passam a ser auditadas (novo trigger) e a política de exposição do motivo (texto livre, LGPD).
+O mockup também mostra “Confirmação enviada ao paciente”, que não existe no sistema (sem envio de mensagens).
+
+Não validado: banco/sessão real, leitor de tela real, zoom nativo. Próxima ação: revisão do usuário.
+
 ## Redesenho visual da Agenda — publicação autorizada (02/10/2026)
 
 Estado em 02/10/2026 15:51 -03:00: **publicação autorizada em andamento** das três entregas abaixo

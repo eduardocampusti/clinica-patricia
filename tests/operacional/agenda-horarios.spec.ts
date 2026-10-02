@@ -154,21 +154,23 @@ test('falha da leitura da faixa não bloqueia o formulário', async ({ page }) =
   await expect(page.getByRole('status').filter({ hasText: 'Agendamento criado' })).toBeVisible()
 })
 
-test('edição usa os mesmos blocos, sem faixa de dias; próprio horário fica selecionado', async ({ page }, info) => {
+test('edição usa os mesmos blocos, agora com a faixa de dias da remarcação; próprio horário fica selecionado', async ({ page }, info) => {
   await page.goto(previa, { waitUntil: 'domcontentloaded' })
   // Computador abre no modo Dia; estes cenários usam as ações da lista.
   await page.getByRole('button', { name: 'Lista', exact: true }).click()
   await page.locator('[data-registro-id="ag-2"]').getByRole('button', { name: 'Editar agendamento' }).click()
-  const painel = page.getByRole('dialog', { name: 'Editar agendamento' })
+  const painel = page.getByRole('dialog', { name: 'Remarcar agendamento' })
   await expect(painel.getByText('Verificando disponibilidade...', { exact: true })).toHaveCount(0)
-  await expect(faixa(painel)).toHaveCount(0)
+  // Remarcação: “Escolher outra data” passou a incluir a faixa de dias (antes ausente na edição).
+  await expect(faixa(painel)).toHaveCount(1)
   await expect(blocos(painel).getByRole('button', { name: '10:00', exact: true })).toHaveAttribute('aria-pressed', 'true')
   await expect(blocos(painel).getByRole('button', { name: '09:00 ocupado', exact: true })).toBeDisabled()
   await blocos(painel).getByRole('button', { name: '11:00', exact: true }).click()
   await expect(painel.getByLabel('Resumo do horário')).toContainText('11:30')
+  await painel.getByRole('button', { name: 'Outro', exact: true }).click()
   await painel.getByLabel('Motivo da correção').fill('Correção exclusivamente sintética')
   await painel.getByRole('checkbox', { name: /Conferi o horário/ }).check()
-  await expect(painel.getByRole('button', { name: 'Salvar alterações' })).toBeEnabled()
+  await expect(painel.getByRole('button', { name: 'Confirmar remarcação' })).toBeEnabled()
   await semOverflow(page, painel)
   await capturar(page, blocos(painel), 'edicao', info.project.name)
 })
