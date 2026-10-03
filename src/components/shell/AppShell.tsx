@@ -1,10 +1,11 @@
-import { useState, type ReactNode } from 'react'
+import { type ReactNode } from 'react'
 import type { ClinicaAtiva } from '../../hooks/useClinicaAtiva'
 import type { Papel } from '../../hooks/usePapelNaClinica'
 import { ThemeToggle } from '../../theme/ThemeToggle'
+import { rotuloPapel } from '../../lib/papelApresentacao'
 import Sidebar from './Sidebar'
-import type { Tela } from './types'
-import { IconeFechar, IconeLupa, IconeMenuHamburguer, IconeSino } from './icons'
+import { TITULOS_TELA, type Tela } from './types'
+import { SidebarProvider, SidebarInset, SidebarTrigger } from '../ui/sidebar'
 
 interface AppShellProps {
   tela: Tela
@@ -29,122 +30,49 @@ function AppShell({
   onSair,
   children,
 }: AppShellProps) {
-  const [drawerAberto, setDrawerAberto] = useState(false)
-
   return (
-    <div className="flex min-h-screen bg-[var(--fundo-pagina)]">
+    <SidebarProvider className={tela === 'financeiro' ? 'app-shell-finance' : ''}>
       <Sidebar
-        tela={tela}
         onNavegar={onNavegar}
         clinicaAtiva={clinicaAtiva}
         clinicasDoUsuario={clinicasDoUsuario}
         onSelecionarClinica={onSelecionarClinica}
         papel={papel}
-        aberta={drawerAberto}
-        onFechar={() => setDrawerAberto(false)}
+        emailUsuario={emailUsuario}
         onSair={onSair}
       />
 
-      {drawerAberto && (
-        <button
-          type="button"
-          aria-label="Fechar menu"
-          onClick={() => setDrawerAberto(false)}
-          className="fixed inset-0 z-30 bg-[var(--sobreposicao)] lg:hidden"
-        />
-      )}
+      <SidebarInset>
+        <header className="app-shell-header flex min-h-16 flex-none items-center gap-3 border-b border-[var(--borda)] bg-[var(--fundo-card)] px-4 sm:px-6 lg:px-8">
+          <SidebarTrigger />
 
-      <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex h-16 flex-none items-center gap-4 border-b border-[var(--borda)] bg-[var(--fundo-card)] px-4 lg:px-6">
-          {/* Botão hambúrguer — só mobile */}
-          <button
-            type="button"
-            onClick={() => setDrawerAberto((v) => !v)}
-            aria-label={drawerAberto ? 'Fechar menu' : 'Abrir menu'}
-            className="flex h-9 w-9 items-center justify-center rounded-lg text-[var(--texto-principal)] transition hover:bg-[var(--fundo-pagina)] lg:hidden"
-          >
-            {drawerAberto ? <IconeFechar /> : <IconeMenuHamburguer />}
-          </button>
-
-          {/* Abas de clínica — só proprietária (desktop) */}
-          {clinicasDoUsuario.length > 1 && (
-            <nav className="hidden items-center gap-1 lg:flex">
-              {clinicasDoUsuario.map((c) => {
-                const ativa = c.id === clinicaAtiva?.id
-                return (
-                  <button
-                    key={c.id}
-                    type="button"
-                    onClick={() => onSelecionarClinica(c.id)}
-                    className={`relative px-3 py-2 text-sm font-medium transition ${
-                      ativa
-                        ? 'text-[var(--cor-primaria)]'
-                        : 'text-[var(--texto-terciario)] hover:text-[var(--texto-principal)]'
-                    }`}
-                  >
-                    {c.nome.replace('Clínica ', '')}
-                    {ativa && (
-                      <span className="absolute bottom-0 left-1 right-1 h-0.5 rounded-full bg-[var(--cor-primaria)]" />
-                    )}
-                  </button>
-                )
-              })}
-            </nav>
-          )}
-
-          {/* Nome da clínica — só funcionário (desktop) */}
-          {clinicasDoUsuario.length <= 1 && clinicaAtiva && (
-            <span className="hidden text-sm font-medium text-[var(--texto-secundario)] lg:block">
-              {clinicaAtiva.nome}
-            </span>
-          )}
+          <div className="min-w-0">
+            <p className="truncate text-sm font-semibold text-[var(--texto-principal)]">{TITULOS_TELA[tela]}</p>
+            <p className="hidden text-xs text-[var(--texto-secundario)] sm:block">Gestão clínica</p>
+          </div>
 
           {/* Espaçador */}
           <div className="flex-1" />
 
-          {/* Busca (desktop) */}
-          <div className="hidden items-center gap-2 rounded-lg border border-[var(--borda)] bg-[var(--fundo-pagina)] px-3 py-1.5 text-sm text-[var(--texto-terciario)] lg:flex">
-            <IconeLupa className="h-4 w-4" />
-            <span>Buscar paciente ou agenda...</span>
-            <kbd className="ml-4 rounded border border-[var(--borda)] bg-[var(--fundo-card)] px-1.5 py-0.5 text-[11px] font-medium text-[var(--texto-terciario)]">
-              Ctrl+K
-            </kbd>
-          </div>
-
-          {/* Ícones de ação */}
-          <div className="flex items-center gap-2">
-            {/* Sino de notificações */}
-            <button
-              type="button"
-              className="relative flex h-9 w-9 items-center justify-center rounded-lg text-[var(--texto-secundario)] transition hover:bg-[var(--fundo-pagina)]"
-            >
-              <IconeSino className="h-5 w-5" />
-              <span className="absolute right-1.5 top-1.5 flex h-2 w-2 rounded-full bg-[var(--cor-erro)]" />
-            </button>
-
-            {/* Toggle claro/escuro */}
+          <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+            {clinicasDoUsuario.length > 1 ? (
+              <select aria-label="Selecionar clínica" value={clinicaAtiva?.id ?? ''}
+                onChange={(evento) => onSelecionarClinica(evento.target.value)}
+                className="max-w-[115px] min-h-10 truncate rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-2 text-xs font-medium text-[var(--texto-principal)] focus-visible:outline-2 focus-visible:outline-[var(--cor-primaria)] sm:max-w-[190px] sm:px-3 sm:text-sm">
+                {clinicasDoUsuario.map((clinica) => <option key={clinica.id} value={clinica.id}>{clinica.nome}</option>)}
+              </select>
+            ) : clinicaAtiva && <span className="max-w-[110px] truncate text-xs font-medium text-[var(--texto-secundario)] sm:max-w-none sm:text-sm">{clinicaAtiva.nome}</span>}
             <ThemeToggle />
-
-            {/* CTA — Novo Atendimento (desktop) */}
-            <button
-              type="button"
-              onClick={() => onNavegar('atendimentos')}
-              className="hidden items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90 lg:flex"
-              style={{ backgroundColor: 'var(--cor-primaria)' }}
-            >
-              Novo Atendimento
-            </button>
-
-            {/* Avatar do usuário */}
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--fundo-pagina)] text-xs font-bold text-[var(--texto-principal)]">
+            <div aria-label={`Usuário ${emailUsuario}`} title={emailUsuario} className="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-[var(--cor-primaria-suave)] text-xs font-bold text-[var(--cor-primaria)]">
               {emailUsuario.slice(0, 2).toUpperCase()}
             </div>
+            <div className="hidden max-w-40 lg:block"><p className="truncate text-xs font-semibold text-[var(--texto-principal)]" title={emailUsuario}>{emailUsuario.split('@')[0]}</p><p className="text-xs text-[var(--texto-secundario)]">{rotuloPapel(papel)}</p></div>
           </div>
         </header>
 
-        <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-10 lg:py-9">{children}</main>
-      </div>
-    </div>
+        <main className="min-w-0 flex-1 px-4 py-5 sm:px-6 lg:px-8 lg:py-7">{children}</main>
+      </SidebarInset>
+    </SidebarProvider>
   )
 }
 

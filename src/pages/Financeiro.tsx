@@ -8,6 +8,8 @@ import {
   type PacienteOpcaoEntrada,
   type ProfissionalOpcaoEntrada,
 } from '../components/financeiro/FormRegistrarEntrada'
+import { FeedbackAlert } from '../components/feedback/FeedbackAlert'
+import { AcoesFinanceiras } from '../components/financeiro/AcoesFinanceiras'
 
 type PacienteOpcao = PacienteOpcaoEntrada
 type ProfissionalOpcao = ProfissionalOpcaoEntrada
@@ -124,14 +126,7 @@ function Financeiro({ clinicaAtivaId, carregandoClinica }: FinanceiroProps) {
               />
             </div>
 
-            {erro && (
-              <p
-                role="alert"
-                className="rounded-lg border border-[var(--cor-erro-borda)] bg-[var(--cor-erro-suave)] px-3 py-2 text-sm text-[var(--cor-erro)]"
-              >
-                {erro}
-              </p>
-            )}
+            {erro && <FeedbackAlert variant="destructive" title="Caixa não aberto" description={erro} urgent />}
 
             <button
               type="submit"
@@ -145,6 +140,7 @@ function Financeiro({ clinicaAtivaId, carregandoClinica }: FinanceiroProps) {
       </div>
 
       {sessao && <EntradasCaixa sessaoCaixaId={sessao.id} clinicaAtivaId={clinicaAtivaId} />}
+      {sessao && clinicaAtivaId && <AcoesFinanceiras clinicaId={clinicaAtivaId} onCaixaFechado={recarregar} />}
     </div>
   )
 }

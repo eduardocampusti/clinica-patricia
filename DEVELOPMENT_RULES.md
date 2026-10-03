@@ -6,11 +6,20 @@
 > Ver `10-PLANO-DIRETOR.md` para a visão profissional de longo prazo (mapa, não
 > lista de tarefas — implementar incrementalmente).
 
-## Decisões estruturais formalizadas (01/08/2026)
+## Decisões estruturais formalizadas (01/08/2026 e 12/08/2026)
 
-- **CNPJs diferentes por clínica, mesma proprietária** → 3 controladores de dados
-  distintos (LGPD). NÃO criar "paciente global" entre clínicas sem decisão jurídica.
-  Isolamento por `clinica_id` já protege isso.
+- **Histórico da decisão de 01/08/2026:** o modelo então vigente tratava Brotas,
+  Ipupiara e Ibitiara como 3 clínicas/controladores. Testes e relatos produzidos
+  nesse contexto não devem ser reescritos.
+- **Decisão vigente de 12/08/2026:** Brotas e Ipupiara são as 2 clínicas e cada
+  uma é um controlador de dados distinto. O laboratório da proprietária em
+  Ibitiara tem CNPJ e sistema próprios e NÃO faz parte deste multi-tenant. Não
+  criar "paciente global" nem compartilhar dados entre CNPJs sem decisão jurídica.
+- **Ibitiara → laboratório externo:** a referência canônica é
+  `DECISAO-IBITIARA-LABORATORIO.md`. Não tratar o laboratório como `clinica_id`,
+  não apagar registros históricos e não executar `desativar_ibitiara.sql` sem
+  inventário, revisão e autorização futura. Relatos de testes feitos quando havia
+  3 clínicas são históricos e não devem ser reescritos.
 - **Proprietária NÃO tem acesso clínico automático.** Ser dona = acesso financeiro/
   administrativo. Acesso ao conteúdo de prontuário exige necessidade assistencial
   (princípio da minimização, LGPD). Não dar acesso a prontuário "por ser dona".
@@ -106,6 +115,26 @@ Frontend (`.env`, ver `.env.example`):
 Supabase (Vault):
 - `cpf_key`, `cpf_pepper` — chaves de criptografia/HMAC do CPF (**provisórias**, trocar
   antes da produção).
+
+## Integridade do banco (obrigatório antes e depois de cada migration)
+
+- **Nunca confie no cabeçalho do arquivo `.sql` como fonte de status.** O comentário
+  "PROPOSTA PARA REVISÃO — NÃO APLICADA" pode persistir mesmo em migrations
+  aplicadas. Ele é convenção histórica, não indicador vivo.
+- **Nunca confie apenas em `supabase_migrations.schema_migrations`.** O registro
+  ali só prova que a migration foi enfileirada, não que executou por completo.
+- **Sempre verifique cada objeto no banco** após aplicar migration. Consulte
+  `information_schema.tables`, `information_schema.columns`, `pg_proc`,
+  `information_schema.triggers`, `pg_policies`.
+- **Nunca chute nome de tabela ou coluna ao investigar.** Consulte primeiro:
+  `SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_name ILIKE '%<termo>%';`
+- **Convenção de nomenclatura:** tabelas de vínculo com natureza jurídica ou de
+  papel recebem sufixo semântico (ex.: `pacientes_responsaveis_legais`,
+  não `pacientes_responsaveis`).
+- **Ferramenta oficial:** rodar `supabase\tools\verificar-integridade.sql` após
+  cada migration nova.
+- **Referência completa:** processo detalhado, checklist e histórico em
+  `docs\modulos\pacientes\12-DIAGNOSTICO-INTEGRIDADE.md`.
 
 ## Ao gerar prompts de implementação (para Claude Code / outra IA)
 

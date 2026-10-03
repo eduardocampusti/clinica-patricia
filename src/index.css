@@ -1,6 +1,60 @@
 @import "tailwindcss";
+@import "./financeiro.css";
+
+/* Tokens aditivos do acabamento da Agenda. Os tokens anteriores permanecem intactos. */
+:root {
+  --sombra-1: 0 2px 4px rgb(30 58 95 / 8%), 0 8px 20px rgb(30 58 95 / 9%);
+  --sombra-2: 0 3px 6px rgb(30 58 95 / 12%), 0 12px 28px rgb(30 58 95 / 14%);
+  --sombra-3: -3px 0 8px rgb(30 58 95 / 14%), -16px 0 40px rgb(30 58 95 / 18%);
+  --kpi-1-acento: #3b82f6; --kpi-1-texto: #1d4ed8;
+  --kpi-2-acento: #f59e0b; --kpi-2-texto: #92400e;
+  --kpi-3-acento: #f97316; --kpi-3-texto: #9a3412;
+  --kpi-4-acento: #10b981; --kpi-4-texto: #166534;
+  --kpi-5-acento: #8b5cf6; --kpi-5-texto: #6b21a8;
+  --kpi-1-inicio: color-mix(in srgb, var(--kpi-1-acento) 16%, var(--fundo-card)); --kpi-1-fim: var(--fundo-card); --kpi-1-icone-fundo: color-mix(in srgb, var(--kpi-1-acento) 20%, var(--fundo-card));
+  --kpi-2-inicio: color-mix(in srgb, var(--kpi-2-acento) 16%, var(--fundo-card)); --kpi-2-fim: var(--fundo-card); --kpi-2-icone-fundo: color-mix(in srgb, var(--kpi-2-acento) 20%, var(--fundo-card));
+  --kpi-3-inicio: color-mix(in srgb, var(--kpi-3-acento) 16%, var(--fundo-card)); --kpi-3-fim: var(--fundo-card); --kpi-3-icone-fundo: color-mix(in srgb, var(--kpi-3-acento) 20%, var(--fundo-card));
+  --kpi-4-inicio: color-mix(in srgb, var(--kpi-4-acento) 16%, var(--fundo-card)); --kpi-4-fim: var(--fundo-card); --kpi-4-icone-fundo: color-mix(in srgb, var(--kpi-4-acento) 20%, var(--fundo-card));
+  --kpi-5-inicio: color-mix(in srgb, var(--kpi-5-acento) 16%, var(--fundo-card)); --kpi-5-fim: var(--fundo-card); --kpi-5-icone-fundo: color-mix(in srgb, var(--kpi-5-acento) 20%, var(--fundo-card));
+  --prof-1-fundo: #e3eeff; --prof-1-avatar: #dbeafe; --prof-1-texto: #1e40af;
+  --prof-2-fundo: #e4f8ed; --prof-2-avatar: #dcfce7; --prof-2-texto: #166534;
+  --prof-3-fundo: #ffe5eb; --prof-3-avatar: #ffe4e6; --prof-3-texto: #9f1239;
+  --prof-4-fundo: #efe5ff; --prof-4-avatar: #f3e8ff; --prof-4-texto: #6b21a8;
+  --prof-5-fundo: #ffeddd; --prof-5-avatar: #ffedd5; --prof-5-texto: #9a3412;
+  --prof-6-fundo: #def7f2; --prof-6-avatar: #ccfbf1; --prof-6-texto: #115e59;
+  --agenda-link-texto: color-mix(in srgb, var(--cor-primaria) 65%, var(--texto-principal));
+  --agenda-superficie-borda: var(--borda);
+  --agenda-realce-fundo: color-mix(in srgb, var(--cor-primaria) 8%, var(--fundo-card));
+  /* A marca pode ser verde claro: texto derivado escurecido para contraste, sem mudar a marca. */
+  --agenda-realce-texto: color-mix(in srgb, var(--cor-primaria) 65%, var(--texto-principal));
+}
+[data-theme="escuro"] {
+  --sombra-1: 0 1px 3px rgb(0 8 20 / 14%), 0 3px 8px rgb(0 8 20 / 10%);
+  --sombra-2: 0 2px 4px rgb(0 8 20 / 22%), 0 6px 8px rgb(0 8 20 / 18%);
+  --sombra-3: -2px 0 6px rgb(0 8 20 / 25%), -12px 0 32px rgb(0 8 20 / 28%);
+  --kpi-1-acento: #60a5fa; --kpi-1-texto: #bfdbfe;
+  --kpi-2-acento: #fbbf24; --kpi-2-texto: #fde68a;
+  --kpi-3-acento: #fb923c; --kpi-3-texto: #fed7aa;
+  --kpi-4-acento: #34d399; --kpi-4-texto: #a7f3d0;
+  --kpi-5-acento: #a78bfa; --kpi-5-texto: #ddd6fe;
+  --kpi-1-inicio: color-mix(in srgb, var(--kpi-1-acento) 8%, var(--fundo-card));
+  --kpi-2-inicio: color-mix(in srgb, var(--kpi-2-acento) 8%, var(--fundo-card));
+  --kpi-3-inicio: color-mix(in srgb, var(--kpi-3-acento) 8%, var(--fundo-card));
+  --kpi-4-inicio: color-mix(in srgb, var(--kpi-4-acento) 8%, var(--fundo-card));
+  --kpi-5-inicio: color-mix(in srgb, var(--kpi-5-acento) 8%, var(--fundo-card));
+  --agenda-link-texto: color-mix(in srgb, var(--cor-primaria) 45%, var(--texto-principal));
+  --agenda-superficie-borda: color-mix(in srgb, var(--borda) 88%, var(--texto-principal));
+  --prof-1-fundo: #192d46; --prof-1-avatar: #1e3a5f; --prof-1-texto: #bfdbfe;
+  --prof-2-fundo: #192e2a; --prof-2-avatar: #1b4030; --prof-2-texto: #bbf7d0;
+  --prof-3-fundo: #352530; --prof-3-avatar: #4c2535; --prof-3-texto: #fecdd3;
+  --prof-4-fundo: #2c2541; --prof-4-avatar: #3a2854; --prof-4-texto: #e9d5ff;
+  --prof-5-fundo: #32271f; --prof-5-avatar: #48301d; --prof-5-texto: #fed7aa;
+  --prof-6-fundo: #1b2e35; --prof-6-avatar: #16454a; --prof-6-texto: #99f6e4;
+  --agenda-realce-texto: color-mix(in srgb, var(--cor-primaria) 35%, var(--texto-principal));
+}
 
 html {
+  --texto-sobre-primaria: #FFFFFF;
   font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
 }
 
@@ -115,6 +169,20 @@ body {
   --cor-alerta-suave: color-mix(in srgb, var(--cor-alerta) 12%, transparent);
   --cor-alerta-borda: color-mix(in srgb, var(--cor-alerta) 30%, transparent);
 
+  /* Feedback compartilhado (Alert / AlertDialog, adaptado do shadcn/ui). */
+  --feedback-sucesso-fundo: #F0FDF4;
+  --feedback-sucesso-borda: #BBF7D0;
+  --feedback-sucesso-texto: #166534;
+  --feedback-alerta-fundo: #FFF7ED;
+  --feedback-alerta-borda: #FED7AA;
+  --feedback-alerta-texto: #9A3412;
+  --feedback-erro-fundo: #FEF2F2;
+  --feedback-erro-borda: #FECACA;
+  --feedback-erro-texto: #991B1B;
+  --feedback-info-fundo: #EFF6FF;
+  --feedback-info-borda: #BFDBFE;
+  --feedback-info-texto: #1E40AF;
+
   /* Sobreposição do drawer mobile */
   --sobreposicao: rgba(0, 0, 0, 0.4);
 
@@ -162,22 +230,41 @@ body {
   --status-confirmado-borda: #15803d;
   --status-confirmado-texto: #14532d;
   --status-confirmado-badge-fundo: #c9ead3;
-  --status-confirmado-badge-texto: #15803d;
+  --status-confirmado-badge-texto: #166534;
   --status-em-atendimento-fundo: #d6f3f3;
   --status-em-atendimento-borda: #0e7c86;
   --status-em-atendimento-texto: #0b4f55;
   --status-em-atendimento-badge-fundo: #bde8e8;
-  --status-em-atendimento-badge-texto: #0e7c86;
+  --status-em-atendimento-badge-texto: #0b5e66;
   --status-aguardando-fundo: #fdecd1;
   --status-aguardando-borda: #b45309;
   --status-aguardando-texto: #7c3a0a;
   --status-aguardando-badge-fundo: #fadfb3;
-  --status-aguardando-badge-texto: #b45309;
+  --status-aguardando-badge-texto: #92400e;
   --status-cancelado-fundo: #fbe1e1;
   --status-cancelado-borda: #b91c1c;
   --status-cancelado-texto: #7f1d1d;
   --status-cancelado-badge-fundo: #f7cfcf;
   --status-cancelado-badge-texto: #b91c1c;
+  /* Situações complementares da Agenda (v3): agendado (neutro) e faltou. */
+  --status-agendado-fundo: #eef1f5;
+  --status-agendado-borda: #64748b;
+  --status-agendado-texto: #334155;
+  --status-agendado-badge-fundo: #e2e8f0;
+  --status-agendado-badge-texto: #475569;
+  --status-faltou-fundo: #fde8ee;
+  --status-faltou-borda: #be123c;
+  --status-faltou-texto: #881337;
+  --status-faltou-badge-fundo: #fbd0dc;
+  --status-faltou-badge-texto: #9f1239;
+  /* Ponto indicador: acompanha a borda de cada situação nos dois modos. */
+  --status-agendado-ponto: var(--status-agendado-borda);
+  --status-confirmado-ponto: var(--status-confirmado-borda);
+  --status-aguardando-ponto: var(--status-aguardando-borda);
+  --status-em-atendimento-ponto: var(--status-em-atendimento-borda);
+  --status-concluido-ponto: var(--status-concluido-borda);
+  --status-faltou-ponto: var(--status-faltou-borda);
+  --status-cancelado-ponto: var(--status-cancelado-borda);
 }
 
 [data-theme="escuro"] {
@@ -207,6 +294,19 @@ body {
   --cor-sucesso: #4ade80;
   --cor-alerta: #fbbf24;
 
+  --feedback-sucesso-fundo: #10281B;
+  --feedback-sucesso-borda: #256C42;
+  --feedback-sucesso-texto: #86EFAC;
+  --feedback-alerta-fundo: #2B1D0E;
+  --feedback-alerta-borda: #7C4A16;
+  --feedback-alerta-texto: #FDBA74;
+  --feedback-erro-fundo: #2D1517;
+  --feedback-erro-borda: #7F3038;
+  --feedback-erro-texto: #FCA5A5;
+  --feedback-info-fundo: #14233D;
+  --feedback-info-borda: #28558D;
+  --feedback-info-texto: #93C5FD;
+
   --dourado: #d4a64f;
   --dourado-texto: #e8c77a;
   --dourado-fundo: color-mix(in srgb, #b8873d 20%, transparent);
@@ -231,27 +331,176 @@ body {
 
   --status-concluido-borda: color-mix(in srgb, #6b3fa0 85%, white);
   --status-concluido-fundo: color-mix(in srgb, #6b3fa0 22%, transparent);
-  --status-concluido-texto: color-mix(in srgb, #6b3fa0 70%, white);
+  --status-concluido-texto: color-mix(in srgb, #6b3fa0 50%, white);
   --status-concluido-badge-fundo: color-mix(in srgb, #6b3fa0 30%, transparent);
-  --status-concluido-badge-texto: color-mix(in srgb, #6b3fa0 78%, white);
+  --status-concluido-badge-texto: color-mix(in srgb, #6b3fa0 50%, white);
   --status-confirmado-borda: color-mix(in srgb, #15803d 85%, white);
   --status-confirmado-fundo: color-mix(in srgb, #15803d 22%, transparent);
-  --status-confirmado-texto: color-mix(in srgb, #15803d 70%, white);
+  --status-confirmado-texto: color-mix(in srgb, #15803d 50%, white);
   --status-confirmado-badge-fundo: color-mix(in srgb, #15803d 30%, transparent);
-  --status-confirmado-badge-texto: color-mix(in srgb, #15803d 78%, white);
+  --status-confirmado-badge-texto: color-mix(in srgb, #15803d 50%, white);
   --status-em-atendimento-borda: color-mix(in srgb, #0e7c86 85%, white);
   --status-em-atendimento-fundo: color-mix(in srgb, #0e7c86 22%, transparent);
-  --status-em-atendimento-texto: color-mix(in srgb, #0e7c86 70%, white);
+  --status-em-atendimento-texto: color-mix(in srgb, #0e7c86 50%, white);
   --status-em-atendimento-badge-fundo: color-mix(in srgb, #0e7c86 30%, transparent);
-  --status-em-atendimento-badge-texto: color-mix(in srgb, #0e7c86 78%, white);
+  --status-em-atendimento-badge-texto: color-mix(in srgb, #0e7c86 50%, white);
   --status-aguardando-borda: color-mix(in srgb, #b45309 85%, white);
   --status-aguardando-fundo: color-mix(in srgb, #b45309 22%, transparent);
-  --status-aguardando-texto: color-mix(in srgb, #b45309 70%, white);
+  --status-aguardando-texto: color-mix(in srgb, #b45309 50%, white);
   --status-aguardando-badge-fundo: color-mix(in srgb, #b45309 30%, transparent);
-  --status-aguardando-badge-texto: color-mix(in srgb, #b45309 78%, white);
+  --status-aguardando-badge-texto: color-mix(in srgb, #b45309 50%, white);
   --status-cancelado-borda: color-mix(in srgb, #b91c1c 85%, white);
   --status-cancelado-fundo: color-mix(in srgb, #b91c1c 22%, transparent);
-  --status-cancelado-texto: color-mix(in srgb, #b91c1c 70%, white);
+  --status-cancelado-texto: color-mix(in srgb, #b91c1c 50%, white);
   --status-cancelado-badge-fundo: color-mix(in srgb, #b91c1c 30%, transparent);
-  --status-cancelado-badge-texto: color-mix(in srgb, #b91c1c 78%, white);
+  --status-cancelado-badge-texto: color-mix(in srgb, #b91c1c 50%, white);
+  --status-agendado-borda: color-mix(in srgb, #64748b 85%, white);
+  --status-agendado-fundo: color-mix(in srgb, #64748b 22%, transparent);
+  --status-agendado-texto: color-mix(in srgb, #64748b 45%, white);
+  --status-agendado-badge-fundo: color-mix(in srgb, #64748b 30%, transparent);
+  --status-agendado-badge-texto: color-mix(in srgb, #64748b 50%, white);
+  --status-faltou-borda: color-mix(in srgb, #be123c 85%, white);
+  --status-faltou-fundo: color-mix(in srgb, #be123c 22%, transparent);
+  --status-faltou-texto: color-mix(in srgb, #be123c 50%, white);
+  --status-faltou-badge-fundo: color-mix(in srgb, #be123c 30%, transparent);
+  --status-faltou-badge-texto: color-mix(in srgb, #be123c 50%, white);
+  /* No escuro, o ponto usa a cor do texto da situação para manter contraste com o fundo suave. */
+  --status-agendado-ponto: var(--status-agendado-texto);
+  --status-confirmado-ponto: var(--status-confirmado-texto);
+  --status-aguardando-ponto: var(--status-aguardando-texto);
+  --status-em-atendimento-ponto: var(--status-em-atendimento-texto);
+  --status-concluido-ponto: var(--status-concluido-texto);
+  --status-faltou-ponto: var(--status-faltou-texto);
+  --status-cancelado-ponto: var(--status-cancelado-texto);
+}
+
+/* Componentes de feedback source-owned conforme composição shadcn/ui. */
+.app-alert {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid;
+  border-radius: 12px;
+  background: var(--feedback-info-fundo);
+  border-color: var(--feedback-info-borda);
+  color: var(--feedback-info-texto);
+}
+.app-alert[data-variant="success"] { background: var(--feedback-sucesso-fundo); border-color: var(--feedback-sucesso-borda); color: var(--feedback-sucesso-texto); }
+.app-alert[data-variant="warning"] { background: var(--feedback-alerta-fundo); border-color: var(--feedback-alerta-borda); color: var(--feedback-alerta-texto); }
+.app-alert[data-variant="destructive"] { background: var(--feedback-erro-fundo); border-color: var(--feedback-erro-borda); color: var(--feedback-erro-texto); }
+.app-alert-icon { display: inline-flex; width: 20px; height: 20px; margin-top: 1px; }
+.app-alert-icon svg, .app-alert-dialog-icon svg { width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.app-alert-copy { min-width: 0; }
+.app-alert-title { margin: 0; color: currentColor; font-size: .9rem; font-weight: 650; line-height: 1.4; }
+.app-alert-description { margin-top: 2px; color: currentColor; font-size: .84rem; line-height: 1.5; opacity: .92; }
+.app-alert-description p { margin: 0; }
+.app-alert-action { display: flex; align-items: center; gap: 6px; }
+.app-alert-action > button:not(.app-alert-close), .app-alert-action > a {
+  min-height: 36px; padding: 7px 10px; border: 1px solid currentColor; border-radius: 8px; color: inherit; font-size: .8rem; font-weight: 650;
+}
+.app-alert-close { width: 36px; height: 36px; border-radius: 8px; color: currentColor; font-size: 1.25rem; line-height: 1; }
+.app-alert-close:hover, .app-alert-action > button:hover, .app-alert-action > a:hover { background: color-mix(in srgb, currentColor 9%, transparent); }
+.app-alert button:focus-visible, .app-alert a:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+
+.app-alert-dialog-overlay { position: fixed; inset: 0; z-index: 120; background: var(--sobreposicao); animation: feedback-fade-in 160ms ease-out; }
+.app-alert-dialog-content {
+  position: fixed; z-index: 121; top: 50%; left: 50%; width: min(92vw, 480px); transform: translate(-50%, -50%);
+  border: 1px solid var(--borda); border-radius: 16px; background: var(--fundo-card); color: var(--texto-principal);
+  padding: 20px; box-shadow: var(--sombra-alta); animation: feedback-dialog-in 180ms ease-out;
+}
+.app-alert-dialog-header { display: grid; grid-template-columns: 42px 1fr; align-items: start; gap: 12px; }
+.app-alert-dialog-icon { display: grid; place-items: center; width: 42px; height: 42px; padding: 10px; border-radius: 12px; }
+.app-alert-dialog-icon[data-tone="warning"] { background: var(--feedback-alerta-fundo); color: var(--feedback-alerta-texto); }
+.app-alert-dialog-icon[data-tone="danger"] { background: var(--feedback-erro-fundo); color: var(--feedback-erro-texto); }
+.app-alert-dialog-title { margin: 1px 0 0; font-size: 1.05rem; font-weight: 650; line-height: 1.4; }
+.app-alert-dialog-description { margin: 5px 0 0; color: var(--texto-secundario); font-size: .88rem; line-height: 1.55; }
+.app-alert-dialog-footer { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+.app-alert-dialog-button { min-height: 42px; padding: 9px 14px; border-radius: 9px; font-size: .86rem; font-weight: 650; }
+.app-alert-dialog-cancel { border: 1px solid var(--borda); background: var(--fundo-card); color: var(--texto-principal); }
+.app-alert-dialog-action[data-tone="warning"] { background: var(--feedback-alerta-texto); color: white; }
+.app-alert-dialog-action[data-tone="danger"] { background: var(--feedback-erro-texto); color: white; }
+.app-alert-dialog-button:hover { filter: brightness(.94); }
+.app-alert-dialog-button:focus-visible { outline: 2px solid var(--cor-primaria); outline-offset: 2px; }
+.app-alert-dialog-button:disabled { opacity: .55; cursor: wait; }
+@keyframes feedback-fade-in { from { opacity: 0; } }
+/* Agenda: números técnicos (dia da faixa, resumo do horário) em JetBrains Mono, como os rótulos técnicos v3. */
+.agenda-fonte-tecnica { font-family: 'JetBrains Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+
+/* Agenda: painel modal nativo, tela inteira no celular, ações fora da rolagem. */
+.painel-agenda[open] { display: flex; flex-direction: column; }
+.agenda-formulario { display: flex; flex: 1; flex-direction: column; min-height: 0; overflow: hidden; }
+.agenda-formulario-conteudo { flex: 1; min-height: 0; overflow-y: auto; padding: 20px; scroll-padding-block: 16px; }
+.agenda-formulario-conteudo :is(input, select, textarea, button, summary) { scroll-margin-block: 16px; }
+/* O foco do checkbox deve trazer também seu texto de confirmação para a área visível. */
+.agenda-formulario-conteudo input[type="checkbox"] { scroll-margin-bottom: 4rem; }
+.agenda-formulario-rodape { flex-shrink: 0; border-top: 1px solid var(--borda); background: var(--fundo-card); padding: 14px 20px max(14px, env(safe-area-inset-bottom)); }
+.agenda-lista-linha { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--borda-sutil); }
+.agenda-lista-linha:last-child { border-bottom: 0; }
+.agenda-lista-consulta { display: grid; gap: 6px; min-width: 0; text-align: left; border-radius: 6px; }
+.agenda-lista-cabecalho { display: none; }
+.agenda-lista-acoes { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.agenda-acao-compacta { display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-height: 40px; padding: 7px 10px; border: 1px solid var(--borda); border-radius: 8px; font-size: 12px; font-weight: 600; }
+.agenda-acao-compacta:focus-visible { background: var(--fundo-pagina); }
+@media (hover: hover) { .agenda-acao-compacta:hover:not(:disabled) { background: var(--fundo-pagina); } }
+.agenda-acao-compacta:disabled { opacity: .5; }
+.agenda-temporal-rolagem { max-height: 620px; overflow: auto; position: relative; overscroll-behavior: contain; }
+.agenda-temporal { display: grid; min-width: 100%; width: max-content; }
+.agenda-temporal-cabecalho, .agenda-temporal-canto { position: sticky; top: 0; z-index: 3; background: var(--fundo-card); border-bottom: 1px solid var(--borda); padding: 2px 2px 2px 10px; display: flex; align-items: center; justify-content: space-between; gap: 4px; min-width: 0; }
+.agenda-temporal-canto { left: 0; z-index: 4; font-size: 12px; }
+.agenda-temporal-eixo { position: sticky; left: 0; z-index: 2; background: var(--fundo-card); }
+.agenda-temporal-eixo span { position: absolute; left: 8px; margin-top: 2px; font-size: 11px; color: var(--texto-secundario); }
+/* Linhas a cada 30 minutos (--agenda-linha = 30 min × ESCALA_AGENDA), a partir do início da janela visível. */
+.agenda-temporal-coluna { position: relative; border-left: 1px solid var(--borda); background-image: repeating-linear-gradient(to bottom, color-mix(in srgb, var(--borda) 70%, transparent) 0 1px, transparent 1px var(--agenda-linha, 48px)); }
+.agenda-temporal-livre, .agenda-temporal-neutro { position: absolute; left: 4px; right: 4px; display: flex; justify-content: center; border-radius: 10px; font-size: 13px; color: var(--texto-secundario); }
+.agenda-temporal-livre { align-items: center; border: 1px dashed var(--borda); background: var(--fundo-card); }
+button.agenda-temporal-livre { cursor: pointer; transition: background-color .15s, border-color .15s, color .15s; }
+button.agenda-temporal-livre:focus-visible:not(:disabled) { border-color: var(--cor-primaria); color: var(--cor-primaria); background: var(--cor-primaria-suave); }
+@media (hover: hover) { button.agenda-temporal-livre:hover:not(:disabled) { border-color: var(--cor-primaria); color: var(--cor-primaria); background: var(--cor-primaria-suave); } }
+button.agenda-temporal-livre:focus-visible { outline: 2px solid var(--cor-primaria); outline-offset: 2px; }
+/* Sem expediente, folga ou disponibilidade não confirmada: bloco neutro, sem ação. */
+.agenda-temporal-neutro { align-items: flex-start; padding: 14px 8px; background: var(--fundo-pagina); text-align: center; }
+.agenda-temporal-neutro span { position: sticky; top: 60px; }
+.agenda-temporal-posicao { position: absolute; z-index: 1; min-width: 0; }
+.agenda-temporal-registro { --situacao-fundo: var(--status-agendado-fundo); --situacao-texto: var(--status-agendado-texto); --situacao-ponto: var(--status-agendado-ponto);
+  height: 100%; overflow: auto; border-radius: 10px; background: var(--situacao-fundo); padding: 4px 8px; color: var(--texto-principal); container-type: inline-size; }
+.agenda-temporal-registro[data-situacao="confirmado"] { --situacao-fundo: var(--status-confirmado-fundo); --situacao-texto: var(--status-confirmado-texto); --situacao-ponto: var(--status-confirmado-ponto); }
+.agenda-temporal-registro[data-situacao="aguardando"] { --situacao-fundo: var(--status-aguardando-fundo); --situacao-texto: var(--status-aguardando-texto); --situacao-ponto: var(--status-aguardando-ponto); }
+.agenda-temporal-registro[data-situacao="em-atendimento"] { --situacao-fundo: var(--status-em-atendimento-fundo); --situacao-texto: var(--status-em-atendimento-texto); --situacao-ponto: var(--status-em-atendimento-ponto); }
+.agenda-temporal-registro[data-situacao="concluido"] { --situacao-fundo: var(--status-concluido-fundo); --situacao-texto: var(--status-concluido-texto); --situacao-ponto: var(--status-concluido-ponto); }
+.agenda-temporal-registro[data-situacao="faltou"] { --situacao-fundo: var(--status-faltou-fundo); --situacao-texto: var(--status-faltou-texto); --situacao-ponto: var(--status-faltou-ponto); }
+.agenda-temporal-registro[data-situacao="cancelado"] { --situacao-fundo: var(--status-cancelado-fundo); --situacao-texto: var(--status-cancelado-texto); --situacao-ponto: var(--status-cancelado-ponto); }
+.agenda-situacao { display: inline-flex; align-items: center; gap: 5px; flex-shrink: 0; font-size: 12px; font-weight: 600; color: var(--situacao-texto); }
+.agenda-situacao-ponto { width: 7px; height: 7px; flex-shrink: 0; border-radius: 9999px; background: var(--situacao-ponto); }
+.agenda-temporal-registro .agenda-lista-consulta { grid-template-columns: minmax(0, 1fr); gap: 1px; width: 100%; font-size: 12px; line-height: 1.3; }
+/* Nome sempre em uma linha; o nome completo fica no title e no nome acessível. */
+.agenda-registro-nome { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+/* Cartão estreito (sobreposição): some o texto da situação, fica o ponto; a situação segue no nome acessível. */
+@container (max-width: 170px) { .agenda-situacao-texto { display: none; } }
+.agenda-temporal-registro.agenda-temporal-curto { overflow: hidden; padding: 0; }
+.agenda-temporal-curto .agenda-lista-consulta { display: flex; align-items: center; height: 100%; padding: 0 6px; gap: 6px; }
+.agenda-temporal-curto .agenda-lista-consulta > span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 12px; }
+.agenda-temporal-curto .agenda-lista-consulta > span:first-child { flex-shrink: 0; }
+.agenda-temporal-registro .agenda-lista-acoes { margin-top: 3px; }
+.agenda-temporal-registro .agenda-acao-compacta { min-height: 28px; padding: 3px 5px; font-size: 11px; background: var(--fundo-card); }
+@media (min-width: 1100px) {
+  .agenda-lista-linha, .agenda-lista-cabecalho { grid-template-columns: minmax(0, 1fr) 220px; gap: 16px; align-items: center; }
+  .agenda-lista-consulta, .agenda-lista-titulos { grid-template-columns: 110px minmax(120px, 1.2fr) minmax(110px, 1fr) 120px; gap: 14px; align-items: center; }
+  .agenda-lista-cabecalho { display: grid; padding: 9px 16px; font-size: 12px; font-weight: 500; color: var(--texto-secundario); background: var(--fundo-pagina); border-bottom: 1px solid var(--borda); }
+  .agenda-lista-titulos { display: grid; }
+  .agenda-lista-acoes { justify-content: flex-end; }
+}
+@media (max-width: 639px) { .agenda-temporal-rolagem { max-height: 500px; } .agenda-formulario-conteudo { padding: 16px; } .agenda-formulario-rodape { padding-left: 16px; padding-right: 16px; } }
+@keyframes feedback-dialog-in { from { opacity: 0; transform: translate(-50%, calc(-50% + 6px)) scale(.985); } }
+@media (max-width: 520px) {
+  .app-alert { grid-template-columns: 20px minmax(0, 1fr); }
+  .app-alert-action { grid-column: 1 / -1; padding-left: 30px; flex-wrap: wrap; }
+  .app-alert-dialog-content { padding: 18px; }
+  .app-alert-dialog-footer { flex-direction: column-reverse; }
+  .app-alert-dialog-button { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-alert-dialog-overlay, .app-alert-dialog-content { animation: none; }
 }

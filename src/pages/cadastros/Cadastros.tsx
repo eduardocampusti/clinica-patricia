@@ -3,10 +3,12 @@ import { usePapelNaClinica } from '../../hooks/usePapelNaClinica'
 import Especialidades from './Especialidades'
 import Profissionais from './Profissionais'
 import Servicos from './Servicos'
+import Equipe from './Equipe'
 
-type Aba = 'especialidades' | 'profissionais' | 'servicos'
+type Aba = 'equipe' | 'especialidades' | 'profissionais' | 'servicos'
 
 const ABAS: { chave: Aba; titulo: string }[] = [
+  { chave: 'equipe', titulo: 'Equipe & acessos' },
   { chave: 'especialidades', titulo: 'Especialidades' },
   { chave: 'profissionais', titulo: 'Profissionais' },
   { chave: 'servicos', titulo: 'Serviços' },
@@ -19,7 +21,7 @@ interface CadastrosProps {
 }
 
 function Cadastros({ clinicaAtivaId, carregandoClinica, usuarioId }: CadastrosProps) {
-  const [aba, setAba] = useState<Aba>('especialidades')
+  const [aba, setAba] = useState<Aba>('equipe')
   const { papel, souProprietaria } = usePapelNaClinica(usuarioId, clinicaAtivaId)
   const podeGerenciarAgenda = papel === 'proprietaria' || papel === 'recepcao'
 
@@ -28,7 +30,7 @@ function Cadastros({ clinicaAtivaId, carregandoClinica, usuarioId }: CadastrosPr
       <div>
         <h1 className="texto-titulo-tela text-[var(--texto-principal)]">Cadastros</h1>
         <p className="text-sm text-[var(--texto-secundario)]">
-          Especialidades, profissionais e serviços da clínica.
+          Pessoas, profissionais, especialidades e serviços das clínicas.
         </p>
       </div>
 
@@ -56,6 +58,7 @@ function Cadastros({ clinicaAtivaId, carregandoClinica, usuarioId }: CadastrosPr
         })}
       </div>
 
+      {aba === 'equipe' && <Equipe clinicaAtivaId={clinicaAtivaId} souProprietaria={souProprietaria} />}
       {aba === 'especialidades' && <Especialidades souProprietaria={souProprietaria} />}
       {aba === 'profissionais' && (
         <Profissionais

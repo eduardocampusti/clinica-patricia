@@ -1,0 +1,6 @@
+{
+  "project_ref": "xftnkusbyqzyvzrovroj",
+  "site_url": "http://localhost:3000",
+  "redirect_urls": ["http://127.0.0.1:3000/acesso/brotas"],
+  "observacao": "Snapshot limitado de URLs visíveis antes da configuração pública. Não contém senha SMTP, tokens, dados Auth ou backup completo. Templates anteriores em originais-20260930.json."
+}

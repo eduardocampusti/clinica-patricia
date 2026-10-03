@@ -40,12 +40,14 @@ export function useClinicaAtiva(clinicas: ClinicaAtiva[], carregandoLista: boole
   }, [clinicas, carregandoLista, clinicaAtivaId])
 
   const selecionarClinica = useCallback(
-    (id: string) => {
+    (id: string, lembrar = true, preservarPreferencia = false) => {
       // Só aceita um id que já esteja na lista recebida (RLS-limitada) —
       // nunca um id arbitrário.
       if (!clinicas.some((c) => c.id === id)) return
       setClinicaAtivaId(id)
-      window.localStorage.setItem(CHAVE_STORAGE, id)
+      if (preservarPreferencia) return
+      if (lembrar) window.localStorage.setItem(CHAVE_STORAGE, id)
+      else window.localStorage.removeItem(CHAVE_STORAGE)
     },
     [clinicas],
   )
