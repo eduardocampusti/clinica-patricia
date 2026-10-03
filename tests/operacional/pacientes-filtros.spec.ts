@@ -18,6 +18,7 @@ async function preparar(page: Page, opcao: 'normal' | 'limite' | 'erro' | 'sem-c
     if (url.hostname === '127.0.0.1' || url.hostname.endsWith('googleapis.com') || url.hostname.endsWith('gstatic.com')) return route.continue()
     if (url.hostname !== 'operacional.synthetic.invalid') return route.abort()
     if (url.pathname.endsWith('/pacientes')) {
+      if (route.request().method() === 'HEAD') return route.fulfill({ headers: { 'content-range': '*/4' }, body: '' })
       expect(route.request().method()).toBe('GET')
       const clinica = url.searchParams.get('clinica_id')
       expect(['eq.clinica-sintetica', 'eq.clinica-a', 'eq.clinica-b']).toContain(clinica)
@@ -67,7 +68,8 @@ test('ordenação, filtros aplicados, teclado, resumo e capturas responsivas', a
     await page.keyboard.press('Enter')
     await expect(ordenar).toHaveValue('nome_asc')
     await expect(page.getByRole('columnheader', { name: 'Paciente' })).toHaveAttribute('aria-sort', 'ascending')
-    await page.getByRole('button', { name: 'Nascimento / idade', exact: true }).click()
+    // Nascimento detalhado está no resumo; a ordenação permanece no seletor.
+    await ordenar.selectOption('nascimento_desc')
     await expect(ordenar).toHaveValue('nascimento_desc')
     await ordenar.selectOption('cadastro_desc')
     await expect(page.locator('[aria-sort]')).toHaveCount(0)

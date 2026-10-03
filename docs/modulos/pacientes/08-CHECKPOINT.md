@@ -1,5 +1,35 @@
 # CHECKPOINT — PACIENTES
 
+## Preparação para publicação — 03/10/2026, 10:42 -03:00
+
+Visual aprovado pelo usuário, sem novo acabamento. Integração real e pacote existente revisados:
+sem harness, dados sintéticos ou capturas de Pacientes no dist. Leitura conectada local3000,
+Recepção/Brotas: busca/resumo, abrir/cancelar criação/edição e recarga mantendo Pacientes conferidos.
+Sem salvar ou capturar dados pessoais.129/0 e build/lint anteriores mantidos, código/testes inalterados.
+Apta à publicação controlada, sem nova migration/configuração; Ipupiara conectada, zoom nativo e
+gravação/persistência real pendentes. Manifesto e limites no [relatório15](15-REDESENHO-LOCAL.md).
+HEAD403a908; nenhuma gravação, commit, push ou publicação. Próxima ação: publicação autorizada e
+conferência posterior dos dois domínios, preservando documentos de outras tarefas.
+
+## Acabamento local — 03/10/2026, 09:37 -03:00
+
+Referências disponíveis abertas; lista/indicadores/resumo compactados, prévia de identificação e etapa
+real nos formulários. Rodada final completa129/0, retries0;30 unitários,12 capturas,build/lint aprovados.
+Capturas de ambas as clínicas/temas sintéticos; sem conferência conectada ou persistência real.
+Próxima ação: revisão visual pelo usuário na prévia4192. Detalhes, falhas anteriores e limitações em
+[15-REDESENHO-LOCAL.md](15-REDESENHO-LOCAL.md). HEAD403a908, mudanças locais sem commit/publicação.
+
+## Redesenho local — 03/10/2026, 08:54 -03:00 (histórico)
+
+Lista/resumo lateral, cartões móveis, formulários existentes e preenchimento não obrigatório de seis
+itens implementados. CPF opcional e contratos de gravação preservados; sem alterações remotas.
+30 unitários aprovados; build/lint exit0 com avisos existentes. Última rodada completa128/1;
+falha de espera no teste corrigida; rodada dirigida final42/0, retries0. Não equivale a129/0 completo.
+Prévia4192 usa os componentes reais com respostas sintéticas. Não há prova nova de persistência
+real ou permissões conectadas. Referências '(1)' não localizadas; comparação final pendente.
+Próxima ação: revisar prévia/capturas. Detalhes e histórico em [15-REDESENHO-LOCAL.md](15-REDESENHO-LOCAL.md).
+Branch codex/resgate-local-2026-09-26, HEAD403a908; trabalho não commitado, documentos anteriores preservados.
+
 ## Estado vigente — correção autenticada de CPF legado (29/09/2026)
 
 - Projeto `xftnkusbyqzyvzrovroj`; uma única ficha `QA` em Brotas, ID `72704716-3834-44e1-a0c5-292926616003`, reproduziu o legado inválido. O trigger de CPF foi reativado antes do commit da fixture. Pela sessão real de proprietária na porta 5173, a ficha mostrou o aviso sem expor o valor antigo; a correção auditada com motivo e confirmação foi salva. Após fechar, recarregar e reabrir, o novo CPF sintético persistiu e o aviso inválido não reapareceu. O alerta transitório “CPF atualizado” foi observado em uma segunda correção da mesma fixture.

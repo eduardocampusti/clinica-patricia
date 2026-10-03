@@ -8,6 +8,25 @@
 
 ## 1. Natureza deste documento
 
+### Decisão específica aprovada — apresentação de Pacientes, 03/10/2026
+
+Esta aprovação específica não aprova automaticamente o restante do rascunho.
+Situação cadastral é Ativo/Inativo; dados a completar são aviso independente.
+Indicador fixo de seis itens: nome, nascimento, telefone, sexo, endereço e presença confirmada de CPF.
+CPF permanece opcional. Carregamento/erro/informação desconhecida impedem resultado conclusivo,
+sem retirar itens do denominador; pendências confirmadas permanecem visíveis.
+Sexo vazio/não informado não pontua; valor desconhecido não é convertido automaticamente.
+Endereço histórico textual não vazio conta como informado, sem afirmação de validação.
+Estruturado requer logradouro, número ou indicação explícita de sem número, bairro, cidade e UF;
+CEP/complemento dispensados neste indicador. Não inferir sem número nem inventar componentes.
+Contagens globais devem ser autorizadas, independentes de busca/página e sem consultas ilimitadas/N+1.
+Indicadores não disponíveis corretamente devem ser omitidos, não estimados ou transformados em zero.
+Consulta hoje considera pacientes distintos com agendamento na data da clínica, exceto cancelados;
+próxima consulta considera início futuro em Agendado/Confirmado. Histórico preserva situação real.
+Último atendimento exige conclusão comprovada e data com significado definido; conteúdo clínico não
+será consultado para montar resumo administrativo. Limites locais em `15-REDESENHO-LOCAL.md`.
+Desktop usa lista/resumo lateral; tablet/celular resumo sobreposto. Sidebar e gravações existentes preservados.
+
 Este documento organiza o contexto funcional do módulo Pacientes e separa explicitamente:
 
 1. decisões já aprovadas pelo proprietário;
@@ -16,7 +35,7 @@ Este documento organiza o contexto funcional do módulo Pacientes e separa expli
 4. decisões pendentes;
 5. critérios de aceite para uma implementação futura.
 
-Somente a seção **Decisões aprovadas** representa comportamento funcional já decidido. As demais regras de produto descritas como proposta, recomendação ou pergunta não estão aprovadas por este rascunho.
+Somente a seção **Decisões aprovadas** e a decisão específica de apresentação acima representam comportamento funcional já decidido. As demais regras de produto descritas como proposta, recomendação ou pergunta não estão aprovadas por este rascunho.
 
 Este documento não autoriza alteração de frontend, backend, banco, migrations, testes, infraestrutura ou Supabase remoto.
 

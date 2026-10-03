@@ -263,3 +263,56 @@
   .paciente-cancelar { display: none; }
   .paciente-botao-primario { flex: 1 1 180px; }
 }
+
+/* Cadastro e edição reutilizados, com a mesma identidade da listagem. */
+.pacientes-pagina .paciente-modal {
+  --cadastro-azul: var(--cor-primaria);
+  --cadastro-verde: var(--cor-sucesso);
+  --cadastro-fundo: var(--fundo-card);
+  --cadastro-texto: var(--texto-principal);
+  height: auto;
+  max-height: calc(100dvh - 32px);
+  color: var(--texto-principal);
+  font-family: inherit;
+  background: var(--fundo-card);
+  border-color: var(--borda);
+  border-radius: 16px;
+  box-shadow: var(--sombra-neutra);
+}
+.pacientes-pagina .paciente-modal :is(.paciente-modal-cabecalho, .paciente-secao, .paciente-modal-scroll, .paciente-modal-rodape, .paciente-etapas, .paciente-foto-reserva, .paciente-contato-card) { background: var(--fundo-card); border-color: var(--borda); }
+.pacientes-pagina .paciente-modal :is(input:not([type=checkbox]), select, textarea) { color: var(--texto-principal); background: var(--fundo-card); border-color: var(--borda); }
+.pacientes-pagina .paciente-modal :is(input,textarea)::placeholder { color: var(--texto-secundario); opacity: 1; }
+.pacientes-pagina .paciente-modal :is(label, legend, h3, h4, .paciente-subsecao-titulo, .paciente-secao-titulo-linha) { color: var(--texto-principal); }
+.pacientes-pagina .paciente-modal :is(.paciente-modal-subtitulo, .paciente-responsavel-grid p, small, .paciente-etapas small) { color: var(--texto-secundario); }
+.pacientes-pagina .paciente-modal :is(.paciente-rascunho, .paciente-privacidade-pendente, .paciente-idade, .edicao-descarte) { color: var(--texto-secundario); background: var(--fundo-pagina); border-color: var(--borda); }
+.pacientes-pagina .paciente-modal .paciente-secao { border: 0; padding-inline: 0; }
+.pacientes-pagina .paciente-modal :is(.paciente-botao-secundario, .paciente-modal-fechar) { color: var(--texto-principal); background: var(--fundo-card); border-color: var(--borda); }
+.pacientes-pagina .paciente-modal .paciente-botao-primario { background: var(--cor-primaria); border-color: var(--cor-primaria); }
+.pacientes-pagina .paciente-modal :is(input,select,textarea,button):focus-visible { outline: 2px solid var(--cor-primaria); outline-offset: 3px; scroll-margin-block: 24px; }
+.pacientes-pagina .paciente-modal .paciente-modal-scroll { scroll-padding-block: 24px; }
+.pacientes-pagina .paciente-modal :is(.paciente-etapas > button, .paciente-etapa-planejada) { color: var(--texto-secundario); background: var(--fundo-pagina); border-color: var(--borda); }
+.pacientes-pagina .paciente-modal .paciente-etapas > button.ativa { color: var(--texto-principal); background: var(--fundo-card); border-color: var(--cor-primaria); }
+.pacientes-pagina .paciente-modal .paciente-etapas > button:disabled { opacity: 1; cursor: not-allowed; }
+.pacientes-pagina .paciente-modal .paciente-etapa-planejada-icone { color: var(--texto-secundario); background: var(--fundo-card); }
+@media (max-width: 620px) {
+  .pacientes-pagina .paciente-modal { height: 100dvh; max-height: 100dvh; border-radius: 0; }
+}
+.pacientes-pagina .paciente-modal .paciente-foto-area .paciente-foto-reserva { height: auto; }
+.paciente-previa-identificacao { margin-top: 14px; padding: 14px; border-radius: 12px; background: var(--fundo-pagina); color: var(--texto-principal); }
+.paciente-previa-identificacao > small { display: block; margin-bottom: 10px; }
+.paciente-previa-identificacao > div { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.paciente-previa-identificacao > div > span:last-child { display: grid; gap: 4px; min-width: 0; }
+.paciente-previa-identificacao strong { overflow-wrap: anywhere; }
+.paciente-previa-avatar { display: grid; place-items: center; width: 44px; height: 44px; flex: none; border-radius: 50%; background: var(--cor-primaria-suave); color: var(--cor-primaria); font-weight: 700; }
+.paciente-etapa-rodape { margin: 0 auto 0 0; color: var(--texto-secundario); font-size: 13px; }
+.pacientes-pagina .paciente-edicao .paciente-previa-identificacao { margin-block: 12px 18px; }
+@media (min-width: 900px) {
+  .pacientes-pagina .paciente-foto-area .paciente-foto-reserva { min-height: 0; padding: 10px; }
+  .pacientes-pagina .paciente-foto-area .paciente-avatar { width: 48px; height: 48px; margin-bottom: 4px; font-size: 18px; }
+  .pacientes-pagina .paciente-foto-area .paciente-foto-reserva button { min-height: 36px; padding-block: 6px; }
+  .pacientes-pagina .paciente-foto-area .paciente-previa-identificacao { padding: 10px; margin-top: 10px; }
+  .pacientes-pagina .paciente-foto-area .paciente-previa-identificacao > small { margin-bottom: 6px; }
+}
+@media (max-width: 620px) {
+  .paciente-etapa-rodape { flex-basis: 100%; font-size: 12px; }
+}

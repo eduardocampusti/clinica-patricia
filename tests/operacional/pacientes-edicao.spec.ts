@@ -46,6 +46,7 @@ async function preparar(page: Page, erro?: string, comResponsavel = true, foto =
       return route.fulfill({ contentType: 'image/png', body: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+a9p0AAAAASUVORK5CYII=', 'base64') })
     }
     if (url.pathname.endsWith('/pacientes')) {
+      if (route.request().method() === 'HEAD') return route.fulfill({ headers: { 'content-range': '*/1' }, body: '' })
       expect(route.request().method()).toBe('GET') // nenhum INSERT ou UPDATE direto
       expect(url.searchParams.get('select')).not.toMatch(/cpf/)
       const clinic = url.searchParams.get('clinica_id')
@@ -135,7 +136,7 @@ async function sessaoSintetica(page: Page) {
 test('Editar na tabela abre o mesmo formulário sem selecionar o resumo; salva e reabre', async ({ page }, info) => {
   const chamadas = await preparar(page)
   await page.goto('/tests/operacional/pacientes-pagina.html', { waitUntil: 'domcontentloaded' })
-  await expect(page.locator('[role="columnheader"]').filter({ hasText: 'Ações' })).toHaveCount(1)
+  await expect(page.locator('[role="columnheader"]').filter({ hasText: 'Ações' })).toHaveCount(1, { timeout: 15000 })
   const editar = page.getByRole('button', { name: 'Editar Ana Demonstração' })
   await expect(editar).toBeVisible()
   await page.screenshot({ path: `scratch/pacientes-edicao-20260926/tabela-editar-${info.project.name}.png`, fullPage: true })
@@ -173,6 +174,8 @@ test('endereço vazio exibe todos os campos, persiste e reaparece após recarga'
   await page.getByLabel('Cidade').fill('BROTAS DE MACAÚBAS')
   await page.getByLabel('UF').fill('ba')
   await page.getByRole('button', { name: 'Salvar alterações' }).click()
+  await expect(page.getByRole('dialog', { name: 'Editar paciente' })).toHaveCount(0)
+  await expect.poll(() => chamadas.length).toBe(1)
   expect(chamadas).toHaveLength(1)
   expect(chamadas[0].p_alteracoes).toMatchObject({ logradouro: 'Rua Nova', numero: '18', bairro: 'Centro', cidade: 'Brotas de Macaúbas', uf: 'BA' })
   await page.reload({ waitUntil: 'commit' })
@@ -199,6 +202,8 @@ test('endereço textual antigo permanece como referência enquanto os campos est
   await page.getByLabel('UF').fill('ba')
   await page.screenshot({ path: `scratch/pacientes-endereco-completo-${info.project.name}.png`, fullPage: true })
   await page.getByRole('button', { name: 'Salvar alterações' }).click()
+  await expect(page.getByRole('dialog', { name: 'Editar paciente' })).toHaveCount(0)
+  await expect.poll(() => chamadas.length).toBe(1)
   expect(chamadas[0].p_alteracoes).toMatchObject({ logradouro: 'Avenida Teste', numero: '90', complemento: 'SALA 3', bairro: 'Centro', cidade: 'Ipupiara', uf: 'BA' })
   await page.reload({ waitUntil: 'commit' })
   await page.getByRole('button', { name: 'Editar Ana Demonstração' }).click()
@@ -220,6 +225,8 @@ test('endereço estruturado altera somente número e complemento sem perder os d
   await page.getByLabel('Número').fill('47')
   await page.getByLabel('Complemento').fill('Casa B')
   await page.getByRole('button', { name: 'Salvar alterações' }).click()
+  await expect(page.getByRole('dialog', { name: 'Editar paciente' })).toHaveCount(0)
+  await expect.poll(() => chamadas.length).toBe(1)
   expect(chamadas[0].p_alteracoes).toMatchObject({ cep: '47520-000', logradouro: 'Rua Estruturada', numero: '47', complemento: 'Casa B', bairro: 'Centro', cidade: 'Brotas de Macaúbas', uf: 'BA' })
   await page.reload({ waitUntil: 'commit' })
   await page.getByRole('button', { name: 'Editar Ana Demonstração' }).click()
@@ -501,6 +508,7 @@ test('CPF ausente não bloqueia edição; adiamento dura na ficha e inclusão pe
   await expect(page.getByRole('button', { name: 'Informar depois' })).toHaveCount(0)
   await page.screenshot({ path: `scratch/pacientes-cpf-ausente-${info.project.name}.png`, fullPage: true })
   await page.getByRole('button', { name: 'Salvar alterações' }).click()
+  await expect(page.getByRole('dialog', { name: 'Editar paciente' })).toHaveCount(0)
   expect(chamadas[0].p_alteracoes).toEqual({ email: 'outro@example.invalid' })
   await page.reload({ waitUntil: 'commit' })
   await page.getByRole('button', { name: 'Editar Ana Demonstração' }).click()

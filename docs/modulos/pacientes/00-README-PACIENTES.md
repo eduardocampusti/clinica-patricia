@@ -2,6 +2,9 @@
 
 **Status:** EM VALIDAÇÃO
 
+03/10/2026 — redesenho e acabamento local de lista, resumo e formulário, verificados em isolamento: [15-REDESENHO-LOCAL.md](15-REDESENHO-LOCAL.md).
+Indicador não obrigatório de seis itens, estados desconhecidos e contagens autorizadas; sem mudança de banco.
+
 ## Ordem de leitura
 
 1. `01-DOCUMENTO-FUNCIONAL-MESTRE.md` — decisões aprovadas, estado confirmado, propostas e critérios de aceite.

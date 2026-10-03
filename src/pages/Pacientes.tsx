@@ -15,6 +15,10 @@ import {
 import EditorFotoPaciente from '../components/pacientes/EditorFotoPaciente'
 import { AvisoCpfPendente } from '../components/pacientes/AvisoCpfPendente'
 import PacienteAvatar from '../components/pacientes/PacienteAvatar'
+import PreenchimentoCadastro from '../components/pacientes/PreenchimentoCadastro'
+import IndicadoresPacientes from '../components/pacientes/IndicadoresPacientes'
+import PreviaIdentificacaoPaciente from '../components/pacientes/PreviaIdentificacaoPaciente'
+import { avaliarPreenchimento } from '../lib/pacientePreenchimento'
 import { IconeCalendario, IconeChevron, IconeLupa, IconeMais, IconePessoas } from '../components/shell/icons'
 import { calcularIdade } from '../lib/pacienteIdade'
 import { FILTROS_PACIENTES_INICIAIS, LIMITE_CONSULTA_PACIENTES, correspondeAosFiltros, hojeNaBahia, ordenarPacientes, padraoBuscaNome, respostaCompletaPacientes, restricoesPacientes, resumoFiltrosPacientes, type OrdemPacientes } from '../lib/pacienteLista'
@@ -23,6 +27,7 @@ import EditarPaciente from '../components/pacientes/EditarPaciente'
 import type { PacienteEdicao } from '../lib/pacienteEdicao'
 import type { Papel } from '../hooks/usePapelNaClinica'
 import { FeedbackAlert } from '../components/feedback/FeedbackAlert'
+import { ConfirmacaoDialog } from '../components/feedback/ConfirmacaoDialog'
 import { CamposEnderecoContatosPaciente, NavegacaoFormularioPaciente } from '../components/pacientes/FormularioPacienteCompartilhado'
 import './pacientes-cadastro.css'
 import './pacientes-lista.css'
@@ -34,6 +39,7 @@ interface PacienteListado {
   telefone: string | null
   endereco: string | null
   ativo: boolean
+  sexo?: string | null
   foto_path?: string | null
   created_at?: string | null
 }
@@ -46,6 +52,7 @@ interface PacienteRow {
   endereco: string | null
   foto_path: string | null
   created_at: string | null
+  sexo?: string | null
 }
 
 interface ResponsavelResumo {
@@ -240,7 +247,7 @@ function Pacientes({
   const requisicaoAtual = useRef(0)
   const [clinicaListaId, setClinicaListaId] = useState<string | null>(null)
   const [selecao, setSelecao] = useState<{ clinicaId: string; paciente: PacienteListado } | null>(null)
-  const [resumo, setResumo] = useState<{ chave: string; responsaveis: ResponsavelResumo[]; cpfPendente: boolean | null; erro: boolean } | null>(null)
+  const [resumo, setResumo] = useState<{ chave: string; responsaveis: ResponsavelResumo[]; cpfPendente: boolean | null; erro: boolean; erroCpf: boolean } | null>(null)
   const [edicao, setEdicao] = useState<{ pacienteId: string; clinicaId: string; paciente: PacienteListado } | null>(null)
   const edicaoIniciadaNoResumo = useRef(false)
   useEffect(() => { setEdicao(null) }, [clinicaAtivaId, papel, carregandoClinica, carregandoPapel])
@@ -250,6 +257,13 @@ function Pacientes({
   const [revisaoResumo, setRevisaoResumo] = useState(0)
   const requisicaoResumoAtual = useRef(0)
   const resumoRef = useRef<HTMLDialogElement>(null)
+  const [resumoDesktop, setResumoDesktop] = useState(() => window.matchMedia('(min-width: 1280px)').matches)
+  useEffect(() => {
+    const media = window.matchMedia('(min-width: 1280px)')
+    const atualizar = () => setResumoDesktop(media.matches)
+    media.addEventListener('change', atualizar)
+    return () => media.removeEventListener('change', atualizar)
+  }, [])
   const fotoModalRef = useRef<HTMLDialogElement>(null)
   const [processandoFoto, setProcessandoFoto] = useState(false)
   const fecharResumoRef = useRef<HTMLButtonElement>(null)
@@ -258,6 +272,8 @@ function Pacientes({
   const [mostrarFormulario, setMostrarFormulario] = useState(iniciarComCadastroAberto)
   const [etapaCadastro, setEtapaCadastro] = useState<1 | 2 | 3>(1)
   const [form, setForm] = useState(FORM_INICIAL)
+  const [confirmarDescarteCadastro, setConfirmarDescarteCadastro] = useState(false)
+  const cadastroAlterado = useRef(false)
   const selecaoFormatada = useRef<{ input: HTMLInputElement; valor: string; inicio: number; fim: number } | null>(null)
   useLayoutEffect(() => {
     const selecao = selecaoFormatada.current
@@ -294,7 +310,8 @@ function Pacientes({
   const clinicaAtivaRef = useRef(clinicaAtivaId)
   clinicaAtivaRef.current = clinicaAtivaId
 
-  const fecharFormulario = useCallback(() => {
+  cadastroAlterado.current = JSON.stringify(form) !== JSON.stringify(FORM_INICIAL) || Boolean(fotoCadastro)
+  const fecharFormularioSemDescarte = useCallback(() => {
     requisicaoCepAtual.current += 1
     setMostrarFormulario(false)
     setErroFormulario(null)
@@ -307,6 +324,11 @@ function Pacientes({
     setPacienteCriadoPendente(null)
     onCancelarCadastro?.()
   }, [onCancelarCadastro])
+  const fecharFormulario = useCallback(() => {
+    if (enviandoCadastro.current) return
+    if (cadastroAlterado.current) setConfirmarDescarteCadastro(true)
+    else fecharFormularioSemDescarte()
+  }, [fecharFormularioSemDescarte])
 
   const carregarPacientes = useCallback(async (clinicaId: string) => {
     const requisicao = ++requisicaoAtual.current
@@ -319,7 +341,7 @@ function Pacientes({
     setConsultaCompleta(false)
     let consulta = supabase
       .from('pacientes')
-      .select('id, nome_completo, data_nascimento, telefone, endereco, foto_path, created_at', { count: 'exact' })
+      .select('id, nome_completo, data_nascimento, sexo, telefone, endereco, foto_path, created_at', { count: 'exact' })
       .eq('clinica_id', clinicaId)
       .eq('ativo', true)
     // Escape curingas: a busca por nome continua sendo substring literal, não expressão.
@@ -423,6 +445,7 @@ function Pacientes({
     modal?.querySelector<HTMLElement>('[aria-label="Fechar cadastro de paciente"]')?.focus()
 
     function aoTeclar(evento: KeyboardEvent) {
+      if (document.querySelector('[data-slot="alert-dialog-content"]')) return
       if (evento.key === 'Escape' && !salvando) fecharFormulario()
       if (evento.key !== 'Tab' || !modal) return
       const focaveis = Array.from(modal.querySelectorAll<HTMLElement>('button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])')).filter((item) => item.offsetParent !== null)
@@ -557,31 +580,31 @@ function Pacientes({
     const pacienteId = pacienteSelecionado.id
     setResumo(null)
     setCarregandoResumo(true)
-    void Promise.all([
+    void Promise.allSettled([
       supabase.rpc('paciente_responsavel_legal_resumo', {
         p_paciente_id: pacienteId,
         p_clinica_id: clinicaDaConsulta,
       }),
       consultarCpfPendentePaciente(pacienteId, clinicaDaConsulta),
-    ]).then(([responsaveis, cpfPendente]) => {
+    ]).then(([responsaveis, cpf]) => {
       if (requisicao !== requisicaoResumoAtual.current) return
-      if (responsaveis.error) throw responsaveis.error
-      setResumo({ chave: chaveResumo, responsaveis: (responsaveis.data ?? []) as ResponsavelResumo[], cpfPendente, erro: false })
-      setMostrarAdicionarCpf(cpfPendente && lembreteResumoAdiado.current !== chaveResumo)
-    }).catch(() => {
-      if (requisicao !== requisicaoResumoAtual.current) return
-      setResumo({ chave: chaveResumo, responsaveis: [], cpfPendente: null, erro: true })
+      const cpfPendente = cpf.status === 'fulfilled' ? cpf.value : null
+      const respostaResponsaveis = responsaveis.status === 'fulfilled' ? responsaveis.value : null
+      setResumo({ chave: chaveResumo, responsaveis: (respostaResponsaveis?.data ?? []) as ResponsavelResumo[], cpfPendente, erro: !respostaResponsaveis || Boolean(respostaResponsaveis.error), erroCpf: cpf.status === 'rejected' })
+      setMostrarAdicionarCpf(cpfPendente === true && lembreteResumoAdiado.current !== chaveResumo)
     }).finally(() => {
       if (requisicao === requisicaoResumoAtual.current) setCarregandoResumo(false)
     })
   }, [chaveResumo, clinicaAtivaId, pacienteSelecionado, revisaoResumo])
 
   useEffect(() => {
-    if (!pacienteSelecionado) return
-    resumoRef.current?.showModal()
+    if (!chaveResumo) return
+    resumoRef.current?.close()
+    if (resumoDesktop) resumoRef.current?.show()
+    else resumoRef.current?.showModal()
     const anterior = document.activeElement instanceof HTMLElement ? document.activeElement : null
     const overflowAnterior = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
+    if (!resumoDesktop) document.body.style.overflow = 'hidden'
     fecharResumoRef.current?.focus()
     function aoTeclar(evento: KeyboardEvent) {
       if (document.querySelector('.paciente-foto-modal[open], .paciente-edicao[open]')) return
@@ -591,7 +614,7 @@ function Pacientes({
         setMostrarAdicionarCpf(false)
         return
       }
-      if (evento.key !== 'Tab' || !resumoRef.current) return
+      if (resumoDesktop || evento.key !== 'Tab' || !resumoRef.current) return
       const focaveis = Array.from(resumoRef.current.querySelectorAll<HTMLElement>('button:not(:disabled), input:not(:disabled), a[href], [tabindex]:not([tabindex="-1"])'))
       if (!focaveis.length) return
       if (evento.shiftKey && document.activeElement === focaveis[0]) {
@@ -609,7 +632,7 @@ function Pacientes({
       if (gatilhoResumoRef.current?.isConnected) gatilhoResumoRef.current.focus()
       else anterior?.focus()
     }
-  }, [pacienteSelecionado])
+  }, [chaveResumo, resumoDesktop])
 
   useEffect(() => {
     if (!pacienteFoto) return
@@ -635,7 +658,7 @@ function Pacientes({
     edicaoIniciadaNoResumo.current = false
     const linha: PacienteListado = {
       id: atualizado.id, nome_completo: atualizado.nome_completo ?? '', data_nascimento: atualizado.data_nascimento,
-      telefone: atualizado.telefone, endereco: atualizado.endereco, ativo: atualizado.ativo,
+      telefone: atualizado.telefone, sexo: atualizado.sexo, endereco: atualizado.endereco, ativo: atualizado.ativo,
       foto_path: atualizado.foto_path, created_at: atualizado.created_at,
     }
     setPacientes((atuais) => atuais.map((p) => p.id === linha.id ? linha : p))
@@ -905,6 +928,7 @@ function Pacientes({
       return null
     })
     setMostrarFormulario(false)
+    setRevisaoResumo(v => v + 1)
     setFeedbackPagina({ variant: 'success', title: 'Paciente cadastrado', description: 'Paciente cadastrado com sucesso.' })
     if (onPacienteCriado) {
       onPacienteCriado(paciente)
@@ -1213,6 +1237,11 @@ function Pacientes({
 
   return (
     <div className="pacientes-pagina">
+      <ConfirmacaoDialog open={confirmarDescarteCadastro} onOpenChange={setConfirmarDescarteCadastro}
+        title={pacienteCriadoPendente ? 'Fechar cadastro salvo com pendência?' : 'Descartar cadastro não salvo?'}
+        description={pacienteCriadoPendente ? 'O cadastro já salvo será preservado. A foto ainda não enviada será descartada ao fechar.' : 'Os dados digitados e a foto selecionada serão descartados. Nenhum paciente será cadastrado.'}
+        confirmLabel="Descartar cadastro" cancelLabel="Continuar preenchendo" tone="warning" disabled={salvando}
+        onConfirm={fecharFormularioSemDescarte} />
       {edicao && edicao.clinicaId === clinicaAtivaId && podeAdministrar && !carregandoClinica && !carregandoPapel && <EditarPaciente key={`${edicao.clinicaId}:${edicao.pacienteId}`} pacienteId={edicao.pacienteId} clinicaId={edicao.clinicaId} clinicaNome={clinicaNome || 'Clínica selecionada'} podeCorrigirCpf={papel === 'proprietaria'} onFechar={() => setEdicao(null)} onSalvo={aplicarEdicaoConfirmada} onGerenciarFoto={() => abrirAcaoDaEdicao('foto')} onAdicionarCpf={() => abrirAcaoDaEdicao('cpf')} />}
       <header className="pacientes-pagina-cabecalho">
         <div className="pacientes-pagina-identidade">
@@ -1235,6 +1264,8 @@ function Pacientes({
           </button>
         )}
       </header>
+
+      {!mostrarFormulario && <IndicadoresPacientes clinicaId={clinicaAtivaId} revisao={revisaoResumo} />}
 
       {!pacienteSelecionado && alertaResultado}
 
@@ -1310,6 +1341,7 @@ function Pacientes({
                   })
                 }}
               />
+              <PreviaIdentificacaoPaciente nome={form.nomeCompleto} nascimento={form.dataNascimento} sexo={form.sexo} />
             </div>
             <div className={etapaCadastro === 1 ? 'paciente-campo-nome' : 'paciente-oculto'}>
               <label htmlFor="paciente-nome" className="mb-1.5 block text-sm font-medium text-[var(--texto-principal)]">
@@ -1467,6 +1499,7 @@ function Pacientes({
           </fieldset>
 
           <footer className="paciente-modal-rodape">
+            <p className="paciente-etapa-rodape">Etapa {etapaCadastro === 3 && !(idade !== null && idade < 18) ? 2 : etapaCadastro} de {idade !== null && idade < 18 ? 3 : 2} · {etapaCadastro === 1 ? 'Identificação' : etapaCadastro === 2 ? 'Responsável legal' : 'Endereço e contatos'}</p>
             <button
               type="button"
               onClick={fecharFormulario}
@@ -1626,13 +1659,14 @@ function Pacientes({
                   <div role="table" aria-label="Pacientes encontrados">
                     <div className="pacientes-lista-colunas" role="row">
                       <span role="columnheader" aria-sort={ordem === 'nome_asc' ? 'ascending' : ordem === 'nome_desc' ? 'descending' : undefined}><button type="button" onClick={() => setOrdem(ordem === 'nome_asc' ? 'nome_desc' : 'nome_asc')}>Paciente <span aria-hidden="true">{ordem.startsWith('nome') ? ordem === 'nome_asc' ? '↑' : '↓' : ''}</span></button></span>
-                      <span role="columnheader" aria-sort={ordem === 'nascimento_asc' ? 'ascending' : ordem === 'nascimento_desc' ? 'descending' : undefined}><button type="button" onClick={() => setOrdem(ordem === 'nascimento_desc' ? 'nascimento_asc' : 'nascimento_desc')}>Nascimento / idade <span aria-hidden="true">{ordem.startsWith('nascimento') ? ordem === 'nascimento_asc' ? '↑' : '↓' : ''}</span></button></span>
                       <span role="columnheader">Telefone / WhatsApp</span><span role="columnheader">Status</span><span role="columnheader">Ações</span>
                     </div>
                     <div className="pacientes-lista-itens" role="rowgroup">
                       {pacientesExibidos.map((paciente) => {
                         const idadePaciente = paciente.data_nascimento ? calcularIdade(paciente.data_nascimento, dataReferenciaLista) : null
                         const selecionado = pacienteSelecionado?.id === paciente.id
+                        // Somente campos já recebidos na listagem; CPF desconhecido não oculta outras pendências.
+                        const pendencias = avaliarPreenchimento(paciente, null).pendencias
                         return (
                           <div key={paciente.id} role="row" className={`pacientes-lista-linha${selecionado ? ' pacientes-lista-linha--selecionada' : ''}`}
                             onClick={(evento) => {
@@ -1641,10 +1675,9 @@ function Pacientes({
                               const botao = evento.currentTarget.querySelector('button')
                               if (botao) selecionarPaciente(paciente, botao)
                             }}>
-                              <span role="cell" className="pacientes-lista-identidade"><PacienteAvatar pacienteId={paciente.id} clinicaId={clinicaAtivaId} nome={paciente.nome_completo} caminho={paciente.foto_path} /><strong>{paciente.nome_completo}</strong></span>
-                              <span role="cell" className="pacientes-lista-dado"><span className="pacientes-lista-dado-rotulo">Nascimento</span><span>{formatarData(paciente.data_nascimento)}</span><small>{idadePaciente === null ? 'Idade não informada' : `${idadePaciente} anos`}</small></span>
+                              <span role="cell" className="pacientes-lista-identidade"><PacienteAvatar pacienteId={paciente.id} clinicaId={clinicaAtivaId} nome={paciente.nome_completo} caminho={paciente.foto_path} /><span><strong>{paciente.nome_completo}</strong><small>{idadePaciente === null ? 'Idade não informada' : `${idadePaciente} anos`}{OPCOES_SEXO.find(s => s.value === paciente.sexo)?.label ? ` · ${OPCOES_SEXO.find(s => s.value === paciente.sexo)?.label}` : ''}</small></span></span>
                               <span role="cell" className="pacientes-lista-dado pacientes-lista-telefone"><span className="pacientes-lista-dado-rotulo">Telefone / WhatsApp</span>{paciente.telefone ? formatarTelefoneBrasil(paciente.telefone) : 'Não informado'}</span>
-                              <span role="cell"><span className={`pacientes-status pacientes-status--${paciente.ativo ? 'ativo' : 'inativo'}`}>{paciente.ativo ? 'Ativo' : 'Inativo'}</span></span>
+                              <span role="cell" className="pacientes-lista-situacao"><span className={`pacientes-status pacientes-status--${paciente.ativo ? 'ativo' : 'inativo'}`}>{paciente.ativo ? 'Ativo' : 'Inativo'}</span>{pendencias.length > 0 && <small className="pacientes-lista-pendencia" title={`Informações ausentes: ${pendencias.join(', ')}`}>Dados a completar</small>}</span>
                               <span role="cell" className="pacientes-lista-acao">
                                 <button type="button" aria-label={`Ver resumo de ${paciente.nome_completo}`} aria-pressed={selecionado} onClick={(evento) => { evento.stopPropagation(); selecionarPaciente(paciente, evento.currentTarget) }}>Ver resumo<IconeChevron /></button>
                                 <button type="button" className="pacientes-lista-editar" aria-label={`Editar ${paciente.nome_completo}`} onClick={(evento) => { evento.stopPropagation(); abrirEdicao(paciente) }}><IconeLapis />Editar</button>
@@ -1660,22 +1693,25 @@ function Pacientes({
 
             {pacienteSelecionado && clinicaAtivaId && (
               <>
-                <dialog ref={resumoRef} className="pacientes-resumo" onCancel={(evento) => { evento.preventDefault(); fecharResumo() }} aria-label={`Resumo do cadastro de ${pacienteSelecionado.nome_completo}`}>
+                <dialog ref={resumoRef} className={`pacientes-resumo${resumoDesktop ? ' pacientes-resumo--lateral' : ''}`} onCancel={(evento) => { evento.preventDefault(); fecharResumo() }} aria-label={`Resumo do cadastro de ${pacienteSelecionado.nome_completo}`}>
                   <div className="pacientes-resumo-cabecalho"><h2>Resumo do cadastro</h2><button ref={fecharResumoRef} type="button" aria-label="Fechar resumo" onClick={fecharResumo}>×</button></div>
                   {alertaResultado}
                   <div className="pacientes-resumo-identidade">
                     <PacienteAvatar pacienteId={pacienteSelecionado.id} clinicaId={clinicaAtivaId} nome={pacienteSelecionado.nome_completo} caminho={pacienteSelecionado.foto_path} tamanho="resumo" />
                     <div><h3>{pacienteSelecionado.nome_completo}</h3><p>{idadeSelecionada !== null ? `${idadeSelecionada} anos` : 'Idade não informada'}</p><span className={`pacientes-status pacientes-status--${pacienteSelecionado.ativo ? 'ativo' : 'inativo'}`}>{pacienteSelecionado.ativo ? 'Ativo' : 'Inativo'}</span></div>
                   </div>
-                  <div className="pacientes-resumo-editar"><button type="button" className="pacientes-botao-secundario" onClick={() => abrirEdicao(pacienteSelecionado)}><IconeLapis />Editar cadastro</button></div>
-                  <div className="pacientes-resumo-bloco"><h4>Identificação</h4><dl><dt>Nascimento</dt><dd>{formatarData(pacienteSelecionado.data_nascimento)}</dd><dt>CPF</dt><dd>{carregandoResumo || resumo?.chave !== chaveResumo ? 'Consultando…' : resumo.erro ? 'Consulta indisponível' : resumo.cpfPendente ? 'Não informado' : 'Informado'}</dd></dl>
+                  <div className="pacientes-resumo-editar">{onIrParaAgenda && <button type="button" className="pacientes-botao-primario" onClick={onIrParaAgenda}><IconeCalendario />Abrir agenda</button>}<button type="button" className="pacientes-botao-secundario" onClick={() => abrirEdicao(pacienteSelecionado)}><IconeLapis />Editar cadastro</button></div>
+                  <div className="pacientes-resumo-bloco"><h4>Identificação</h4><dl><dt>Nascimento</dt><dd>{formatarData(pacienteSelecionado.data_nascimento)}</dd><dt>CPF</dt><dd>{carregandoResumo || resumo?.chave !== chaveResumo ? 'Consultando…' : resumo.erroCpf ? 'Consulta indisponível' : resumo.cpfPendente ? 'Não informado' : 'Informado'}</dd></dl>
                     {resumo?.chave === chaveResumo && resumo.cpfPendente === true && !mostrarAdicionarCpf && <button type="button" className="pacientes-link" onClick={() => setMostrarAdicionarCpf(true)}>Adicionar CPF</button>}
                     {mostrarAdicionarCpf && resumo?.chave === chaveResumo && resumo.cpfPendente === true && <AvisoCpfPendente key={chaveResumo} pacienteId={pacienteSelecionado.id} pacienteNome={pacienteSelecionado.nome_completo} clinicaId={clinicaAtivaId} contexto="cadastro" onAdicionado={() => { lembreteResumoAdiado.current = chaveResumo; setResumo((atual) => atual?.chave === chaveResumo ? { ...atual, cpfPendente: false } : atual); setMostrarAdicionarCpf(false) }} onLembrar={() => { lembreteResumoAdiado.current = chaveResumo; setMostrarAdicionarCpf(false) }} />}
                   </div>
                   <div className="pacientes-resumo-bloco"><h4>Contato</h4><dl><dt>Telefone / WhatsApp</dt><dd>{pacienteSelecionado.telefone ? formatarTelefoneBrasil(pacienteSelecionado.telefone) : 'Não informado'}</dd></dl></div>
+                  <PreenchimentoCadastro key={`${chaveResumo}:${revisaoResumo}`} pacienteId={pacienteSelecionado.id} clinicaId={clinicaAtivaId}
+                    dadosBasicos={pacienteSelecionado} cpfPendente={carregandoResumo || resumo?.chave !== chaveResumo ? null : resumo.cpfPendente}
+                    cpfErro={resumo?.chave === chaveResumo && resumo.erroCpf} onVerificar={() => setRevisaoResumo(v => v + 1)} />
                   <div className="pacientes-resumo-bloco"><h4>Responsável legal</h4>{carregandoResumo || resumo?.chave !== chaveResumo ? <p>Consultando…</p> : resumo.erro ? <p>Não foi possível consultar este vínculo.</p> : resumo.responsaveis.length ? <ul className="pacientes-responsaveis">{resumo.responsaveis.map((responsavel) => <li key={responsavel.id}><strong>{responsavel.nome_completo}</strong><span>{responsavel.vinculo} · {formatarTelefoneBrasil(responsavel.telefone)}</span>{responsavel.email && <span>{responsavel.email}</span>}</li>)}</ul> : <p>Nenhum responsável vinculado neste cadastro.</p>}{resumo?.erro && <button type="button" className="pacientes-link" onClick={() => setRevisaoResumo((atual) => atual + 1)}>Tentar novamente</button>}</div>
                   <div className="pacientes-resumo-bloco"><h4>Endereço</h4><p className="pacientes-endereco-literal">{pacienteSelecionado.endereco || 'Não informado'}</p></div>
-                  <div className="pacientes-resumo-acoes"><button type="button" className="pacientes-botao-secundario" onClick={() => void abrirGerenciadorFoto(pacienteSelecionado)}>Gerenciar foto</button>{onIrParaAgenda && <button type="button" className="pacientes-botao-primario" onClick={onIrParaAgenda}><IconeCalendario /> Ir para Agenda</button>}</div>
+                  <div className="pacientes-resumo-acoes"><button type="button" className="pacientes-botao-secundario" onClick={() => void abrirGerenciadorFoto(pacienteSelecionado)}>Gerenciar foto</button></div>
                 </dialog>
               </>
             )}

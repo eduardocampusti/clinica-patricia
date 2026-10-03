@@ -6,6 +6,7 @@ import { calcularIdade } from '../../lib/pacienteIdade'
 import { hojeNaBahia } from '../../lib/pacienteLista'
 import { alteracoesAdministrativas, alteracoesEnderecoEstruturado, CAMPOS_EDICAO, CAMPOS_ENDERECO_EDICAO, mensagemErroEdicao, RESPONSAVEL_VAZIO, validarEdicao, type DadosEdicao, type PacienteEdicao, type ResponsavelEdicao } from '../../lib/pacienteEdicao'
 import PacienteAvatar from './PacienteAvatar'
+import PreviaIdentificacaoPaciente from './PreviaIdentificacaoPaciente'
 import { consultarCpfPendentePaciente, lerCpfPaciente } from '../../lib/pacienteCpf'
 import { cpfLegadoInvalidoConfirmado } from '../../lib/pacienteCpfEstado'
 import CorrigirCpfPaciente from './CorrigirCpfPaciente'
@@ -295,6 +296,7 @@ export default function EditarPaciente({ pacienteId, clinicaId, clinicaNome, pod
               <p>A foto é confirmada separadamente em armazenamento privado. Cancelar esta edição não desfaz uma foto já confirmada.</p>
             </div>
           </div>
+          <PreviaIdentificacaoPaciente nome={dados.nome_completo ?? ''} nascimento={dados.data_nascimento ?? ''} sexo={dados.sexo ?? ''} />
           <section className="edicao-cpf" aria-label="CPF do paciente" aria-busy={situacaoCpf === 'carregando'}>
             <h3>CPF <small>(opcional)</small></h3>
             {sucessoCpf && <FeedbackAlert variant="success" title="CPF atualizado" description="A correção foi confirmada e registrada." onClose={() => setSucessoCpf(false)} autoDismissMs={6000} />}
@@ -361,6 +363,7 @@ export default function EditarPaciente({ pacienteId, clinicaId, clinicaNome, pod
       </fieldset>}
     </form>
     <footer className="paciente-modal-rodape">
+      <p className="paciente-etapa-rodape">Etapa {etapa} de {menor ? 3 : 2} · {etapa === 1 ? 'Identificação' : menor && etapa === 2 ? 'Responsável legal' : 'Endereço e contatos'}</p>
       <button type="button" disabled={salvando} className="paciente-botao-secundario paciente-cancelar" onClick={fechar}>Cancelar</button>
       {etapa > 1 && <button type="button" disabled={salvando || !dados} className="paciente-botao-secundario" aria-label={etapa === 2 ? 'Voltar à Identificação' : 'Voltar ao Responsável legal'} onClick={() => setEtapa(etapa - 1)}><span aria-hidden="true">← </span>{etapa === 2 ? 'Voltar à Identificação' : 'Voltar ao Responsável legal'}</button>}
       {etapa < (menor ? 3 : 2) && <button type="button" disabled={salvando || !dados} className="paciente-botao-secundario" onClick={() => setEtapa(etapa + 1)}>Avançar →</button>}

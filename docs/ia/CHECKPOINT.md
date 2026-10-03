@@ -1,5 +1,74 @@
 # Checkpoint operacional — Clínica Patrícia
 
+Atualização de Pacientes: 03/10/2026 11:03 -03:00. Demais registros abaixo mantidos como histórico datado.
+
+## Pacientes — publicação autorizada, 03/10/2026 11:03 -03:00
+
+Hostinger consultada: Brotas e Ipupiara completed em403a908, ambas na branch
+codex/resgate-local-2026-09-26. Fetch atualizado e HEAD/remoto0/0; índice inicialmente vazio.
+Build/lint desta execução exit0 com avisos existentes; versão funcional dos129/0 inalterada.
+Commit seletivo em preparação; documentos misturados serão preparados por conteúdo no índice,
+sem desfazer versões locais. Nenhuma migration, banco ou mudança de configuração.
+Reversão prevista: novo commit revertendo somente esta entrega, depois push/deploy nas duas clínicas;
+referência anterior403a908. Próxima ação: concluir seleção, push e acompanhar cada deploy.
+
+## Pacientes — preparação para publicação, 03/10/2026 10:42 -03:00 (histórico)
+
+Visual aprovado pelo usuário nesta etapa. Git codex/resgate-local-2026-09-26/403a908,
+alterações locais anteriores preservadas; nenhuma alteração funcional nesta revisão.
+App.tsx e prévia usam Pacientes/EditarPaciente reais; indicadores HEAD/count exact por clínica,
+resumo com campos administrativos/RPCs existentes, sem simulações no caminho normal.
+Artefato dist existente: index-kHow25Lp.js/index-Dlzxam2f.css; zero dos seis marcadores sintéticos
+pesquisados, sem testes/capturas/harness de Pacientes. Prévia de e-mails estática preexistente preservada.
+Leitura conectada local3000/principal, Recepção/Brotas: abertura, busca, seleção/resumo,
+criação/edição abertas e canceladas sem digitar/salvar; recarga mantém /sistema/brotas/pacientes,
+clínica/perfil e lista. Indicadores e preenchimento retornaram sem erro visível.
+Console sem error observado; aviso preexistente de múltiplos clientes Auth de foto permanece.
+129/0,30 unitários,12 capturas e build/lint anteriores preservados, sem repetição desnecessária.
+Não requer nova migration/configuração; Ipupiara conectada, gravação/persistência real e zoom
+nativo125%/150% não verificados. Pronta para publicação controlada, com esses limites explícitos.
+Manifesto seletivo e evidências em [relatório15](../modulos/pacientes/15-REDESENHO-LOCAL.md).
+Próxima ação: mediante autorização específica, versionar somente entrega/trechos pertinentes,
+publicar nas duas clínicas e conferir artefatos; não incluir pendências documentais alheias.
+Sem banco, permissões, dados, commit, push ou deploy nesta etapa; TypeSafe sem aplicação necessária.
+
+## Pacientes — acabamento local concluído, 03/10/2026 09:37 -03:00 (histórico)
+
+Três referências de tela pacientes2 abertas e comparadas nesta sessão, antes das edições.
+Lista sem coluna repetida de nascimento; pendências confirmadas sem N+1/espera por CPF;
+indicadores diferenciados, ações perto da identificação, prévia compartilhada e etapa no rodapé.
+Altura desktop do formulário ajustada ao conteúdo. AppShell, Agenda, banco e permissões preservados.
+Rodada final completa129/0, retries0, nas três telas; 30 unitários e12 capturas comparáveis aprovados.
+Build/lint exit0, avisos existentes. Primeira rodada desta etapa124/5 e respectivas correções/limites
+documentados no relatório15, sem apagar o histórico128/1 da etapa anterior.
+Capturas inspecionadas de lista, cadastro, edição e celular; Brotas/Ipupiara e claro/escuro sintéticos.
+Espera do teste usa fechamento observável do formulário, mantendo asserção de chamada única/payload.
+Próxima ação: usuário revisar a prévia4192 e as diferenças preservadas; conferência conectada,
+persistência real e zoom nativo permanecem não verificados nesta entrega.
+Branch/HEAD403a908 inalterados; mudanças locais, sem commit/push/deploy ou validação conectada.
+
+## Pacientes — redesenho local, 03/10/2026 08:54 -03:00 (histórico)
+
+Branch codex/resgate-local-2026-09-26, HEAD 403a908; alterações documentais anteriores preservadas.
+Lista desktop/resumo lateral, resumo sobreposto tablet/celular, cartões, cadastro/edição reutilizados,
+contagens HEAD exatas independentes da busca e indicador individual de seis itens implementados.
+CPF opcional, leitura de presença sem descriptografia; falha de responsável não apaga CPF confirmado.
+Histórico/último atendimento/próxima consulta, total de dados incompletos e inativos omitidos:
+não há agregação/leitura administrativa global suficientemente estabelecida nesta entrega.
+Sem alteração de banco, permissões, AppShell/Sidebar, outros módulos, dependências, commit/push/deploy.
+25 unitários existentes + 5 novos aprovados; build aprovado; lint somente aviso preexistente de ThemeProvider.
+Última rodada completa:128 aprovados/1 falha de sincronização no teste de endereço vazio, retries0.
+Após espera pelo retorno e ajuste visual móvel:42 cenários dirigidos aprovados/0 falhas, retries0.
+Não apresentar isso como uma rodada completa129/0; histórico das rodadas no relatório15.
+Resumo não reabre sobre foto após atualizar seleção; cartões móveis mantêm identificação no topo,
+último item acessível acima do botão fixo; descarte e retorno do foco conferidos em isolamento.
+Desktop1440/tablet820/celular390, claro/escuro e duas clínicas sintéticas; sem validação conectada.
+Prévia isolada4192 com os componentes reais, dados sintéticos e destino operacional.synthetic.invalid.
+Capturas preservadas em scratch/pacientes-redesenho (ignorado); referências com '(1)' não localizadas
+na pasta indicada. Próxima ação: usuário revisar a prévia e fornecer essas referências para comparação
+final; futura conferência conectada deve ser autorizada e não se confunde com persistência simulada.
+Detalhes no [relatório15 de Pacientes](../modulos/pacientes/15-REDESENHO-LOCAL.md).
+
 ## Agenda manual: fase aditiva instalada — 01/10/2026, 19:31 -03:00
 
 Transição autorizada em fases, branch codex/resgate-local-2026-09-26, base 490ebca.
