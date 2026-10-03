@@ -4,6 +4,7 @@ import { distribuirSobreposicoes, ESCALA_AGENDA as ESCALA, janelaVisivelAgenda, 
 
 export interface ColunaAgenda {
   id: string; nome: string; detalhe: string
+  cor?: number
   // Inícios dos blocos livres dentro do expediente e duração de cada bloco.
   livres: string[]; duracao: number | null
   passados?: string[]
@@ -41,9 +42,9 @@ export function GradeTemporalAgenda<T extends RegistroTemporal>({ registros, col
   return <div ref={rolagem} className="agenda-temporal-rolagem" tabIndex={0} aria-label="Grade temporal do dia">
     <div className="agenda-temporal" style={{ gridTemplateColumns: `56px repeat(${colunas.length}, minmax(200px, 1fr))`, width: `max(100%, ${56 + colunas.length * 200}px)` }}>
       <div className="agenda-temporal-canto"><span className="sr-only">Hora</span></div>
-      {colunas.map(c => <div key={c.id} className="agenda-temporal-cabecalho">
+      {colunas.map(c => <div key={c.id} data-profissional={c.id} data-cor={c.cor ?? 1} className="agenda-temporal-cabecalho" style={{ ['--agenda-prof-fundo' as string]: `var(--prof-${c.cor ?? 1}-fundo)`, ['--agenda-prof-avatar' as string]: `var(--prof-${c.cor ?? 1}-avatar)`, ['--agenda-prof-texto' as string]: `var(--prof-${c.cor ?? 1}-texto)` }}>
         <div className="flex min-w-0 items-center gap-2">
-          <span aria-hidden="true" className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[var(--fundo-pagina)] text-xs font-semibold text-[var(--texto-secundario)]">{iniciais(c.nome)}</span>
+          <span aria-hidden="true" className="agenda-prof-avatar flex size-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold">{iniciais(c.nome)}</span>
           <div className="min-w-0"><h3 title={c.nome} className="truncate text-sm font-semibold leading-tight">{c.nome}</h3><p title={c.detalhe} className="truncate text-xs leading-tight text-[var(--texto-secundario)]">{c.detalhe}</p></div>
         </div>
         {renderAcao?.(c.id)}

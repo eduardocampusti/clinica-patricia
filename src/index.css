@@ -1,6 +1,58 @@
 @import "tailwindcss";
 @import "./financeiro.css";
 
+/* Tokens aditivos do acabamento da Agenda. Os tokens anteriores permanecem intactos. */
+:root {
+  --sombra-1: 0 2px 4px rgb(30 58 95 / 8%), 0 8px 20px rgb(30 58 95 / 9%);
+  --sombra-2: 0 3px 6px rgb(30 58 95 / 12%), 0 12px 28px rgb(30 58 95 / 14%);
+  --sombra-3: -3px 0 8px rgb(30 58 95 / 14%), -16px 0 40px rgb(30 58 95 / 18%);
+  --kpi-1-acento: #3b82f6; --kpi-1-texto: #1d4ed8;
+  --kpi-2-acento: #f59e0b; --kpi-2-texto: #92400e;
+  --kpi-3-acento: #f97316; --kpi-3-texto: #9a3412;
+  --kpi-4-acento: #10b981; --kpi-4-texto: #166534;
+  --kpi-5-acento: #8b5cf6; --kpi-5-texto: #6b21a8;
+  --kpi-1-inicio: color-mix(in srgb, var(--kpi-1-acento) 16%, var(--fundo-card)); --kpi-1-fim: var(--fundo-card); --kpi-1-icone-fundo: color-mix(in srgb, var(--kpi-1-acento) 20%, var(--fundo-card));
+  --kpi-2-inicio: color-mix(in srgb, var(--kpi-2-acento) 16%, var(--fundo-card)); --kpi-2-fim: var(--fundo-card); --kpi-2-icone-fundo: color-mix(in srgb, var(--kpi-2-acento) 20%, var(--fundo-card));
+  --kpi-3-inicio: color-mix(in srgb, var(--kpi-3-acento) 16%, var(--fundo-card)); --kpi-3-fim: var(--fundo-card); --kpi-3-icone-fundo: color-mix(in srgb, var(--kpi-3-acento) 20%, var(--fundo-card));
+  --kpi-4-inicio: color-mix(in srgb, var(--kpi-4-acento) 16%, var(--fundo-card)); --kpi-4-fim: var(--fundo-card); --kpi-4-icone-fundo: color-mix(in srgb, var(--kpi-4-acento) 20%, var(--fundo-card));
+  --kpi-5-inicio: color-mix(in srgb, var(--kpi-5-acento) 16%, var(--fundo-card)); --kpi-5-fim: var(--fundo-card); --kpi-5-icone-fundo: color-mix(in srgb, var(--kpi-5-acento) 20%, var(--fundo-card));
+  --prof-1-fundo: #e3eeff; --prof-1-avatar: #dbeafe; --prof-1-texto: #1e40af;
+  --prof-2-fundo: #e4f8ed; --prof-2-avatar: #dcfce7; --prof-2-texto: #166534;
+  --prof-3-fundo: #ffe5eb; --prof-3-avatar: #ffe4e6; --prof-3-texto: #9f1239;
+  --prof-4-fundo: #efe5ff; --prof-4-avatar: #f3e8ff; --prof-4-texto: #6b21a8;
+  --prof-5-fundo: #ffeddd; --prof-5-avatar: #ffedd5; --prof-5-texto: #9a3412;
+  --prof-6-fundo: #def7f2; --prof-6-avatar: #ccfbf1; --prof-6-texto: #115e59;
+  --agenda-link-texto: color-mix(in srgb, var(--cor-primaria) 65%, var(--texto-principal));
+  --agenda-superficie-borda: var(--borda);
+  --agenda-realce-fundo: color-mix(in srgb, var(--cor-primaria) 8%, var(--fundo-card));
+  /* A marca pode ser verde claro: texto derivado escurecido para contraste, sem mudar a marca. */
+  --agenda-realce-texto: color-mix(in srgb, var(--cor-primaria) 65%, var(--texto-principal));
+}
+[data-theme="escuro"] {
+  --sombra-1: 0 1px 3px rgb(0 8 20 / 14%), 0 3px 8px rgb(0 8 20 / 10%);
+  --sombra-2: 0 2px 4px rgb(0 8 20 / 22%), 0 6px 8px rgb(0 8 20 / 18%);
+  --sombra-3: -2px 0 6px rgb(0 8 20 / 25%), -12px 0 32px rgb(0 8 20 / 28%);
+  --kpi-1-acento: #60a5fa; --kpi-1-texto: #bfdbfe;
+  --kpi-2-acento: #fbbf24; --kpi-2-texto: #fde68a;
+  --kpi-3-acento: #fb923c; --kpi-3-texto: #fed7aa;
+  --kpi-4-acento: #34d399; --kpi-4-texto: #a7f3d0;
+  --kpi-5-acento: #a78bfa; --kpi-5-texto: #ddd6fe;
+  --kpi-1-inicio: color-mix(in srgb, var(--kpi-1-acento) 8%, var(--fundo-card));
+  --kpi-2-inicio: color-mix(in srgb, var(--kpi-2-acento) 8%, var(--fundo-card));
+  --kpi-3-inicio: color-mix(in srgb, var(--kpi-3-acento) 8%, var(--fundo-card));
+  --kpi-4-inicio: color-mix(in srgb, var(--kpi-4-acento) 8%, var(--fundo-card));
+  --kpi-5-inicio: color-mix(in srgb, var(--kpi-5-acento) 8%, var(--fundo-card));
+  --agenda-link-texto: color-mix(in srgb, var(--cor-primaria) 45%, var(--texto-principal));
+  --agenda-superficie-borda: color-mix(in srgb, var(--borda) 88%, var(--texto-principal));
+  --prof-1-fundo: #192d46; --prof-1-avatar: #1e3a5f; --prof-1-texto: #bfdbfe;
+  --prof-2-fundo: #192e2a; --prof-2-avatar: #1b4030; --prof-2-texto: #bbf7d0;
+  --prof-3-fundo: #352530; --prof-3-avatar: #4c2535; --prof-3-texto: #fecdd3;
+  --prof-4-fundo: #2c2541; --prof-4-avatar: #3a2854; --prof-4-texto: #e9d5ff;
+  --prof-5-fundo: #32271f; --prof-5-avatar: #48301d; --prof-5-texto: #fed7aa;
+  --prof-6-fundo: #1b2e35; --prof-6-avatar: #16454a; --prof-6-texto: #99f6e4;
+  --agenda-realce-texto: color-mix(in srgb, var(--cor-primaria) 35%, var(--texto-principal));
+}
+
 html {
   --texto-sobre-primaria: #FFFFFF;
   font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
@@ -391,7 +443,8 @@ body {
 .agenda-lista-cabecalho { display: none; }
 .agenda-lista-acoes { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 .agenda-acao-compacta { display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-height: 40px; padding: 7px 10px; border: 1px solid var(--borda); border-radius: 8px; font-size: 12px; font-weight: 600; }
-.agenda-acao-compacta:hover { background: var(--fundo-pagina); }
+.agenda-acao-compacta:focus-visible { background: var(--fundo-pagina); }
+@media (hover: hover) { .agenda-acao-compacta:hover:not(:disabled) { background: var(--fundo-pagina); } }
 .agenda-acao-compacta:disabled { opacity: .5; }
 .agenda-temporal-rolagem { max-height: 620px; overflow: auto; position: relative; overscroll-behavior: contain; }
 .agenda-temporal { display: grid; min-width: 100%; width: max-content; }
@@ -404,7 +457,8 @@ body {
 .agenda-temporal-livre, .agenda-temporal-neutro { position: absolute; left: 4px; right: 4px; display: flex; justify-content: center; border-radius: 10px; font-size: 13px; color: var(--texto-secundario); }
 .agenda-temporal-livre { align-items: center; border: 1px dashed var(--borda); background: var(--fundo-card); }
 button.agenda-temporal-livre { cursor: pointer; transition: background-color .15s, border-color .15s, color .15s; }
-button.agenda-temporal-livre:hover, button.agenda-temporal-livre:focus-visible { border-color: var(--cor-primaria); color: var(--cor-primaria); background: var(--cor-primaria-suave); }
+button.agenda-temporal-livre:focus-visible:not(:disabled) { border-color: var(--cor-primaria); color: var(--cor-primaria); background: var(--cor-primaria-suave); }
+@media (hover: hover) { button.agenda-temporal-livre:hover:not(:disabled) { border-color: var(--cor-primaria); color: var(--cor-primaria); background: var(--cor-primaria-suave); } }
 button.agenda-temporal-livre:focus-visible { outline: 2px solid var(--cor-primaria); outline-offset: 2px; }
 /* Sem expediente, folga ou disponibilidade não confirmada: bloco neutro, sem ação. */
 .agenda-temporal-neutro { align-items: flex-start; padding: 14px 8px; background: var(--fundo-pagina); text-align: center; }

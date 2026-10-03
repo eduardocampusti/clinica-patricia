@@ -17,13 +17,14 @@ import { PainelAgenda, ResumoHorario, campoAgenda, acaoAgenda } from '../compone
 import { SelecionarPaciente } from '../components/agenda/SelecionarPaciente'
 import { GradeTemporalAgenda, type ColunaAgenda, type PedidoRolagemAgenda } from '../components/agenda/GradeTemporalAgenda'
 import { janelaVisivelAgenda } from '../lib/agendaTemporal'
-import { IconeCalendario } from '../components/shell/icons'
+import { IconeCalendario, IconeSino, IconePessoas, IconeCheck, IconeEquipe } from '../components/shell/icons'
 import { MiniCalendarioAgenda } from '../components/agenda/MiniCalendarioAgenda'
 import { useDescarteAgenda } from '../components/agenda/useDescarteAgenda'
 import { DisponibilidadeFormulario } from '../components/agenda/DisponibilidadeFormulario'
 import { FaixaDiasAgenda } from '../components/agenda/FaixaDiasAgenda'
 import { DiasAgendaCelular } from '../components/agenda/DiasAgendaCelular'
 import '../components/agenda/agendaCelular.css'
+import '../components/agenda/agendaAcabamento.css'
 import { blocosApresentacaoAgenda } from '../lib/agendaBlocosApresentacao'
 import { useAgoraAgenda } from '../hooks/useAgoraAgenda'
 import { EscolhaProfissional } from '../components/agenda/EscolhaProfissional'
@@ -686,6 +687,8 @@ function Agenda({
       { inicio: 0, fim: faixas[0][0], rotulo: 'Fora do expediente' }].filter(n => n.fim > n.inicio)
     const especialidade = profissionais.find(p => p.id === id)?.especialidade_nome
     return { id, nome: nomeProfissional(id), detalhe: [especialidade && especialidade !== '—' ? especialidade : null, faixas.length ? `${livres.length} ${livres.length === 1 ? 'livre' : 'livres'}` : rotulo.toLocaleLowerCase('pt-BR')].filter(Boolean).join(' · '),
+      // Cor da lista completa ordenada, independente do dia e das colunas filtradas.
+      cor: Math.max(0, profissionais.findIndex(p => p.id === id)) % 6 + 1,
       livres, passados: blocosDoDia(id, janelas).filter(b => !b.ocupado && b.passado).map(b => b.hora), duracao: profissionais.find(p => p.id === id)?.duracao_consulta_minutos ?? null, neutros }
   })
   // Janela compacta: do primeiro ao último horário relevante (expediente ou agendamento) das colunas visíveis.
@@ -752,7 +755,7 @@ function Agenda({
     </article>
   }
   const segmento = (ativo: boolean) => `min-h-11 rounded-md px-3 text-sm sm:px-4 font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cor-primaria)] ${ativo ? 'bg-[var(--fundo-card)] text-[var(--texto-principal)] shadow-[var(--sombra-baixa)] ring-1 ring-inset ring-[var(--borda)]' : 'text-[var(--texto-secundario)] hover:text-[var(--texto-principal)]'}`
-  const cartao = 'rounded-xl border border-[var(--borda)] bg-[var(--fundo-card)]'
+  const cartao = 'agenda-superficie rounded-xl border border-[var(--borda)] bg-[var(--fundo-card)]'
   const janelaExibida = janelaVisivelAgenda(janelaGrade, registros, diaInteiro)
   const profissionaisFiltro = [...new Set([...profissionais.map(p => p.id), ...agendamentos.map(a => a.profissional_id)])]
   const livresCelular = filtroProfissional && !buscaPaciente.trim() && podeEscrever && expedienteDoDia(filtroProfissional).confirmado
@@ -772,7 +775,8 @@ function Agenda({
     </div>}
     {/* Celular: faixa compacta (número e rótulo curto); demais telas: cartões com rótulo e apoio. */}
     <section aria-label="Resumo do dia" className="agenda-resumo-dia grid grid-cols-5 gap-1 sm:grid-cols-3 sm:gap-3 lg:grid-cols-5">
-      {indicadores.map(i => <div key={i.rotulo} className={`${cartao} min-w-0 px-0.5 py-2 text-center sm:px-3 sm:py-2.5 sm:text-left`}>
+      {indicadores.map((i, indice) => <div key={i.rotulo} data-kpi={indice + 1} className={`${cartao} agenda-indicador min-w-0 px-0.5 py-2 text-center sm:px-3 sm:py-2.5 sm:text-left`} style={{ ['--agenda-kpi-acento' as string]: `var(--kpi-${indice + 1}-acento)`, ['--agenda-kpi-inicio' as string]: `var(--kpi-${indice + 1}-inicio)`, ['--agenda-kpi-fim' as string]: `var(--kpi-${indice + 1}-fim)`, ['--agenda-kpi-icone' as string]: `var(--kpi-${indice + 1}-icone-fundo)` }}>
+        <span aria-hidden="true" className="agenda-indicador-icone">{indice === 0 ? <IconeCalendario /> : indice === 1 ? <IconeSino /> : indice === 2 ? <IconePessoas /> : indice === 3 ? <IconeCheck /> : <IconeEquipe />}</span>
         <p className="sr-only text-[13px] leading-snug text-[var(--texto-secundario)] sm:not-sr-only">{i.rotulo}</p>
         <p className="numero-tabular text-lg font-semibold leading-tight text-[var(--texto-principal)] sm:mt-0.5 sm:text-2xl">{i.valor}</p>
         <p aria-hidden="true" className="truncate text-[11px] leading-tight text-[var(--texto-secundario)] sm:hidden">{i.curto}</p>
@@ -806,7 +810,7 @@ function Agenda({
               <button type="button" className="min-h-11 underline" onClick={() => setPedidoRolagem(p => ({ alvo: 'inicio', vez: (p?.vez ?? 0) + 1 }))}>Início do dia</button>
               <button type="button" className="min-h-11 underline" onClick={() => setPedidoRolagem(p => ({ alvo: 'primeiro', vez: (p?.vez ?? 0) + 1 }))}>{registros.length ? 'Primeiro agendamento' : 'Ir para 08h'}</button>
             </>}
-            <button type="button" aria-pressed={diaInteiro} className="min-h-11 font-semibold text-[var(--cor-primaria)] underline-offset-4 hover:underline" onClick={() => setDiaInteiro(v => !v)}>
+            <button type="button" aria-pressed={diaInteiro} className="agenda-link min-h-11 font-semibold underline-offset-4 hover:underline" onClick={() => setDiaInteiro(v => !v)}>
               {diaInteiro ? 'Ver horários relevantes' : 'Ver dia inteiro'}
             </button>
           </div>}
@@ -846,7 +850,7 @@ function Agenda({
             <div className="min-w-0"><p className="break-words font-medium">{e.paciente_nome}</p><p className="text-sm text-[var(--texto-secundario)]">{e.profissional_nome} · desde {new Date(e.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}</p></div>
             {podeEscrever && <button type="button" className={`${acaoAgenda} shrink-0`} aria-label={`Encaixar ${e.paciente_nome}`} onClick={() => abrirNovoAgendamento({ pacienteId: e.paciente_id, profissionalId: e.profissional_id })}>Encaixar</button>}
           </li>)}</ul>}
-          {podeEscrever && <button type="button" className="mt-2 min-h-11 text-sm font-semibold text-[var(--cor-primaria)] underline-offset-4 hover:underline" onClick={() => setModalAberto('espera')}>+ Adicionar à lista de espera</button>}
+          {podeEscrever && <button type="button" className="agenda-link mt-2 min-h-11 text-sm font-semibold underline-offset-4 hover:underline" onClick={() => setModalAberto('espera')}>+ Adicionar à lista de espera</button>}
         </section>
         <section aria-label="Situação dos atendimentos" className={`${cartao} p-4`}>
           <h2 className="mb-2 text-base font-semibold">Situação dos atendimentos</h2>

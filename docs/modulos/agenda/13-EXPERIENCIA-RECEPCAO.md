@@ -1,5 +1,315 @@
 # Agenda — experiência da recepção
 
+## Publicação do acabamento — Fases 0–2, 03/10/2026 06:43 -03:00
+
+Git: branch codex/resgate-local-2026-09-26, HEAD/remoto cf8231051c73c6ff74c869ff538ce152fa729386.
+Consulta remota normal falhou no transporte Windows SEC_E_NO_CREDENTIALS; consulta somente de
+leitura fora dessa restrição confirmou o SHA, sem alterar credenciais. TypeSafe avaliada pela
+descrição, sem pertinência; nenhuma chave/API utilizada. Nenhum arquivo funcional editado.
+
+### Arquivos e isolamento do diff
+
+- Código Agenda: src/pages/Agenda.tsx, src/components/agenda/GradeTemporalAgenda.tsx,
+  src/components/agenda/agendaAcabamento.css; estilos aditivos em src/index.css;
+  nota em src/config/notasEvolucao.json.
+- Testes/prévia: tests/operacional/agenda-preview.tsx, agenda-acabamento.spec.ts,
+  playwright.agenda-acabamento.config.ts e vite.agenda-acabamento.config.ts no mesmo diretório.
+  Último arquivo configura SOMENTE o harness sintético, sem alterar Vite/build/deploy de produção.
+- Documentação desta entrega: 01-DESIGN-SYSTEM.md e trechos de acabamento/publicação deste relatório.
+  Checkpoint operacional atualizado; somente contribuição específica poderá ser versionada.
+- Documentação preexistente preservada: AGENTS.md, CHECKPOINT.md raiz, docs/ia/DECISOES.md,
+  docs/ia/INDICE.md; Agenda README/01/12 e trechos históricos alheios do relatório13;
+  Equipe README/01/08/23, Pacientes README/08/12, Sistema README/08/09/10/11/12.
+  Essas alterações não pertencem ao commit do acabamento. Scratch/artefatos ignorados não incluídos.
+
+Prova de src/index.css: hunk inicial acrescenta apenas sombra-1/2/3, kpi-1..5,
+prof-1..6 e agenda-link/superficie/realce, com claro/escuro. Busca de consumidores
+incluindo referências dinâmicas: Agenda.tsx e GradeTemporalAgenda.tsx alimentam aliases;
+agendaAcabamento.css consome os novos tokens; nenhum outro módulo os usa.
+Comparação de TODAS as declarações de propriedades customizadas do HEAD com o arquivo atual:
+**zero declarações anteriores retiradas ou com valor alterado**. Os --status-* não tiveram
+alteração nesta entrega. Tokens compartilhados sombra-baixa/alta/neutra, cor-primaria,
+fundo-card/pagina e texto-principal/secundario permanecem exatamente como antes.
+
+Exemplo do diff (adição):
+
+```diff
++ --kpi-1-acento: #3b82f6; --kpi-1-texto: #1d4ed8;
++ --agenda-link-texto: color-mix(in srgb, var(--cor-primaria) 65%, var(--texto-principal));
+```
+
+Além dos tokens, dois seletores EXCLUSIVOS da Agenda no index.css receberam foco e
+hover condicionado ao dispositivo, sem alterar tokens: agenda-acao-compacta e
+button.agenda-temporal-livre. Não é literalmente um diff só de tokens; são os ajustes
+de hover já implementados e testados, sem efeito nos outros módulos. Nenhum AppShell,
+Sidebar, ModalBase, hook de permissão, serviço ou configuração de produção modificado.
+
+### Verificações e leitura conectada
+
+Build atual exit0 (700 módulos; avisos existentes de chunks/importação e tempo de plugin).
+Lint exit0, somente aviso histórico Fast Refresh ThemeProvider. Código/testes têm datas de
+alteração anteriores à rodada final de 02/10 23:04, executada nesta conversa: **289/0/14**,
+retries0; nenhum desses arquivos foi modificado depois. Evidência reutilizada sem nova rodada.
+
+Aplicação local3000, principal xftnkusbyqzyvzrovroj, sessão Recepção/Brotas confirmada pela
+interface. Navegação e leitura somente; nenhuma gravação, expediente ou cadastro criado.
+1440×900/390×844: cinco acentos/gradientes/sombras, cabeçalho do profissional disponível,
+barra de situação no cartão, links escuros e ausência de overflow horizontal conferidos.
+Só um profissional disponível nesta sessão: paleta de múltiplos profissionais permanece
+comprovada no harness isolado, não por dados reais inventados.
+Cartão existente: hover real confirmado por :hover, sombra-2 e translateY(-1px), nos dois temas.
+Terça06/10: 20 livres; abertura de um deles e Escape sem salvar; hover real claro/escuro
+confirmado por fundo/cor/borda computados. Novo e Editar abertos/fechados sem salvar;
+painel móvel ocupa a janela. Aparência/regiões conferidas por interface e estilos computados.
+
+Dashboard, Pacientes, Financeiro e Equipe abertos nos dois temas com a sessão existente.
+Sem falhas/alertas observados; componentes/tokens correspondentes inalterados em relação
+ao HEAD. Não houve comparação lado a lado com capturas antigas dos quatro módulos;
+conclusão de não mudança é sustentada pelo diff/consumidores e inspeção atual, não por
+uma captura histórica nova. Console sem error; um warn Multiple GoTrueClient instances
+do caminho de fotos de Pacientes, preexistente em src/lib/pacienteFoto.ts, sem diff;
+não corrigido fora do escopo. Não houve captura/HAR com dados pessoais, nem inspeção
+exaustiva de cada resposta de rede: nenhum erro de rede observável no console/interface.
+
+Hostinger MCP: ambos os builds anteriores completed em cf82310; auto-deployment habilitado,
+mesmo repositório e branch, Node22/Vite/npm/dist. Nenhuma configuração remota alterada.
+Próximo marco: commit seletivo, push normal e confirmação de builds/artefatos por domínio.
+Reversão prevista: git revert do novo commit + push na mesma branch e aguardar ambos os
+deploys; retorna o código funcional a cf82310 sem reset/force push ou qualquer banco.
+
+## Segundo acabamento visual — CONCLUÍDO LOCALMENTE, 02/10/2026 23:17 -03:00
+
+Esta seção sucede o acabamento anterior, sem reescrever seus resultados.
+HEAD cf82310; branch `codex/resgate-local-2026-09-26`; Git/diff conferidos antes de editar.
+Alterações funcionais anteriores identificadas como acabamento da própria Agenda;
+documentação de outras tarefas preservada. Sem commit, push, deploy ou banco.
+Typesafe-ai avaliada pela descrição: sem necessidade de IA. Impeccable aplicada à cor,
+contraste e profundidade, usando contexto de produto e identidade existentes; script
+de contexto indisponível já registrado, não repetido. Pedido atual prevalece sobre
+diretrizes genéricas da skill: não redesenhar layout, não mudar regras ou textos.
+
+### As 12 falhas anteriores, individualizadas
+
+| Cenário anterior | Tela | Erro | Causa | Correção já aplicada antes desta rodada |
+| --- | --- | --- | --- | --- |
+| agenda-horarios:38, Brotas | desktop | Timeout: fundo selecionado diferente da primária | Produto, estilo | Excluir aria-pressed do escurecimento dos CTAs |
+| agenda-horarios:38, Ipupiara | desktop | Mesmo timeout | Produto, estilo | Mesma exclusão |
+| agenda-horarios:38, Brotas | tablet | Mesmo timeout | Produto, estilo | Mesma exclusão |
+| agenda-horarios:38, Ipupiara | tablet | Mesmo timeout | Produto, estilo | Mesma exclusão |
+| agenda-horarios:38, Brotas | mobile | Mesmo timeout | Produto, estilo | Mesma exclusão |
+| agenda-horarios:38, Ipupiara | mobile | Mesmo timeout | Produto, estilo | Mesma exclusão |
+| agenda-acabamento:13, geometria | desktop | Baseline difere; indicador +18px | Teste: ícone novo virou inline ao desativar CSS | Ocultar ícone decorativo no baseline |
+| agenda-acabamento:13, geometria | tablet | Baseline difere | Mesmo defeito de instrumentação | Mesma ocultação |
+| agenda-acabamento:13, geometria | mobile | Baseline difere | Mesmo defeito de instrumentação | Mesma ocultação |
+| agenda-acabamento:41, foco | desktop | Esperado translateY(-1px), recebido none | Teste: focus() após mouse não ativa focus-visible | Entrada efetiva de teclado Shift+Tab/Tab |
+| agenda-acabamento:41, foco | tablet | Mesmo erro de transform | Mesmo defeito de instrumentação | Mesma entrada de teclado |
+| agenda-acabamento:41, foco | mobile | Mesmo erro de transform | Mesmo defeito de instrumentação | Mesma entrada de teclado |
+
+Nenhuma dessas correções mudou comportamento funcional, validações, permissões ou serviços.
+As seis correções de produto alteraram somente o realce CSS da seleção existente.
+Nenhuma falha anterior foi atribuída ao ambiente.
+
+### Ajustes e verificações concluídos
+
+Acento vivo separado de texto em cada KPI; gradiente claro 16% da cor sobre o cartão,
+sombras de duas camadas mais presentes, cores claras dos cabeçalhos reforçadas e
+uso da largura disponível pelo nome, sem mudar as dimensões da grade.
+Links Ver dia inteiro e Adicionar à lista de espera recebem token exclusivo derivado da
+marca, mais luminoso no escuro. Ícones KPI continuam aria-hidden decorativos;
+neutros do número/textos e tokens anteriores de outras telas não mudam.
+Hover do indicador altera apenas sombra, sem torná-lo clicável/focável artificialmente.
+
+Sidebar em navegador sintético 1440×900: documento1181, scrollY0→281;
+retângulo da barra y0/altura900 nos dois estados. Permaneceu cobrindo a janela ao rolar:
+efeito de captura full-page anterior, não defeito reproduzido. Nenhuma alteração na Sidebar.
+Avatar do usuário no cabeçalho tem contraste baixo no escuro; pendência de AppShell
+fora do escopo, preservada sem correção. Nenhuma informação real usada nas capturas.
+
+### Duas rodadas completas, retries 0
+
+Primeira: 285 aprovados, 4 falhas, 14 inaplicáveis, 11,0 min. As três falhas de
+agenda-acabamento (desktop/tablet/mobile) mediram 4,29:1 no texto secundário sobre
+KPI1-inicio escuro. Causa de estilo confirmada: mistura de acento vivo a 16%; corrigida
+para 8% no escuro, mantendo 16% no claro. A quarta falha foi agenda-edicao:161 no tablet:
+timeout de 90s ao procurar Outro horário, após navegação inesperada para agenda-contexto.html.
+Causa definitiva não comprovada; possível recarga do servidor de desenvolvimento durante
+alterações de arquivos. Não se alterou o fluxo, assertion, timeout ou seleção de cenários.
+
+Segunda: **289 aprovados, 0 falhas, 14 inaplicáveis, 0 flaky**, 13,4 min, todos os
+303 cenários novamente, sem repetição seletiva. Servidor exclusivo 4193, HMR/watch desligados,
+com os mesmos aliases isolados. O encerramento automático desse Vite ficou preso após
+o último teste; consulta de processo confirmou seu comando/configuração/porta e somente
+esse processo foi encerrado. O runner então concluiu com exit0 e gravou o relatório.
+Os servidores 3000/4192 foram preservados. Isso não comprova a causa do timeout anterior.
+
+| Conjunto | Rodada 1 aprovados/falhas/inaplicáveis | Rodada 2 aprovados/falhas/inaplicáveis |
+| --- | ---: | ---: |
+| agenda-pagina | 23/0/4 | 23/0/4 |
+| agenda-novo-painel | 21/0/0 | 21/0/0 |
+| agenda-horarios | 24/0/0 | 24/0/0 |
+| agenda-remarcacao | 24/0/0 | 24/0/0 |
+| agenda-experiencia | 18/0/0 | 18/0/0 |
+| agenda-refinamento | 27/0/0 | 27/0/0 |
+| agenda-fechamento | 18/0/0 | 18/0/0 |
+| agenda-edicao | 95/1/0 | 96/0/0 |
+| recepcao-fluxo | 18/0/0 | 18/0/0 |
+| agenda-celular | 11/0/10 | 11/0/10 |
+| agenda-acabamento | 6/3/0 | 9/0/0 |
+
+Os 14 skips são condições de tela existentes, não falhas removidas nesta rodada.
+As 12 falhas da etapa histórica anterior passaram nesta execução integral.
+Build final exit0; lint exit0, somente aviso Fast Refresh preexistente em ThemeProvider.
+Build mantém avisos existentes de chunks/importação dinâmica. Runner emite aviso de
+compatibilidade futura do carregamento de configuração do Vite, sem erro de execução.
+Diff check sem erros. Nenhuma gravação no principal ou verificação conectada nova.
+
+### Contraste, arquivos e evidências
+
+576 medições: 48 pares × 2 temas × 2 clínicas × 3 telas. Mínimos **5,32:1 claro e
+4,83:1 escuro**. Links escuros: **6,43:1 no cartão e 6,14:1 no realce**.
+Valores completos dos tokens, sombras e cabeçalhos em [design system](../../../01-DESIGN-SYSTEM.md).
+Ícones KPI aria-hidden e faixas são decorativos; seu acento vivo não é usado como texto.
+Neutros dos textos foram medidos nas extremidades dos gradientes. Não se certifica
+contraste de outras telas; avatar escuro do AppShell continua pendente.
+
+Alterados nesta segunda rodada: src/index.css, src/pages/Agenda.tsx,
+src/components/agenda/agendaAcabamento.css, src/config/notasEvolucao.json,
+tests/operacional/agenda-acabamento.spec.ts, playwright.agenda-acabamento.config.ts
+e novo vite.agenda-acabamento.config.ts no mesmo diretório; este relatório,
+docs/ia/CHECKPOINT.md e 01-DESIGN-SYSTEM.md. GradeTemporalAgenda.tsx e agenda-preview.tsx
+mantêm as alterações da primeira etapa. Demais alterações documentais anteriores preservadas.
+
+Capturas de janela, não full-page, em scratch/agenda-ux/acabamento-cores-2:
+desktop-{brotas,ipupiara}-{claro,escuro}.png (1440×900),
+tablet-{brotas,ipupiara}-{claro,escuro}.png (820×1180),
+mobile-{brotas,ipupiara}-{claro,escuro}.png (390×844), hover-agendamento.png,
+hover-livre.png, hover-indicador.png e sidebar-apos-rolagem.png.
+Conferência visual identificou nomes de tema invertidos nas primeiras capturas de Ipupiara:
+preferência persistida após troca de unidade. Gerador ignorado passou a conferir data-theme
+antes de cada captura; tentativa inicial usando class dark falhou, corrigida para o atributo
+real do projeto. Capturas finais regeneradas e conferidas, sem mudança no produto ou
+repetição de regressões. JSONs rodada-1/rodada-2 e contrastes por tela permanecem ignorados.
+
+### Diferenças preservadas em relação à referência e prontidão
+
+Mantidos marca/tokens atuais, Sidebar e layout existente: não se copiaram azul literal,
+Semana, Remarcar, busca global ou turno inexistentes no escopo. Situações vigentes,
+durações proporcionais e dados sintéticos existentes não foram trocados pelos números,
+nomes ou expedientes da imagem. Nomes usam toda a largura disponível, com reticências
+quando necessário e identificação completa nos detalhes. Mobile mantém os controles
+compactos; ícones decorativos KPI ficam restritos às telas previstas.
+
+**Acabamento pronto para revisão/publicação posterior**, com regressão local integral
+aprovada. Esta execução não fez commit, push, deploy, migration ou mudança de banco.
+Prévia isolada: http://127.0.0.1:4192/tests/operacional/agenda-preview.html?acabamento
+(acrescentar &unidade=ipupiara). Mesmos componentes reais, dados/serviços sintéticos;
+recarga descarta alterações, não comprova persistência real. Permanecem separadas as
+pendências de gravação legítima/persistência, sessão pública de Ipupiara, zoom nativo
+e dispositivo físico. Avatar AppShell depende de tarefa específica fora deste escopo.
+
+## Acabamento visual — entrega LOCAL, 02/10/2026 22:34 -03:00
+
+### Diagnóstico e escopo
+
+Fase 0: branch `codex/resgate-local-2026-09-26`, HEAD/remoto
+`cf8231051c73c6ff74c869ff538ce152fa729386` iguais por consulta Git. Havia somente
+22 arquivos documentais alterados, preservados. Nenhuma alteração funcional desconhecida.
+Leitura das instruções, checkpoint, fundação visual, página e componentes atuais da Agenda.
+Descrição de typesafe-ai avaliada: sem pertinência para este acabamento determinístico;
+nenhuma API/chave utilizada. Skill impeccable aplicada ao acabamento/acessibilidade,
+com referência ao contexto existente de produto/design system: utilitário context.mjs
+indisponível já documentado, sem inventar outra estrutura nem repetir sua execução.
+
+Implementados tokens aditivos claro/escuro, cinco indicadores com faixa superior de 3px,
+gradiente e ícones existentes somente no desktop/tablet; cores de profissionais derivadas
+da lista completa ordenada por nome, módulo seis; barras de situação de 3px reaproveitando
+os tokens existentes; sombras em superfícies/painéis e realces por mouse/teclado.
+Hover condicionado à capacidade do dispositivo; movimento reduzido suprime deslocamentos
+e transições. Tabela desktop continua sem barra; estados neutros continuam planos.
+Não alterados medidas da grade, ordem dos controles, textos, serviços, RPCs, hooks,
+permissões, políticas, AppShell, Sidebar, ModalBase, banco ou publicação.
+
+Arquivos desta rodada:
+
+- Código: `src/index.css`, `src/pages/Agenda.tsx`,
+  `src/components/agenda/GradeTemporalAgenda.tsx`, novo `agendaAcabamento.css` no mesmo diretório.
+- Testes/prévia: `tests/operacional/agenda-preview.tsx`, novos `agenda-acabamento.spec.ts`
+  e `playwright.agenda-acabamento.config.ts` no mesmo diretório.
+- Registro: `src/config/notasEvolucao.json`, este relatório, `docs/ia/CHECKPOINT.md`
+  e seção aditiva de `01-DESIGN-SYSTEM.md` com todos os valores e contrastes.
+- Artefatos ignorados: `scratch/agenda-ux/acabamento-cores/`; nenhum segredo/dado real.
+
+### Rodada única de testes, retries 0
+
+303 cenários, 9,9 min: **277 aprovados, 12 falhas, 14 inaplicáveis**. Não houve repetição.
+Resultados abaixo referem-se à versão testada antes das correções finais de estilo/teste.
+
+| Conjunto | Aprovados | Falhas | Inaplicáveis |
+| --- | ---: | ---: | ---: |
+| agenda-pagina | 23 | 0 | 4 |
+| agenda-novo-painel | 21 | 0 | 0 |
+| agenda-horarios | 18 | 6 | 0 |
+| agenda-remarcacao | 24 | 0 | 0 |
+| agenda-experiencia | 18 | 0 | 0 |
+| agenda-refinamento | 27 | 0 | 0 |
+| agenda-fechamento | 18 | 0 | 0 |
+| agenda-edicao | 96 | 0 | 0 |
+| recepcao-fluxo | 18 | 0 | 0 |
+| agenda-celular | 11 | 0 | 10 |
+| agenda-acabamento (novo) | 3 | 6 | 0 |
+
+Falhas e correções, sem ocultar o resultado:
+
+1. `agenda-horarios:38`, Brotas e Ipupiara, nas três telas: o bloco selecionado por teclado
+   deveria manter a primária, mas o seletor novo de CTA também abrangia botões com
+   `aria-pressed`. Timeout ao comparar fundo com a primária. Defeito de estilo concreto;
+   corrigido excluindo `[aria-pressed]` do escurecimento de CTA. Não altera seleção/gravação.
+2. `agenda-acabamento:13`, três telas: baseline desativava o CSS novo, fazendo o ícone
+   decorativo entrar no fluxo inline e aumentar o indicador (18px desktop). Defeito da
+   instrumentação, não prova de deslocamento na aplicação normal. Comparação preparada
+   para ocultar esse elemento inexistente no baseline antes de desativar o CSS.
+3. `agenda-acabamento:41`, três telas: foco programático após mouse não ativava
+   `:focus-visible`; esperado translateY(-1px), recebido none. Teste preparado para entrada
+   efetiva de teclado (Shift+Tab/Tab). Hover de cartão desktop chegou a passar antes dessa falha.
+
+As correções posteriores não foram novamente submetidas à regressão, respeitando a ordem
+de não repetir até passar. Estabilidade entre dias/modos, baseline e sequência completa
+de foco/movimento reduzido/desabilitados no teste novo **não ficaram aprovadas**.
+Não declarar entrega totalmente aprovada ou pronta para publicação pela rodada acima.
+
+Contraste: os três testes de contraste passaram, 552 medições no total (46 pares × dois
+temas × duas clínicas × três telas), mínimo 5,49:1 claro/5,44:1 escuro. Fórmula/composição
+do script de contraste já utilizado; valores documentados no design system. JSON detalhado
+em `scratch/agenda-ux/acabamento-cores/contrastes-{desktop,tablet,mobile}.json`.
+Build final aprovado, 700 módulos; avisos de chunk/import dinâmico permanecem.
+Lint final sem erros novos; aviso preexistente Fast Refresh em ThemeProvider. Diff check sem
+erro de espaços, apenas avisos Git LF/CRLF. Nenhuma gravação conectada executada.
+
+### Prévia, capturas e limites
+
+Prévia isolada, mesmos componentes reais, sem conexão ao principal:
+`http://127.0.0.1:4192/tests/operacional/agenda-preview.html?acabamento`
+e `?acabamento&unidade=ipupiara`. Navegador controlado abriu a grade e conferiu sua apresentação.
+Capturas finais geradas separadamente da regressão, sem assertions ou envio a banco:
+`scratch/agenda-ux/acabamento-cores/{desktop,tablet,mobile}-brotas-{claro,escuro}.png`,
+`{desktop,tablet,mobile}-ipupiara.png`, `hover-agendamento.png`, `hover-livre.png`,
+`hover-indicador.png`. Desktop 1440×1000, tablet 820×1180, celular 390×844 em emulação.
+Captura full-page móvel posiciona o botão fixo na altura do viewport; isso não representa
+um novo deslocamento no fluxo. Conferência visual das capturas claro/escuro/móvel realizada.
+
+Diferenças intencionais do mockup: marca e Sidebar atuais preservados; sem Semana/Remarcar
+no topo/busca global/turno; situações e nomes existentes mantidos (não introduzido Faltou);
+expediente/quantidades exclusivamente da fixture, sem inventar disponibilidade real;
+cores de profissionais seguem a lista estável, não uma atribuição clínica; indicador não
+clicável não sobe no hover; celular conserva a faixa compacta sem ícone. Não mudou o login.
+
+**Limitações/próxima ação:** acabamento disponível somente localmente para revisão.
+Uma nova verificação autorizada deve confirmar as correções e os cenários interrompidos
+antes de tratar a regressão como aprovada. Sem persistência real, dispositivo físico ou
+zoom nativo comprovados nesta rodada; nenhuma nova validação conectada foi alegada.
+Nenhum commit, push, deploy ou alteração remota realizado. Histórico de publicação abaixo
+refere-se à versão anterior, não a este acabamento.
+
 ## Publicação móvel/B1/B2 — leitura conectada concluída no escopo disponível, 02/10/2026 21:44 -03:00
 
 Retomada após login pessoal. Navegador controlado confirmou **Recepção/Brotas**, aplicação normal

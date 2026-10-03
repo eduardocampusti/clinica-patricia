@@ -52,6 +52,15 @@ if (params.has('celular')) {
   }))
 }
 if (params.has('vazio')) registros = []
+// Acabamento visual: três colunas e seis situações, somente neste harness isolado.
+if (params.has('acabamento')) {
+  profissionais.push({ id: 'prof-3', nome_completo: 'Profissional Sintético — Psicologia', duracao_consulta_minutos: 60, valor_consulta: null, especialidades: { nome: 'Psicologia' } })
+  registros = ['concluido', 'cancelado', 'em_atendimento', 'aguardando', 'confirmado', 'agendado'].map((status, i) => ({
+    id: `acabamento-${i}`, profissional_id: `prof-${i % 3 + 1}`, paciente_id: `pac-${i % 5}`,
+    hora_inicio: `${horaAgenda(480 + i * 30)}:00`, hora_fim: `${horaAgenda(480 + i * 30 + (i % 3 === 2 ? 60 : 30))}:00`, status,
+    data: hoje, clinica_id: clinicaId, updated_at: '2026-10-01T10:00:00Z', observacoes: 'Somente conferência visual sintética.', pacientes: { nome_completo: pacientes[i % 5].nome_completo },
+  }))
+}
 const fetchOriginal = window.fetch.bind(window)
 window.fetch = async (input, init) => {
   const url = new URL(typeof input === 'string' ? input : input instanceof Request ? input.url : input.toString())
