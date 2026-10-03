@@ -4,6 +4,51 @@
 
 ## Comportamento solicitado
 
+### Integração inicial do Painel da Recepção — 03/10/2026, autorização posterior
+
+Pedido posterior de 03/10, publicação seletiva autorizada: commit, push e implantação
+pelo fluxo Hostinger existente, sem novas regras/banco/permissões/configuração.
+Preservar nove prévias de e-mail anteriores; prévia/fixtures da Recepção não servidas
+em produção. Autorização substitui a limitação de publicação das etapas anteriores,
+sem ampliar o escopo funcional ou autorizar gravações para validar.
+
+Revisão para preparação de publicação (03/10, 18:03 -03:00): ações que abrem a
+Agenda geral devem usar Abrir Agenda, sem prometer seleção de um agendamento;
+Financeiro mantém destino geral. Caixa só mostra resumo com status/valores/período
+compatíveis com o contrato oficial. Prévia sintética da Recepção fora do pacote
+normal. Manifesto seletivo e limites de verificação no relatório13; preparar não
+autoriza publicação nem mudanças de banco/configuração/permissões.
+
+Integrar somente ao Dashboard normal da Recepção, preservando os outros perfis e o
+shell existente. Manter a composição aprovada: indicadores compactos, movimento
+principal, próximos agendamentos e apoios laterais, recolhidos inicialmente no celular.
+Contar o conjunto completo de agendamentos não cancelados da clínica/data America/Bahia,
+sem confundir agendamentos com IDs distintos de pacientes; situações registradas e
+filtros nominais/CPF exato por serviço existente. Ordenação pelo horário agendado;
+sem inferir chegada, espera, prioridade clínica, falta ou presença profissional.
+Resumo de caixa exclusivamente oficial, por sessão/período autorizado, distinguindo
+recebido bruto e saldo esperado em dinheiro; falha/legado/indisponibilidade não são zero.
+Omitir pagamento individual e contagens cadastrais até fonte segura. Reusar cadastro
+e agendamento existentes; encaminhar chegada e recebimento à Agenda, sem criar novas
+gravações no Dashboard. Erros/permissões/atualização explícitos, descarte de respostas
+antigas, todas as abas por toque/teclado e ajuda expansível. Simulações só na prévia.
+Sem alteração de banco/permissões/publicação nesta etapa. Implementação e limites no
+[relatório13](13-PAINEL-RECEPCAO-PREVIA.md). A decisão abaixo descreve a fase anterior.
+
+### Proposta isolada do Painel da recepção — 03/10/2026 (histórico)
+
+Pedido específico: somente prévia sem dados reais, conforme conceitos desktop/celular;
+Dashboard normal preservado. Fila em destaque, cabeçalho com ações, quatro contagens
+de agendamentos (não pacientes distintos), busca/CPF exato e profissional, próximas
+chegadas, caixa compacto e pendências não bloqueantes. No celular, caixa/pendências
+inicialmente recolhidos, menu móvel existente e último item integralmente acessível.
+Espera exige horário de chegada; horário passado sem chegada exige conferência,
+sem falta automática ou prioridade clínica. Presença profissional não deriva da
+Agenda. Financeiro conserva estados oficiais e falhas distintas, recebido bruto
+e saldo separados; ações futuras reutilizam fluxos, sem fechamento direto/WhatsApp.
+Descartar respostas obsoletas por contexto. Integração/publicação não autorizadas.
+Inventário e limites: [relatório 13](13-PAINEL-RECEPCAO-PREVIA.md).
+
 ### Navegação compartilhada aprovada — 02/10/2026
 
 Usar Sidebar shadcn/ui Base UI no layout autenticado, com expansão desktop persistida

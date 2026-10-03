@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { iniciais } from '../lib/texto'
 import { FeedbackAlert } from '../components/feedback/FeedbackAlert'
+import type { Papel } from '../hooks/usePapelNaClinica'
+import PainelRecepcao, { type AcoesPainelRecepcao } from '../components/dashboard/PainelRecepcao'
 
 function paraISODate(data: Date): string {
   const ano = data.getFullYear()
@@ -24,7 +26,7 @@ interface DashboardProps {
   clinicaAtivaId: string | null
 }
 
-function Dashboard({ clinicaAtivaId }: DashboardProps) {
+function DashboardBasico({ clinicaAtivaId }: DashboardProps) {
   const [proximoPaciente, setProximoPaciente] = useState<ProximoPaciente | null>(null)
   const [carregandoProximo, setCarregandoProximo] = useState(true)
   const [erroProximo, setErroProximo] = useState(false)
@@ -99,4 +101,8 @@ function Dashboard({ clinicaAtivaId }: DashboardProps) {
   </div>
 }
 
-export default Dashboard
+export default function Dashboard(props: DashboardProps & AcoesPainelRecepcao & { papel: Papel | null; clinicaNome: string }) {
+  return props.papel === 'recepcao' && props.clinicaAtivaId
+    ? <PainelRecepcao key={props.clinicaAtivaId} clinicaId={props.clinicaAtivaId} {...props}/>
+    : <DashboardBasico clinicaAtivaId={props.clinicaAtivaId}/>
+}

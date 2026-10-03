@@ -44,6 +44,7 @@ function App() {
   const [atendimentoParaAbrir, setAtendimentoParaAbrir] = useState<string | null>(null)
   const [cadastroPacienteAgendaAberto, setCadastroPacienteAgendaAberto] = useState(false)
   const [pacienteCriadoAgenda, setPacienteCriadoAgenda] = useState<PacienteCriadoAgenda | null>(null)
+  const [entradaPainel, setEntradaPainel] = useState<{ clinicaId: string; novoPaciente?: boolean; novoAgendamento?: boolean; pacienteId?: string } | null>(null)
   const { aplicarCoresClinica } = useTheme()
   const { clinicas: clinicasDoUsuario, carregando: carregandoClinicas, erro: erroClinicas } = useClinicasDoUsuario(session?.user.id)
   const {
@@ -57,11 +58,17 @@ function App() {
   const conviteValido = !!conviteId && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/iu.test(conviteId)
   const sessionUserId = session?.user.id
 
-  function setTela(destino: Tela) {
+  function setTela(destino: Tela, entrada?: { clinicaId: string; novoPaciente?: boolean; novoAgendamento?: boolean; pacienteId?: string }) {
     if (!papel || !TELAS_POR_PAPEL[papel].includes(destino)) return
     const marca = Object.values(CLINIC_BRANDS).find(item => clinicaAtiva && clinicaCorrespondeAoBrand(clinicaAtiva, item))
     if (!marca) return
+    setEntradaPainel(entrada ?? null)
     navegarPara(caminhoInterno(marca.slug, destino))
+  }
+
+  function encaminharPainel(destino: 'pacientes' | 'agenda', entrada: { novoPaciente?: boolean; novoAgendamento?: boolean; pacienteId?: string }) {
+    if (papel !== 'recepcao' || !clinicaAtivaId) return
+    setTela(destino, { clinicaId: clinicaAtivaId, ...entrada })
   }
 
   // Auth restaura a sessão; os serviços existentes confirmam vínculo/papel.
@@ -97,6 +104,7 @@ function App() {
 
   useEffect(() => {
     function voltarNaRota() {
+      setEntradaPainel(null)
       const rota = lerRotaInterna()
       if (!rota) { window.location.replace(window.location.href); return }
       const clinica = clinicasDoUsuario.find(item => clinicaCorrespondeAoBrand(item, CLINIC_BRANDS[rota.unidade]))
@@ -257,6 +265,7 @@ function App() {
       clinicaAtiva={clinicaAtiva}
       clinicasDoUsuario={clinicasDoUsuario}
       onSelecionarClinica={id => {
+        setEntradaPainel(null)
         const clinica = clinicasDoUsuario.find(item => item.id === id)
         const marca = Object.values(CLINIC_BRANDS).find(item => clinica && clinicaCorrespondeAoBrand(clinica, item))
         if (!marca) return
@@ -267,10 +276,15 @@ function App() {
       papel={papel}
       onSair={handleSignOut}
     >
-      {tela === 'dashboard' && <Dashboard clinicaAtivaId={clinicaAtivaId} />}
+      {tela === 'dashboard' && <Dashboard clinicaAtivaId={clinicaAtivaId} clinicaNome={clinicaAtiva?.nome ?? 'Clínica selecionada'} papel={papel}
+        onNovoPaciente={() => encaminharPainel('pacientes', { novoPaciente: true })}
+        onNovoAgendamento={() => encaminharPainel('agenda', { novoAgendamento: true })}
+        onAbrirPaciente={pacienteId => encaminharPainel('pacientes', { pacienteId })}
+        onAgenda={() => setTela('agenda')} onPacientes={() => setTela('pacientes')} onFinanceiro={() => setTela('financeiro')} />}
       {tela === 'agenda' && (
         <>
           <Agenda
+            iniciarComNovoAgendamento={entradaPainel?.clinicaId === clinicaAtivaId && entradaPainel.novoAgendamento}
             clinicaAtiva={clinicaAtiva}
             carregandoClinica={carregandoClinica}
             usuarioId={session.user.id}
@@ -301,6 +315,9 @@ function App() {
       )}
       {tela === 'pacientes' && (
         <Pacientes
+          key={clinicaAtivaId}
+          iniciarComCadastroAberto={entradaPainel?.clinicaId === clinicaAtivaId && entradaPainel.novoPaciente}
+          pacienteInicialId={entradaPainel?.clinicaId === clinicaAtivaId ? entradaPainel.pacienteId : undefined}
           clinicaAtivaId={clinicaAtivaId}
           clinicaNome={clinicaAtiva?.nome}
           carregandoClinica={carregandoClinica}

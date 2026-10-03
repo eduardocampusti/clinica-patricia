@@ -155,6 +155,7 @@ interface AgendaProps {
   onNovoPaciente?: () => void
   pacienteCriadoExternamente?: PacienteCriadoAgenda | null
   cadastroPacienteAberto?: boolean
+  iniciarComNovoAgendamento?: boolean
 }
 
 function Agenda({
@@ -165,6 +166,7 @@ function Agenda({
   onNovoPaciente,
   pacienteCriadoExternamente,
   cadastroPacienteAberto = false,
+  iniciarComNovoAgendamento = false,
 }: AgendaProps) {
   const clinicaAtivaId = clinicaAtiva?.id ?? null
   const { papel, carregando: carregandoPapel } = usePapelNaClinica(usuarioId, clinicaAtivaId)
@@ -217,6 +219,7 @@ function Agenda({
   } | null>(null)
   useEffect(() => { setFeedbackStatus(null) }, [chaveContextoAtual])
   const [modalAberto, setModalAberto] = useState<'agendamento' | 'excecao' | 'espera' | null>(null)
+  const entradaNovoAgendamento = useRef({ clinicaId: clinicaAtivaId, pendente: iniciarComNovoAgendamento })
   const [prefillAgendamento, setPrefillAgendamento] = useState<{ pacienteId: string; profissionalId: string; inicio?: string } | null>(
     null,
   )
@@ -488,6 +491,15 @@ function Agenda({
     setProfissionalParaExcecao(null)
     setErroIniciarAtendimento(null)
   }, [clinicaAtivaId])
+
+  useEffect(() => {
+    const entrada = entradaNovoAgendamento.current
+    if (!entrada.pendente) return
+    if (entrada.clinicaId !== clinicaAtivaId) { entrada.pendente = false; return }
+    if (!podeEscrever || carregandoClinica) return
+    entrada.pendente = false
+    setModalAberto('agendamento')
+  }, [clinicaAtivaId, podeEscrever, carregandoClinica])
 
   useEffect(() => {
     if (!pacienteCriadoExternamente || pacienteCriadoExternamente.clinica_id !== clinicaAtivaId) return

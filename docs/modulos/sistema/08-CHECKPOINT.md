@@ -1,5 +1,58 @@
 # Sistema — checkpoint de implementação local
 
+## Painel da recepção — publicação autorizada, 03/10/2026 18:36 -03:00
+
+Pedido posterior autoriza commit/push/fluxo Hostinger seletivos nas duas clínicas.
+Branch codex/resgate-local-2026-09-26, HEAD2afff0a2 alinhado0/0 após fetch; índice vazio.
+Runtime coincide com a preparação, sem nova mudança funcional/testes20+9 repetidos.
+Seleção por conteúdo em documentos misturados; outros trabalhos preservados.
+Hostinger pede reconexão e web sem sessão. Implantação nova ainda não comprovada.
+Próxima ação: commit/envio, confirmar builds/commit servido e sessões autorizadas;
+sem banco/permissões/dados/configuração. Detalhes/resultado efetivo no relatório13.
+
+## Painel da recepção — preparação seletiva, 03/10/2026 18:03 -03:00
+
+Integração tecnicamente preparada com limitações conectadas explícitas, sem publicação.
+Concluídos literal, fontes/contagens/permissões/guardas e omissões revisados. Rótulos
+de linhas/próximos agora Abrir Agenda (destino geral); estado de caixa precisa constar
+no contrato oficial antes de exibir valores. 2/2 testes dirigidos desktop/celular,
+build/TypeScript/lint/diff-check exit0, sem repetir 20+9 anteriores. Pacote de 29
+arquivos auditado: sem fixtures/testes/capturas da Recepção; nove prévias de e-mail
+anteriores intencionalmente preservadas. Manifesto seletivo, fontes e dependências
+no relatório13; evidência local em scratch/recepcao-publicacao/auditoria-pacote.json.
+Sessão local3000 Recepção/Brotas: Ipupiara negada por falta de vínculo ativo; Brotas
+recuperada. Caixa operacional real e Ipupiara autenticada continuam não comprovados;
+zoom nativo indisponível na ferramenta. Sem banco/configuração/permissões/dados reais,
+commit/push/deploy. Branch codex/resgate-local-2026-09-26, HEAD2afff0a2, não commitado.
+Próxima ação: decisão específica do usuário sobre publicação; leituras restantes
+dependem de sessão legitimamente autorizada. Entrada canônica em ../../ia/CHECKPOINT.md.
+
+## Painel da recepção — primeira integração local, 03/10/2026 17:44 -03:00
+
+Pedido posterior explícito atendido no Dashboard da Recepção; demais perfis e shell
+preservados. Fontes reais por clínica/data, contagens completas, CPF exato, fluxos
+existentes e caixa oficial. Espera, pagamento individual e totais cadastrais sem fonte
+segura omitidos. Caixa legado explícito. 20 combinações de integração e 9 regressões
+pertinentes da prévia aprovadas; TypeScript/build/lint exit0, capturas e revisão visual.
+Leitura conectada Recepção/Brotas: painel/busca/filtro/abas, abertura/cancelamento dos
+formulários, F5 e Financeiro; sem salvar. Caixa operacional real/Ipupiara conectada
+não comprovados. Sem alteração de banco/permissões/dados reais/commit/push/deploy.
+Branch `codex/resgate-local-2026-09-26`, HEAD `2afff0a2`, alterações não commitadas.
+Próxima ação: revisão local do usuário, sem publicação automática. Fontes, arquivos,
+URLs e limites no [relatório13](13-PAINEL-RECEPCAO-PREVIA.md); entrada canônica em
+`../../ia/CHECKPOINT.md`. Registro anterior restrito à etapa histórica da prévia.
+
+## Painel da recepção — prévia isolada, 03/10/2026 16:49 -03:00
+
+Implementado somente em `tests/operacional/recepcao-preview.*`, com servidor/configurações
+de teste próprios. Dashboard/AppShell/Sidebar e configurações operacionais inalterados.
+21/21 testes, TypeScript e lint dirigidos aprovados; 21 capturas e revisão visual de
+desktop/celular claro/escuro. Fontes existentes e lacunas (timestamp de chegada,
+leitura completa de pagamento e agregação cadastral) no [relatório 13](13-PAINEL-RECEPCAO-PREVIA.md).
+Sem dados reais/commit/push/deploy. Branch `codex/resgate-local-2026-09-26`, HEAD `2afff0a`;
+alterações anteriores preservadas. Próxima ação: usuário revisar a proposta local4193.
+Integração e validação por papel/clínica seguem pendentes, sem autorização nesta etapa.
+
 Reabertura01/10 — relato Recepção/F5/Pacientes retornando Dashboard no64e22df. Teste dirigido confirmou substituição de URL válida por estado capturado durante consulta; não é prova de evento idêntico da sessão do titular. URL agora é fonte única; destino não autorizado explícito. Sessão real Recepção solicitada, não substituir por proprietária. Resultado final/publicação no relatório10; sem alterações de banco/contas.
 
 **Conclusão01/10:** commit `64e22df` publicado nas duas aplicações, builds completed e bundles novos conferidos no navegador. Sessão real proprietária/Brotas restaurou Dashboard automaticamente; F5 manteve Agenda/Pacientes e recarga repetida/rota direta funcionaram sem Continuar. Ipupiara sem sessão autenticada própria exibiu login correto na rota interna/recarga; validação autenticada Ipupiara e Recepção real dependem do titular. 15 testes sintéticos finais e build/lint aprovados. Sem dados/SMTP/senhas alterados; relatório10 atualizado. Não encerrado o ensaio de e-mail pendente.

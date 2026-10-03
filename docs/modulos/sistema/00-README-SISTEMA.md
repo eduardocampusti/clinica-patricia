@@ -1,5 +1,31 @@
 # Sistema — índice
 
+03/10/2026, 18:36 -03:00 — publicação seletiva da Recepção autorizada pelo pedido
+posterior; seleção/commit/envio em execução, sem nova implantação comprovada.
+Branch confirmada/alinhada com origin; reconexão Hostinger solicitada. Manifesto,
+resultado efetivo e limites no [relatório13](13-PAINEL-RECEPCAO-PREVIA.md).
+
+03/10/2026, 18:03 -03:00 — primeira integração da Recepção revisada e preparada
+tecnicamente para publicação seletiva, sem publicar. Destino geral da Agenda com
+rótulo explícito; estado de caixa inválido não mostra valores. 2 testes dirigidos,
+build/TypeScript/lint/diff-check e auditoria de dist aprovados; 20+9 anteriores não
+repetidos. Ipupiara negou ausência de vínculo da sessão; Dashboard autenticado e
+caixa operacional real ainda não comprovados. Zoom nativo não disponível.
+Manifesto seletivo/dependências e prévias de e-mail anteriores preservadas no
+[relatório13](13-PAINEL-RECEPCAO-PREVIA.md). Sem banco/configuração/commit/push/deploy.
+
+03/10/2026, 17:44 -03:00 — primeira versão integrada localmente ao Dashboard da
+Recepção, por autorização posterior específica; outros perfis e shell preservados.
+20 combinações sintéticas de integração + 9 regressões pertinentes da prévia, build/lint
+e leitura conectada Brotas sem gravação aprovados. Caixa operacional real e Ipupiara
+conectada ainda não comprovados. Sem alteração de banco/permissões/commit/push/deploy.
+Fontes, omissões, arquivos e evidências no [relatório13](13-PAINEL-RECEPCAO-PREVIA.md).
+
+03/10/2026, 16:49 -03:00 (histórico) — Painel da recepção criado somente como prévia isolada, sem substituir
+Dashboard: fila, ações simuladas, caixa e pendências; 21 testes aprovados nos três
+tamanhos e capturas claro/escuro. Fontes e lacunas de integração no
+[relatório 13](13-PAINEL-RECEPCAO-PREVIA.md). Sem dados reais ou publicação.
+
 Revisão01/10/Recepção: titular relatou F5 Pacientes → Dashboard após64e22df. Conferência anterior de proprietária não é prova de Recepção. Corrigida concorrência entre URL e estado capturado na consulta; URL passa a ser fonte única, sem Dashboard silencioso em rota não autorizada. Testes/publicação/sessões reais registrados no relatório10. Preservados os fatos e limites históricos abaixo.
 
 **Publicado01/10:** restauração automática/rotas internas no commit `64e22df`, builds completed nas duas clínicas. Conferência conectada de proprietária/Brotas aprovou entrada automática, Agenda/Pacientes após F5, recarga repetida e rota direta. Ipupiara sem sessão própria mostrou login correto/recarga da rota interna. Recepção real/Brotas e F5 autenticado/Ipupiara pendentes; 15 testes sintéticos cobrem os cenários restantes. Relatório10 contém evidências, arquivos e limites; histórico abaixo preservado.

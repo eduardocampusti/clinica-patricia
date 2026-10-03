@@ -2,6 +2,7 @@
   "versaoEmDesenvolvimento": "0.1.0",
   "naoLancadas": {
     "novidades": [
+      "Dashboard da Recepção: movimento do dia por clínica, situações registradas, busca por nome ou CPF exato, filtros, acesso aos fluxos de cadastro e agendamento e resumo oficial do caixa. Caixa e pendências começam recolhidos no celular; informações ainda sem fonte segura não são estimadas.",
       "Acesso: solicitação de recuperação de senha com mensagem discreta, retorno à clínica de origem e confirmação da nova senha, sem alterar vínculos ou permissões.",
       "Equipe ganhou uma área unificada para consultar médicos, outros profissionais, recepção, administração e funcionários de apoio, separando cadastro de acesso ao sistema.",
       "Equipe: a migration segura foi aplicada e validada no Supabase autorizado; proprietária pode cadastrar e editar membros com persistência real, auditoria e vínculos multi-clínica.",

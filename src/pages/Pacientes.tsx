@@ -204,6 +204,7 @@ interface PacientesProps {
   carregandoPapel: boolean
   usuarioId: string
   iniciarComCadastroAberto?: boolean
+  pacienteInicialId?: string
   onCancelarCadastro?: () => void
   onPacienteCriado?: (paciente: { id: string; nome_completo: string; clinica_id: string }) => void
   onIrParaAgenda?: () => void
@@ -217,12 +218,15 @@ function Pacientes({
   carregandoPapel,
   usuarioId,
   iniciarComCadastroAberto = false,
+  pacienteInicialId,
   onCancelarCadastro,
   onPacienteCriado,
   onIrParaAgenda,
 }: PacientesProps) {
   const podeAdministrar = papel === 'proprietaria' || papel === 'recepcao'
   const [pacientes, setPacientes] = useState<PacienteListado[]>([])
+  const [pacienteEncaminhadoId, setPacienteEncaminhadoId] = useState(pacienteInicialId)
+  const encaminhamentoAplicado = useRef(false)
   const [busca, setBusca] = useState('')
   const [ordem, setOrdem] = useState<OrdemPacientes>('nome_asc')
   const [filtros, setFiltros] = useState(FILTROS_PACIENTES_INICIAIS)
@@ -233,7 +237,7 @@ function Pacientes({
   const dataReferenciaLista = new Date(`${hoje}T12:00:00`)
   const regrasFiltros = useMemo(() => restricoesPacientes(filtros, hoje), [filtros, hoje])
   const filtrosAtivos = resumoFiltrosPacientes(filtros)
-  const chaveLista = JSON.stringify([clinicaAtivaId, busca.trim(), filtros, hoje])
+  const chaveLista = JSON.stringify([clinicaAtivaId, busca.trim(), filtros, hoje, pacienteEncaminhadoId])
   const consultaListaPendente = chaveListaCarregada !== chaveLista
   const abortarLista = useRef<AbortController | null>(null)
   const [modoBusca, setModoBusca] = useState<'nome' | 'cpf'>('nome')
@@ -344,6 +348,7 @@ function Pacientes({
       .select('id, nome_completo, data_nascimento, sexo, telefone, endereco, foto_path, created_at', { count: 'exact' })
       .eq('clinica_id', clinicaId)
       .eq('ativo', true)
+    if (pacienteEncaminhadoId) consulta = consulta.eq('id', pacienteEncaminhadoId)
     // Escape curingas: a busca por nome continua sendo substring literal, não expressão.
     if (busca.trim()) consulta = consulta.filter('nome_completo', 'imatch', padraoBuscaNome(busca))
     for (const regra of regrasFiltros) consulta = consulta.filter(regra.campo, regra.operador, regra.valor)
@@ -369,7 +374,7 @@ function Pacientes({
     setClinicaListaId(clinicaId)
     setCarregandoLista(false)
     return true
-  }, [busca, regrasFiltros, chaveLista])
+  }, [busca, regrasFiltros, chaveLista, pacienteEncaminhadoId])
 
   useEffect(() => {
     if (carregandoClinica || carregandoPapel) return
@@ -560,6 +565,12 @@ function Pacientes({
     ? pacientesExibidos.find((paciente) => paciente.id === selecao.paciente.id) ?? null
     : null
   const chaveResumo = pacienteSelecionado && clinicaAtivaId ? `${clinicaAtivaId}:${pacienteSelecionado.id}` : null
+  useEffect(() => {
+    if (encaminhamentoAplicado.current || !pacienteEncaminhadoId || listaPendente || erroLista || clinicaListaId !== clinicaAtivaId || !clinicaAtivaId) return
+    const paciente = pacientesExibidos.find(item => item.id === pacienteEncaminhadoId)
+    encaminhamentoAplicado.current = true
+    if (paciente) setSelecao({ clinicaId: clinicaAtivaId, paciente })
+  }, [pacienteEncaminhadoId, listaPendente, erroLista, clinicaListaId, clinicaAtivaId, pacientesExibidos])
   const idadeSelecionada = pacienteSelecionado?.data_nascimento ? calcularIdade(pacienteSelecionado.data_nascimento, dataReferenciaLista) : null
 
   useEffect(() => {
@@ -1266,6 +1277,9 @@ function Pacientes({
       </header>
 
       {!mostrarFormulario && <IndicadoresPacientes clinicaId={clinicaAtivaId} revisao={revisaoResumo} />}
+      {pacienteEncaminhadoId && <FeedbackAlert variant="warning" title="Cadastro encaminhado pelo painel"
+        description={!listaPendente && !erroLista && !pacientesExibidos.length ? 'Cadastro não encontrado entre os pacientes ativos autorizados desta clínica.' : 'Exibindo somente o cadastro selecionado no Dashboard.'}
+        action={<button className="pacientes-botao-secundario" onClick={() => { setPacienteEncaminhadoId(undefined); setSelecao(null) }}>Ver todos os pacientes</button>} />}
 
       {!pacienteSelecionado && alertaResultado}
 

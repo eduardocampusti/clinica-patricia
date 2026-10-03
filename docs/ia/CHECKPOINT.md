@@ -1,6 +1,96 @@
 # Checkpoint operacional — Clínica Patrícia
 
-Atualização de Pacientes: 03/10/2026 11:03 -03:00. Demais registros abaixo mantidos como histórico datado.
+Atualizado: 2026-10-03 18:36 -03:00 (America/Bahia).
+Etapa atual: publicação seletiva da Recepção autorizada, seleção/commit/envio em execução; implantação ainda não comprovada.
+Demais perfis, Sidebar/AppShell, regras de gravação, banco, permissões e configurações preservados.
+Publicação anterior de Pacientes e pendências conectadas seguem no histórico abaixo.
+
+## Painel da recepção — publicação autorizada, 03/10/2026 18:36 -03:00
+
+Fetch confirmou branch codex/resgate-local-2026-09-26, HEAD2afff0a2 alinhado0/0;
+índice vazio e diff de runtime igual à preparação. Commit/push/Hostinger autorizados
+pelo pedido posterior, somente manifesto seletivo; sem mudanças funcionais novas.
+Documentos misturados serão selecionados por conteúdo, preservando outras tarefas.
+Testes pertinentes versionados fora de dist; nove prévias de e-mail anteriores
+preservadas. TypeSafe avaliada, não pertinente, sem chave/API. 20+9 e2 anteriores
+não apresentados como testes novos. Hostinger MCP pede reconexão e web sem sessão;
+solicitada ao titular enquanto Git avança. Leitura HTTPS200 das rotas públicas com
+assets anteriores não comprova painel autenticado nem implantação nova.
+Banco, permissões/vínculos/dados reais/configurações preservados. Próxima ação:
+concluir seleção, commit/envio, confirmar builds/commit por domínio e conferir
+produção somente por leitura com sessões disponíveis. Detalhes no relatório13.
+
+## Painel da recepção — preparação para publicação concluída, 03/10/2026 18:03 -03:00
+
+Revisados perfil, clínica/permissões, contagens completas, estados registrados,
+fontes e encaminhamentos. Concluídos usa status literal concluido; omissões da
+primeira versão preservadas. Dois ajustes locais sem redesenho: rótulo Abrir Agenda
+para destino geral e validação de STATUS_CAIXA antes de mostrar valores oficiais.
+2/2 novos testes dirigidos desktop/celular aprovados (contratos do caixa e destino
+Agenda, nenhuma escrita); 20+9 cenários anteriores não repetidos. Build/TypeScript,
+lint e diff-check exit0, avisos preexistentes. Auditoria do pacote: 130 fontes runtime,
+nenhuma fonte de teste; 29 artefatos, sem fixtures/capturas/páginas da Recepção.
+Nove prévias de e-mail públicas de entrega anterior mantidas conforme documentação.
+Manifesto seletivo de arquivos/trechos/dependências no relatório13; manifesto/hash
+do build em scratch/recepcao-publicacao/auditoria-pacote.json, fora de dist/Git.
+Leitura conectada local3000: Ipupiara recusou ausência de vínculo ativo; retorno a
+Brotas recuperou Dashboard autorizado. Ipupiara autenticada e caixa operacional
+real desta integração continuam não comprovados. Zoom nativo125%/150% indisponível
+na ferramenta; sem emulação apresentada como prova. Banco/configurações/permissões,
+Sidebar, dados reais e outras tarefas preservados. Sem novas dependências/IA/chaves,
+commit/push/deploy. Branch codex/resgate-local-2026-09-26, HEAD2afff0a2, não commitado.
+Próxima ação: decisão do usuário sobre publicação seletiva; conferências conectadas
+restantes somente em sessão legitimamente autorizada. Detalhes/URLs/limites no
+[relatório13](../modulos/sistema/13-PAINEL-RECEPCAO-PREVIA.md).
+
+## Painel da recepção — integração local concluída, 03/10/2026 17:44 -03:00
+
+Agendamentos completos por clínica/data/situação, busca por nome/CPF exato, profissionais
+vinculados e caixa oficial por sessão. Totais independem de filtros/página e distinguem
+agendamentos de pacientes. Espera, pagamento individual e contagens de pendências sem
+fonte segura omitidos; ordem pelo horário previsto, sem deduzir falta. Formulários e
+cadastro reusam Pacientes/Agenda; chegada e pagamento encaminham à Agenda. CSS/abas
+compartilhados com a única prévia, dados sintéticos somente em testes. Troca de clínica
+e filtros, inclusive retorno ao filtro inicial, descarta consultas antigas e seu
+carregamento. Falha não vira zero nem renova última leitura válida; abas/foco, ajuda
+expansível e apoio recolhido no celular preservam a fila.
+20 combinações distintas de integração aprovadas em execuções dirigidas + 9/9 regressões
+pertinentes da prévia. TypeScript/build/lint exit0, avisos existentes, diff-check aprovado.
+Capturas sintéticas nos três tamanhos/dois temas, revisão visual desktop/celular.
+Leitura conectada Recepção/Brotas local3000: painel, busca/filtro/abas, formulários
+abertos/cancelados, F5 e Financeiro; sem salvar. Caixa real legado correto, sem valores.
+Caixa operacional real e Ipupiara conectada ainda não comprovados nesta sessão.
+Sem alteração de banco, permissões, dependências, dados reais, commit/push/deploy.
+TypeSafe não pertinente, sem IA/chave. Relatório/README/mestre e checkpoints atualizados;
+alterações anteriores preservadas. Branch `codex/resgate-local-2026-09-26`, HEAD
+`2afff0a2dbc4b61ce85a6406d29b2d8e04a80b69`; implementação não commitada.
+App: http://127.0.0.1:3000/sistema/brotas/dashboard.
+Prévia: http://127.0.0.1:4193/tests/operacional/recepcao-preview.html.
+Próxima ação: revisão local do usuário; conferências restantes em sessão autorizada
+futura, sem publicação automática. Fontes/arquivos/verificações/limites no
+[relatório13](../modulos/sistema/13-PAINEL-RECEPCAO-PREVIA.md).
+
+## Painel da recepção — prévia isolada concluída, 03/10/2026 16:49 -03:00 (histórico)
+
+Única proposta encontrada/criada em `tests/operacional/recepcao-preview.*`, sem importação
+no caminho normal. Fila, busca/CPF exato, abas, próximos, caixa/pendências recolhidos no
+celular, menu existente, atualização/falhas e guardas de clínica. Ações somente simuladas.
+Fontes previamente identificadas: Agenda/status, Pacientes/CPF, Financeiro/RPC de caixa;
+timestamp de chegada não identificado no contrato, Set de recebimentos insuficiente para
+estado financeiro completo, agregação de pendências exige desenvolvimento adicional.
+Parcial informado é cenário de conferência; não amplia regra de recebimento integral.
+Teste local sintético:21/21 aprovados em29,1s, desktop1440×1000/tablet820×1180/mobile390×844;
+claro/escuro, teclado/menu, vazio/falha/parcial/sem chegada, último registro, desatualização.
+TypeScript/lint dirigidos exit0.21 capturas, desktop/celular claro/escuro inspecionados.
+Zero chamadas externas de aplicação observadas no teste de composição; requisições do
+antivírus injetadas no Chrome classificadas separadamente, sem desativar proteção.
+Prévia acessível local4193 e abertura solicitada no painel Codex. Sem leitura/gravação
+de dados reais, banco, dependência, commit, push ou deploy; nenhuma publicação confirmada.
+Branch `codex/resgate-local-2026-09-26`, HEAD `2afff0a2dbc4b61ce85a6406d29b2d8e04a80b69`;
+alterações desta etapa não commitadas, documentos anteriores preservados. Relatório,
+README/mestre/checkpoint Sistema atualizados. TypeSafe sem pertinência; sem API/chave.
+Próxima ação: usuário revisar a proposta; integração somente em etapa especificamente autorizada.
+Detalhes/tabela de fontes/arquivos: [Sistema13](../modulos/sistema/13-PAINEL-RECEPCAO-PREVIA.md).
 
 ## Pacientes — publicação autorizada, 03/10/2026 11:03 -03:00
 

@@ -32,6 +32,8 @@ Projeto Supabase: `xftnkusbyqzyvzrovroj`
 
 Este documento é a fonte mestre de continuidade do projeto. Ele registra somente fatos comprovados no código, no Git, nos relatórios de validação, no checkpoint lógico e nas auditorias remotas somente leitura.
 
+**Revisão Recepção publicada01/10:** commit `a9abeea`, ambas implantações completed e arquivos públicos novos conferidos. Falha URL/estado durante consulta reproduzida sinteticamente e corrigida com fonte única; 19 cenários distintos/build/lint aprovados. NÃO encerrada validação real de Recepção: Brotas só proprietária no navegador controlado, Ipupiara sem sessão; solicitada entrada pessoal, sem credenciais. URLs antes/depois do F5 real ainda pendentes; não atribuir causa definitiva do evento do titular a cache ou à fragilidade sintética sem correlação. Relatório10 atualizado. Sem banco, senha, permissões ou fixtures novas.
+
 **Reabertura01/10 — Recepção/Pacientes/F5:** relato real retornando ao Dashboard após64e22df; conferência anterior de proprietária não aprova Recepção. Confirmada sinteticamente divergência URL/estado durante consulta pendente; corrigida fonte única de navegação e tratamento explícito de rota não autorizada. Sessão Recepção solicitada para conferência pública. Testes/publicação/evidências finais no relatório10; preservar conclusões anteriores com seus limites e ensaio de e-mail separado.
 
 **Resultado vigente01/10 — F5 corrigido e publicado:** commit `64e22df`, duas implantações completed e bundles públicos conferidos. Sessão real proprietária/Brotas entrou automaticamente e manteve Agenda/Pacientes após F5, recarga repetida e rota direta, sem Continuar. Ipupiara sem sessão própria carregou login/rota interna corretamente; F5 autenticado Ipupiara e conta Recepção real dependem de conferência do titular. 15 cenários sintéticos finais/build/lint aprovados. Sem banco, SMTP, senha ou cadastro alterados. Relatório de evidência: `docs/modulos/sistema/10-RESTAURACAO-SESSAO-E-ROTAS.md`. Ensaio institucional, recuperação e limpeza anteriores permanecem separados no relatório23.
@@ -807,3 +809,42 @@ No Supabase autorizado `xftnkusbyqzyvzrovroj`, foi aplicada somente a migration 
 Chamadas autenticadas reais de **Cadastros → Equipe & acessos → Ver cadastro** passaram nas origens locais 5173 e 3000. Com duas contas temporárias autenticadas, a leitura protegida funcionou antes da suspensão; depois da suspensão pela administradora, a mesma sessão e o mesmo token foram recusados no servidor; a reativação recuperou o acesso. As contas, usuários, vínculos e membro sintéticos foram removidos por IDs exatos e dois eventos de auditoria foram preservados. Pós-limpeza: membros `1`, vínculos ativos `2`, acessos ativos `6`, convites `0`, idempotências `0`; integridade `qtd_pacientes=3`.
 
 Snapshot mínimo protegido: `D:\PROJETOS SAAS\CLINICA PATRICIA_BACKUPS\20260930_EQUIPE_CONVITES_PRE\snapshot-equipe-convites-20260930.json`, SHA-256 `4065DFCA9C752029EB1FCD1A1EDB67BAE940810BBF11A7046EFEA1614B5C4D57`. Não é backup completo e não teve restauração testada. O ciclo de e-mail continua aguardando redirect allowlisted e caixa de teste autorizada. Relatório: `docs/modulos/equipe/21-AJUSTES-FINAIS-CONVITES-E-SUSPENSAO.md`.
+
+## 2026-10-03 16:49 -03:00 — Painel da recepção, prévia isolada
+
+Proposta única local em tests/operacional/recepcao-preview.*, sem alterar Dashboard/AppShell/Sidebar normal. Dados e ações fictícios; 21/21 testes aprovados nos três tamanhos, temas/teclado, TypeScript/lint dirigidos exit0 e 21 capturas. Fonte de espera por chegada não identificada; estados completos de pagamento e agregação de pendências precisam adaptação. Sem dados reais, banco, dependências, commit/push/deploy. Branch codex/resgate-local-2026-09-26, HEAD2afff0a; alterações anteriores preservadas. Fontes/evidências/limites em docs/modulos/sistema/13-PAINEL-RECEPCAO-PREVIA.md; resumo vigente em docs/ia/CHECKPOINT.md. Próxima ação: revisão visual do usuário na porta4193, integração somente com novo escopo autorizado.
+
+## 2026-10-03 17:44 -03:00 — Recepção integrada localmente ao Dashboard
+
+Autorização posterior específica atendida, mantendo outros perfis, shell, regras de
+gravação, banco/permissões e alterações anteriores. Agendamentos completos por
+clínica/data, situações literais, CPF exato, fluxos existentes e caixa oficial;
+espera/pagamentos individuais/totais de pendências sem fonte segura omitidos.
+20 combinações distintas da integração e 9 regressões pertinentes da prévia aprovadas;
+TypeScript/build/lint exit0, avisos existentes; capturas sintéticas/revisão visual.
+Recepção/Brotas conectada por leitura: painel/filtro/busca/abas, formulários abertos
+e cancelados, F5 e Financeiro. Caixa real legado sem valores; operacional real e
+Ipupiara conectada não comprovados. Nenhuma gravação de paciente/chegada/pagamento.
+Sem alteração de banco/dados reais, dependência, commit/push/deploy. Branch
+codex/resgate-local-2026-09-26, HEAD2afff0a; implementação não commitada. Relatório13,
+README/mestre/checkpoint Sistema e checkpoint operacional sincronizados.
+App normal local3000; mesma prévia local4193. Próxima ação: revisão local do usuário;
+conferências conectadas restantes em sessão autorizada futura, sem publicar automaticamente.
+
+## 2026-10-03 18:03 -03:00 — Recepção preparada para publicação seletiva
+
+Integração revisada sem redesenho, banco/configuração/permissões ou dados reais.
+Rótulos Abrir Agenda refletem página geral; STATUS_CAIXA desconhecido oculta valores.
+2/2 testes novos dirigidos desktop/celular, build/TypeScript/lint e diff-check exit0;
+20+9 anteriores não repetidos. Dist auditado: 130 fontes runtime sem testes; 29
+artefatos sem fixtures/capturas/prévia da Recepção. Nove HTML de prévias de e-mail
+públicas de entrega anterior preservados conforme documentação. Manifesto seletivo
+no relatório13, incluindo trechos de App/Agenda/Pacientes e dependências existentes;
+auditoria/hash em scratch/recepcao-publicacao/auditoria-pacote.json, fora do pacote.
+Leitura conectada local3000: Ipupiara negou falta de vínculo ativo da sessão; retorno
+a Brotas recuperou Dashboard. Ipupiara autenticada/caixa operacional real e zoom
+nativo125%/150% não comprovados (ferramenta sem zoom nativo). Sem IA/chaves, commit,
+push/deploy; branch codex/resgate-local-2026-09-26, HEAD2afff0a2, não commitado.
+Relatório13/README/mestre/checkpoint Sistema e operacional sincronizados, trabalhos
+anteriores preservados. Próxima ação: decisão do usuário sobre publicação seletiva,
+com limites documentados; conferências conectadas só em sessão autorizada.
