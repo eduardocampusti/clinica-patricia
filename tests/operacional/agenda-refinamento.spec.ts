@@ -2,6 +2,8 @@
 // Painel de criação: cartões de profissional (rádios nativos) ou select acima de seis.
 const radioProfissional = (escopo: Page | Locator, id: string) => escopo.locator(`input[name="novo-agendamento-profissional"][value="${id}"]`)
 import { expect, test, type Locator, type Page } from '@playwright/test'
+import { relogioAgendaAntesDoExpediente } from './agenda-test-utils'
+relogioAgendaAntesDoExpediente()
 import { ESCALA_AGENDA } from '../../src/lib/agendaTemporal'
 
 const previa = '/tests/operacional/agenda-preview.html'

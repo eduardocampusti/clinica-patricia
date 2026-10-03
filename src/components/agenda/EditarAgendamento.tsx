@@ -122,7 +122,7 @@ export function EditarAgendamento({ agendamento, clinicaId, clinicaNome, profiss
     <form onSubmit={salvar} className="agenda-formulario"><div className="agenda-formulario-conteudo space-y-4">
       <div className="space-y-1 border-b border-[var(--borda)] pb-3"><p className="text-xs text-[var(--texto-secundario)]">{clinicaNome} · {agendamento.status === 'aguardando' ? 'Aguardando' : agendamento.status === 'confirmado' ? 'Confirmado' : 'Agendado'}</p><h3 className="break-words text-lg font-semibold">{agendamento.paciente_nome}</h3><p className="text-sm text-[var(--texto-secundario)]">{profissionalNome}</p></div>
       <label className="block text-sm">Nova data<input className={campo} type="date" required value={data} disabled={salvando || chegou} onChange={e => setData(e.target.value)} /></label>
-      <DisponibilidadeFormulario consulta={consulta} inicio={inicio} duracao={duracao} onInicio={setInicio} ocupado={salvando} proprioId={agendamento.id} edicao />
+      <DisponibilidadeFormulario consulta={consulta} data={data} inicio={inicio} duracao={duracao} onInicio={setInicio} ocupado={salvando} proprioId={agendamento.id} edicao />
       <section aria-label="Comparação de horários" className="space-y-2"><div><p className="mb-1 text-xs font-medium">Horário anterior · {exibirData(agendamento.data)}</p><ResumoHorario label="Horário anterior" inicio={inicioAnterior} duracao={minutosAgenda(agendamento.hora_fim) - minutosAgenda(agendamento.hora_inicio)} /></div>
         <div><p className="mb-1 text-xs font-medium">Novo horário · {exibirData(data)}</p><ResumoHorario inicio={inicio} duracao={duracao} /></div></section>
       <label className="block text-sm">Motivo da correção<textarea className={campo} required minLength={5} maxLength={500} rows={3} value={motivo} disabled={salvando} onChange={e => setMotivo(e.target.value)} /><span className="text-xs">Descreva apenas a correção, sem documentos ou informações clínicas.</span></label>
@@ -193,14 +193,14 @@ export function EditarAgendamento({ agendamento, clinicaId, clinicaNome, profiss
 
       <section aria-labelledby="remarcar-outra-data" className="space-y-3">
         <h3 ref={secaoOutraData} tabIndex={-1} id="remarcar-outra-data" className="text-base font-medium outline-none">Escolher outra data</h3>
-        {!chegou && <FaixaDiasAgenda clinicaId={clinicaId} profissionalId={agendamento.profissional_id} data={data} duracao={duracao} onData={setData} ocupado={salvando} />}
+        {!chegou && <FaixaDiasAgenda clinicaId={clinicaId} profissionalId={agendamento.profissional_id} data={data} duracao={duracao} onData={setData} ocupado={salvando} proprioId={agendamento.id} />}
         <div className="flex flex-wrap items-center justify-between gap-2">
           <p className="text-sm text-[var(--texto-secundario)]">{data ? <>Data escolhida: <span className="font-medium text-[var(--texto-principal)]">{dataCompleta(data)}</span></> : 'Nenhuma data escolhida.'}</p>
           <label className="flex items-center gap-2 text-sm font-medium">Nova data
             <input className="min-h-11 rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-2 text-sm text-[var(--texto-principal)] focus:outline-none focus:ring-2 focus:ring-[var(--cor-primaria)] disabled:opacity-60" type="date" required value={data} disabled={salvando || chegou} onChange={e => setData(e.target.value)} />
           </label>
         </div>
-        <DisponibilidadeFormulario consulta={consulta} inicio={inicio} duracao={duracao} onInicio={setInicio} ocupado={salvando} proprioId={agendamento.id} edicao />
+        <DisponibilidadeFormulario consulta={consulta} data={data} inicio={inicio} duracao={duracao} onInicio={setInicio} ocupado={salvando} proprioId={agendamento.id} edicao />
       </section>
 
       <section aria-labelledby="remarcar-motivo" className="space-y-3">

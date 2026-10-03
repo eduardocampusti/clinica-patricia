@@ -3,6 +3,8 @@
 const radioProfissional = (escopo: Page | Locator, id: string) => escopo.locator(`input[name="novo-agendamento-profissional"][value="${id}"]`)
 const pacienteEscolhido = (escopo: Page | Locator) => escopo.getByRole('group', { name: 'Paciente selecionado' })
 import { expect, test, type Locator, type Page } from '@playwright/test'
+import { relogioAgendaAntesDoExpediente } from './agenda-test-utils'
+relogioAgendaAntesDoExpediente()
 import { ESCALA_AGENDA } from '../../src/lib/agendaTemporal'
 
 const previa = '/tests/operacional/agenda-preview.html'

@@ -1,18 +1,19 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
-import { horaAgenda } from '../lib/agendaDisponibilidade'
+import { referenciaAgoraAgenda } from '../lib/agendaBlocosApresentacao'
+import { useAgoraAgenda } from './useAgoraAgenda'
 import { sugestoesRemarcacao, type LeituraIntervaloAgenda, type SugestaoRemarcacao } from '../lib/agendaSugestoes'
 import { somarDiasAgenda } from './useResumoDiasAgenda'
 
 const DIAS = 14
-const dataCivilHoje = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}` }
 
 // Próximos horários livres do mesmo profissional, a partir de hoje, em uma leitura por intervalo
 // (mesmas tabelas da faixa de dias). Somente sugestão: o servidor valida ao salvar. Falha não bloqueia.
 export function useSugestoesRemarcacao({ clinicaId, profissionalId, proprioId, dataAtual, inicioAtual, duracao, somenteMesmaData }: {
   clinicaId: string; profissionalId: string; proprioId: string; dataAtual: string; inicioAtual: string; duracao: number | null; somenteMesmaData: boolean
 }): { estado: 'carregando' | 'pronta' | 'erro'; sugestoes: SugestaoRemarcacao[]; hoje: string } {
-  const hoje = dataCivilHoje()
+  const agora = useAgoraAgenda()
+  const { hoje, horaAgora } = referenciaAgoraAgenda(agora)
   const fim = somarDiasAgenda(hoje, DIAS - 1)
   const contexto = `${clinicaId}/${profissionalId}/${hoje}`
   const [leitura, setLeitura] = useState<{ contexto: string; estado: 'carregando' | 'pronta' | 'erro'; dados: LeituraIntervaloAgenda | null }>({ contexto: '', estado: 'carregando', dados: null })
@@ -32,10 +33,9 @@ export function useSugestoesRemarcacao({ clinicaId, profissionalId, proprioId, d
   }, [contexto, clinicaId, profissionalId, hoje, fim])
   const estado = leitura.contexto === contexto ? leitura.estado : 'carregando'
   if (estado !== 'pronta' || !leitura.dados) return { estado, sugestoes: [], hoje }
-  const agora = new Date()
   const sugestoes = sugestoesRemarcacao({
     leitura: leitura.dados, datas: Array.from({ length: DIAS }, (_, i) => somarDiasAgenda(hoje, i)), duracao, proprioId,
-    dataAtual, inicioAtual, hoje, horaAgora: horaAgenda(agora.getHours() * 60 + agora.getMinutes()), somenteMesmaData,
+    dataAtual, inicioAtual, hoje, horaAgora, somenteMesmaData,
   })
   return { estado, sugestoes, hoje }
 }

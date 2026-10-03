@@ -1,4 +1,6 @@
 import { expect, test, type Locator, type Page } from '@playwright/test'
+import { relogioAgendaAntesDoExpediente } from './agenda-test-utils'
+relogioAgendaAntesDoExpediente()
 
 // Etapa 1 do seletor visual de horários. Somente prévia sintética; nenhuma escrita em banco real.
 const previa = '/tests/operacional/agenda-preview.html'
@@ -184,6 +186,11 @@ test('modo escuro: blocos, faixa e seleção legíveis com tokens do tema', asyn
   await painel.locator('input[name="novo-agendamento-profissional"][value="prof-1"]').check()
   await faixa(painel).getByRole('button', { name: /^terça-feira/ }).click()
   await blocos(painel).getByRole('button', { name: '10:30', exact: true }).click()
+  await expect(blocos(painel).getByRole('button', { name: '10:30', exact: true })).toHaveAttribute('aria-pressed', 'true')
+  // Aguarda a transição visual já existente, sem espera fixa e sem relaxar contraste.
+  await expect.poll(() => blocos(painel).getByRole('button', { name: '10:30', exact: true }).evaluate(el =>
+    getComputedStyle(el).backgroundColor !== getComputedStyle(document.querySelector('dialog')!).backgroundColor
+  )).toBe(true)
   const cores = await blocos(painel).getByRole('button', { name: '10:30', exact: true }).evaluate(el => {
     const fundo = getComputedStyle(document.querySelector('dialog')!).backgroundColor
     return { texto: getComputedStyle(el).color, fundoBloco: getComputedStyle(el).backgroundColor, fundo }

@@ -3,6 +3,8 @@
 const radioProfissional = (escopo: Page | Locator, id: string) => escopo.locator(`input[name="novo-agendamento-profissional"][value="${id}"]`)
 const pacienteEscolhido = (escopo: Page | Locator) => escopo.getByRole('group', { name: 'Paciente selecionado' })
 import { expect, test, type Locator, type Page } from '@playwright/test'
+import { filtrarProfissionalAgenda, relogioAgendaAntesDoExpediente } from './agenda-test-utils'
+relogioAgendaAntesDoExpediente()
 
 // Interface real com serviços sintéticos do harness. Não é autenticação nem banco real.
 const previa = '/tests/operacional/agenda-preview.html'
@@ -32,12 +34,12 @@ for (const unidade of ['brotas', 'ipupiara']) {
     expect((await page.getByTestId('registro-agenda').evaluateAll(nodes => nodes.map(n => n.getAttribute('data-registro-id')))).sort()).toEqual(['ag-1', 'ag-2', 'ag-3'])
     await semOverflow(page)
     if (unidade === 'brotas') await page.screenshot({ path: `scratch/agenda-ux/grade-${info.project.name}.png`, fullPage: true })
-    await page.getByLabel('Filtrar profissional').selectOption('prof-2')
+    await filtrarProfissionalAgenda(page, 'prof-2')
     await expect(page.getByTestId('registro-agenda')).toHaveCount(1)
     await expect(page.getByTestId('registro-agenda')).toContainText('Clara Exemplo Sintético')
     await page.getByRole('button', { name: 'Lista', exact: true }).click()
     await expect(page.getByTestId('registro-agenda')).toHaveCount(1)
-    await page.getByLabel('Filtrar profissional').selectOption('')
+    await filtrarProfissionalAgenda(page, '')
     await page.getByLabel('Busca na Agenda').fill('Bruno')
     await expect(page.getByTestId('registro-agenda')).toHaveCount(1)
   })

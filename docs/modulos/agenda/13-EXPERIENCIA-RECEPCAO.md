@@ -1,5 +1,214 @@
 # Agenda — experiência da recepção
 
+## Publicação móvel/B1/B2 — leitura conectada concluída no escopo disponível, 02/10/2026 21:44 -03:00
+
+Retomada após login pessoal. Navegador controlado confirmou **Recepção/Brotas**, aplicação normal
+`http://127.0.0.1:3000/sistema/brotas/agenda`, principal xftnkusbyqzyvzrovroj. Somente navegação/leitura,
+nenhum salvar, agendar, chegada ou alteração de banco. TypeSafe avaliada pela descrição, sem pertinência
+para esta entrega determinística; nenhuma integração/chave utilizada.
+
+- Celular 390×844: faixa de cinco dias e chips funcionais; dois registros de hoje visíveis com situação
+  textual e ações de recepção. Terça-feira 06/10, profissional de teste: 20 horários livres, sem consultas
+  nesse dia. Livre 08:00 abriu o componente real, com data/profissional/início e término 08:30; cancelado.
+  Último livre 17:30 totalmente visível (topo 381,5/fim 461,5), antes do rodapé fixo (topo 767/fim 844).
+  Sem overflow horizontal. Os registros reais não foram fotografados nem identificados neste relatório.
+- Desktop 1440×1000: Novo na terça, seleção de profissional, faixa 20 livres e 20 blocos (8 manhã/12 tarde).
+  Mudança apenas do rascunho para hoje: “Sem expediente cadastrado nesta data”, sem inventar blocos.
+  Cancelamento com confirmação de descarte preservou os registros.
+- Editar registro existente de hoje: horário anterior e dados exibidos; faixa de terça 20 livres,
+  selecionada só no formulário, com 20 blocos correspondentes; motivo e confirmação mantidos pendentes.
+  Cancelado e descartado, sem RPC de gravação.
+- Console observado: nenhuma entrada error/warn durante a conferência. Leituras concluídas sem alertas
+  de falha; não houve inspeção completa de tráfego HTTP nesta sessão (API de performance indisponível no
+  navegador controlado). Tamanho temporário restaurado ao terminar.
+
+Limites de dados, não defeitos: terça-feira estava vazia, portanto intercalação livre/consulta não
+comprovada conectadamente; hoje não tinha expediente, portanto B2 com blocos passados ficou comprovado
+somente pelos testes isolados aprovados. B1 foi conferido pela concordância das contagens na nova data,
+não por exclusão de próprio registro em data com expediente. Nenhuma fixture criada para completar casos.
+Gravação/persistência legítima, sessão pública de Ipupiara, dispositivo físico e zoom nativo pendentes.
+
+Preparação da publicação: Hostinger MCP confirmou os dois últimos builds `completed`, commit anterior
+`c73f07454a4947b71c1bdc4439b8291c1bf93602`, Vite/Node22/npm/build/dist, mesma branch de publicação.
+Reversão desta entrega: reverter somente o novo commit e push normal na branch existente; sem rollback
+de banco, pois esta entrega não altera banco. Ainda sem commit/push nesta anotação de preparação.
+
+## Publicação móvel/B1/B2 — condição de estabilidade aprovada; aguarda autenticação, 02/10/2026 21:00 -03:00
+
+Fase 0 somente de leitura: branch `codex/resgate-local-2026-09-26`, HEAD e referência remota
+`c73f07454a4947b71c1bdc4439b8291c1bf93602`; últimos cinco commits e diff conferidos. Mudanças funcionais
+somente na Agenda e nota de evolução expressamente incluída no escopo. Documentos de outras tarefas
+preservados e fora da seleção futura. Nenhum commit ou push nesta rodada.
+
+### Falhas anteriores, sem reclassificar o histórico
+
+- Verificação inicial dos novos testes: cenário “celular 390: datas, último cartão, sem expediente,
+  escuro e Ipupiara”, também em 360. Após selecionar o segundo dia, `aria-pressed` era falso e a faixa
+  saltava durante a recarga. Defeito do produto: base da faixa passou a residir na Agenda, sobrevivendo
+  à remontagem do componente. Essa falha antecedeu a regressão completa mencionada abaixo.
+- Primeira regressão completa anterior: apenas `agenda-horarios.spec.ts:180`, tablet 820×1180,
+  “modo escuro: blocos, faixa e seleção legíveis com tokens do tema”. Após clicar 10:30, a leitura
+  imediata obteve `rgb(30, 41, 59)` tanto no bloco como no fundo; falhou a exigência de cores distintas.
+  Correção exclusivamente do teste: aguardar `aria-pressed=true` e a mudança de cor com `expect.poll`,
+  preservando as asserções de contraste. A repetição de 24/24 produziu o agregado anterior de 280,
+  não uma execução completa originalmente sem falhas.
+
+### Rodada única exigida para publicar — executada nesta sessão
+
+Comando: `node node_modules/@playwright/test/cli.js test --config tests/operacional/playwright.agenda-celular.config.ts
+--retries=0 --max-failures=1 --output=scratch/agenda-ux/celular/publicacao-resultados --reporter=list,json`.
+Desktop 1440×1000, tablet 820×1180 e mobile 390×844. Uma execução, sem repetição dirigida; proteção para
+interromper na primeira falha. Resultado: **280 aprovados, 14 inaplicáveis, zero falhas, zero flaky**, 8,4 min.
+Dados e serviços interceptados apenas no harness isolado 4192; não comprovam persistência no banco real.
+
+| Conjunto | Aprovados | Inaplicáveis | Falhas |
+| --- | ---: | ---: | ---: |
+| agenda-pagina | 23 | 4 | 0 |
+| agenda-novo-painel | 21 | 0 | 0 |
+| agenda-horarios | 24 | 0 | 0 |
+| agenda-remarcacao | 24 | 0 | 0 |
+| agenda-experiencia | 18 | 0 | 0 |
+| agenda-refinamento | 27 | 0 | 0 |
+| agenda-fechamento | 18 | 0 | 0 |
+| agenda-edicao | 96 | 0 | 0 |
+| recepcao-fluxo | 18 | 0 | 0 |
+| agenda-celular | 11 | 10 | 0 |
+
+Unitários `agendaBlocosApresentacao.test.ts`: 3/3. `npm run build` e `npm run lint`: sem erros;
+avisos preexistentes de bundle/import e Fast Refresh. `git diff --check`: sem erros de whitespace.
+Resultado bruto ignorado: `scratch/agenda-ux/celular/publicacao-regressao.json`; não versionar.
+
+### Fase 2 — bloqueio concreto e retomada
+
+Porta 3000 inicialmente indisponível (`ERR_CONNECTION_REFUSED`), iniciada com
+`npm run dev -- --host 127.0.0.1 --port 3000 --strictPort`, preservando 4192.
+Módulo servido `src/lib/supabase.ts` aponta ao **principal xftnkusbyqzyvzrovroj**, e `src/pages/Agenda.tsx`
+servido contém `DiasAgendaCelular` e `blocosApresentacaoAgenda`. Não é um banco de testes.
+Navegador abriu `http://127.0.0.1:3000/acesso/brotas`: página de login, sem sessão autorizada disponível.
+Conforme a condição expressa do usuário, **interrompido antes de commit/push/publicação**. Nenhuma escrita.
+
+Próxima ação: login pessoal de Recepção/Brotas na aba aberta, sem enviar credenciais pelo chat; então
+conferir móvel 390, terça-feira/profissional de teste, abertura/cancelamento do livre e B1/B2 no desktop.
+Essas verificações conectadas e todos os deploys permanecem pendentes. Não repetir a rodada já aprovada
+se o código continuar intacto. TypeSafe avaliada pela descrição; IA não necessária e não utilizada.
+
+## Agenda no celular e acertos B1/B2 — LOCAL CONCLUÍDA, 02/10/2026 20:43 -03:00
+
+Entrega local sobre `c73f07454a4947b71c1bdc4439b8291c1bf93602`, branch
+`codex/resgate-local-2026-09-26`. **Sem commit, push, publicação ou alteração de banco.**
+Os registros de publicação e conferência conectada abaixo são históricos desta entrega anterior,
+não evidência de publicação da nova tela móvel.
+
+### Fase 0 e preservação
+
+HEAD igual ao remoto, últimos commits `c73f074`, `1d16cf9`, `9fe8df8`, `2530dbc`, `a0e09bf`.
+Antes de editar havia somente alterações documentais preexistentes; todas foram preservadas.
+O celular anterior abria a lista existente, com filtro por select, sem a linha do tempo do mockup.
+Lidos AGENTS, checkpoint, índice, convenções, design system, relatório e componentes pertinentes.
+TypeSafe avaliada pela descrição: sem necessidade de decisão semântica; nenhuma chamada ou chave.
+Impeccable orientou hierarquia, leitura e alvos móveis. Seu script local de contexto não estava disponível;
+usados os tokens e documentos existentes, sem instalar ou copiar ferramentas.
+
+### Parte A — apresentação móvel
+
+- Faixa de cinco dias corridos desde a data selecionada, com escolha e realce; janela não salta ao clicar.
+  A primeira verificação encontrou remount durante o carregamento; a base visual passou a permanecer na
+  página, sem criar outro estado de data selecionada. Setas, Hoje e calendário recolhível preservados.
+- Todos + chips roláveis horizontalmente; acima de oito profissionais, select existente.
+- Mesmos registros e ações: horário monoespaçado à esquerda, cartões pelos tokens de situação, nomes
+  completos, profissional/duração e situação com ponto e texto; chegada/edição com alvo mínimo de 44 px.
+- Um profissional selecionado + expediente confirmado: livres cronológicos abrem o formulário existente
+  com data, profissional e início. Todos, ausência de expediente e falha de consulta não inventam livres.
+- Novo agendamento fixo abaixo, com área segura/espaço de rolagem; oculto enquanto um painel está aberto.
+  Indicadores, calendário, espera por vaga e situações continuam abaixo da lista móvel.
+- Estilos limitados a `< md`; tablet/desktop preservados, salvo o comportamento informativo de B2.
+
+Arquivos A: `src/pages/Agenda.tsx`, novos `src/components/agenda/DiasAgendaCelular.tsx` e
+`src/components/agenda/agendaCelular.css`. Estilos usam tokens de cor, espaçamento, tipografia e raio
+existentes. AppShell, Sidebar, ModalBase e usePapelNaClinica não foram alterados.
+
+### Parte B — contagens e blocos passados
+
+B1: parâmetro opcional `proprioId` em `useResumoDiasAgenda` e `FaixaDiasAgenda`, informado somente na
+edição. Na fixture às 06:00: criação 17 livres, remarcação 18, igual aos blocos; outro registro continua
+ocupando. Não ignora vínculos, situações ou conflitos de outros agendamentos.
+
+B2: camada de apresentação sobre `blocosHorarioAgenda`; hoje, inícios até o minuto atual ficam
+esmaecidos/desabilitados, com nome acessível “horário já passou”, fora da faixa/indicador de livres.
+O minuto atual também é excluído, coerentemente com as sugestões existentes. Data futura não muda.
+Relógio civil local comum às sugestões, atualizado a cada minuto e ao voltar à aba. Não altera
+“Outro horário”, marcação manual nem a validação do servidor.
+
+Arquivos B: `src/components/agenda/{DisponibilidadeFormulario,EditarAgendamento,FaixaDiasAgenda,
+GradeTemporalAgenda}.tsx`, `src/hooks/{useResumoDiasAgenda,useSugestoesRemarcacao}.ts`, novos
+`src/hooks/useAgoraAgenda.ts` e `src/lib/agendaBlocosApresentacao.ts`.
+`avaliarAgendaManual`, `janelasAgenda`, `validarHorarioAgenda`, serviços, RPCs, migrations e permissões intactos.
+
+### Testes e evidências desta rodada
+
+Somente componentes reais em harness sintético `4192`, com endereço de backend `.synthetic.invalid`,
+bloqueio de integrações externas e relógio fixo. Não representam sessão Auth nem persistência real.
+
+| Conjunto | Resultado |
+| --- | --- |
+| Unitários B1/B2: próprio ID, outros conflitos, hoje/futuro, virada de hora | 3/3 |
+| agenda-celular: 390×844, 360×740; B1/B2 também desktop/tablet | 11 aprovados; 10 não aplicáveis às dimensões |
+| agenda-pagina | 23 aprovados; 4 não aplicáveis às dimensões |
+| agenda-novo-painel | 21/21 |
+| agenda-horarios | 24/24 na reexecução final |
+| agenda-remarcacao | 24/24 |
+| agenda-experiencia | 18/18 |
+| agenda-refinamento | 27/27 |
+| agenda-fechamento | 18/18 |
+| agenda-edicao | 96/96 |
+| recepcao-fluxo | 18/18 |
+| Build e lint finais | Aprovados; somente avisos preexistentes de bundle/import e Fast Refresh |
+
+Execução completa: 279 aprovados, 14 não aplicáveis e uma falha de leitura imediata da cor em transição
+(tablet, agenda-horarios). Corrigido **o teste**, aguardando `aria-pressed` e a mudança da cor via poll;
+mantidas as duas asserções de contraste. Sem temporizador/remendo no aplicativo.
+Reexecução integral da suíte afetada: **24/24 em 44,4 s**; estado final agregado dos cenários:
+**280 aprovados +14 não aplicáveis**, sem falha pendente. A execução inicial não foi reclassificada como
+inteiramente aprovada; os resultados finais usam a repetição dirigida acima.
+Nova suíte repetida após os últimos ajustes de captura: 11 aprovados +10 não aplicáveis.
+Regressões usam relógio às 06:00 (remarcação mantém 10:20); não relaxadas as asserções anteriores.
+Dois seletores do filtro em agenda-experiencia usam chip no celular e select nas demais telas.
+
+Arquivos de teste: novos `agenda-celular.spec.ts`, `agenda-test-utils.ts`,
+`playwright.agenda-celular.config.ts`, `src/lib/agendaBlocosApresentacao.test.ts`; harness
+`agenda-preview.tsx` com fixtures `celular` e `nove-profissionais`; relógio fixado nas oito suítes
+anteriores, mantendo seus cenários/assertivas. Nota em `src/config/notasEvolucao.json` (não lançada).
+Resultados JSON das repetições em `scratch/agenda-ux/celular/verificacao-final.json` e
+`regressao-horarios-final.json`. Comando da regressão: `node node_modules/@playwright/test/cli.js test
+--config tests/operacional/playwright.agenda-celular.config.ts`; requer prévia isolada já aberta em 4192.
+
+### Capturas, prévia e diferenças intencionais
+
+Pasta ignorada pelo Git: `scratch/agenda-ux/celular/`. Para cada largura 390/360:
+`todos-*.png`, `profissional-livres-*.png`, `sem-expediente-*.png`, `escuro-brotas-*.png`,
+`ipupiara-*.png`, `escuro-ipupiara-*.png`, `ultimo-item-*.png`, `livre-painel-*.png` e
+`linha-do-tempo-*.png` (recorte integral da lista). B1/B2: `b1-*.png`, `b2-*.png` e `b2-blocos-*.png`
+para desktop/tablet/mobile. A lista integral usa seis consultas sintéticas, em posições equivalentes
+ao mockup, com expediente sintético 08–12 apenas nesse cenário. Nenhum dado foi cadastrado no principal.
+
+Prévia: `http://127.0.0.1:4192/tests/operacional/agenda-preview.html?celular`;
+Ipupiara: acrescentar `&unidade=ipupiara`. Componentes da Agenda e AppShell reais, dados interceptados
+somente no harness. O horário da prévia aberta é real: à noite, livres de hoje não aparecerão; selecione
+uma data futura para conferir os livres. Capturas/testes equivalentes foram feitos com relógio às 06:00.
+
+Diferenças do mockup: cabeçalho real preservado; cores/tipografia/tamanhos seguem tokens, não a imagem;
+situações Concluído/Cancelado mantidas, sem inventar Finalizado/Faltou; dias incluem fim de semana,
+sem supor agenda apenas em dias úteis; busca, alternância Dia/Lista e ações reais preservadas.
+Cancelamento libera o bloco conforme regra existente: histórico cancelado e horário livre podem aparecer
+no mesmo início, sem duplicar o cadastro. Profissionais/nomes são explicitamente sintéticos nas capturas.
+
+Conferência pelo navegador controlado: tela móvel sintética, abertura/fechamento de Novo agendamento,
+sem gravação. Playwright conferiu papéis sintéticos Recepção/Proprietária/Médico, ações, filtros, seleção
+por teclado, rolagem e ausência de overflow; sucesso depende do retorno sintético e permanece fora do painel.
+Limites: não validada nesta rodada sessão conectada, persistência real, produção, dispositivo físico ou
+zoom nativo; ampliação CSS das regressões não equivale a zoom nativo. Publicação requer nova autorização.
+Pronta para revisão local; não há dependência de migration para esta alteração de apresentação.
+
 ## Painel de remarcação conforme o mockup (02/10/2026)
 
 Implementado localmente às 18:31; publicação autorizada em andamento (abaixo).

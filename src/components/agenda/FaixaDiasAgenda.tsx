@@ -8,14 +8,14 @@ const textoSituacao = (dia: ResumoDiaAgenda, estado: string) => estado === 'carr
     : dia.situacao === 'folga' ? 'Folga' : dia.situacao === 'sem-expediente' ? 'Sem expediente' : ''
 
 // Somente informativa: a data escolhida continua validada pela consulta própria do formulário.
-export function FaixaDiasAgenda({ clinicaId, profissionalId, data, duracao, onData, ocupado }: {
-  clinicaId: string; profissionalId: string; data: string; duracao: number | null; onData: (data: string) => void; ocupado: boolean
+export function FaixaDiasAgenda({ clinicaId, profissionalId, data, duracao, onData, ocupado, proprioId = '' }: {
+  clinicaId: string; profissionalId: string; data: string; duracao: number | null; onData: (data: string) => void; ocupado: boolean; proprioId?: string
 }) {
   // A janela começa na data escolhida e só se desloca quando a data sai dela, sem saltar a cada clique.
   const [base, setBase] = useState(data)
   const dentro = !!data && data >= base && data <= somarDiasAgenda(base, QUANTIDADE - 1)
   if (data && !dentro) setBase(data)
-  const resumo = useResumoDiasAgenda(clinicaId, profissionalId, dentro ? base : data, duracao, QUANTIDADE)
+  const resumo = useResumoDiasAgenda(clinicaId, profissionalId, dentro ? base : data, duracao, QUANTIDADE, proprioId)
   if (!data) return null
   return <div className="space-y-1.5">
     <div role="group" aria-label="Próximos dias" className="grid grid-cols-4 gap-1.5 sm:grid-cols-7">

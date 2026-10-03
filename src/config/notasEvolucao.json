@@ -12,6 +12,7 @@
       "Página “Sobre o sistema” com versão em execução, créditos de desenvolvimento e contexto da clínica."
     ],
     "melhorias": [
+      "Agenda no celular: faixa de cinco dias, profissionais em chips, horários e cartões por situação, horários livres dentro do expediente e botão Novo agendamento no rodapé. Na remarcação, a contagem ignora o próprio agendamento; blocos de hoje já passados ficam indisponíveis, sem alterar a marcação manual.",
       "Navegação: menu compartilhado recolhível no computador e sobreposto no celular, com links sincronizados à URL, unidades autorizadas e preferência visual independente dos formulários.",
       "Agenda: lista cronológica compacta e grade temporal com horários alinhados, duração proporcional e sobreposições visíveis. Selecionar um horário prepara o formulário sem gravar. Painéis responsivos, resumo anterior/novo, avisos claros e confirmação de descarte; consultas curtas priorizam horário e paciente, com dados completos nos detalhes. Regras e serviços preservados.",
       "Agenda: novo agendamento e edição mostram os horários como blocos clicáveis por Manhã, Tarde e Noite, com ocupados riscados e o horário escolhido em destaque; “Outro horário” mantém a digitação manual com os mesmos avisos e confirmação. No novo agendamento, uma faixa de 7 dias indica horários livres, sem expediente ou folga. Regras e serviços preservados.",

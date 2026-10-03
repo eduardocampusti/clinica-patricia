@@ -1,5 +1,9 @@
 # Agenda — correção de data e horário
 
+**Local, 02/10/2026:** tela móvel conforme mockup (cinco dias, chips, linha do tempo e botão inferior),
+contagem da remarcação sem próprio ID e blocos passados de hoje indisponíveis na apresentação.
+Sem publicação/banco nesta rodada; resultados e limites no [relatório 13](13-EXPERIENCIA-RECEPCAO.md).
+
 **Etapa 1 do redesenho (02/10/2026):** seletor visual de horários (blocos Manhã/Tarde/Noite,
 “Outro horário” manual e faixa de 7 dias na criação), somente interface. Leitura conferida no
 principal (Recepção/Brotas); publicação autorizada. Testes, limites e resultados no [relatório 13](13-EXPERIENCIA-RECEPCAO.md).

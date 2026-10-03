@@ -22,8 +22,12 @@ import { MiniCalendarioAgenda } from '../components/agenda/MiniCalendarioAgenda'
 import { useDescarteAgenda } from '../components/agenda/useDescarteAgenda'
 import { DisponibilidadeFormulario } from '../components/agenda/DisponibilidadeFormulario'
 import { FaixaDiasAgenda } from '../components/agenda/FaixaDiasAgenda'
+import { DiasAgendaCelular } from '../components/agenda/DiasAgendaCelular'
+import '../components/agenda/agendaCelular.css'
+import { blocosApresentacaoAgenda } from '../lib/agendaBlocosApresentacao'
+import { useAgoraAgenda } from '../hooks/useAgoraAgenda'
 import { EscolhaProfissional } from '../components/agenda/EscolhaProfissional'
-import { blocosHorarioAgenda, horaAgenda, janelasAgenda, minutosAgenda, type JanelaAgenda } from '../lib/agendaDisponibilidade'
+import { horaAgenda, janelasAgenda, minutosAgenda, type JanelaAgenda } from '../lib/agendaDisponibilidade'
 
 type StatusAgendamento = 'agendado' | 'confirmado' | 'aguardando' | 'em_atendimento' | 'concluido' | 'cancelado'
 type TipoExcecao = 'folga' | 'horario_especial'
@@ -167,6 +171,8 @@ function Agenda({
   const souMedico = papel === 'medico'
 
   const [dataSelecionada, setDataSelecionada] = useState(() => new Date())
+  const [baseDiasCelular, setBaseDiasCelular] = useState(() => paraISODate(new Date()))
+  const agoraAgenda = useAgoraAgenda()
   const [buscaPaciente, setBuscaPaciente] = useState('')
   // Computador (lg em diante) abre no modo Dia; tablet e celular, na Lista. Escolha posterior é do usuário.
   const telaAmpla = () => typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia('(min-width: 1024px)').matches
@@ -669,8 +675,9 @@ function Agenda({
       return { janelas, rotulo: excecoesProf.some(e => (e.tipo as string) === 'bloqueio') ? 'Bloqueio' : excecoesProf.some(e => e.tipo === 'folga') ? 'Folga' : 'Sem expediente', confirmado: true }
     } catch { return { janelas: [], rotulo: 'Exceção inconsistente nesta data', confirmado: false } }
   }
-  const livresDoDia = (id: string, janelas: JanelaAgenda[]) => blocosHorarioAgenda(profissionais.find(p => p.id === id)?.duracao_consulta_minutos ?? null, janelas,
-    agendamentos.filter(a => a.profissional_id === id)).filter(b => !b.ocupado).map(b => b.hora)
+  const blocosDoDia = (id: string, janelas: JanelaAgenda[]) => blocosApresentacaoAgenda(paraISODate(dataSelecionada), profissionais.find(p => p.id === id)?.duracao_consulta_minutos ?? null, janelas,
+    agendamentos.filter(a => a.profissional_id === id), '', agoraAgenda)
+  const livresDoDia = (id: string, janelas: JanelaAgenda[]) => blocosDoDia(id, janelas).filter(b => !b.ocupado && !b.passado).map(b => b.hora)
   const colunas: ColunaAgenda[] = idsProfissionais.map(id => {
     const { janelas, rotulo } = expedienteDoDia(id)
     const livres = livresDoDia(id, janelas)
@@ -679,7 +686,7 @@ function Agenda({
       { inicio: 0, fim: faixas[0][0], rotulo: 'Fora do expediente' }].filter(n => n.fim > n.inicio)
     const especialidade = profissionais.find(p => p.id === id)?.especialidade_nome
     return { id, nome: nomeProfissional(id), detalhe: [especialidade && especialidade !== '—' ? especialidade : null, faixas.length ? `${livres.length} ${livres.length === 1 ? 'livre' : 'livres'}` : rotulo.toLocaleLowerCase('pt-BR')].filter(Boolean).join(' · '),
-      livres, duracao: profissionais.find(p => p.id === id)?.duracao_consulta_minutos ?? null, neutros }
+      livres, passados: blocosDoDia(id, janelas).filter(b => !b.ocupado && b.passado).map(b => b.hora), duracao: profissionais.find(p => p.id === id)?.duracao_consulta_minutos ?? null, neutros }
   })
   // Janela compacta: do primeiro ao último horário relevante (expediente ou agendamento) das colunas visíveis.
   const relevantes = [...colunas.flatMap(c => expedienteDoDia(c.id).janelas.flatMap(j => j.hora_inicio && j.hora_fim ? [minutosAgenda(j.hora_inicio), minutosAgenda(j.hora_fim)] : [])),
@@ -728,32 +735,43 @@ function Agenda({
         </>}
       </button>
     </article>
-    return <article key={ag.id} data-testid="registro-agenda" data-registro-id={ag.id} className="agenda-lista-linha">
+    return <article key={ag.id} data-testid="registro-agenda" data-registro-id={ag.id} data-situacao={ag.status.replace(/_/g, '-')} className="agenda-lista-linha">
+      <time className="agenda-celular-hora agenda-fonte-tecnica" dateTime={`${ag.data}T${ag.hora_inicio}`}>{formatarHoraCurta(ag.hora_inicio)}</time>
+      <div className="agenda-lista-cartao">
       <button {...abrirConsulta}>
         <span className="numero-tabular text-sm font-semibold">{formatarHoraCurta(ag.hora_inicio)}–{formatarHoraCurta(ag.hora_fim)}<span className="block text-xs font-normal text-[var(--texto-secundario)]">{duracaoRegistro} min</span></span>
         <span className="min-w-0 break-words font-semibold">{ag.paciente_nome}{recebidos.has(ag.id) && <span className="block text-xs font-medium">Recebimento registrado</span>}</span>
-        <span className="min-w-0 break-words text-sm text-[var(--texto-secundario)]">{nomeProfissional(ag.profissional_id)}</span>
-        <span><span className="inline-block rounded-md px-2 py-1 text-xs font-semibold" style={{ background: badge.fundo, color: badge.texto }}>{STATUS_LABEL[ag.status]}</span>{disponibilidadeTexto && <span className="mt-1 block text-xs text-[var(--texto-secundario)]">{disponibilidadeTexto}</span>}</span>
+        <span className="min-w-0 break-words text-sm text-[var(--texto-secundario)]">{nomeProfissional(ag.profissional_id)}<span className="md:hidden"> · {duracaoRegistro} min</span></span>
+        <span><span className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-semibold" style={{ background: badge.fundo, color: badge.texto }}><span aria-hidden="true" className="size-1.5 rounded-full md:hidden" style={{ background: badge.texto }} />{STATUS_LABEL[ag.status]}</span>{disponibilidadeTexto && <span className="mt-1 block text-xs text-[var(--texto-secundario)]">{disponibilidadeTexto}</span>}</span>
       </button>
       {podeEscrever && <div className="agenda-lista-acoes">
         {['agendado', 'confirmado'].includes(ag.status) && <button type="button" className="agenda-acao-compacta" disabled={atualizandoStatus} onClick={() => void mudarStatus(ag, 'aguardando')}>Registrar chegada</button>}
         {elegivel && <button type="button" className="agenda-acao-compacta" aria-label="Editar agendamento" onClick={() => { setMenuStatusId(null); setEditandoAgendamento(ag) }}>Editar</button>}
       </div>}
+      </div>
     </article>
   }
   const segmento = (ativo: boolean) => `min-h-11 rounded-md px-3 text-sm sm:px-4 font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cor-primaria)] ${ativo ? 'bg-[var(--fundo-card)] text-[var(--texto-principal)] shadow-[var(--sombra-baixa)] ring-1 ring-inset ring-[var(--borda)]' : 'text-[var(--texto-secundario)] hover:text-[var(--texto-principal)]'}`
   const cartao = 'rounded-xl border border-[var(--borda)] bg-[var(--fundo-card)]'
   const janelaExibida = janelaVisivelAgenda(janelaGrade, registros, diaInteiro)
-  return <div className="space-y-4">
+  const profissionaisFiltro = [...new Set([...profissionais.map(p => p.id), ...agendamentos.map(a => a.profissional_id)])]
+  const livresCelular = filtroProfissional && !buscaPaciente.trim() && podeEscrever && expedienteDoDia(filtroProfissional).confirmado
+    ? livresDoDia(filtroProfissional, expedienteDoDia(filtroProfissional).janelas) : []
+  const linhaDoTempo = [...registros.map(ag => ({ hora: ag.hora_inicio.slice(0, 5), id: ag.id, ag })), ...livresCelular.map(hora => ({ hora, id: `livre-${hora}`, ag: null }))].sort((a, b) => a.hora.localeCompare(b.hora))
+  return <div className="agenda-pagina space-y-4">
     <header className="flex items-end justify-between gap-3">
       <div className="min-w-0"><h1 className="texto-titulo-tela">Agenda</h1><p className="text-sm text-[var(--texto-secundario)] sm:text-base">{formatarDataExtenso(dataSelecionada)}</p></div>
       {podeEscrever && <button type="button" onClick={() => abrirNovoAgendamento()} disabled={!clinicaAtivaId}
-        className={`${acaoAgenda} shrink-0 border-transparent bg-[var(--cor-primaria)] text-[var(--texto-sobre-primaria)] hover:bg-[var(--cor-primaria-hover)]`}>
+        className={`${acaoAgenda} hidden md:inline-flex shrink-0 border-transparent bg-[var(--cor-primaria)] text-[var(--texto-sobre-primaria)] hover:bg-[var(--cor-primaria-hover)]`}>
         <span aria-hidden="true" className="sm:hidden">+ Novo</span><span className="sr-only sm:not-sr-only">+ Novo agendamento</span>
       </button>}
     </header>
+    <DiasAgendaCelular data={paraISODate(dataSelecionada)} base={baseDiasCelular} onBase={setBaseDiasCelular} onData={data => setDataSelecionada(new Date(`${data}T12:00:00`))} />
+    {profissionaisFiltro.length <= 8 && <div role="group" aria-label="Profissionais no celular" className="agenda-celular-chips md:hidden">
+      {[{ id: '', nome: 'Todos' }, ...profissionaisFiltro.map(id => ({ id, nome: nomeProfissional(id) }))].map(p => <button key={p.id} type="button" aria-pressed={filtroProfissional === p.id} onClick={() => setFiltroProfissional(p.id)}>{p.nome}</button>)}
+    </div>}
     {/* Celular: faixa compacta (número e rótulo curto); demais telas: cartões com rótulo e apoio. */}
-    <section aria-label="Resumo do dia" className="grid grid-cols-5 gap-1 sm:grid-cols-3 sm:gap-3 lg:grid-cols-5">
+    <section aria-label="Resumo do dia" className="agenda-resumo-dia grid grid-cols-5 gap-1 sm:grid-cols-3 sm:gap-3 lg:grid-cols-5">
       {indicadores.map(i => <div key={i.rotulo} className={`${cartao} min-w-0 px-0.5 py-2 text-center sm:px-3 sm:py-2.5 sm:text-left`}>
         <p className="sr-only text-[13px] leading-snug text-[var(--texto-secundario)] sm:not-sr-only">{i.rotulo}</p>
         <p className="numero-tabular text-lg font-semibold leading-tight text-[var(--texto-principal)] sm:mt-0.5 sm:text-2xl">{i.valor}</p>
@@ -768,8 +786,8 @@ function Agenda({
     {erroIniciarAtendimento && <FeedbackAlert variant="destructive" title="Atendimento não iniciado" description={erroIniciarAtendimento} />}
     {erroRecebimentos && <FeedbackAlert variant="warning" title="Recebimentos indisponíveis" description={mensagemErroFinanceiro(erroRecebimentos)} action={<button type="button" onClick={() => setRevisaoRecebimentos(v => v + 1)}>Tentar novamente</button>} />}
     {erroDisponibilidadeDia && <FeedbackAlert variant="destructive" title="Falha ao consultar disponibilidade" description="Os agendamentos foram carregados, mas o expediente e os bloqueios não puderam ser confirmados. Isso não significa ausência de expediente. Criar e editar exigem uma consulta válida." action={<button type="button" onClick={() => void recarregarTudo()}>Tentar novamente</button>} />}
-    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_21rem] lg:items-start">
-      <section aria-label="Agendamentos do dia" className={`${cartao} min-w-0 overflow-hidden`}>
+    <div className="agenda-celular-layout grid gap-5 lg:grid-cols-[minmax(0,1fr)_21rem] lg:items-start">
+      <section aria-label="Agendamentos do dia" className={`${cartao} ${visao === 'lista' ? 'agenda-celular-lista' : ''} min-w-0 overflow-hidden`}>
         <h2 className="sr-only">Agendamentos do dia</h2>
         <div aria-label="Controles da Agenda" role="group" className="flex flex-wrap items-center gap-x-2 gap-y-1.5 border-b border-[var(--borda)] px-3 py-2">
           <div className="flex items-center gap-2">
@@ -792,8 +810,8 @@ function Agenda({
               {diaInteiro ? 'Ver horários relevantes' : 'Ver dia inteiro'}
             </button>
           </div>}
-          <div className="grid w-full grid-cols-2 gap-2 lg:ml-auto lg:w-auto lg:grid-cols-[13rem_13rem]">
-            <label className="min-w-0"><span className="sr-only">Filtrar profissional</span><select className={campoAgenda} value={filtroProfissional} onChange={e => setFiltroProfissional(e.target.value)}>
+          <div className="grid w-full grid-cols-1 gap-2 md:grid-cols-2 lg:ml-auto lg:w-auto lg:grid-cols-[13rem_13rem]">
+            <label className={`min-w-0 ${profissionaisFiltro.length <= 8 ? 'hidden md:block' : ''}`}><span className="sr-only">Filtrar profissional</span><select className={campoAgenda} value={filtroProfissional} onChange={e => setFiltroProfissional(e.target.value)}>
               <option value="">Todos os profissionais</option>{[...new Set([...profissionais.map(p => p.id), ...agendamentos.map(a => a.profissional_id)])].map(id => <option key={id} value={id}>{nomeProfissional(id)}</option>)}</select></label>
             <label className="min-w-0"><span className="sr-only">Busca na Agenda</span><input className={campoAgenda} placeholder="Buscar paciente" value={buscaPaciente} onChange={e => setBuscaPaciente(e.target.value)} /></label>
           </div>
@@ -802,7 +820,8 @@ function Agenda({
           : carregandoGrade ? <p role="status" className="p-5 text-sm">Carregando agendamentos...</p>
           : visao === 'lista' ? <>
             <p className="border-b border-[var(--borda)] px-4 py-2 text-xs text-[var(--texto-secundario)]">{registros.length} registro(s) com os filtros atuais</p>
-            {registros.length ? <><div className="agenda-lista-cabecalho" aria-hidden="true"><div className="agenda-lista-titulos"><span>Horário</span><span>Paciente</span><span>Profissional</span><span>Situação</span></div><span className="text-right">Ações</span></div>{registros.map(ag => item(ag))}</> : <p className="p-6 text-sm">Nenhum agendamento corresponde à data e aos filtros. Altere os filtros ou crie uma marcação.</p>}
+            {!registros.length && livresCelular.length > 0 && <p className="hidden p-6 text-sm md:block">Nenhum agendamento corresponde à data e aos filtros. Altere os filtros ou crie uma marcação.</p>}
+            {linhaDoTempo.length ? <><div className="agenda-lista-cabecalho" aria-hidden="true"><div className="agenda-lista-titulos"><span>Horário</span><span>Paciente</span><span>Profissional</span><span>Situação</span></div><span className="text-right">Ações</span></div>{linhaDoTempo.map(linha => linha.ag ? item(linha.ag) : <div key={linha.id} className="agenda-celular-livre md:hidden"><time className="agenda-celular-hora agenda-fonte-tecnica">{linha.hora}</time><button type="button" aria-label={`Horário livre às ${linha.hora} — agendar`} onClick={() => abrirNovoAgendamento({ pacienteId: '', profissionalId: filtroProfissional, inicio: linha.hora })}>+ Horário livre · agendar</button></div>)}</> : <p className="p-6 text-sm">Nenhum agendamento corresponde à data e aos filtros. Altere os filtros ou crie uma marcação.</p>}
           </>
           : <GradeTemporalAgenda registros={registros} colunas={colunas} janela={janelaGrade} diaInteiro={diaInteiro} pedidoRolagem={pedidoRolagem} contexto={chaveContextoAtual ?? ''} renderRegistro={ag => item(ag, true)}
             onNovo={podeEscrever ? (id, inicio) => abrirNovoAgendamento({ pacienteId: '', profissionalId: id, inicio }) : undefined}
@@ -859,6 +878,7 @@ function Agenda({
         {podeEscrever && ['agendado', 'confirmado', 'aguardando'].includes(selecionado.status) && <button type="button" className={acaoAgenda} onClick={() => { setMenuStatusId(null); setEditandoAgendamento(selecionado) }}>Editar agendamento</button>}
       </div></div>
     </PainelAgenda>}
+    {podeEscrever && !modalAberto && !editandoAgendamento && !menuStatusId && !consultaReceber && <div className="agenda-celular-novo md:hidden"><button type="button" onClick={() => abrirNovoAgendamento()} disabled={!clinicaAtivaId} className={`${acaoAgenda} border-transparent bg-[var(--cor-primaria)] text-[var(--texto-sobre-primaria)] hover:bg-[var(--cor-primaria-hover)]`}>+ Novo agendamento</button></div>}
     {editandoAgendamento && clinicaAtivaId && podeEscrever && <EditarAgendamento key={`${chaveContextoAtual}:${editandoAgendamento.id}`} agendamento={editandoAgendamento} clinicaId={clinicaAtivaId} clinicaNome={clinicaAtiva?.nome ?? 'Clínica'}
       profissionalNome={nomeProfissional(editandoAgendamento.profissional_id)} duracao={profissionais.find(p => p.id === editandoAgendamento.profissional_id)?.duracao_consulta_minutos ?? null}
       onFechar={() => setEditandoAgendamento(null)} onSalvo={data => { setEditandoAgendamento(null); setCorrecaoSalva({ clinicaId: clinicaAtivaId, data }); void recarregarTudo() }} />}
@@ -1081,7 +1101,7 @@ function ModalNovoAgendamento({
             </label>
           </div>
           {profissionalId && <>
-            <DisponibilidadeFormulario consulta={disponibilidade} inicio={horaInicio} duracao={duracao} onInicio={setHoraInicio} ocupado={salvando} />
+            <DisponibilidadeFormulario consulta={disponibilidade} data={data} inicio={horaInicio} duracao={duracao} onInicio={setHoraInicio} ocupado={salvando} />
             {disponibilidade.aviso && <label className="flex items-start gap-2 text-sm"><input type="checkbox" checked={confirmadoManual} disabled={salvando} onChange={e => setConfirmadoManual(e.target.checked)} />Conferi os avisos e confirmo a marcação manual.</label>}
           </>}
         </SecaoAgendamento>

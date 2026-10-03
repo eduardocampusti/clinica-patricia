@@ -23,6 +23,7 @@ const profissionais = [
 // ?muitos-profissionais: acima de seis, o painel usa o select em vez de cartões.
 if (params.has('muitos-profissionais')) profissionais.push(...['Dermatologia', 'Pediatria', 'Ortopedia', 'Psicologia', 'Nutrição', 'Fisioterapia'].map((nome, i) => ({ id: `prof-extra-${i}`, nome_completo: `Profissional Sintético — ${nome}`, duracao_consulta_minutos: 30, valor_consulta: null, especialidades: { nome } })))
 const pacientes = ['Ana Exemplo Sintético', 'Bruno Exemplo Sintético', 'Clara Exemplo Sintético', 'Davi Exemplo Sintético', 'Paciente Exemplo Sintético de Nome Muito Longo para Conferência de Leitura e Expansão'].map((nome_completo, i) => ({ id: `pac-${i}`, nome_completo }))
+if (params.has('nove-profissionais')) profissionais.push(...Array.from({ length: 7 }, (_, i) => ({ id: `prof-nove-${i}`, nome_completo: `Profissional Sintético ${i + 3}`, duracao_consulta_minutos: 30, valor_consulta: null, especialidades: { nome: 'Exemplo' } })))
 let registros = [
   { id: 'ag-1', profissional_id: 'prof-1', paciente_id: 'pac-1', hora_inicio: '09:00:00', hora_fim: '09:30:00', status: 'aguardando' },
   { id: 'ag-2', profissional_id: 'prof-1', paciente_id: 'pac-0', hora_inicio: '10:00:00', hora_fim: '10:30:00', status: 'confirmado' },
@@ -39,6 +40,17 @@ if (params.has('curtas')) registros.push(...[
 ].map(a => ({ ...a, data: hoje, clinica_id: clinicaId, updated_at: '2026-10-01T10:00:00Z', observacoes: 'Consulta curta exclusivamente sintética para verificar apresentação e acesso aos detalhes.', pacientes: { nome_completo: pacientes.find(p => p.id === a.paciente_id)!.nome_completo } })))
 // ?remarcacao: consulta confirmada às 11:00, cenário equivalente ao mockup do painel de remarcação.
 if (params.has('remarcacao')) registros.push({ id: 'ag-r', profissional_id: 'prof-1', paciente_id: 'pac-2', hora_inicio: '11:00:00', hora_fim: '11:30:00', status: 'confirmado', data: hoje, clinica_id: clinicaId, updated_at: '2026-10-01T10:00:00Z', observacoes: 'Registro exclusivamente sintético para conferir a remarcação.', pacientes: { nome_completo: pacientes[2].nome_completo } })
+// Comparação visual com o mockup: somente situações efetivamente existentes no sistema.
+if (params.has('celular')) {
+  pacientes.push(...['Marina', 'José Carlos', 'Antônio', 'Beatriz', 'Paulo Henrique', 'Rita'].map((nome, i) => ({ id: `pac-celular-${i}`, nome_completo: `${nome} Exemplo Sintético` })))
+  registros = ['08:00', '08:30', '09:00', '09:30', '10:30', '11:00'].map((hora, i) => ({
+    id: `ag-celular-${i}`, profissional_id: 'prof-1', paciente_id: `pac-celular-${i}`,
+    hora_inicio: `${hora}:00`, hora_fim: `${horaAgenda(minutosAgenda(hora) + 30)}:00`,
+    status: ['concluido', 'cancelado', 'em_atendimento', 'aguardando', 'confirmado', 'agendado'][i],
+    data: hoje, clinica_id: clinicaId, updated_at: '2026-10-01T10:00:00Z', observacoes: 'Somente comparação visual sintética.',
+    pacientes: { nome_completo: pacientes.find(p => p.id === `pac-celular-${i}`)!.nome_completo },
+  }))
+}
 if (params.has('vazio')) registros = []
 const fetchOriginal = window.fetch.bind(window)
 window.fetch = async (input, init) => {
@@ -59,7 +71,7 @@ window.fetch = async (input, init) => {
   if (caminho === 'agenda_manual_disponivel') return resposta(true)
   if (caminho === 'paciente_cpf_pendente') return resposta(false)
   // Padrão: expediente 08–18 em todos os dias; ?terca limita à terça-feira, como o ensaio histórico do principal.
-  if (caminho === 'disponibilidade_padrao') return resposta(params.has('sem-expediente') ? [] : (params.has('terca') ? [2] : [0, 1, 2, 3, 4, 5, 6]).map(dia_semana => ({ id: `disp-${dia_semana}`, profissional_id: 'prof-1', hora_inicio: '08:00:00', hora_fim: '18:00:00', dia_semana })).filter(d => (!url.searchParams.has('profissional_id') || url.searchParams.get('profissional_id') === `eq.${d.profissional_id}`) && (!url.searchParams.has('dia_semana') || url.searchParams.get('dia_semana') === `eq.${d.dia_semana}`)))
+  if (caminho === 'disponibilidade_padrao') return resposta(params.has('sem-expediente') ? [] : (params.has('terca') ? [2] : [0, 1, 2, 3, 4, 5, 6]).map(dia_semana => ({ id: `disp-${dia_semana}`, profissional_id: 'prof-1', hora_inicio: '08:00:00', hora_fim: params.has('celular') ? '12:00:00' : '18:00:00', dia_semana })).filter(d => (!url.searchParams.has('profissional_id') || url.searchParams.get('profissional_id') === `eq.${d.profissional_id}`) && (!url.searchParams.has('dia_semana') || url.searchParams.get('dia_semana') === `eq.${d.dia_semana}`)))
   if (caminho === 'agenda_excecoes') return params.has('falha') ? resposta({ code: '42501', message: 'Falha sintética de leitura' }, 403) : resposta((params.has('folga') ? [{ profissional_id: 'prof-2', data: hoje, tipo: 'folga', hora_inicio: null, hora_fim: null }] : []).filter(e => (!url.searchParams.has('profissional_id') || url.searchParams.get('profissional_id') === `eq.${e.profissional_id}`) && (!intervalo || naData(e.data))))
   if (caminho === 'lista_espera') return resposta([{ id: 'esp-1', paciente_id: 'pac-3', profissional_id: 'prof-2', created_at: `${hoje}T08:00:00Z`, pacientes: { nome_completo: pacientes[3].nome_completo }, profissionais: { nome_completo: profissionais[1].nome_completo } }])
   if (caminho === 'agendamentos') {

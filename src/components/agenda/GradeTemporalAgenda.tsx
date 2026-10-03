@@ -6,6 +6,7 @@ export interface ColunaAgenda {
   id: string; nome: string; detalhe: string
   // Inícios dos blocos livres dentro do expediente e duração de cada bloco.
   livres: string[]; duracao: number | null
+  passados?: string[]
   // Trechos sem expediente, folga ou disponibilidade não confirmada, em minutos do dia (0–1440).
   neutros: { inicio: number; fim: number; rotulo: string }[]
 }
@@ -55,6 +56,7 @@ export function GradeTemporalAgenda<T extends RegistroTemporal>({ registros, col
           const de = Math.max(n.inicio, inicio), ate = Math.min(n.fim, fim)
           return <div key={`${n.inicio}-${n.rotulo}`} className="agenda-temporal-neutro" style={{ top: y(de) + 2, height: Math.max(0, (ate - de) * ESCALA - 4) }}><span>{n.rotulo}</span></div>
         })}
+        {c.duracao && c.passados?.filter(h => minutosAgenda(h) >= inicio && minutosAgenda(h) < fim).map(h => <button key={`passado-${h}`} type="button" disabled className="agenda-temporal-livre opacity-50" aria-label={`${h} horário já passou — ${c.nome}`} style={{ top: y(minutosAgenda(h)) + 2, height: c.duracao! * ESCALA - 4 }}><span>{h}</span></button>)}
         {c.duracao && c.livres.filter(h => minutosAgenda(h) >= inicio && minutosAgenda(h) < fim).map(h => {
           const estilo = { top: y(minutosAgenda(h)) + 2, height: c.duracao! * ESCALA - 4 }
           return onNovo

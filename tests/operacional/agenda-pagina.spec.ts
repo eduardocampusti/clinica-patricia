@@ -1,4 +1,6 @@
 import { expect, test, type Locator, type Page } from '@playwright/test'
+import { relogioAgendaAntesDoExpediente } from './agenda-test-utils'
+relogioAgendaAntesDoExpediente()
 import { ESCALA_AGENDA } from '../../src/lib/agendaTemporal'
 
 // Página principal da Agenda conforme o mockup aprovado. Somente prévia sintética; nenhuma escrita em banco real.

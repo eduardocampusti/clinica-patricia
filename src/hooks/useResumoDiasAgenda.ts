@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
+import { useAgoraAgenda } from './useAgoraAgenda'
+import { blocosApresentacaoAgenda } from '../lib/agendaBlocosApresentacao'
 import { supabase } from '../lib/supabase'
-import { blocosHorarioAgenda, diaSemanaAgenda, janelasAgenda, type ExcecaoAgenda, type JanelaAgenda, type OcupacaoAgenda } from '../lib/agendaDisponibilidade'
+import { diaSemanaAgenda, janelasAgenda, type ExcecaoAgenda, type JanelaAgenda, type OcupacaoAgenda } from '../lib/agendaDisponibilidade'
 
 export type SituacaoDiaAgenda = 'livres' | 'sem-expediente' | 'folga' | 'indefinida'
 export interface ResumoDiaAgenda { data: string; situacao: SituacaoDiaAgenda; livres: number }
@@ -16,7 +18,8 @@ interface Leitura { padrao: (JanelaAgenda & { dia_semana: number })[]; excecoes:
 
 // Resumo informativo de vários dias em uma leitura por intervalo. Falha não bloqueia o formulário,
 // que mantém a consulta própria da data; respostas de contexto antigo são descartadas.
-export function useResumoDiasAgenda(clinicaId: string, profissionalId: string, inicio: string, duracao: number | null, quantidade = 7) {
+export function useResumoDiasAgenda(clinicaId: string, profissionalId: string, inicio: string, duracao: number | null, quantidade = 7, proprioId = '') {
+  const agora = useAgoraAgenda()
   const datas = inicio ? Array.from({ length: quantidade }, (_, i) => somarDiasAgenda(inicio, i)) : []
   const fim = datas.at(-1) ?? ''
   const contexto = `${clinicaId}/${profissionalId}/${inicio}/${quantidade}`
@@ -45,7 +48,7 @@ export function useResumoDiasAgenda(clinicaId: string, profissionalId: string, i
     let janelas: JanelaAgenda[]
     try { janelas = janelasAgenda(dados.padrao.filter(j => j.dia_semana === diaSemanaAgenda(data)), excecoes) } catch { return { data, situacao: 'indefinida', livres: 0 } }
     if (!janelas.length) return { data, situacao: 'sem-expediente', livres: 0 }
-    const livres = blocosHorarioAgenda(duracao, janelas, dados.ocupacoes.filter(o => o.data === data)).filter(b => !b.ocupado).length
+    const livres = blocosApresentacaoAgenda(data, duracao, janelas, dados.ocupacoes.filter(o => o.data === data), proprioId, agora).filter(b => !b.ocupado && !b.passado).length
     return { data, situacao: 'livres', livres }
   })
   return { estado, dias }

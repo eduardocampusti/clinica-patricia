@@ -1,6 +1,8 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import type { useDisponibilidadeAgenda } from '../../hooks/useDisponibilidadeAgenda'
-import { blocosHorarioAgenda, periodoAgenda, type BlocoHorarioAgenda, type PeriodoAgenda } from '../../lib/agendaDisponibilidade'
+import { periodoAgenda, type BlocoHorarioAgenda, type PeriodoAgenda } from '../../lib/agendaDisponibilidade'
+import { blocosApresentacaoAgenda } from '../../lib/agendaBlocosApresentacao'
+import { useAgoraAgenda } from '../../hooks/useAgoraAgenda'
 import { FeedbackAlert } from '../feedback/FeedbackAlert'
 import { campoAgenda } from './PainelAgenda'
 
@@ -8,13 +10,14 @@ const PERIODOS: PeriodoAgenda[] = ['Manhã', 'Tarde', 'Noite']
 const rotuloLivres = (n: number) => `${n} ${n === 1 ? 'livre' : 'livres'}`
 const foco = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cor-primaria)]'
 
-export function DisponibilidadeFormulario({ consulta, inicio, duracao, onInicio, ocupado, proprioId = '', edicao = false }: {
+export function DisponibilidadeFormulario({ consulta, data, inicio, duracao, onInicio, ocupado, proprioId = '', edicao = false }: {
   consulta: ReturnType<typeof useDisponibilidadeAgenda>; inicio: string; duracao: number | null
-  onInicio: (inicio: string) => void; ocupado: boolean; proprioId?: string; edicao?: boolean
+  onInicio: (inicio: string) => void; ocupado: boolean; proprioId?: string; edicao?: boolean; data: string
 }) {
   const pronta = consulta.estado === 'pronta'
-  const blocos = pronta ? blocosHorarioAgenda(duracao, consulta.janelas, consulta.ocupacoes, proprioId) : []
-  const livres = blocos.filter(b => !b.ocupado)
+  const agora = useAgoraAgenda()
+  const blocos = pronta ? blocosApresentacaoAgenda(data, duracao, consulta.janelas, consulta.ocupacoes, proprioId, agora) : []
+  const livres = blocos.filter(b => !b.ocupado && !b.passado)
   const folga = consulta.excecoes.some(e => e.tipo === 'folga' || e.tipo === 'bloqueio')
   // Horário digitado ou vindo da grade fora dos blocos livres continua visível no campo manual.
   const [aberto, setAberto] = useState(false)
@@ -38,7 +41,7 @@ export function DisponibilidadeFormulario({ consulta, inicio, duracao, onInicio,
         : <>
           {grupos.length ? <div role="group" aria-label="Horários disponíveis" className="space-y-3">
             {grupos.map(({ periodo, blocos: doPeriodo }) => <div key={periodo} role="group" aria-labelledby={`${base}-${periodo}`} className="space-y-1.5">
-              <p id={`${base}-${periodo}`} className="text-xs font-medium uppercase tracking-wide text-[var(--texto-secundario)]">{periodo} <span className="font-normal normal-case tracking-normal">· {rotuloLivres(doPeriodo.filter(b => !b.ocupado).length)}</span></p>
+              <p id={`${base}-${periodo}`} className="text-xs font-medium uppercase tracking-wide text-[var(--texto-secundario)]">{periodo} <span className="font-normal normal-case tracking-normal">· {rotuloLivres(doPeriodo.filter(b => !b.ocupado && !b.passado).length)}</span></p>
               <div className="grid grid-cols-[repeat(auto-fill,minmax(4.5rem,1fr))] gap-2">
                 {doPeriodo.map(bloco => <BotaoBloco key={bloco.hora} bloco={bloco} selecionado={!bloco.ocupado && bloco.hora === inicio} ocupado={ocupado}
                   onEscolher={() => { setAberto(false); onInicio(bloco.hora) }} />)}
@@ -50,7 +53,7 @@ export function DisponibilidadeFormulario({ consulta, inicio, duracao, onInicio,
               <p className="mt-1 text-xs text-[var(--texto-secundario)]">{folga ? 'Não há horários para escolher.' : 'A marcação manual continua possível, com aviso e confirmação.'}</p>
             </div>}
           {livres.length ? <p className="text-xs text-[var(--texto-secundario)]">Sem conflito na consulta atual. Não é reserva; o servidor valida ao salvar.</p>
-            : grupos.length ? <p className="text-xs text-[var(--texto-secundario)]">Todos os blocos estão ocupados. Use outro horário ou outra data.</p> : null}
+            : grupos.length ? <p className="text-xs text-[var(--texto-secundario)]">Nenhum bloco futuro livre. Use outro horário ou outra data.</p> : null}
           <details className="text-xs text-[var(--texto-secundario)]"><summary className="min-h-8 cursor-pointer">Faixas habituais na data</summary><p className="py-1">{consulta.janelas.length ? consulta.janelas.map(j => `${j.hora_inicio?.slice(0, 5)}–${j.hora_fim?.slice(0, 5)}`).join(' / ') : 'Sem expediente disponível.'}</p></details>
         </>}
     <div className="space-y-2">
@@ -70,7 +73,9 @@ export function DisponibilidadeFormulario({ consulta, inicio, duracao, onInicio,
   </section>
 }
 
-function BotaoBloco({ bloco, selecionado, ocupado, onEscolher }: { bloco: BlocoHorarioAgenda; selecionado: boolean; ocupado: boolean; onEscolher: () => void }) {
+function BotaoBloco({ bloco, selecionado, ocupado, onEscolher }: { bloco: BlocoHorarioAgenda & { passado: boolean }; selecionado: boolean; ocupado: boolean; onEscolher: () => void }) {
+  if (bloco.passado) return <button type="button" disabled aria-label={`${bloco.hora} horário já passou`}
+    className="numero-tabular min-h-11 cursor-not-allowed rounded-lg border border-dashed border-[var(--borda)] bg-[var(--fundo-pagina)] text-sm text-[var(--texto-secundario)] opacity-50">{bloco.hora}</button>
   if (bloco.ocupado) return <button type="button" disabled aria-label={`${bloco.hora} ocupado`}
     className="numero-tabular min-h-11 cursor-not-allowed rounded-lg border border-dashed border-[var(--borda)] bg-[var(--fundo-pagina)] text-sm text-[var(--texto-secundario)] line-through">
     {bloco.hora}

@@ -1,4 +1,6 @@
 import { expect, test, type Locator, type Page } from '@playwright/test'
+import { relogioAgendaAntesDoExpediente } from './agenda-test-utils'
+relogioAgendaAntesDoExpediente()
 
 // Fidelidade visual do painel "Novo agendamento". Somente prévia sintética; nenhuma escrita em banco real.
 const previa = '/tests/operacional/agenda-preview.html'

@@ -1,4 +1,6 @@
 import { expect, test, type Locator, type Page } from '@playwright/test'
+import { relogioAgendaAntesDoExpediente } from './agenda-test-utils'
+relogioAgendaAntesDoExpediente()
 import { avaliarAgendaManual, diaSemanaAgenda, janelasAgenda, validarHorarioAgenda, sugestoesHorarioAgenda } from '../../src/lib/agendaDisponibilidade'
 
 // Painel de criação: cartões de profissional (rádios nativos) ou select acima de seis.
