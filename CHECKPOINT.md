@@ -1,5 +1,24 @@
 # CHECKPOINT MESTRE — CLÍNICA PATRÍCIA
 
+## Caixa — Git/GitHub sincronizados sem publicação, 2026-10-04 19:18:39 -03:00
+
+Commit seletivo33 arquivos 8fc296f9681e32e9916edfc4cd4e25f62f48522d confirmado local/remoto em
+codex/sincronizacao-caixa-legado-2026-10-04, checkout isolado limpo após commit/push normal.
+Uma atualização documental posterior registra estas evidências na mesma branch; o tip
+final deve ser consultado no Git/GitHub (não incorporar o SHA do próprio commit).
+Branch original/deploy permanece2a6e88d09c0a8a51cd73649bf45530c2db6a6923 e trabalhos
+de outras tarefas preservados. Hostinger auto-deploy habilitado só na branch original:
+releitura após push19:17 -03:00 mostrou mesmos builds completed e bundles/hashes nos
+dois domínios; nenhuma publicação automática observada ou deploy deliberado acionado.
+Fontes do procedimento e registro seguro versionados; originais privados/SQL gerados,
+cópias DPAPI, exportações, segredos, capturas/ZIP/build ausentes do commit. A/B anteriores
+não reaplicadas.27 contratos offline,11 node-check,2 PowerShell,3 JSON,29 dependências e
+diff-check da seleção conformes; runtime/infraestrutura inalterados. Matrizes/manifesto
+e limites no Financeiro15. Pendências: recibos/reimpressão, emissão fiscal externa,
+fonte operacional de cobranças/débito/origem-destino estruturados; persistência financeira
+real/aparelho/teclado virtual/zoom nativo não verificados. Próxima ação somente sob escopo
+novo; não fazer merge na branch de implantação sem autorizar seu deploy. Sem IA/chaves.
+
 ## Caixa — sincronização seletiva em validação, 2026-10-04 19:13:49 -03:00
 
 Runtime e domínios confirmados no SHA2a6e88d09c0a8a51cd73649bf45530c2db6a6923; sem fonte

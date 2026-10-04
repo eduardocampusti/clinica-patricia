@@ -113,8 +113,20 @@ manifestações reais e cópias privadas ausentes da seleção.
 
 ## Resultado da sincronização
 
-Commit/push ainda em conclusão; registrar abaixo apenas após confirmação do GitHub e
-releitura dos dois builds/bundles. Nenhum novo deploy está autorizado.
+Sincronizado: commit seletivo `8fc296f9681e32e9916edfc4cd4e25f62f48522d` confirmado por git ls-remote
+na branch `codex/sincronizacao-caixa-legado-2026-10-04`. Registro final das evidências
+em commit documental sucessor, na mesma branch; consultar tip pelo GitHub/Git, sem
+pretender incluir o SHA do documento no seu próprio commit. Checkout original conserva
+branch/HEAD2a6e88d0 e alterações de outras tarefas. Não houve merge/force push.
+
+Após push,19:17 -03:00: mesmos dois builds vigentes, nenhum build novo; hashes dos
+bundles idênticos aos registrados acima, HTTP200. Nenhuma publicação automática
+observada, nenhuma alteração de configuração Hostinger ou deploy deliberado.
+A branch é independente da branch implantada; sincronização não significa aplicação
+dos templates SQL nem publicação de nova versão. Nenhum código funcional local
+pendente de deploy identificado. Alterações da intervenção já aplicada são apenas
+representadas pelo registro seguro e fontes offline, com arquivos privados preservados.
+
 
 Links do aplicativo: [Brotas](https://clinicabrotas.com.br/sistema/brotas/financeiro) e
 [Ipupiara](https://clinicaipupiara.com.br/sistema/ipupiara/financeiro).
