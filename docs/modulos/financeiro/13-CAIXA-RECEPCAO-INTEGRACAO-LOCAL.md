@@ -1,4 +1,130 @@
-# Caixa da Recepção — integração local
+# Caixa da Recepção — integração e publicação controlada
+
+## Sincronização posterior — 2026-10-04 19:13:49 -03:00
+
+Matriz de todas as telas e estado Git/publicação no [relatório15](15-SINCRONIZACAO-E-MATRIZ-CAIXA.md).
+O aplicativo continua2a6e88d0; A/B já concluídas estão representadas por fontes e registro
+seguro, sem nova aplicação SQL. Arquivos privados/congelados citados historicamente são
+locais e ignorados. Sincronização ocorre em branch sem deploy automático.
+
+## Diagnóstico posterior do legado de Brotas — 04/10/2026, 10:04 -03:00
+
+Esta publicação permanece no SHA2a6e88d09c0a8a51cd73649bf45530c2db6a6923.
+Pedido posterior autoriza somente diagnóstico/proposta do legado, sem transição.
+Leitura atual: Brotas legado aberto, R$150,50, abertura03/08/2026 14:55. Inventário
+SQL completo indisponível no canal oficial; contagens históricas não reconfirmadas.
+Não há fluxo ativo de transição localizado no código. Proposta administrativa,
+conferência humana, desenvolvimento mínimo e recuperação estão no
+[relatório14](14-CAIXA-LEGADO-BROTAS-DIAGNOSTICO.md). Nenhuma suíte de publicação repetida,
+mudança de runtime/banco/permissões/operação real/commit/push/deploy nesta etapa.
+
+## Publicação concluída — 04/10/2026, 09:32 -03:00 (America/Bahia)
+
+**PUBLICADO em Brotas e Ipupiara:** SHA completo
+`2a6e88d09c0a8a51cd73649bf45530c2db6a6923`, commit seletivo40 arquivos, push normal
+na branch codex/resgate-local-2026-09-26. Remoto confirmado no mesmo SHA, alinhado0/0.
+Versão embarcada0.1.0 com selo Em desenvolvimento, conforme processo vigente;
+nenhuma tag/PR de versão ou incremento manual criado. Publicação do aplicativo não
+representa lançamento semântico pelo Release Please. Etapas abaixo são históricas.
+
+| Domínio | Build Hostinger completed | Conclusão Bahia | Bundle efetivamente servido |
+| --- | --- | --- | --- |
+| clinicabrotas.com.br | 01a106e0-c036-7244-824a-7904af18355b | 04/10/2026 09:26:37 | /assets/index-Dz5uHHiv.js |
+| clinicaipupiara.com.br | 01a106e0-c0af-726b-84bf-7603fa42905f | 04/10/2026 09:26:40 | /assets/index-RQWYX2d8.js |
+
+Ambos os builds apontam o SHA completo da seleção validada. Consulta HTTP dos domínios
+e bundles confirma metadados `commit:2a6e88d0`, versão0.1.0, sem alterações locais,
+texto Caixa da recepção e validação nova de parcelas. Os hashes dos bundles são distintos
+por configuração/horário de build; não se afirma identidade binária entre os domínios.
+Brotas SHA-256d9f325ae802f373200c5eab1a03d4d9a0af234d36c3629bf8b53b74d0e71d939;
+Ipupiara506c97aef555b00faf4e04fdc14dad3c0eaa3b417b9b7fde15c7cae763436605.
+Nove prévias de e-mail intencionais de cada domínio idênticas por SHA-256 antes/depois.
+URL /tests/financeiro/recepcao-integracao.html devolve SPA normal, sem entrada de teste;
+bundles sem controles/serviço/host sintéticos. Galerias/capturas/ZIPs não enviados.
+
+Configuração Hostinger existente preservada: Node22, Vite, npm/build/dist, raiz por
+domínio e instalação Git existentes. Push iniciou os dois builds automáticos; nenhuma
+segunda escrita de start-build, troca de site, variável, assinatura, DNS ou serviço.
+Não houve falha concreta atribuível à release nem necessidade de reversão.
+Versão anterior0.1.0/cdfdec66 e seus builds/bundles continuam registrados na etapa
+de autorização abaixo e nos artefatos locais para eventual retorno só do aplicativo.
+
+### Conferência autenticada efetivamente realizada
+
+Sessões autorizadas de **Recepção** disponíveis nas duas clínicas, pelo navegador
+do Codex, somente leitura. Conferidos clínica/perfil, Caixa/Estornos/Fiscal, carregamento
+seguido do resultado, histórico, Agenda→Financeiro e recarga completa da rota Financeiro.
+Tecla F5 enviada pela ferramenta e recarga explícita confirmada; não se apresenta
+isso como teclado físico, zoom nativo ou aparelho físico.
+
+| Clínica | Resultado observado após publicação |
+| --- | --- |
+| Brotas | Caixa antigo em aberto continua bloqueado, sem ações modernas para converter/encerrar. Histórico lista somente o legado; detalhes reiteram preservação e ausência de reutilização automática. Estornos/Fiscal vazios. Agenda abriu e retorno/recarga conservaram /sistema/brotas/financeiro e clínica Brotas. |
+| Ipupiara | Caixa fechado sem sessão ativa; abertura não acionada. Histórico vazio com paginação desabilitada; Estornos vazios. Fiscal informa emissão externa não configurada e filtro Emissão solicitada vazio. Agenda abriu e retorno/recarga conservaram /sistema/ipupiara/financeiro e clínica Ipupiara. |
+
+Logs error/warn consultados nas duas abas retornaram listas vazias. A tentativa inicial
+do seletor fiscal pela API DOM não encontrou o controle; foi usado o controle acessível
+visível, que mostrou Emissão solicitada e resultado vazio. Foi limitação de seleção da
+ferramenta, sem erro financeiro, escrita ou modificação da interface.
+
+Não há sessão moderna disponível nessas clínicas para provar resumo/movimentos reais
+deste estado. Não foi aberto caixa para produzir dados. Recebimento, fechamento,
+aprovação, suprimento, sangria, estorno ou solicitação fiscal reais não foram executados.
+As28 verificações dirigidas da revisão permanecem evidência sintética reaproveitada,
+pois runtime/spec idênticos; nenhuma suíte financeira foi repetida nesta publicação.
+Verificações novas: TypeScript das duas entradas mais runtime via build, lint/build/
+diff-check no checkout isolado do commit; públicos por hash; dois deploys, bundles,
+rotas e percurso de leitura autenticado. Não alegar que compilação sem .env local
+comprova configuração/persistência remota. As duas sessões e bundles publicados
+comprovam somente a leitura exercitada com a configuração existente.
+
+### Preservação, evidências e limites finais
+
+40 arquivos/trechos da release e SHA-256 do conteúdo do commit registrados em
+scratch/caixa-publicacao/manifesto-commit.json. Mantido o manifesto histórico da revisão.
+25 arquivos documentais não selecionados permaneceram com hashes iguais; alterações
+restantes dos três documentos compartilhados preservadas no trabalho local. Outros
+arquivos não rastreados, incluindo configuração documental ReUI, preservados.
+Sem reset/limpeza destrutiva/force push. Checkout isolado limpo permanece em scratch
+para auditoria; sem alterações de fonte nessa cópia, sem acesso a chaves/.env.
+
+Evidências locais (fora do Git/build): versões-anteriores.json, versoes-publicadas.json,
+bundles anteriores/novos, manifesto-commit.json e duas capturas PNG em
+scratch/caixa-publicacao/. Capturas somente das telas de Caixa, sem dados de pacientes.
+Relatório, README, índice e checkpoints atualizados após comprovação e mantidos locais
+sem novo commit/push que dispararia deploy exclusivamente documental.
+
+Links: https://clinicabrotas.com.br/sistema/brotas/financeiro e
+https://clinicaipupiara.com.br/sistema/ipupiara/financeiro.
+Persistência financeira real, RLS além das leituras exercitadas, aparelho físico,
+teclado virtual, zoom nativo125%/150%, recibos/reimpressão, conciliação externa e
+provedor fiscal permanecem não comprovados/não implementados conforme o contrato.
+Nenhum banco/RPC/permissão/transição do legado ou outro sistema alterado.
+Próximo: uso autorizado pelo titular; operações legítimas ou evoluções separadas
+exigem escopo próprio, sem simular disponibilidade de recibos/integrações externas.
+
+## Commit seletivo validado — 04/10/2026, 09:25 -03:00
+
+Commit2a6e88d09c0a8a51cd73649bf45530c2db6a6923 na branch existente,40 arquivos.
+Sem git add indiscriminado: índice recebeu conteúdo explícito dos arquivos/trechos.
+Checkpoint raiz, operacional e índice selecionados por conteúdo do Caixa;25 arquivos
+de outras tarefas conferidos por hash e preservados. Sem capturas/ZIP/build/segredos.
+Diff-check do índice identificou linhas vazias finais em três fontes novas da prévia,
+removidas sem mudança funcional; checagens do commit e árvore aprovadas depois.
+
+Checkout isolado limpo do SHA em scratch/caixa-publicacao/release: TypeScript das duas
+entradas de teste e runtime via build, lint, validador de notas/versão, build e
+git diff/show --check aprovados. Lint mantém apenas aviso conhecido ThemeProvider;
+build mantém aviso import Supabase/chunk. Não copiado/acessado .env ou chaves: build
+local valida compilação da seleção, não configuração remota. Hostinger conserva seus
+valores existentes; prova do runtime real dependerá da consulta pública e autenticada.
+19 arquivos públicos existentes copiados idênticos no build, incluindo .htaccess/
+nove prévias intencionais de e-mail. Nenhuma galeria/fixture/controle sintético da
+entrega no pacote; src sem import dos testes. Sem dependências/banco/RPC/permissões,
+configuração/shell/tema fora da entrega. Fonte runtime e spec de integração idênticos
+à revisão, então28 verificações dirigidas reaproveitadas sem repetição de suítes.
+Push/deploy a seguir; sucesso da compilação não é publicação. Registros posteriores
+de verificação ficarão locais, sem redeploy meramente documental desta release.
 
 ## Publicação controlada autorizada — 04/10/2026, 09:20 -03:00
 

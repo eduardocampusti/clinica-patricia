@@ -1,0 +1,263 @@
+{
+  "estado": "EXECUTADOS_EM_POSTGRESQL_ISOLADO_COM_PROTECAO_PROPOSTA",
+  "alvo_isolado": {
+    "host": "127.0.0.1",
+    "porta": 64752,
+    "run": "e075e28c6f0448139c9a48f71259be5f",
+    "versao": "17.11",
+    "parado_em": "2026-10-04T12:50:39.0800423-03:00"
+  },
+  "versao_postgresql_desejada": "17.6",
+  "requisitos": [
+    "Banco dedicado, vazio, sem uso por outro projeto, identidade/localização/processo comprovados antes de DDL/DML",
+    "Não usar projeto principal xftnkusbyqzyvzrovroj, nenhuma branch main ou outro projeto em uso",
+    "Reproduzir catálogo relevante: enums, FKs, índice único de sessão ativa, triggers reais, RLS/grants e RPC de abertura revisados",
+    "Dados exclusivamente sintéticos; sem registros ou credenciais de pacientes/usuários reais",
+    "Preparar artefato de homologação separado com UUIDs sintéticos; não editar nem remover trava dos candidatos destinados ao principal",
+    "Exportar somente resultados mínimos, hashes, IDs sintéticos e evidência de isolamento"
+  ],
+  "fixture": {
+    "clinica_id": "11111111-1111-4111-8111-111111111111",
+    "outra_clinica_id": "55555555-5555-4555-8555-555555555555",
+    "sessao_id": "22222222-2222-4222-8222-222222222222",
+    "responsavel_id": "33333333-3333-4333-8333-333333333333",
+    "execucao_id": "44444444-4444-4444-8444-444444444444",
+    "subdomain": "brotas",
+    "status": "aberto",
+    "idempotency_key": null,
+    "valor_abertura_centavos": 15050,
+    "valor_contado": null,
+    "valor_esperado": null,
+    "diferenca": null,
+    "entradas_atuais_centavos": [
+      50000,
+      50000
+    ],
+    "entrada_excluida_centavos": 8590,
+    "entrada_excluida_forma": "pix",
+    "auditoria": [
+      "INSERT_SESSAO",
+      "INSERT_PIX",
+      "DELETE_PIX",
+      "INSERT_DINHEIRO_1",
+      "INSERT_DINHEIRO_2",
+      "UPDATE_FECHADO",
+      "UPDATE_REABERTO"
+    ],
+    "objetos_modernos_quantidade": 0,
+    "observacao": "Valores reproduzem o caso, sem provar saldo físico. Criar vínculos de pacientes/profissionais somente sintéticos e nunca copiar UUIDs reais. Fixture descritiva, não schema completo nem SQL executado."
+  },
+  "casos": [
+    {
+      "id": "H01",
+      "cenario": "Execução válida",
+      "acao": "Selar inventário sintético; aprovar apenas a fixture; executar candidato isolado",
+      "esperado": "Só3 campos da sessão mudam; +1 evento administrativo e +1 auditoria; todos os valores e vínculos iguais"
+    },
+    {
+      "id": "H02",
+      "cenario": "Outra clínica ou sessão",
+      "acao": "Trocar um UUID de alvo sem mudar aprovação/snapshot",
+      "esperado": "Exceção antes de DML; hashes iguais"
+    },
+    {
+      "id": "H03",
+      "cenario": "Sessão moderna ou estado inesperado",
+      "acao": "Usar chave moderna ou status fechado/aprovado sem evento desta execução",
+      "esperado": "Recusa; nenhuma escrita"
+    },
+    {
+      "id": "H04",
+      "cenario": "Inventário/catálogo mudou",
+      "acao": "Separadamente inserir vínculo moderno, alterar entrada, adicionar auditoria, alterar trigger/constraint depois de selar",
+      "esperado": "Recusa em cada variante; preservar a mudança concorrente, sem encerrar"
+    },
+    {
+      "id": "H05",
+      "cenario": "Repetição",
+      "acao": "Repetir mesmo UUID/manifesto após sucesso e também depois de nova abertura sintética",
+      "esperado": "Nenhum UPDATE/INSERT extra; verificação dos originais/evento/auditoria; nova sessão intocada"
+    },
+    {
+      "id": "H06",
+      "cenario": "Falha intermediária",
+      "acao": "No artefato isolado, injetar exceção após UPDATE, após trigger e após INSERT financeiro",
+      "esperado": "Cada transação inteira revertida; sessão aberta, entradas e7 eventos anteriores intactos, evento administrativo ausente"
+    },
+    {
+      "id": "H07",
+      "cenario": "Concorrência com abertura",
+      "acao": "Duas conexões: pausar candidato após locks; chamar abertura oficial sintética em outra conexão; repetir ordem inversa",
+      "esperado": "Sem duas sessões ativas; abertura espera/falha com timeout ou somente progride após commit válido; nenhuma alteração parcial"
+    },
+    {
+      "id": "H08",
+      "cenario": "Concorrência com movimento antigo/moderno",
+      "acao": "Duas conexões, testar INSERT antes/durante/depois dos locks, inclusive transação antiga repeatable read e escritor legado sem advisory lock",
+      "esperado": "Nenhum movimento tardio entra no legado encerrado; se política/snapshot permitir, marcar falha e BLOQUEAR candidato até controle de writers comprovado"
+    },
+    {
+      "id": "H09",
+      "cenario": "Preservação de auditoria/vínculos",
+      "acao": "Comparar todos os hashes anteriores; tentar TRUNCATE/alteração concorrente apenas em isolamento; conferir locks/timeouts; verificar Pix segue excluído",
+      "esperado": "Originais iguais; novo evento ligado à auditoria da sessão; nunca restaurar Pix ou fabricar ajustes"
+    },
+    {
+      "id": "H10",
+      "cenario": "Nova abertura independente",
+      "acao": "Antes da conclusão tentar abrir; após conclusão válida abrir com fundo sintético explicitamente contado de12345centavos",
+      "esperado": "Bloqueio antes; sessão nova12345centavos depois, sem carregar15050/100000; nenhuma abertura feita pelo candidato"
+    },
+    {
+      "id": "H11",
+      "cenario": "Interrupção e resposta incerta",
+      "acao": "Interromper conexão antes/depois do commit somente isolado; consultar evento fixo e estado por conexão nova",
+      "esperado": "Antes: estado original/evento ausente. Depois: evento único/estado fechado/preservação. Nunca reenviar cegamente ou reabrir"
+    },
+    {
+      "id": "H12",
+      "cenario": "Permissão/responsável/aprovação",
+      "acao": "Remover vínculo autorizado, manter decisão humana pendente, usar role de leitura parcial ou mudar motivo/manifesto de evento concluído",
+      "esperado": "Recusa explícita; sem mudanças de role/grants/RLS nem interpretação de vazio como ausência"
+    }
+  ],
+  "resultados_postgresql": [
+    {
+      "id": "H01",
+      "resultado": "APROVADO",
+      "detalhe": {
+        "campos_alterados": 3,
+        "entradas_preservadas": 2,
+        "auditorias_anteriores": 7,
+        "nova_auditoria": 1,
+        "novo_evento": 1
+      },
+      "ms": 3357
+    },
+    {
+      "id": "H02",
+      "resultado": "APROVADO",
+      "detalhe": {
+        "clinic": "P0001",
+        "session": "P0001"
+      },
+      "ms": 4134
+    },
+    {
+      "id": "H03",
+      "resultado": "APROVADO",
+      "detalhe": {
+        "moderna": "recusada",
+        "fechada_sem_evento": "recusada"
+      },
+      "ms": 7219
+    },
+    {
+      "id": "H04",
+      "resultado": "APROVADO",
+      "detalhe": {
+        "variantes": [
+          "entrada",
+          "auditoria",
+          "vinculo_moderno",
+          "catalogo"
+        ]
+      },
+      "ms": 15434
+    },
+    {
+      "id": "H05",
+      "resultado": "APROVADO",
+      "detalhe": {
+        "repeticoes_sem_efeito": 2,
+        "inclui_nova_sessao_posterior": true
+      },
+      "ms": 5159
+    },
+    {
+      "id": "H06",
+      "resultado": "APROVADO",
+      "detalhe": {
+        "rollback_integral": [
+          "after_update",
+          "after_evento"
+        ]
+      },
+      "ms": 7347
+    },
+    {
+      "id": "H07",
+      "resultado": "APROVADO",
+      "detalhe": {
+        "duas_conexoes": true,
+        "abertura_esperou_commit": true,
+        "abertura_antes_recusada": true
+      },
+      "ms": 9645
+    },
+    {
+      "id": "H08",
+      "resultado": "APROVADO",
+      "detalhe": {
+        "antes": "drift detectado",
+        "durante": "55P03: lock timeout, sem entrada",
+        "depois": "55000: proteção de banco bloqueou",
+        "snapshot_antigo": {
+          "codigo": 3,
+          "sqlstate": "40001",
+          "entrada_tardia": 0
+        },
+        "service_role_INSERT": "55000: recusado",
+        "service_role_UPDATE": "55000: recusado",
+        "service_role_DELETE": "55000: recusado",
+        "postgres_INSERT": "55000: recusado",
+        "postgres_UPDATE": "55000: recusado",
+        "postgres_DELETE": "55000: recusado",
+        "reabertura_manual_nao_remove_protecao": "55000: evento administrativo continua bloqueando",
+        "outra_clinica": "Entrada sintética válida permitida; proteção restrita ao alvo"
+      },
+      "ms": 17270
+    },
+    {
+      "id": "H09",
+      "resultado": "APROVADO",
+      "detalhe": {
+        "truncate_concorrente": "55P03",
+        "update_auditoria": "recusado",
+        "pix_excluido": true
+      },
+      "ms": 6798
+    },
+    {
+      "id": "H10",
+      "resultado": "APROVADO",
+      "detalhe": {
+        "fundo_novo_centavos": 12345,
+        "automaticamente_transportado": false
+      },
+      "ms": 3430
+    },
+    {
+      "id": "H11",
+      "resultado": "APROVADO",
+      "detalhe": {
+        "conexao_interrompida_antes_commit": "rollback comprovado por conexão nova",
+        "resposta_descartada_apos_commit": "evento único verificado e repetição sem efeitos"
+      },
+      "ms": 4323
+    },
+    {
+      "id": "H12",
+      "resultado": "APROVADO",
+      "detalhe": {
+        "sem_aprovacao": "recusado",
+        "pendencias": "recusado",
+        "role_parcial": "recusado",
+        "vinculo_inativo": "recusado",
+        "evento_conflitante": "recusado"
+      },
+      "ms": 7930
+    }
+  ],
+  "limite": "12 casos distintos aprovados no recorte financeiro e proteção proposta; Auth/Vault auxiliares, PostgreSQL17.11, não equivalência completa do principal nem autorização de transição."
+}

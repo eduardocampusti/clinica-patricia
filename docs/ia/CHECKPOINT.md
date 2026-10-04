@@ -1,5 +1,361 @@
 # Checkpoint operacional — Clínica Patrícia
 
+## Caixa — sincronização seletiva em validação, 2026-10-04 19:13:49 -03:00
+
+Runtime e domínios confirmados no SHA2a6e88d09c0a8a51cd73649bf45530c2db6a6923; sem fonte
+funcional local pendente de publicação. Hostinger auto-deploy ligado somente à branch
+codex/resgate-local-2026-09-26. Usar branch separada codex/sincronizacao-caixa-legado-2026-10-04,
+checkout isolado, seleção explícita, sem merge/deploy ou SQL. Fontes offline, registro mínimo
+de A/B já aplicadas e referência10.disabled versionáveis; inventários/manifestações completas,
+SQL gerados e recortes privados continuam locais/ignorados. Exemplo sintético bloqueado
+substitui dependência privada nos testes/laboratório;27 contratos offline passaram. Não altera
+candidato financeiro/proteção;12 cenários PostgreSQL/4 recuperações e28 testes UI reaproveitados.
+Matriz desktop/celular e seleção no Financeiro15. GitHub/pós-push ainda em conferência;
+demais trabalhos preservados. TypeSafe determinística, sem IA/chaves.
+
+
+## Brotas — encerramento administrativo concluído, 04/10/2026,18:38 -03:00
+
+A instalada18:23:53; B concluída18:31:22, projeto xftnkusbyqzyvzrovroj/main, exclusivamente
+pelo SQL Editor oficial no navegador interno, sob autorizações expressas do usuário.
+Responsável Eduardo Campos, desenvolvedor de software: conta de administração indicada,
+UUID8792e28b-faf6-41fd-9d89-a84a453f0137, ativa/Proprietária ativa em Brotas, nome exibido
+Proprietária. Não houve criação/promoção de conta. Declaração de testes e ausência de
+dinheiro/obrigações reais atribuída ao usuário, sem conclusão independente da auditoria.
+
+Sessão a4a18e49-6634-4058-9fd8-07f3b065fd63 fechada administrativamente. Só status,
+fechado_por e fechado_em alterados; duas entradas e sete auditorias originais preservadas.
+Acrescentados auditoria1582 e evento único9ecb1e2a-5fe0-463c-8858-13919b1096f3; nenhum
+valor, contagem ou conciliação fabricado. Outras sessões intactas,14 grupos modernos vazios.
+A cria somente função privada/trigger I/U/D da sessão fixa; catálogo714itens,0 objetos
+antigos modificados.9 SELECTs oficiais de integridade conformes. Recorte protegido DPAPI
+renovado e comparado ao recuperado no laboratório;12 cenários/4 recuperações reaproveitados.
+
+Aplicação normal clinicabrotas.com.br/sistema/brotas/financeiro, Recepção: Caixa fechado
+e Abrir caixa disponíveis, inclusive após F5. Nenhum formulário/caixa novo aberto.
+Captura em scratch (ignorado pelo Git); motivo, recuperação e limites no pacote08 e
+relatório14 seção18.03/05/10 continuam disabled; não repetir scripts executados. Nenhuma
+exclusão, transporte de valores, pausa de serviços, permissão existente, commit/push/deploy.
+Branch codex/resgate-local-2026-09-26; HEAD2a6e88d09c0a8a51cd73649bf45530c2db6a6923;
+alterações documentais locais não commitadas. TypeSafe determinística sem IA/chaves.
+Próxima ação: operação normal pelo usuário, com fundo efetivamente contado; qualquer nova
+intervenção requer escopo próprio. Não restaurar/reabrir automaticamente o legado.
+
+
+Validação final desta execução: JSON4/4, node --check de candidato/preparador e git diff --check
+com saída0. Comparados28 arquivos preexistentes:27 idênticos por SHA256 e1 com acréscimo
+autorizado de integridade, prefixo original integralmente preservado.0 divergências não
+autorizadas. Nenhuma suíte visual/financeira repetida, nenhum build ou publicação.
+
+
+
+## Brotas — A/B aplicadas; pós-verificação em conclusão, 04/10/2026,18:32 -03:00
+
+A confirmada21:23:53UTC, catálogo714itens: somente2adições previstas,0alterações/remoções de objetos antigos. Função SECDEF/postgres/search_pathpg_catalog, EXECUTEpublic/anon/authenticated/service_rolefalse; triggerBEFOREI/U/D habilitadaO, corpo igual por linha salvo CRLF/indentação do editor. Script oficial de integridade executado9SELECTs com resultados pertinentes conformes. Inventário pré-B intacto. B COMMIT confirmado21:31:22UTC; execução9ecb1e2a-5fe0-463c-8858-13919b1096f3. Leitura06 independente: estado/evento compatíveis, auditoria original preservada/nova íntegra,0sessões posteriores ativas, financeiro_conciliado=false. Próximo:inventário completo pós-B e interface normal somente por leitura. Nenhuma nova abertura ou transporte de valores. Responsável conta indicada pelo usuário UUID8792e28b-faf6-41fd-9d89-a84a453f0137, proprietaria ativo. Não repetir DML; resposta incerta resolvida por estado/evento. Sem commit/push/deploy.
+
+
+
+## Brotas — A aplicada; B pendente, 04/10/2026,18:24 -03:00
+
+Conta de administração fornecida pelo usuário identificada: UUID8792e28b-faf6-41fd-9d89-a84a453f0137, ativa, papel Proprietária ativo em Brotas; nome exibido Proprietária. A/B autorizadas. Inventário completo reconfirmado antes de A, mesmos fingerprints; cópia mínima DPAPI/ACL renovada, conteúdo idêntico ao recuperado no laboratório salvo momento,4 ensaios reaproveitados. A executada e COMMIT confirmado no SQL Editor oficial xftnkusbyqzyvzrovroj/main às21:23:53UTC; guardas internas de sessão/inventário/catálogo/auditoria/roles/transações passaram. Novos objetos previstos: função privada e trigger de INSERT/UPDATE/DELETE da sessão fixa. B ainda não executada; próximo passo verificar objetos/catálogo e integridade, então encerrar com guardas homologadas. Nenhuma entrada alterada/apagada, caixa novo aberto, valor transportado, commit/push/deploy. Manifesto atualizado; demais trabalhos preservados.
+
+
+
+## Brotas — A/B autorizadas, bloqueio de responsável, 04/10/2026,15:12 -03:00
+
+Usuário declarou todos os dados atuais como testes e ausência de dinheiro/obrigações
+reais do legado; responsável Eduardo Campos, desenvolvedor de software. Registrado
+como declaração do usuário, não conclusão independente. A/B expressamente autorizadas,
+nenhuma aplicada. Projeto/env/main conferidos;2 leituras SQL Editor IAB,18:09/18:10UTC.
+Sessão exata ainda aberta/chave nula;0 transações/preparadas e0 locks em entradas/sessões;
+proteção ausente. Nenhuma conta nome exato Eduardo Campos ou contendo Eduardo encontrada.
+Contrato homologado exige UUID de usuário ativo e vínculo Proprietária ativo em Brotas
+para fechado_por/evento.usuario_id/papel. Não inventar identidade, promover conta ou
+atribuir a outra pessoa. Menor ação: identificar conta existente do responsável com esse
+vínculo; se inexiste, reavaliar contrato administrativo por adaptação revisada/homologada.
+Autorização A/B continua válida; não pedir novamente. Bloqueio antecedeu qualquer escrita.
+Recuperação/ensaios mantidos; não exportar novamente até resolver essa pré-condição.
+Pacote08/manifesto/09/relatório14 seção17 atualizados.05 só manifesto, trava false/ROLLBACK;
+03/04/10/inventário/gerador intactos. Sem banco alterado, caixa encerrado/aberto, pausa,
+permissões existentes, commit/push/deploy. Abertura normal não liberada; UI não verificada.
+Branch codex/resgate-local-2026-09-26; HEAD2a6e88d09c0a8a51cd73649bf45530c2db6a6923;
+alterações locais não commitadas; TypeSafe determinística sem IA/chaves.
+
+
+## Brotas — declaração do usuário registrada, 04/10/2026,15:02 -03:00
+
+Usuário declarou que todos os lançamentos/operações da sessão legada eram testes do
+Codex/GPT, incluindo2 entradas de R$500, PixR$85,90 excluído e fechamento/reabertura.
+Informação atribuída exclusivamente ao usuário, sem conclusão independente da auditoria.
+Objetivo: encerramento administrativo preservando registros/auditoria, sem transportar
+valores, apagar registros ou fabricar contagem/conciliação. Dinheiro/obrigações reais
+associados continuam desconhecidos; responsável nome/função e autorizações A/B pendentes.
+Próxima ação: uma confirmação curta dessas três matérias; não repetir diagnóstico.
+Pacote08, manifesto/09 e relatório14 seção16 atualizados.05 só atualiza manifesto
+embutido, sem lógica financeira;03/04/10/inventário intactos, guardas false/ROLLBACK.
+Nenhum banco consultado/alterado, serviço pausado, teste/exportação repetido ou commit/
+push/deploy. TypeSafe sem IA/chaves. Trabalho existente preservado.
+Branch codex/resgate-local-2026-09-26; HEAD2a6e88d09c0a8a51cd73649bf45530c2db6a6923.
+Alterações locais não commitadas.
+
+
+## Brotas — conferência limitada dos canais concluída, 04/10/2026,14:50 -03:00
+
+Preparação técnica concluída no escopo existente; faltam decisões humanas e A/B.
+Hostinger oficial: ambos sites ativos/Node22/Vite, build2a6e88d0 completed, sem entry_file
+Fastify. Supabase xftnkusbyqzyvzrovroj/main:1 Edge Function equipe-acessos; index321
+linhas lidas trata Equipe/Auth, sem caixa. Integrations instalado Data API/Vault;
+Cron/Queues/Webhooks são opções sem INSTALLED. Não identificado serviço antigo
+ativo/fila financeira; possibilidades genéricas deixam de bloquear o preparo.
+H07/H08/H09/H11 reaproveitados: locks/fingerprints/trigger cobrem escrita anterior,
+concorrente/tardia e resultado incerto; pausa ampla não é condição de integridade.
+Janela breve sem envios é precaução de disponibilidade. Leitura/drenagem pertinente,
+inventário/cópia imediatamente anteriores e pós-checks continuam condições da execução.
+writers=false preserva guarda da janela, não afirma suspensão nem cria busca genérica.
+Se surgir backend histórico ativo, não retomar antes de nova abertura: resolve outro
+caixa e A só protege alvo fixo. Efeitos externos não são revertidos pela trigger;
+nenhum gateway financeiro concreto identificado. Equipe/e-mails/outros sites preservados.
+Pacote08/matriz/janela e manifesto/09 atualizados; recuperação4/4/12 cenários mantidos,
+0 exportações/0 testes novos.05 só manifesto embutido, lógica/trava falsa/ROLLBACK intactas;
+03/10 e geradores inalterados. A/B/respostas nulas; sem pausa, escrita principal,
+financeiro real, permissões, commit/push/deploy. TypeSafe determinística sem IA/chaves.
+Branch codex/resgate-local-2026-09-26, HEAD2a6e88d09c0a8a51cd73649bf45530c2db6a6923.
+Alterações locais não commitadas; detalhes no pacote08 e relatório14 seção15.
+
+Atualizado: 2026-10-04 18:38 -03:00 (America/Bahia).
+Etapa atual: A/B aplicadas; legado encerrado administrativamente e abertura normal disponível em Brotas.
+Pendências históricas de Equipe/aceite e trabalhos de outras tarefas preservados.
+
+
+## Brotas — recuperação do recorte comprovada e canais identificados, 04/10/2026,14:30 -03:00
+
+Principal xftnkusbyqzyvzrovroj/main somente leitura. Exportação oficial Copy as CSV:
+8 partes/31.571 bytes; recorte1 sessão+2 entradas+7 auditorias,0 eventos, definições
+pertinentes. Snapshot/catálogo/fingerprints iguais; Pix excluído só na auditoria.
+Cópia DPAPI/ACL exclusiva em scratch/recuperacao-caixa-legado-82186a79d4054153ad8f629e69ee9574,
+fora de Git/public; não backup integral/PITR ou recuperação de desastre.
+4/4 casos finais de recuperação PostgreSQL17.11 aprovados: dados exatos, funções/
+ACL/triggers, conferência repetida preservando evento posterior, recusa SQLSTATE55000
+antes de DML. Cinco invocações do ensaio,3 interrompidas por ajustes do próprio teste,
+1 preliminar e1 final.12 cenários anteriores reaproveitados, sem repetição integral.
+Cluster final5ffc40de3e9248f38abe0d1e2b273e8a parado14:27:59, senha descartada, PIDfile
+ausente/porta livre; outras2 instâncias desta etapa também paradas. Cadastros auxiliares
+sintéticos e Auth/Vault/versão parcial limitam fidelidade; não houve restore principal.
+Canais: tela/endpoint antigos de agosto inseriam entradas diretamente com JWT usuário;
+bootstrap atual não registra rotas antigas, financeiro_privado/financeiro_api ausentes
+no principal. Data API/serviço BYPASSRLS continuam caminhos técnicos possíveis.
+pg_monitor/pg_read_all_stats confirmados;0 transações/preparadas/locks de escrita nas
+fotografias17:18/17:21UTC. Isso não comprova suspensão de servidores/filas externos.
+Bundles públicos das duas clínicas continuam iguais à publicação2a6e88d0 por SHA256.
+Sequência concreta da janela em08/consultas12: identificar e retirar backends antigos,
+suspender somente envios afetados, drenar transações, renovar cópia/inventário, A só
+após aprovação, revalidar catálogo posterior a A, B só após decisões/aprovação, retomar
+somente serviços atuais. Trigger A protege sessão fixa; não torna writer antigo seguro
+para próxima sessão. Não desativar controles/usar TRUNCATE/cancelar conexões por atalho.
+Pendência real: deploys/filas/consumidores privilegiados externos não inventariados;
+writers=false. Backup=true refere só ao recorte comprovado e exige renovação na janela.
+A/B e respostas da proprietária continuam nulas.03/10 intactos;05 apenas manifesto
+embutido atualizado, trava falsa/ROLLBACK. Sem mudança financeira principal, pausa,
+permissões, commit/push/deploy. TypeSafe sem IA/chaves. Trabalho existente preservado.
+Branch codex/resgate-local-2026-09-26, HEAD2a6e88d09c0a8a51cd73649bf45530c2db6a6923;
+alterações locais não commitadas. Pacote/relatório14 seção14 guardam detalhes atuais.
+
+
+## Brotas — revisão técnica e pacote único concluídos, 04/10/2026,13:34 -03:00
+
+Projeto xftnkusbyqzyvzrovroj/main confirmado no IAB/SQL Editor autorizado;6 lotes
+READ ONLY concluídos, sem escrita/erro SQL. Mesma sessão,2 entradas dinheiro100000cent,
+14 grupos modernos vazios,7 auditorias,0 eventos; catálogo21 tabelas/712 itens igual.
+Auditoria real/vínculos conferidos; correção de literal MD5 não alterou função.
+Proteção ausente no principal. service_role/BYPASSRLS é o caminho do defeito sintético;
+operador authenticated segue RLS. Administrador pode desabilitar/drop/TRUNCATE;
+não prometer proteção contra abuso deliberado. SQL lógico05/10 intacto; cabeçalhos/
+metadados corrigidos. Proposta A/B integral em08; autorizações e respostas nulas.
+4 testes dirigidos PostgreSQL aprovados: H01/H05 +2 recuperação de objetos; nova
+sessão legítima e registros preservados.12 cenários/25 execuções anteriores reaproveitados.
+Cluster novo40330f20a003432198f9417579cd7cfc parado13:24:51, senha descartada,
+PIDfile ausente/porta livre. Não equivale a recuperação do principal.
+Bloqueio comprovado: painel principal Free sem backups do projeto; nenhuma cópia
+principal recuperável apresentada/testada. Writers/janela ainda pendentes; fotografia
+sem transações não prova interrupção dos canais. Antes de B comprovar recuperação,
+aplicar A somente após aprovação específica e refazer catálogo/inventário após A.
+A cria função+trigger e revoga EXECUTE só da função nova, sem linha financeira; B
+muda status/fechado_por/fechado_em e acrescenta1 auditoria+1 evento administrativo,
+sem contagem/conciliação/abertura automática. Custódia/obrigações, natureza das entradas,
+responsável/motivo e decisões específicas A/B continuam pendentes. Desconhecido não é zero.
+Runbook/inventário/manifesto/09/relatório/checkpoints atualizados;03/04 históricos
+preservados. Demais trabalhos locais preservados. TypeSafe reaproveitada sem IA/chaves.
+Branch codex/resgate-local-2026-09-26, HEAD2a6e88d09c0a8a51cd73649bf45530c2db6a6923;
+alterações não commitadas. Sem banco/permissão principal, financeiro real, commit/push/deploy.
+[Relatório14, seção13](../modulos/financeiro/14-CAIXA-LEGADO-BROTAS-DIAGNOSTICO.md).
+
+
+## Brotas — homologação PostgreSQL real concluída, 04/10/2026, 12:52 -03:00
+
+PostgreSQL17.11 portátil encontrado; cluster novo exclusivo em scratch,
+127.0.0.1:64752, somente dados sintéticos e senha própria.12 cenários H01–H12
+aprovados,25 execuções aprovadas incluindo regressões; duas conexões, interrupção
+real, resposta incerta e dump/restore com hashes iguais. Instância parada12:50:39,
+senha descartada, PIDfile ausente e porta sem listener. Sem conexão ao principal.
+Defeito comprovado: service_role/BYPASSRLS podia gravar entrada após encerramento.
+Proteção mínima de função privada/trigger específica homologada somente no isolado;
+proposta10.sql.disabled e05 continuam trava falsa/rollback.03/04/inventário preservados.
+Auth/Vault auxiliares, versão17.11 vs17.6, Storage/Pacientes parcial e origem do ZIP
+sem checksum autoritativo limitam fidelidade; sem equivalência Supabase completa.
+Manifesto: evidência isolada verdadeira; aprovação, responsável, motivo e execução
+nulos; escritores/backup do principal ainda não comprovados. TypeSafe sem IA/chaves.
+Próximo: revisão/aprovação específica da adaptação; depois catálogo/inventário novos,
+controle de escritores e recuperação do principal, decisões humanas e aprovação
+específica do encerramento. Não transportar fundo nem inferir dinheiro físico/quitação.
+Nenhuma operação real, banco/permissão do principal, commit/push/deploy. Runtime normal
+intacto, trabalhos de outras tarefas preservados; alterações locais não commitadas.
+Branch codex/resgate-local-2026-09-26, HEAD2a6e88d09c0a8a51cd73649bf45530c2db6a6923.
+[Financeiro14, seção12](../modulos/financeiro/14-CAIXA-LEGADO-BROTAS-DIAGNOSTICO.md).
+
+
+## Brotas — preparo concluído, homologação pendente, 04/10/2026, 12:04 -03:00
+
+Novo05-candidato.sql.disabled separado com trava falsa/rollback, UUIDs fixos,
+inventário/catalogo/auditorias preservados, locks e repetição; leitores06/07, fixture
+descritiva e12 cenários em homologacao-casos.json, recuperação/quadro humano em08.
+03/04/inventário anterior intactos.30/30 testes Node offline (14+16), lint0 dos4 mjs;
+não comprovam PostgreSQL.0 testes em banco: Docker sem daemon/configuração negada,
+binários PostgreSQL/PGlite/conector utilizável ausentes. Nenhuma nova leitura principal.
+Inventário conectado anterior reaproveitado, sem inferir dinheiro físico/quitação.
+Manifesto sem aprovação/responsável/motivo/execução; custódia/obrigações sem avaliação
+e plano bloqueiam. Locks requerem janela de gravação para ambas as clínicas e controle
+de writers/transações antigas ainda não comprovado. Backup/recuperação pendentes.
+Próximo: comprovar banco dedicado, executar H01–H12 com cópia sintética separada;
+depois decisões humanas/nova leitura antes de aprovação específica. TypeSafe sem IA.
+Sem banco/RPC/permissões/runtime/infraestrutura/financeiro/commit/push/deploy.
+Branch codex/resgate-local-2026-09-26, HEAD2a6e88d09c0a8a51cd73649bf45530c2db6a6923;
+alterações locais não commitadas e demais trabalhos preservados.
+[Relatório14, seção11](../modulos/financeiro/14-CAIXA-LEGADO-BROTAS-DIAGNOSTICO.md).
+
+
+## Brotas — inventário conectado confirmado, 04/10/2026, 11:31 -03:00
+
+Exceção do usuário autoriza nesta tarefa SQL Editor oficial no IAB somente leitura;
+projeto xftnkusbyqzyvzrovroj/main confirmado na interface e ref local correspondente.
+Uma sessão antiga aberta, abertura03/08/2026 14:55:38 -03, fundo registrado R$150,50,
+operador UUID identificado/Recepção atual ativa. Duas entradas dinheiro R$500 cada
+reconfirmadas;14 objetos modernos vazios no grafo. Auditoria7 eventos: Pix R$85,90
+excluído, fechamento/reabertura antigos sem contagem/motivo; executor não comprovado.
+Nenhum valor determina dinheiro físico ou quitação. Catálogo/abrangência/RLS/grants/
+triggers conferidos; grants amplos de auditoria/entradas precisam de revisão de
+preservação, sem alteração/teste de escrita. Inventário/manifesto/runbook e relatório14
+atualizados;01 corrigido após erro de alias,02 SELECT exportável e complemento histórico.
+15 lotes RO concluídos,1 erro corrigido;14 testes locais aprovados, parsing/lint/diff
+conferidos; não homologam PostgreSQL/transição.03.disabled/04 intactos por hash,
+autorização/motivo/responsável/evento nulos.8 pendências de preparo: decisões humanas,
+writers/concorrência, recuperação/controle de auditoria e homologação isolada.
+Próximo: esclarecimentos humanos, homologar/revisar procedimento e revalidar leituras
+antes de aprovação específica. Sem banco/financeiro/RPC/permissão/commit/push/deploy.
+TypeSafe anterior reaproveitada, sem IA. Branch codex/resgate-local-2026-09-26,
+HEAD2a6e88d09c0a8a51cd73649bf45530c2db6a6923; alterações locais não commitadas.
+Fonte: [Financeiro14](../modulos/financeiro/14-CAIXA-LEGADO-BROTAS-DIAGNOSTICO.md), seção10.
+
+
+## Brotas — continuidade bloqueada e canal esclarecido, 04/10/2026, 10:40 -03:00
+
+Usuário restabelecerá o acesso separadamente.8 artefatos anteriores conferidos por
+hash;3 SQLs gerados coerentes. Verificação offline confirmou alvo/snapshot/autorização
+nulos, flags falsas, trava SQL falsa/rollback e33 pendências.12 casos sintéticos
+anteriores reaproveitados, sem repetir suíte ou comprovar PostgreSQL. SQL/manifesto/
+gerador intactos; só documentação de continuidade/acesso atualizada. TypeSafe sem
+pertinência. Nenhuma nova evidência financeira ou tentativa de acessar o banco.
+Correção: ponte Chrome suportada pelo Codex é extensão ChatGPT via Settings >
+Computer Use; Claude Code não foi exposto a este Codex. Runbook traz conexão e menção
+@Chrome, sem prometer disponibilidade. Regra04 de isolamento permanece intacta;
+validar compatibilidade antes de SQL. Não usar IAB/credenciais extraídas como atalho.
+Próxima retomada somente leitura01 e depois02 com alvo confirmado.03 continua
+não autorizado; sem encerramento/abertura/banco/commit/push/deploy. Branch
+codex/resgate-local-2026-09-26, HEAD2a6e88d09c0a8a51cd73649bf45530c2db6a6923.
+Fonte: [Financeiro14](../modulos/financeiro/14-CAIXA-LEGADO-BROTAS-DIAGNOSTICO.md), seção9.
+
+
+## Brotas — procedimento legado preparado e bloqueado, 04/10/2026, 10:31 -03:00
+
+Preparo local em database/operations/caixa-legado-brotas: catálogo/inventário/pós
+somente leitura, manifesto com UUIDs/snapshots nulos, gerador offline e SQL.disabled
+com trava incondicional falsa/rollback. Proposta altera somente status/fechado_por/
+fechado_em da sessão legada exata e acrescenta auditoria; não fabrica contagem,
+conciliação ou aprovação financeira. Relação moderna encontrada bloqueia o recorte.
+Estado antigo fechado + evento administrativo sujeito à confirmação do catálogo.
+Nenhum canal Chrome/Supabase disponível; apenas IAB Ipupiara, sem conector SQL.
+Restabelecer login/interface no SQL Editor oficial xftnkusbyqzyvzrovroj com extensão
+Claude Code. UUID/operador/entradas/relações/obrigações atuais não reconfirmados.
+Docker daemon não encontrado; PostgreSQL isolado indisponível. Nenhum SQL executado,
+nem DML de teste no principal.12 casos do preparador passaram em2 rodadas (24 execuções),
+sem homologação PostgreSQL. Parsing/lint/diff-check/geração coerente conferidos;27
+arquivos anteriores preservados por hash. Runtime/banco/migrations/permissões/
+dependências/visual intactos. Sem chave/API/commit/push/deploy ou transição.
+Relatório14 e runbook detalham recuperação, registro de desconhecidos e decisões
+humanas: origem/natureza, custódia atual, pendências, responsável/motivo. Não exigir
+contagem atual como histórica; nova abertura e fundo contado são independentes.
+Branch codex/resgate-local-2026-09-26, HEAD2a6e88d09c0a8a51cd73649bf45530c2db6a6923.
+Próximo: concluir inventário pelo canal oficial, revisar catálogo/relações, homologar
+em PostgreSQL isolado e obter aprovação específica de outro arquivo de execução;
+este preparo permanece não executável. Histórico e demais pendências preservados.
+Fonte: [Financeiro14](../modulos/financeiro/14-CAIXA-LEGADO-BROTAS-DIAGNOSTICO.md).
+
+
+## Brotas — diagnóstico do legado, 04/10/2026, 10:04 -03:00
+
+Leitura autenticada Recepção: caixa antigo R$150,50, histórico Aberto · legado,
+abertura03/08/2026 14:55; detalhes sem extrato/operador. Código identifica ausência
+de idempotency_key; contratos locais bloqueiam entradas antigas e outra sessão ativa.
+Histórico documental: duas entradas R$1.000,00 e objetos modernos então vazios,
+sem reconfirmação atual. Canal Chrome/Supabase exigido não disponível nesta sessão;
+UUID/operador/formas/relações/pendências e catálogo atuais ainda desconhecidos.
+Proposta: encerramento administrativo pontual com preservação/auditoria, sujeito a
+inventário integral, contagem humana, aprovação da proprietária e procedimento
+transacional revisado/homologado. Nova abertura separada com fundo contado, sem
+transportar R$150,50. Não há fluxo ativo implementado de transição identificado.
+Relatório14 contém fontes, condições, registros afetados e recuperação de interrupção.
+Branch codex/resgate-local-2026-09-26, HEAD2a6e88d09c0a8a51cd73649bf45530c2db6a6923.
+Somente documentação local; sem operação real/SQL/banco/RPC/permissão/commit/push/
+deploy ou mudança de visual. Sem repetição de suítes;26 arquivos externos preservados
+por hash e diff-check aprovado; runtime/banco/dependências intactos.
+Próximo: disponibilizar o canal oficial para inventário somente leitura;
+a execução da transição permanece pendente de aprovação específica.
+Fonte: [Financeiro14](../modulos/financeiro/14-CAIXA-LEGADO-BROTAS-DIAGNOSTICO.md).
+
+
+## Caixa — publicação concluída, 04/10/2026, 09:32 -03:00
+
+Commit seletivo40 arquivos2a6e88d09c0a8a51cd73649bf45530c2db6a6923, push normal,
+remoto alinhado0/0. Hostinger completed Brotas01a106e0-c036-7244-824a-7904af18355b
+e Ipupiara01a106e0-c0af-726b-84bf-7603fa42905f; ambos bundles públicos identificam
+2a6e88d0/0.1.0, com código Caixa/validação de parcelas. Checkout limpo desse SHA:
+TypeScript/lint/build/diff-check aprovados;28 verificações dirigidas reaproveitadas.
+19 públicos preservados no build, nove prévias de e-mail por domínio idênticas
+antes/depois; fixtures/galerias fora do pacote. Versão segue Em desenvolvimento.
+Recepção real nas duas clínicas: abas permitidas, histórico, Estornos/Fiscal vazios,
+Agenda/retorno/recarga e clínica/rota preservadas, logs error/warn vazios. Brotas
+legado bloqueado com detalhes; Ipupiara sem sessão/histórico. Sem sessão moderna para
+provar resumo/movimentos reais; nenhuma operação financeira/banco/RPC/permissão/legado.
+25 trabalhos anteriores conferidos por hash e trechos não selecionados preservados.
+Versão anterior registrada; sem falha/reversão. Pós-deploy documental salvo localmente,
+sem novo commit/redeploy. [Relatório13](../modulos/financeiro/13-CAIXA-RECEPCAO-INTEGRACAO-LOCAL.md)
+contém SHA/builds/links/evidências. Próximo: uso legítimo autorizado; persistência real,
+físico/teclado virtual/zoom nativo/recibos/integrações externas permanecem limitados.
+
+
+## Caixa — commit validado, 04/10/2026, 09:25 -03:00
+
+Commit2a6e88d09c0a8a51cd73649bf45530c2db6a6923,40 arquivos, três documentos
+compartilhados selecionados por trechos.25 trabalhos anteriores com hashes preservados.
+Checkout isolado limpo desse SHA: TypeScript runtime/integração/prévia, lint/build,
+show/diff-check aprovados.19 artefatos públicos preservados, sem controles/entradas
+sintéticas no pacote. Sem .env/chaves nessa cópia de compilação; Hostinger mantém
+configuração existente e código servido será conferido após deploy.28 verificações
+dirigidas reaproveitadas, runtime/spec idênticos; somente linhas vazias finais de três
+fontes da prévia removidas por diff-check. Versão0.1.0 em desenvolvimento preservada.
+Sem banco/RPC/permissões/legado/operações reais. Próximo: push normal e confirmação
+dos dois deploys, bundle servido e leitura autorizada de Recepção disponível.
+
+
 Atualizado: 2026-10-04 09:20 -03:00 (America/Bahia).
 Etapa atual: publicação controlada do Caixa autorizada; seleção e validação em preparação.
 Trabalhos de outras tarefas preservados fora desta seleção.

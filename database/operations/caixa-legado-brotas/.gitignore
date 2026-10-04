@@ -1,0 +1,18 @@
+# Artefatos privados/congelados da execução; não são fontes de reprodução.
+inventario-confirmado.json
+manifesto-revisao.json
+09-RESULTADOS-PREPARO.json
+02-inventario.sql
+03-encerramento.sql.disabled
+04-pos-verificacoes.sql
+05-candidato.sql.disabled
+06-pos-candidato.sql
+07-reinventario-pos.sql
+11-exportacao-recuperacao.sql
+*.dpapi
+*.csv
+*.dump
+*.backup
+*.pgpass
+exportacoes/
+recuperacao/

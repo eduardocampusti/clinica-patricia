@@ -308,3 +308,15 @@ Detalhes e limitações: [Agenda 12](../agenda/12-EDICAO-DATA-HORARIO.md).
   Clínica Patrícia e LabBrotas.
 - `supabase/tools/verificar-integridade.sql` — script de
   verificação de integridade selecionada.
+
+## Verificação após proteção do legado Financeiro — 04/10/2026,18:28 -03:00
+
+Projeto xftnkusbyqzyvzrovroj/main, SQL Editor oficial IAB autorizado especificamente para
+A/B. Após A,9SELECTs do script supabase/tools/verificar-integridade.sql executados em
+transação READ ONLY. Tabelas/colunas/RPCs esperadas presentes, grants de CPF anon=false/
+authenticated=true, bucketpacientes-fotosprivado=true; nenhum indício textual de nome
+inválido de responsáveis. Contagem agregada3, sem selecionar documentos/nomes de pacientes.
+Nenhum dado, objeto ou permissão de Pacientes alterado. Nova função/trigger Financeiro
+conferidas via pg_proc/pg_trigger/ACL, sem usar ledger como prova. Não é prova de integridade
+exaustiva do banco. Detalhes em [Financeiro14, seção18](../financeiro/14-CAIXA-LEGADO-BROTAS-DIAGNOSTICO.md).
+Histórico preexistente desta documentação preservado integralmente.

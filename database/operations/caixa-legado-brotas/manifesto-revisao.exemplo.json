@@ -1,0 +1,107 @@
+{
+  "natureza": "EXEMPLO_SINTETICO_BLOQUEADO; não é inventário, autorização ou instrução de reaplicação",
+  "estado": "EXEMPLO_BLOQUEADO",
+  "project_ref": "xftnkusbyqzyvzrovroj",
+  "clinica_subdomain": "brotas",
+  "clinica_id": null,
+  "sessao_id": null,
+  "sessao_original": null,
+  "snapshot": {
+    "entradas_caixa": {
+      "quantidade": 0,
+      "md5": "00000000000000000000000000000000"
+    },
+    "recebimentos": {
+      "quantidade": 0,
+      "md5": "00000000000000000000000000000000"
+    },
+    "recebimentos_pagamentos": {
+      "quantidade": 0,
+      "md5": "00000000000000000000000000000000"
+    },
+    "movimentos_caixa": {
+      "quantidade": 0,
+      "md5": "00000000000000000000000000000000"
+    },
+    "estornos": {
+      "quantidade": 0,
+      "md5": "00000000000000000000000000000000"
+    },
+    "estornos_pagamentos": {
+      "quantidade": 0,
+      "md5": "00000000000000000000000000000000"
+    },
+    "sangrias_caixa": {
+      "quantidade": 0,
+      "md5": "00000000000000000000000000000000"
+    },
+    "fechamentos_caixa": {
+      "quantidade": 0,
+      "md5": "00000000000000000000000000000000"
+    },
+    "revisoes_fechamento_caixa": {
+      "quantidade": 0,
+      "md5": "00000000000000000000000000000000"
+    },
+    "repasses": {
+      "quantidade": 0,
+      "md5": "00000000000000000000000000000000"
+    },
+    "repasses_itens": {
+      "quantidade": 0,
+      "md5": "00000000000000000000000000000000"
+    },
+    "ajustes_repasse": {
+      "quantidade": 0,
+      "md5": "00000000000000000000000000000000"
+    },
+    "aplicacoes_ajuste_repasse": {
+      "quantidade": 0,
+      "md5": "00000000000000000000000000000000"
+    },
+    "documentos_fiscais": {
+      "quantidade": 0,
+      "md5": "00000000000000000000000000000000"
+    },
+    "tentativas_documento_fiscal": {
+      "quantidade": 0,
+      "md5": "00000000000000000000000000000000"
+    }
+  },
+  "catalogo_md5": null,
+  "catalogo_revisado": false,
+  "canal_projeto_confirmados": false,
+  "abrangencia_confirmada": false,
+  "inventario_completo": false,
+  "vinculos_conferidos": false,
+  "originais_cruzados": false,
+  "escritores_antigos_controlados": false,
+  "homologacao_postgresql_isolado": true,
+  "backup_recuperacao_verificados": false,
+  "observacao_homologacao": "Ensaios históricos documentados em 08; este exemplo não comprova o principal e não os executa.",
+  "autorizacao_execucao": null,
+  "execucao_id": null,
+  "responsavel_id": null,
+  "motivo": null,
+  "avaliacao_pendencias": {
+    "estado": null,
+    "plano_responsabilidade": null,
+    "tratamento_custodia_definido": false
+  },
+  "decisoes_humanas": {
+    "origem_natureza_entradas": null,
+    "dinheiro_sob_responsabilidade": "nao_informado",
+    "pendencias_conhecidas": null,
+    "limitacoes_historicas": null
+  },
+  "auditoria_fingerprints": {
+    "auditoria": {
+      "quantidade": 0,
+      "md5": "00000000000000000000000000000000"
+    },
+    "eventos_financeiros": {
+      "quantidade": 0,
+      "md5": "00000000000000000000000000000000"
+    }
+  }
+}

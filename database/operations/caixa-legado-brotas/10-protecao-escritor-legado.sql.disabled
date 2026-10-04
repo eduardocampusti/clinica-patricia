@@ -1,0 +1,33 @@
+-- PROPOSTA DE ADAPTAÇÃO MÍNIMA. NÃO APLICAR NO PRINCIPAL. APROVAÇÃO PENDENTE.
+begin;
+do $$ begin
+ if not false then raise exception 'PROTECAO BLOQUEADA: aplicação no principal não autorizada'; end if;
+end $$;
+create function private.financeiro_proteger_entrada_legado_administrativo() returns trigger
+language plpgsql security definer set search_path=pg_catalog as $$
+declare v_status public.status_sessao_caixa; v_key text; v_alvo boolean;
+begin
+ v_alvo:=case when tg_op='INSERT' then new.sessao_caixa_id='a4a18e49-6634-4058-9fd8-07f3b065fd63'::uuid
+   when tg_op='DELETE' then old.sessao_caixa_id='a4a18e49-6634-4058-9fd8-07f3b065fd63'::uuid
+   else old.sessao_caixa_id='a4a18e49-6634-4058-9fd8-07f3b065fd63'::uuid or new.sessao_caixa_id='a4a18e49-6634-4058-9fd8-07f3b065fd63'::uuid end;
+ if not v_alvo then return case when tg_op='DELETE' then old else new end; end if;
+ select status,idempotency_key into v_status,v_key from public.sessoes_caixa
+   where id='a4a18e49-6634-4058-9fd8-07f3b065fd63'::uuid and clinica_id='7c2a450d-7b9a-4701-8d5a-982eda331c58'::uuid for share;
+ if not found or v_key is not null then raise exception 'Alvo legado/clínica inválido' using errcode='55000'; end if;
+ if v_status<>'aberto' or exists(select 1 from public.eventos_auditoria_financeira
+   where clinica_id='7c2a450d-7b9a-4701-8d5a-982eda331c58'::uuid and entidade_id='a4a18e49-6634-4058-9fd8-07f3b065fd63'::uuid
+     and entidade='sessao_caixa' and acao='encerrar_caixa_legado_administrativamente') then
+   raise exception 'Histórico legado encerrado administrativamente: gravação proibida' using errcode='55000';
+ end if;
+ if tg_op<>'DELETE' and (new.sessao_caixa_id<>'a4a18e49-6634-4058-9fd8-07f3b065fd63'::uuid or new.clinica_id<>'7c2a450d-7b9a-4701-8d5a-982eda331c58'::uuid) then
+   raise exception 'Não mover entrada do alvo para outra sessão/clínica' using errcode='55000';
+ end if;
+ return case when tg_op='DELETE' then old else new end;
+end $$;
+revoke execute on function private.financeiro_proteger_entrada_legado_administrativo()
+from public,anon,authenticated,service_role;
+create trigger entradas_caixa_legado_administrativo before insert or update or delete
+on public.entradas_caixa for each row execute function private.financeiro_proteger_entrada_legado_administrativo();
+-- Não cria eventos, não altera valores/registros nem permissões de objetos existentes.
+-- EXECUTE direto do novo objeto privado revogado; execução pela trigger preservada.
+rollback;

@@ -1,0 +1,64 @@
+{
+  "natureza": "REGISTRO_HISTORICO_MINIMO; NÃO EXECUTAR, NÃO REAPLICAR",
+  "project_ref": "xftnkusbyqzyvzrovroj",
+  "branch_banco": "main",
+  "clinica_subdomain": "brotas",
+  "clinica_id": "7c2a450d-7b9a-4701-8d5a-982eda331c58",
+  "sessao_id": "a4a18e49-6634-4058-9fd8-07f3b065fd63",
+  "origem_evidencia": "Verificação conectada documentada em 08 e relatório14, 04/10/2026. Esta sincronização não repetiu SQL.",
+  "declaracao_usuario": "Eduardo Campos declarou dados como testes, sem dinheiro ou obrigações reais; não é conclusão independente da auditoria.",
+  "autorizacao_historica": {
+    "responsavel": "Eduardo Campos, desenvolvedor de software",
+    "A": "Expressamente concedida e consumida em 04/10/2026",
+    "B": "Expressamente concedida e consumida em 04/10/2026"
+  },
+  "A": {
+    "concluida_em": "2026-10-04T18:23:53-03:00",
+    "objetos_criados": [
+      "private.financeiro_proteger_entrada_legado_administrativo()",
+      "public.entradas_caixa:trigger entradas_caixa_legado_administrativo"
+    ],
+    "operacoes": "BEFORE INSERT/UPDATE/DELETE exclusivamente para a sessão fixa",
+    "security_definer": true,
+    "owner": "postgres",
+    "search_path": "pg_catalog",
+    "execute_direto_revogado": [
+      "PUBLIC",
+      "anon",
+      "authenticated",
+      "service_role"
+    ],
+    "referencia_desabilitada": "10-protecao-escritor-legado.sql.disabled",
+    "referencia_sha256": "d67b0485e34167779b111ddf25409409beaa841c6ad7129f02b123af1c41bde8",
+    "limites": "Não impede administrador de desabilitar a proteção; não controla efeitos externos nem TRUNCATE deliberado."
+  },
+  "B": {
+    "concluida_em": "2026-10-04T18:31:22-03:00",
+    "estado_final": "fechado",
+    "natureza": "encerramento administrativo, não fechamento financeiro conciliado",
+    "campos_alterados": [
+      "status",
+      "fechado_por",
+      "fechado_em"
+    ],
+    "evento_id": "9ecb1e2a-5fe0-463c-8858-13919b1096f3",
+    "auditoria_nova_id": 1582,
+    "originais_preservados": {
+      "entradas": 2,
+      "auditorias": 7
+    },
+    "valor_contado": null,
+    "valor_esperado": null,
+    "diferenca": null,
+    "caixa_novo_criado": false,
+    "valores_transportados": false
+  },
+  "recuperacao": "Recorte mínimo privado DPAPI/ACL fora do Git, recuperado no laboratório; não é backup integral. Caminho e limites no pacote08. Não contém exportação neste registro.",
+  "verificacoes_reaproveitadas": {
+    "postgresql_cenarios": 12,
+    "recuperacao_cenarios": 4,
+    "integridade_principal_selects": 9,
+    "interface": "Recepção Brotas: fechado/Abrir caixa disponíveis após F5; nenhum caixa aberto"
+  },
+  "cli": "Geradores offline exigem manifesto privado local ignorado. Testes e laboratório usam manifesto-revisao.exemplo.json. Não transformar este registro em manifesto executável."
+}
