@@ -85,14 +85,14 @@ export default function FinanceiroFiscal({ clinicaId, usuarioId }: { clinicaId: 
       <select className={`${campo} mt-1 block`} value={status} onChange={(e) => { setStatus(e.target.value as typeof status); setPagina(0) }}>
         <option value="todos">Todas</option>{Object.entries(rotulos).map(([valor, rotulo]) => <option key={valor} value={valor}>{rotulo}</option>)}
       </select></label><button type="button" className={botao} onClick={() => void consulta.recarregar()}>Atualizar</button></div>
-    {sucesso && <FeedbackAlert variant="warning" title="Solicitação registrada" description={sucesso} onClose={() => setSucesso(null)} />}
+    {sucesso && <FeedbackAlert variant="info" title="Solicitação registrada" description={sucesso} onClose={() => setSucesso(null)} />}
     {consulta.resultado.estado === 'carregando' && <div role="status" aria-label="Carregando documentos fiscais" className={`${card} finance-skeleton`} />}
     {consulta.resultado.estado === 'erro' && <FeedbackAlert variant="destructive" title="Não foi possível carregar os documentos fiscais" description={consulta.resultado.erro.message} action={<button type="button" onClick={() => void consulta.recarregar()}>Tentar novamente</button>} urgent />}
     {dados && <section className={card}><h2 className="texto-titulo-secao">Documentos da clínica</h2>
       {!dados.itens.length ? <div className="finance-empty"><strong>Nenhum documento nesta seleção</strong><p>Solicitações fiscais da clínica aparecerão aqui.</p></div> :
         <ul className="mt-3 divide-y divide-[var(--borda)]">{dados.itens.map((documento) => <li key={documento.id} className="flex flex-wrap items-center justify-between gap-3 py-4">
           <div><div className="flex flex-wrap items-center gap-2"><p className="font-medium">{documento.paciente}</p>
-            <span className="finance-status" data-tone={documento.status === 'emitida' ? 'success' : documento.status.startsWith('erro') ? 'danger' : documento.status.includes('solicitada') ? 'info' : 'warning'}>{rotulos[documento.status]}</span></div>
+            <span className="finance-status" data-tone={documento.status === 'emitida' ? 'success' : documento.status.startsWith('erro') ? 'danger' : 'info'}>{rotulos[documento.status]}</span></div>
             <p className="text-sm text-[var(--texto-secundario)]">Atualizado {formatarDataFinanceira(documento.updated_at)}</p>
             {documento.ultima_tentativa && <div className="finance-fiscal-timeline"><span>Solicitação de {documento.ultima_tentativa.tipo === 'emissao' ? 'emissão' : 'cancelamento'}</span><i aria-hidden="true" /><span>{rotulosTentativa[documento.ultima_tentativa.status]}</span><small>{formatarDataFinanceira(documento.ultima_tentativa.finalizado_em ?? documento.ultima_tentativa.created_at)}</small></div>}
             {(documento.status === 'erro_emissao' || documento.status === 'erro_cancelamento') && <p className="text-xs text-[var(--cor-erro)]">Falha interna registrada. Consulte a equipe responsável antes de repetir.</p>}

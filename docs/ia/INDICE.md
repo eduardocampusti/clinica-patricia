@@ -32,6 +32,14 @@ Esta memória usa arquivos do repositório, não histórico de chat, banco de me
 
 Para módulos ainda sem índice próprio, localizar fontes existentes sem criar documentação vazia.
 
+Financeiro — [Caixa da Recepção: diagnóstico/prévia isolada](../modulos/financeiro/12-CAIXA-RECEPCAO-PREVIA.md)
+concluídos em03/10/2026; mapa de contratos e galeria histórica. Pedido posterior de04/10
+aprovou o visual e autorizou a [integração local](../modulos/financeiro/13-CAIXA-RECEPCAO-INTEGRACAO-LOCAL.md),
+concluída com testes sintéticos e leitura conectada sem operações. Fontes/capturas/limites
+no13. Revisão de04/10 concluiu prontidão para publicação controlada do recorte,
+com manifesto seletivo e28 verificações dirigidas finais aprovadas; não publicada,
+sem banco/permissões/commit/push/deploy.
+
 ## Histórico e conflitos conhecidos
 
 [Status de agosto](../../02-STATUS-MODULOS.md), [TODO antigo](../../TODO.md),

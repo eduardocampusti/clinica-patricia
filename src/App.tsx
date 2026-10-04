@@ -44,7 +44,7 @@ function App() {
   const [atendimentoParaAbrir, setAtendimentoParaAbrir] = useState<string | null>(null)
   const [cadastroPacienteAgendaAberto, setCadastroPacienteAgendaAberto] = useState(false)
   const [pacienteCriadoAgenda, setPacienteCriadoAgenda] = useState<PacienteCriadoAgenda | null>(null)
-  const [entradaPainel, setEntradaPainel] = useState<{ clinicaId: string; novoPaciente?: boolean; novoAgendamento?: boolean; pacienteId?: string } | null>(null)
+  const [entradaPainel, setEntradaPainel] = useState<{ clinicaId: string; novoPaciente?: boolean; novoAgendamento?: boolean; pacienteId?: string; receberPagamento?: boolean } | null>(null)
   const { aplicarCoresClinica } = useTheme()
   const { clinicas: clinicasDoUsuario, carregando: carregandoClinicas, erro: erroClinicas } = useClinicasDoUsuario(session?.user.id)
   const {
@@ -58,7 +58,7 @@ function App() {
   const conviteValido = !!conviteId && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/iu.test(conviteId)
   const sessionUserId = session?.user.id
 
-  function setTela(destino: Tela, entrada?: { clinicaId: string; novoPaciente?: boolean; novoAgendamento?: boolean; pacienteId?: string }) {
+  function setTela(destino: Tela, entrada?: { clinicaId: string; novoPaciente?: boolean; novoAgendamento?: boolean; pacienteId?: string; receberPagamento?: boolean }) {
     if (!papel || !TELAS_POR_PAPEL[papel].includes(destino)) return
     const marca = Object.values(CLINIC_BRANDS).find(item => clinicaAtiva && clinicaCorrespondeAoBrand(clinicaAtiva, item))
     if (!marca) return
@@ -283,6 +283,9 @@ function App() {
         onAgenda={() => setTela('agenda')} onPacientes={() => setTela('pacientes')} onFinanceiro={() => setTela('financeiro')} />}
       {tela === 'agenda' && (
         <>
+          {entradaPainel?.clinicaId === clinicaAtivaId && entradaPainel.receberPagamento && <div className="mb-4"><FeedbackAlert variant="info" title="Receber pagamento pela Agenda"
+            description={`Selecione o dia e o agendamento de ${clinicaAtiva?.nome ?? 'esta clínica'}. Nos detalhes, use Receber pagamento; o valor será consultado no cadastro autorizado.`}
+            action={<button className="finance-button" onClick={() => setTela('financeiro')}>Voltar ao Caixa</button>} onClose={() => setEntradaPainel(null)} /></div>}
           <Agenda
             iniciarComNovoAgendamento={entradaPainel?.clinicaId === clinicaAtivaId && entradaPainel.novoAgendamento}
             clinicaAtiva={clinicaAtiva}
@@ -344,8 +347,9 @@ function App() {
         />
       )}
       {tela === 'financeiro' && (
-        <FinanceiroModulo clinicaAtivaId={clinicaAtivaId} carregandoClinica={carregandoClinica}
-          usuarioId={session.user.id} papel={papel} carregandoPapel={carregandoPapel} />
+        <FinanceiroModulo key={`${session.user.id}:${clinicaAtivaId}:${papel}`} clinicaAtivaId={clinicaAtivaId} clinicaNome={clinicaAtiva?.nome} carregandoClinica={carregandoClinica}
+          usuarioId={session.user.id} papel={papel} carregandoPapel={carregandoPapel}
+          onReceberPagamento={() => { if (clinicaAtivaId) setTela('agenda', { clinicaId: clinicaAtivaId, receberPagamento: true }) }} />
       )}
       {tela === 'sobre' && <SobreSistema clinicaAtiva={clinicaAtiva} />}
       {tela !== 'dashboard' &&

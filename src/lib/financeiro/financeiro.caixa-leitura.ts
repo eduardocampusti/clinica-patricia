@@ -53,6 +53,7 @@ export interface FechamentoCaixa {
 
 export interface DetalhesCaixa {
   sangrias: SangriaCaixa[]
+  temSangriaPendente: boolean
   ultimoFechamento: FechamentoCaixa | null
   observacaoUltimaRevisao: string | null
 }
@@ -101,7 +102,7 @@ export async function consultarCaixaAtual(clinicaId: UUID): Promise<EstadoCaixaA
 export async function consultarDetalhesCaixa(sessaoCaixaId: UUID): Promise<DetalhesCaixa> {
   try {
     const { supabase } = await import('../supabase')
-    const [sangrias, fechamento] = await Promise.all([
+    const [sangrias, fechamento, pendentes] = await Promise.all([
       supabase.from('sangrias_caixa')
         .select('id, valor, motivo, status, solicitado_em, observacao_revisao')
         .eq('sessao_caixa_id', sessaoCaixaId)
@@ -110,9 +111,12 @@ export async function consultarDetalhesCaixa(sessaoCaixaId: UUID): Promise<Detal
         .select('id, tentativa, status, valor_esperado, valor_contado, diferenca, justificativa_diferenca, enviado_em')
         .eq('sessao_caixa_id', sessaoCaixaId)
         .order('tentativa', { ascending: false }).limit(1).maybeSingle(),
+      supabase.from('sangrias_caixa').select('id').eq('sessao_caixa_id', sessaoCaixaId)
+        .in('status', ['solicitada', 'aprovada']).limit(1),
     ])
     if (sangrias.error) throw sangrias.error
     if (fechamento.error) throw fechamento.error
+    if (pendentes.error) throw pendentes.error
     let observacaoUltimaRevisao: string | null = null
     if (fechamento.data) {
       const revisao = await supabase.from('revisoes_fechamento_caixa')
@@ -122,6 +126,7 @@ export async function consultarDetalhesCaixa(sessaoCaixaId: UUID): Promise<Detal
     }
     return {
       sangrias: (sangrias.data ?? []) as SangriaCaixa[],
+      temSangriaPendente: !!pendentes.data?.length,
       ultimoFechamento: fechamento.data as FechamentoCaixa | null,
       observacaoUltimaRevisao,
     }

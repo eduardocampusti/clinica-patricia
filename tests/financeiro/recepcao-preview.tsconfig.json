@@ -1,0 +1,6 @@
+{
+  "extends": "../../tsconfig.app.json",
+  "compilerOptions": { "tsBuildInfoFile": "../../node_modules/.tmp/caixa-previa.tsbuildinfo" },
+  "include": ["recepcao-preview.tsx", "recepcao-modelo.ts"],
+  "exclude": []
+}

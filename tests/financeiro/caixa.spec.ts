@@ -28,9 +28,9 @@ async function preparar(page: Page, estadoInicial: Estado, papel = 'recepcao') {
         total_suprimentos: '0.00', total_sangrias: '0.00', total_estornos_dinheiro: '0.00',
         valor_esperado: '200.00', total_clinica: '123.45', total_profissionais: '376.55' },
     }
-    else if (nome === 'sangrias_caixa') data = sangria ? [sangria] : []
-    else if (nome === 'fechamentos_caixa') data = fechamento
-    else if (nome === 'revisoes_fechamento_caixa') data = revisaoObservacao ? { observacao: revisaoObservacao } : null
+    else if (nome === 'sangrias_caixa') data = sangria && (!url.searchParams.has('status') || ['solicitada', 'aprovada'].includes(String(sangria.status))) ? [sangria] : []
+    else if (nome === 'fechamentos_caixa') data = url.searchParams.get('limit') === '21' ? fechamento ? [fechamento] : [] : fechamento
+    else if (nome === 'revisoes_fechamento_caixa') data = url.searchParams.get('select')?.includes('fechamento_id') ? revisaoObservacao && fechamento ? [{ fechamento_id: fechamento.id, observacao: revisaoObservacao, acao: 'devolver', revisado_em: '2026-09-22T15:00:00Z' }] : [] : revisaoObservacao ? { observacao: revisaoObservacao } : null
     else if (nome.startsWith('financeiro_') && nome !== 'financeiro_resumo_caixa') {
       chamadas.push({ nome, parametros: route.request().postDataJSON() })
       if (nome === 'financeiro_abrir_caixa') estado = 'aberto'
@@ -81,8 +81,8 @@ test('abre caixa por RPC e mostra resumo oficial sem soma local', async ({ page 
   const chamadas = await preparar(page, 'vazio')
   await expect(page.getByRole('heading', { name: 'Caixa fechado' })).toBeVisible()
   await page.getByRole('button', { name: 'Abrir caixa' }).click()
-  await page.getByLabel('Valor disponível para troco').fill('0,00')
-  await page.getByRole('button', { name: 'Confirmar' }).click()
+  await page.getByLabel('Fundo inicial contado').fill('0,00')
+  await page.getByRole('button', { name: 'Abrir caixa com R$ 0,00' }).click()
   await expect(page.getByText('R$ 200,00', { exact: true }).first()).toBeVisible()
   await page.screenshot({ path: `scratch/financeiro-caixa-${info.project.name}.png`, fullPage: true })
   expect(chamadas).toHaveLength(1)
@@ -93,7 +93,7 @@ test('abre caixa por RPC e mostra resumo oficial sem soma local', async ({ page 
 test('suprimento envia valor e motivo por RPC com chave estável', async ({ page }) => {
   const chamadas = await preparar(page, 'aberto')
   await expect(page.getByText('Dinheiro esperado')).toBeVisible()
-  await page.getByRole('button', { name: 'Adicionar suprimento' }).click()
+  await page.getByRole('button', { name: 'Suprimento', exact: true }).click()
   await page.getByLabel('Valor', { exact: true }).fill('35,25')
   await page.getByLabel('Motivo').fill('Troco para a recepção')
   await page.getByRole('button', { name: 'Confirmar' }).click()
@@ -131,7 +131,7 @@ test('fechamento divergente exige justificativa e revisão da proprietária', as
   await page.getByLabel('Dinheiro contado').fill('190,00')
   await expect(page.getByLabel('Justificativa da diferença')).toBeVisible()
   await page.getByLabel('Justificativa da diferença').fill('Diferença conferida')
-  await page.getByRole('button', { name: 'Confirmar' }).click()
+  await page.getByRole('button', { name: 'Enviar para aprovação' }).click()
   await expect(page.getByText('Tentativa 1')).toBeVisible()
   await page.getByRole('button', { name: 'Aprovar fechamento' }).click()
   await page.getByRole('button', { name: 'Confirmar' }).click()
@@ -149,14 +149,14 @@ test('devolução preserva orientação e gera nova tentativa de fechamento', as
   await page.getByRole('button', { name: 'Confirmar' }).click()
   await page.getByRole('button', { name: 'Conferir e enviar fechamento' }).click()
   await page.getByLabel('Dinheiro contado').fill('200,00')
-  await page.getByRole('button', { name: 'Confirmar' }).click()
+  await page.getByRole('button', { name: 'Enviar para aprovação' }).click()
   await page.getByRole('button', { name: 'Devolver para correção' }).click()
   await page.getByLabel('Observação').fill('Conferir cédulas novamente')
   await page.getByRole('button', { name: 'Confirmar' }).click()
   await expect(page.getByText('Orientação da revisão: Conferir cédulas novamente')).toBeVisible()
   await page.getByRole('button', { name: 'Conferir e enviar fechamento' }).click()
   await page.getByLabel('Dinheiro contado').fill('200,00')
-  await page.getByRole('button', { name: 'Confirmar' }).click()
+  await page.getByRole('button', { name: 'Enviar para aprovação' }).click()
   await expect(page.getByText('Tentativa 2')).toBeVisible()
   expect(chamadas.filter((chamada) => chamada.nome === 'financeiro_enviar_fechamento')).toHaveLength(2)
 })

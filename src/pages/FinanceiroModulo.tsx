@@ -14,12 +14,14 @@ const rotulos: Record<Aba, string> = {
 }
 const icones: Record<Aba, FinanceIconName> = { painel: 'document', caixa: 'cash', estornos: 'refund', repasses: 'people', fiscal: 'wallet', relatorios: 'chart' }
 
-export default function FinanceiroModulo({ clinicaAtivaId, carregandoClinica, usuarioId, papel, carregandoPapel }: {
+export default function FinanceiroModulo({ clinicaAtivaId, clinicaNome, carregandoClinica, usuarioId, papel, carregandoPapel, onReceberPagamento }: {
   clinicaAtivaId: string | null
+  clinicaNome?: string
   carregandoClinica: boolean
   usuarioId: string
   papel: Papel | null
   carregandoPapel: boolean
+  onReceberPagamento?: () => void
 }) {
   const [aba, setAba] = useState<Aba>('painel')
   const [periodHost, setPeriodHost] = useState<HTMLDivElement | null>(null)
@@ -40,24 +42,24 @@ export default function FinanceiroModulo({ clinicaAtivaId, carregandoClinica, us
 
   if ((!administrativo && papel !== 'medico') || !clinicaAtivaId || carregandoClinica || carregandoPapel) {
     return <div className="financeiro-ui"><FinanceiroCaixa clinicaAtivaId={clinicaAtivaId} carregandoClinica={carregandoClinica}
-      usuarioId={usuarioId} papel={papel} carregandoPapel={carregandoPapel} /></div>
+      usuarioId={usuarioId} papel={papel} carregandoPapel={carregandoPapel} clinicaNome={clinicaNome} onReceberPagamento={onReceberPagamento} /></div>
   }
 
   return <div className="financeiro-ui space-y-5">
-    <div className="finance-page-intro">
+    {papel !== 'recepcao' && <div className="finance-page-intro">
       <div><h1 className="texto-titulo-tela">Financeiro</h1>
         <p>{papel === 'medico' ? 'Sua produção e seus repasses, em um só lugar.' : 'Acompanhe a operação e os resultados da clínica.'}</p></div>
       <div className="finance-period-host" ref={setPeriodHost} />
-    </div>
+    </div>}
     <nav ref={navegacao} aria-label="Áreas do Financeiro" className="finance-nav">
       {abasPermitidas.map((opcao) => <button key={opcao} type="button" aria-current={abaAtiva === opcao ? 'page' : undefined}
         onClick={() => setAba(opcao)}><FinanceIcon name={icones[opcao]} />{rotulos[opcao]}</button>)}
     </nav>
     {abaAtiva === 'caixa' ? <FinanceiroCaixa clinicaAtivaId={clinicaAtivaId} carregandoClinica={false}
-      usuarioId={usuarioId} papel={papel} carregandoPapel={false} />
-      : abaAtiva === 'estornos' ? <FinanceiroEstornos clinicaId={clinicaAtivaId} usuarioId={usuarioId} papel={papel} />
+      usuarioId={usuarioId} papel={papel} carregandoPapel={false} clinicaNome={clinicaNome} onReceberPagamento={onReceberPagamento} />
+      : abaAtiva === 'estornos' ? <FinanceiroEstornos key={`${usuarioId}:${clinicaAtivaId}:${papel}`} clinicaId={clinicaAtivaId} usuarioId={usuarioId} papel={papel} />
         : abaAtiva === 'repasses' ? <FinanceiroRepasses clinicaId={clinicaAtivaId} usuarioId={usuarioId} />
-        : abaAtiva === 'fiscal' ? <FinanceiroFiscal clinicaId={clinicaAtivaId} usuarioId={usuarioId} />
+        : abaAtiva === 'fiscal' ? <FinanceiroFiscal key={`${usuarioId}:${clinicaAtivaId}:${papel}`} clinicaId={clinicaAtivaId} usuarioId={usuarioId} />
         : abaAtiva === 'painel' ? <FinanceiroPainel key={`${clinicaAtivaId}:${papel}`} clinicaId={clinicaAtivaId} papel={papel === 'medico' ? 'medico' : 'proprietaria'} periodHost={periodHost} onNavegar={(destino) => { if (abasPermitidas.includes(destino)) { focarAba.current = true; setAba(destino) } }} />
           : <Suspense fallback={<div role="status" aria-label="Carregando relatórios" className="finance-skeleton" />}>
             <FinanceiroRelatorios clinicaId={clinicaAtivaId} papel={papel === 'medico' ? 'medico' : 'proprietaria'} />

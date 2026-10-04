@@ -12,10 +12,15 @@ import {
   registrarSuprimento, revisarFechamento, revisarSangria, solicitarSangria,
 } from '../lib/financeiro/financeiro.caixa'
 import { invalidarFinanceiro } from '../lib/financeiro/financeiro.cache'
-import { mensagemErroFinanceiro } from '../lib/financeiro/financeiro.errors'
+import { mapearErroFinanceiro, mensagemErroFinanceiro } from '../lib/financeiro/financeiro.errors'
 import { idempotenciaFinanceira, type TentativaIdempotente } from '../lib/financeiro/financeiro.idempotency'
 import { decimalBancoParaCentavos, formatarCentavos, textoMonetarioParaCentavos } from '../lib/financeiro/financeiro.money'
 import type { Papel } from '../hooks/usePapelNaClinica'
+import { ComposicaoCaixa, IndicadoresCaixa } from '../components/financeiro/CaixaRecepcaoVisual'
+import { ExtratoCaixa } from '../components/financeiro/ExtratoCaixa'
+import { HistoricoCaixa } from '../components/financeiro/HistoricoCaixa'
+import { TentativasFechamento } from '../components/financeiro/TentativasFechamento'
+import { formatarDataFinanceira } from '../lib/financeiro/financeiro.date'
 
 type Acao =
   | { tipo: 'abrir' | 'suprimento' | 'solicitar_sangria' | 'enviar_fechamento' | 'iniciar_fechamento' }
@@ -49,11 +54,13 @@ function formularioMonetario(acao: Acao): boolean {
   return ['abrir', 'suprimento', 'solicitar_sangria', 'enviar_fechamento'].includes(acao.tipo)
 }
 
-function OperacaoCaixa({ acao, caixa, clinicaId, usuarioId, onFechar, onConcluido }: {
+function OperacaoCaixa({ acao, caixa, clinicaId, clinicaNome, usuarioId, recepcao, onFechar, onConcluido }: {
   acao: Acao
   caixa: CaixaOperacional | null
   clinicaId: string
+  clinicaNome: string
   usuarioId: string
+  recepcao: boolean
   onFechar: () => void
   onConcluido: () => void
 }) {
@@ -64,7 +71,9 @@ function OperacaoCaixa({ acao, caixa, clinicaId, usuarioId, onFechar, onConcluid
   const [enviado, setEnviado] = useState(false)
   const tentativaRef = useRef<TentativaIdempotente | null>(null)
   const trava = useRef(false)
-  const titulo = rotuloAcao(acao)
+  const vigente = useRef(true)
+  useEffect(() => { vigente.current = true; return () => { vigente.current = false } }, [])
+  const titulo = recepcao && acao.tipo === 'iniciar_fechamento' ? 'Conferir fechamento' : rotuloAcao(acao)
   const precisaMotivo = acao.tipo === 'suprimento' || acao.tipo === 'solicitar_sangria'
   const exigeJustificativa = acao.tipo === 'enviar_fechamento' && caixa && valor.trim() !== '' && (() => {
     try { return textoMonetarioParaCentavos(valor) !== decimalBancoParaCentavos(caixa.resumo.valor_esperado) }
@@ -80,8 +89,8 @@ function OperacaoCaixa({ acao, caixa, clinicaId, usuarioId, onFechar, onConcluid
     try {
       if (formularioMonetario(acao)) {
         centavos = textoMonetarioParaCentavos(valor)
-        if (centavos < 0n || (acao.tipo !== 'abrir' && centavos === 0n)) {
-          throw new Error('Informe um valor válido maior que zero; a abertura pode ser zero.')
+        if (centavos < 0n || (['suprimento', 'solicitar_sangria'].includes(acao.tipo) && centavos === 0n)) {
+          throw new Error('Informe um valor válido. Suprimento e sangria devem ser maiores que zero.')
         }
       }
       if (precisaMotivo && !motivo.trim()) throw new Error('Informe o motivo da operação.')
@@ -126,9 +135,9 @@ function OperacaoCaixa({ acao, caixa, clinicaId, usuarioId, onFechar, onConcluid
         try { idempotenciaFinanceira.concluir(tentativa) } catch { /* operação já foi confirmada */ }
       }
       invalidarFinanceiro('caixa', clinicaId)
-      onConcluido()
+      if (vigente.current) onConcluido()
     } catch (falha) {
-      setErro(mensagemErroFinanceiro(falha))
+      if (vigente.current) setErro(mensagemErroFinanceiro(falha))
     } finally {
       trava.current = false
       setOcupado(false)
@@ -137,47 +146,70 @@ function OperacaoCaixa({ acao, caixa, clinicaId, usuarioId, onFechar, onConcluid
 
   function fechar() {
     if (ocupado) return
-    if (tentativaRef.current) idempotenciaFinanceira.cancelar(tentativaRef.current)
+    if (tentativaRef.current && !enviado) idempotenciaFinanceira.cancelar(tentativaRef.current)
     onFechar()
   }
 
-  return <ModalBase titulo={titulo} onFechar={fechar} ocupado={ocupado}>
-    <form onSubmit={enviar} className="space-y-4">
+  let contado: bigint | null = null
+  try { if (valor.trim()) contado = textoMonetarioParaCentavos(valor) } catch { /* erro de campo exibido ao confirmar */ }
+  const esperado = caixa ? decimalBancoParaCentavos(caixa.resumo.valor_esperado) : 0n
+  return <ModalBase titulo={titulo} subtitulo={clinicaNome} onFechar={fechar} ocupado={ocupado} largura="lg">
+    <form onSubmit={enviar} className="cr-formulario">
+      <p>Clínica: <strong>{clinicaNome}</strong></p>
+      {acao.tipo === 'abrir' && <p className="cr-nota">Conte o dinheiro disponível antes de informar o fundo inicial. O fundo pode ser zero.</p>}
+      {acao.tipo === 'iniciar_fechamento' && <FeedbackAlert variant="warning" title="Antes de iniciar" description="Ao confirmar, o caixa passará para Em fechamento e deixará de receber pagamentos e novas movimentações. Fechar esta janela depois não desfaz essa etapa. Você poderá continuar a contagem ao reabrir." />}
+      {acao.tipo === 'solicitar_sangria' && <p className="cr-nota">Solicitar não retira dinheiro do caixa. A retirada depende de aprovação e efetivação separadas.</p>}
+      {acao.tipo === 'suprimento' && <p className="cr-nota">Entrada de dinheiro para o caixa, separada da receita por consultas.</p>}
+      {(acao.tipo === 'iniciar_fechamento' || acao.tipo === 'enviar_fechamento') && caixa && <>
+        <dl className="cr-valores"><div><dt>Dinheiro físico esperado</dt><dd>{moeda(caixa.resumo.valor_esperado)}</dd></div>
+          {contado !== null && <><div><dt>Dinheiro contado</dt><dd>{formatarCentavos(contado)}</dd></div><div><dt>Diferença</dt><dd>{formatarCentavos(contado - esperado)}</dd></div></>}
+          <div><dt>Pix registrado</dt><dd>{moeda(caixa.resumo.total_pix)}</dd></div><div><dt>Crédito registrado</dt><dd>{moeda(caixa.resumo.total_cartao_credito)}</dd></div></dl>
+        <p className="cr-nota">Pix e crédito são registros eletrônicos do sistema. A conferência externa não foi informada.</p>
+      </>}
       {acao.tipo === 'enviar_fechamento' && caixa && <p className="text-sm text-[var(--texto-secundario)]">
-        Dinheiro esperado agora: <strong className="text-[var(--texto-principal)]">{moeda(caixa.resumo.valor_esperado)}</strong>. O valor será conferido novamente pelo banco ao enviar.
+        A contagem será conferida novamente ao enviar. O envio aguarda aprovação da proprietária.
       </p>}
       {formularioMonetario(acao) && <label className="block text-sm font-medium text-[var(--texto-principal)]">
-        {acao.tipo === 'enviar_fechamento' ? 'Dinheiro contado' : acao.tipo === 'abrir' ? 'Valor disponível para troco' : 'Valor'}
+        {acao.tipo === 'enviar_fechamento' ? 'Dinheiro contado' : acao.tipo === 'abrir' ? 'Fundo inicial contado' : 'Valor'}
         <input className={`${campo} mt-1.5`} inputMode="decimal" placeholder="0,00" value={valor}
+          aria-invalid={!!erro} aria-describedby={erro ? 'caixa-erro' : undefined}
           onChange={(e) => setValor(e.target.value)} disabled={ocupado || enviado} required />
       </label>}
       {(precisaMotivo || exigeJustificativa || observacao) && <label className="block text-sm font-medium text-[var(--texto-principal)]">
         {exigeJustificativa ? 'Justificativa da diferença' : observacao ? 'Observação' : 'Motivo'}
         <textarea className={`${campo} mt-1.5 py-3`} rows={3} value={motivo}
+          aria-invalid={!!erro} aria-describedby={erro ? 'caixa-erro' : undefined}
           onChange={(e) => setMotivo(e.target.value)} disabled={ocupado || enviado}
           required={Boolean(precisaMotivo || exigeJustificativa || (acao.tipo === 'revisar_fechamento' && acao.decisao === 'devolver'))} />
       </label>}
-      {erro && <FeedbackAlert variant="destructive" title="Operação não concluída" description={erro} urgent />}
-      {enviado && erro && <p className="text-xs text-[var(--texto-secundario)]">Os dados foram preservados. Tentar novamente reutiliza a mesma chave; cancelar abandona esta tentativa.</p>}
+      {erro && <div id="caixa-erro"><FeedbackAlert variant="destructive" title="Operação não concluída" description={erro} urgent /></div>}
+      {enviado && erro && <p className="cr-nota">Os dados e a tentativa foram preservados. Tentar novamente mantém a mesma solicitação. Se fechar, consulte o estado do caixa antes de tentar novamente.</p>}
       <div className="flex flex-wrap justify-end gap-2">
         <button type="button" className={botao} onClick={fechar} disabled={ocupado}>Cancelar</button>
-        <button type="submit" className={primario} disabled={ocupado}>{ocupado ? 'Processando…' : enviado ? 'Tentar novamente' : 'Confirmar'}</button>
+        <button type="submit" className={primario} disabled={ocupado}>{ocupado ? 'Processando…' : enviado ? 'Tentar novamente' : recepcao && acao.tipo === 'iniciar_fechamento' ? 'Iniciar fechamento' : acao.tipo === 'abrir' && contado !== null ? `Abrir caixa com ${formatarCentavos(contado)}` : acao.tipo === 'enviar_fechamento' ? 'Enviar para aprovação' : 'Confirmar'}</button>
       </div>
     </form>
   </ModalBase>
 }
 
-export default function FinanceiroCaixa({ clinicaAtivaId, carregandoClinica, usuarioId, papel, carregandoPapel }: {
+interface PropsCaixa {
   clinicaAtivaId: string | null
+  clinicaNome?: string
   carregandoClinica: boolean
   usuarioId: string
   papel: Papel | null
   carregandoPapel: boolean
-}) {
+  onReceberPagamento?: () => void
+}
+export default function FinanceiroCaixa(props: PropsCaixa) {
+  return <FinanceiroCaixaTela key={`${props.usuarioId}:${props.clinicaAtivaId}:${props.papel}:${props.carregandoPapel}:${props.carregandoClinica}`} {...props} />
+}
+function FinanceiroCaixaTela({ clinicaAtivaId, clinicaNome = 'Clínica selecionada', carregandoClinica, usuarioId, papel, carregandoPapel, onReceberPagamento }: PropsCaixa) {
   const [acao, setAcao] = useState<Acao | null>(null)
+  const [historico, setHistorico] = useState(false)
   const [sucesso, setSucesso] = useState<string | null>(null)
   useEffect(() => setSucesso(null), [clinicaAtivaId])
-  const autorizado = papel === 'proprietaria' || papel === 'recepcao'
+  const autorizado = !carregandoPapel && !carregandoClinica && (papel === 'proprietaria' || papel === 'recepcao')
   const carregar = useCallback(async (): Promise<EstadoTela> => {
     const atual = await consultarCaixaAtual(clinicaAtivaId!)
     const detalhes = atual.tipo === 'operacional' ? await consultarDetalhesCaixa(atual.caixa.sessao_caixa_id) : null
@@ -194,18 +226,20 @@ export default function FinanceiroCaixa({ clinicaAtivaId, carregandoClinica, usu
   const caixa = atual?.tipo === 'operacional' ? atual.caixa : null
   const detalhes = estado?.detalhes
   const podeMovimentar = caixa?.status === 'aberto'
+  const recepcao = papel === 'recepcao'
+  const sangriaPendente = detalhes?.temSangriaPendente
 
-  return <div className="space-y-6">
+  return <div className={recepcao ? 'cr-caixa' : 'space-y-6'}>
     <header className="finance-page-intro">
-      <div><h1 className="texto-titulo-tela text-[var(--texto-principal)]">Caixa</h1>
-        <p>Dinheiro disponível, movimentações e fechamento da clínica.</p></div>
+      <div><h1 className="texto-titulo-tela text-[var(--texto-principal)]">{recepcao ? 'Caixa da recepção' : 'Caixa'}</h1>
+        <p>{recepcao ? 'Operação da sessão e conferência do dinheiro.' : 'Dinheiro disponível, movimentações e fechamento da clínica.'}</p></div>
       {autorizado && <button type="button" className={botao} onClick={() => void consulta.recarregar()} disabled={consulta.resultado.estado === 'carregando'}>Atualizar</button>}
     </header>
     {sucesso && <FeedbackAlert variant="success" title="Operação confirmada" description={sucesso} onClose={() => setSucesso(null)} autoDismissMs={6000} />}
     {(carregandoClinica || carregandoPapel || consulta.resultado.estado === 'carregando') && <div role="status" aria-label="Carregando caixa" className={`${card} finance-skeleton`} />}
     {!carregandoClinica && !clinicaAtivaId && <p className={card}>Selecione uma clínica para consultar o caixa.</p>}
     {!carregandoPapel && clinicaAtivaId && !autorizado && <p className={card}>O caixa operacional é restrito aos perfis {rotuloPapel('proprietaria')} e {rotuloPapel('recepcao')}.</p>}
-    {consulta.resultado.estado === 'erro' && <FeedbackAlert variant="destructive" title="Não foi possível carregar o caixa" description={consulta.resultado.erro.message} action={<button type="button" onClick={() => void consulta.recarregar()}>Tentar novamente</button>} urgent />}
+    {consulta.resultado.estado === 'erro' && <FeedbackAlert variant="destructive" title={['nao_autorizado', 'clinica_nao_autorizada'].includes(mapearErroFinanceiro(consulta.resultado.erro).codigo) ? 'Acesso ao caixa restrito' : 'Não foi possível carregar o caixa'} description={consulta.resultado.erro.message} action={<button type="button" onClick={() => void consulta.recarregar()}>Tentar novamente</button>} urgent />}
     {atual?.tipo === 'legado' && <section className={card} role="status">
       <h2 className="texto-titulo-secao">Caixa antigo em aberto</h2>
       <p className="mt-2 text-sm text-[var(--texto-secundario)]">Valor inicial {moeda(atual.valorAbertura)}. Este caixa histórico precisa de uma transição acompanhada antes de usar as novas operações financeiras.</p>
@@ -215,7 +249,26 @@ export default function FinanceiroCaixa({ clinicaAtivaId, carregandoClinica, usu
       <p className="mt-2 text-sm text-[var(--texto-secundario)]">Abra o caixa para registrar recebimentos nesta clínica.</p>
       <button type="button" className={`${primario} mt-4`} onClick={() => { setSucesso(null); setAcao({ tipo: 'abrir' }) }}>Abrir caixa</button>
     </section>}
+    {autorizado && estado && (!recepcao || !caixa) && <button className={`${botao} justify-self-start`} onClick={() => setHistorico(true)}>Histórico de caixas</button>}
     {caixa && <>
+      {recepcao && <>
+        <section className="cr-barra"><div className="cr-identificacao"><div><span className="finance-status" data-tone={caixa.status === 'aberto' ? 'success' : 'info'}>{caixa.status === 'aberto' ? 'Aberto' : caixa.status === 'em_fechamento' ? 'Em fechamento' : caixa.status === 'aguardando_aprovacao' ? 'Aguardando aprovação' : 'Devolvido para correção'}</span><strong>{caixa.clinica_nome}</strong></div>
+          <p className="cr-nota">Abertura {formatarDataFinanceira(caixa.aberto_em)} · {caixa.aberto_por_nome ?? 'Operador indisponível'}</p></div>
+          <div className="cr-acoes">
+            <button className={botao} onClick={() => setHistorico(true)}>Histórico de caixas</button>
+            {podeMovimentar && <><button className={botao} onClick={() => setAcao({ tipo: 'suprimento' })}>Suprimento</button><button className={botao} onClick={() => setAcao({ tipo: 'solicitar_sangria' })}>Sangria</button>
+              <button className={botao} onClick={() => setAcao({ tipo: 'iniciar_fechamento' })} disabled={sangriaPendente}>Conferir fechamento</button>
+              {onReceberPagamento && <button className={primario} onClick={onReceberPagamento}>Receber pagamento</button>}</>}
+            {(caixa.status === 'em_fechamento' || caixa.status === 'devolvido_para_correcao') && <button className={botao} onClick={() => setAcao({ tipo: 'enviar_fechamento' })}>Continuar conferência</button>}
+          </div></section>
+        {podeMovimentar && <p className="cr-nota">Receber pagamento permite escolher o agendamento na Agenda desta clínica, com seu preço autorizado.</p>}
+        {sangriaPendente && <FeedbackAlert variant="warning" title="Sangria pendente" description="Resolva a aprovação ou rejeição e a efetivação da retirada antes de iniciar o fechamento." />}
+        {caixa.status === 'aguardando_aprovacao' && <p role="status">Contagem enviada; aguardando revisão da proprietária.</p>}
+        {caixa.status === 'devolvido_para_correcao' && <FeedbackAlert variant="warning" title="Contagem devolvida para correção" description={detalhes?.observacaoUltimaRevisao ?? 'Reconte o dinheiro e envie uma nova tentativa.'} />}
+        <IndicadoresCaixa resumo={caixa.resumo} />
+        <div className="cr-grade"><div className="cr-principal"><ExtratoCaixa clinicaId={clinicaAtivaId!} sessaoId={caixa.sessao_caixa_id} /></div><ComposicaoCaixa resumo={caixa.resumo} /></div>
+      </>}
+      {!recepcao && <>
       <section className={`${card} finance-cash-summary`}>
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div><h2 className="texto-titulo-secao">{caixa.clinica_nome}</h2><p className="text-sm text-[var(--texto-secundario)]">Aberto em {new Date(caixa.aberto_em).toLocaleString('pt-BR')} por {caixa.aberto_por_nome ?? 'usuário autorizado'}</p></div>
@@ -241,7 +294,7 @@ export default function FinanceiroCaixa({ clinicaAtivaId, carregandoClinica, usu
           {podeMovimentar && <>
             <button type="button" className={botao} onClick={() => setAcao({ tipo: 'suprimento' })}>Adicionar suprimento</button>
             <button type="button" className={botao} onClick={() => setAcao({ tipo: 'solicitar_sangria' })}>Solicitar sangria</button>
-            <button type="button" className={primario} disabled={detalhes?.sangrias.some((s) => s.status === 'solicitada' || s.status === 'aprovada')}
+            <button type="button" className={primario} disabled={sangriaPendente}
               onClick={() => setAcao({ tipo: 'iniciar_fechamento' })}>Iniciar fechamento</button>
           </>}
           {(caixa.status === 'em_fechamento' || caixa.status === 'devolvido_para_correcao') &&
@@ -249,8 +302,10 @@ export default function FinanceiroCaixa({ clinicaAtivaId, carregandoClinica, usu
         </div>
         {caixa.status === 'aguardando_aprovacao' && <p className="mt-3 text-sm text-[var(--texto-secundario)]">Fechamento enviado, aguardando revisão do perfil {rotuloPapel('proprietaria')}.</p>}
       </section>
+      </>}
       <section className={card}>
         <h2 className="texto-titulo-secao">Sangrias</h2>
+        {detalhes?.sangrias.length === 50 && <p className="cr-nota">Últimas 50 solicitações desta sessão. A verificação de pendências considera toda a sessão.</p>}
         {!detalhes?.sangrias.length ? <div className="finance-empty"><strong>Nenhuma sangria registrada</strong><p>Solicitações e revisões aparecerão aqui.</p></div> :
           <ul className="mt-3 divide-y divide-[var(--borda)]">{detalhes.sangrias.map((sangria) => <li key={sangria.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
             <div><p className="font-medium">{moeda(sangria.valor)} · {sangria.status}</p><p className="text-sm text-[var(--texto-secundario)]">{sangria.motivo}</p>
@@ -276,8 +331,10 @@ export default function FinanceiroCaixa({ clinicaAtivaId, carregandoClinica, usu
           <button type="button" className={primario} onClick={() => setAcao({ tipo: 'revisar_fechamento', id: detalhes.ultimoFechamento!.id, decisao: 'aprovar' })}>Aprovar fechamento</button>
         </div>}
       </section>}
+      {recepcao && <TentativasFechamento clinicaId={clinicaAtivaId!} sessaoId={caixa.sessao_caixa_id} />}
     </>}
-    {acao && clinicaAtivaId && <OperacaoCaixa key={`${acao.tipo}:${'id' in acao ? acao.id : ''}`} acao={acao} caixa={caixa} clinicaId={clinicaAtivaId} usuarioId={usuarioId}
+    {historico && clinicaAtivaId && <HistoricoCaixa clinicaId={clinicaAtivaId} onFechar={() => setHistorico(false)} />}
+    {acao && clinicaAtivaId && <OperacaoCaixa key={`${acao.tipo}:${'id' in acao ? acao.id : ''}`} acao={acao} caixa={caixa} clinicaId={clinicaAtivaId} clinicaNome={caixa?.clinica_nome ?? clinicaNome} usuarioId={usuarioId} recepcao={recepcao}
       onFechar={() => setAcao(null)} onConcluido={() => { setSucesso(`${rotuloAcao(acao)} concluído com confirmação do banco.`); setAcao(null); void consulta.recarregar() }} />}
   </div>
 }

@@ -714,3 +714,38 @@ O Financeiro usa navegação por papel: proprietária em Visão geral, recepçã
 A referência visual aprovada substitui a composição inicial da FASE 14: workspace claro, sidebar escura preservando `cor_menu` da clínica, navegação com ícones e realce azul, quatro indicadores principais, evolução diária à esquerda e formas de pagamento à direita. A linha secundária distingue líquido atual dos recebimentos, estornos efetivados no período, repasses pagos e posição pendente. O gráfico só projeta valores oficiais em coordenadas; não cria agregação financeira, tendência ou percentual de comparação. Só existem PIX, crédito e dinheiro.
 
 Na clínica selecionada, o Caixa mostra o valor esperado da consulta operacional oficial; ausência de caixa, legado e erro são estados distintos, nunca convertidos em saldo zero. O CTA conduz à tela homologada para revisar e executar a ação. Pendências de estorno e repasse são atuais; documentos fiscais seguem o período do dashboard. Últimas movimentações apresenta os recebimentos confirmados/parcialmente estornados disponibilizados pelo wrapper existente, sem sugerir histórico completo ou filtro de período. O consolidado não mistura o caixa de uma única clínica com seus totais. O médico não faz leituras operacionais de caixa, fila de estornos ou recebimentos gerais.
+
+### Caixa da Recepção — apresentação e integração local aprovadas (04/10/2026)
+
+Pedido posterior aprova a direção visual da prévia e autoriza somente integração local
+com contratos/permissões existentes. Não autoriza operações reais, banco, commit ou
+publicação. Não altera as regras financeiras homologadas; execução e limites no13.
+
+Recepção usa Caixa/Estornos/Fiscal, com identificação real de sessão/clínica/operador
+e abertura. Dinheiro esperado vem de `valor_esperado`; recebido neste caixa é o bruto
+de toda a sessão, inclusive quando atravessa dias. Não inventar número de caixa,
+contagem de recebimentos ou cobranças/dívidas a partir de agendamentos/preços.
+Estorno de outra sessão afeta o dinheiro atual conforme contrato sem reduzir seu bruto.
+Composição/formas são recolhíveis e inicialmente fechadas no celular, laterais no
+desktop. Proprietária conserva apresentação gerencial e decisões; médico, áreas próprias.
+
+Receber encaminha à Agenda real da clínica com contexto explícito. Formas escolhidas
+podem ser adicionadas/removidas, sem duplicação, somente dinheiro/Pix/crédito, exigindo
+quitação integral pelo preço autorizado. Troco temporário usa entregue menos parcela
+em dinheiro; entregue/troco não compõem parâmetros do recebimento nem documento emitido.
+Confirmação somente após serviço; resposta incerta conserva idempotência. Troca de
+clínica invalida formulário e retorno tardio.
+
+Abertura exige fundo contado, incluindo zero autorizado, clínica e valor explícitos,
+sem copiar histórico. Suprimento usa valor/motivo existentes; sangria preserva
+solicitação/decisão/efetivação distintas. Painel de fechamento não inicia operação
+ao abrir: consequência e ação explícitas; fechar painel não desfaz estado persistido.
+Contagem física, justificativa, pendências, aprovação da proprietária e tentativas
+permanecem. Pix/crédito registrados não são prova de conciliação externa.
+
+Extrato autorizado representa uma linha por movimento, com escopo clínica/sessão,
+ordenação estável, paginação, detalhes e limite explícito da busca textual à página.
+Histórico é leitura da clínica, sem conversão automática de legado. Totais nunca
+derivam da página carregada. Recibo, débito, cobrança agregada, contagem cega e
+documento/conciliação externos continuam dependentes de decisão/contrato próprio.
+Fiscal preserva estados/ações e usa cor neutra/azul para solicitação pendente.

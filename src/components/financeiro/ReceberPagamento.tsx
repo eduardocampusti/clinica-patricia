@@ -5,9 +5,10 @@ import { registrarRecebimento, validarPreviaPagamentos } from '../../lib/finance
 import { idempotenciaFinanceira } from '../../lib/financeiro/financeiro.idempotency'
 import { invalidarFinanceiro } from '../../lib/financeiro/financeiro.cache'
 import { mensagemErroFinanceiro } from '../../lib/financeiro/financeiro.errors'
-import { decimalBancoParaCentavos, formatarCentavos, textoMonetarioParaCentavos } from '../../lib/financeiro/financeiro.money'
+import { centavosParaDecimal, decimalBancoParaCentavos, formatarCentavos, textoMonetarioParaCentavos } from '../../lib/financeiro/financeiro.money'
 import { FORMAS_PAGAMENTO, type FormaPagamento, type PagamentoCentavos, type ResultadoRecebimento, type StatusFiscal, type StatusRecebimento } from '../../lib/financeiro/financeiro.types'
 import { FeedbackAlert } from '../feedback/FeedbackAlert'
+import './caixa-recepcao.css'
 
 export interface ConsultaParaReceber {
   agendamentoId: string
@@ -43,7 +44,11 @@ export function ReceberPagamento({ consulta, usuarioId, onFechar, onRecebido }: 
   const [tentou, setTentou] = useState(false)
   const [resultado, setResultado] = useState<ResultadoRecebimento | null>(null)
   const [valores, setValores] = useState<Record<FormaPagamento, string>>({ dinheiro: '', pix: '', cartao_credito: '' })
+  const [escolhidas, setEscolhidas] = useState<FormaPagamento[]>([])
+  const [entregue, setEntregue] = useState('')
   const trava = useRef(false)
+  const vigente = useRef(true)
+  useEffect(() => { vigente.current = true; return () => { vigente.current = false } }, [])
   const erroRef = useRef<HTMLDivElement>(null)
   const [reconsulta, setReconsulta] = useState(0)
 
@@ -61,8 +66,7 @@ export function ReceberPagamento({ consulta, usuarioId, onFechar, onRecebido }: 
 
   const pagamentos: PagamentoCentavos[] = []
   const errosCampos: Partial<Record<FormaPagamento, string>> = {}
-  for (const forma of FORMAS_PAGAMENTO) {
-    if (!valores[forma].trim()) continue
+  for (const forma of escolhidas) {
     try {
       const valorCentavos = textoMonetarioParaCentavos(valores[forma])
       if (valorCentavos <= 0n) throw new Error()
@@ -70,7 +74,16 @@ export function ReceberPagamento({ consulta, usuarioId, onFechar, onRecebido }: 
     } catch { errosCampos[forma] = 'Informe um valor maior que zero, com até duas casas decimais (ex.: 200,00).' }
   }
   const previa = validarPreviaPagamentos(pagamentos, preco ?? 0n)
-  const podeConfirmar = preco !== null && previa.confere && pagamentos.length > 0 && !Object.keys(errosCampos).length
+  const dinheiro = pagamentos.find(p => p.formaPagamento === 'dinheiro')?.valorCentavos ?? 0n
+  let troco: bigint | null = null
+  let erroEntregue: string | null = null
+  if (dinheiro > 0n && entregue.trim()) {
+    try {
+      troco = textoMonetarioParaCentavos(entregue) - dinheiro
+      if (troco < 0n) erroEntregue = 'O dinheiro entregue deve cobrir a parcela em dinheiro.'
+    } catch { erroEntregue = 'Informe o dinheiro entregue com até duas casas decimais.' }
+  }
+  const podeConfirmar = preco !== null && previa.confere && pagamentos.length > 0 && !Object.keys(errosCampos).length && !erroEntregue
   const diferenca = (preco ?? 0n) - previa.totalCentavos
 
   async function confirmar() {
@@ -83,24 +96,26 @@ export function ReceberPagamento({ consulta, usuarioId, onFechar, onRecebido }: 
     try {
       const tentativa = idempotenciaFinanceira.iniciar(`recebimento:${usuarioId}:${consulta.clinicaId}:${consulta.agendamentoId}`)
       recebido = await registrarRecebimento({ agendamentoId: consulta.agendamentoId, pagamentos, tentativa })
-      setResultado(recebido)
+      if (recebido.clinica_id !== consulta.clinicaId || recebido.agendamento_id !== consulta.agendamentoId) throw new Error('Não foi possível confirmar o contexto do recebimento. Consulte o pagamento antes de tentar novamente.')
+      if (vigente.current) setResultado(recebido)
       // Falha de storage após confirmação nunca deve sugerir repetir o pagamento.
       try { idempotenciaFinanceira.concluir(tentativa) } catch { /* A resposta confirmada prevalece. */ }
     } catch (falha) {
-      setErro(mensagemErroFinanceiro(falha))
+      if (vigente.current) setErro(mensagemErroFinanceiro(falha))
+      recebido = undefined
     } finally {
       trava.current = false
       setEnviando(false)
     }
     if (recebido) {
       invalidarFinanceiro('recebimento', recebido.clinica_id)
-      onRecebido(recebido)
+      if (vigente.current) onRecebido(recebido)
     }
   }
 
   return <ModalBase titulo={resultado ? 'Pagamento confirmado' : revisao ? 'Confirmar recebimento' : 'Receber pagamento'}
     ocupado={enviando} largura="lg" onFechar={() => { if (!trava.current) onFechar() }}>
-    <div className="space-y-5">
+    <div className="cr-formulario">
       <dl className="grid grid-cols-2 gap-3 text-sm">
         <div><dt className="text-[var(--texto-secundario)]">Paciente</dt><dd className="break-words font-semibold">{consulta.paciente}</dd></div>
         <div><dt className="text-[var(--texto-secundario)]">Profissional</dt><dd className="break-words font-semibold">{consulta.profissional}</dd></div>
@@ -125,18 +140,28 @@ export function ReceberPagamento({ consulta, usuarioId, onFechar, onRecebido }: 
         {!revisao ? <form onSubmit={(evento) => { evento.preventDefault(); if (podeConfirmar) { setErro(null); setRevisao(true) } }}>
           <fieldset className="space-y-3">
             <legend className="mb-2 font-semibold">Formas de pagamento</legend>
-            <p id="pagamento-ajuda" className="text-sm text-[var(--texto-secundario)]">Preencha uma ou mais formas. Deixe as demais em branco.</p>
-            {FORMAS_PAGAMENTO.map((forma) => <div key={forma}>
+            <p id="pagamento-ajuda" className="text-sm text-[var(--texto-secundario)]">Escolha uma forma ou adicione outras para dividir o valor integral.</p>
+            <div className="cr-formas">{FORMAS_PAGAMENTO.map(forma => <button type="button" className="finance-button" key={forma} aria-pressed={escolhidas.length === 1 && escolhidas[0] === forma}
+              onClick={() => { setEscolhidas([forma]); setValores({ dinheiro: '', pix: '', cartao_credito: '', [forma]: centavosParaDecimal(preco).replace('.', ',') }); setEntregue('') }}>{FORMAS[forma]}</button>)}</div>
+            {escolhidas.map((forma) => <div key={forma} className="cr-parcela"><div>
               <label htmlFor={`valor-${forma}`} className="mb-1 block text-sm font-medium">{FORMAS[forma]}</label>
               <input id={`valor-${forma}`} inputMode="decimal" autoComplete="off" placeholder="0,00" value={valores[forma]}
                 aria-invalid={!!errosCampos[forma]} aria-describedby={errosCampos[forma] ? `erro-${forma}` : 'pagamento-ajuda'}
                 onChange={(evento) => setValores((anteriores) => ({ ...anteriores, [forma]: evento.target.value }))}
                 className="min-h-12 w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-pagina)] px-3 text-base placeholder:text-[var(--texto-secundario)] focus-visible:outline-2 numero-tabular" />
               {errosCampos[forma] && <p id={`erro-${forma}`} className="mt-1 text-sm">{errosCampos[forma]}</p>}
-            </div>)}
+            </div><button type="button" className="finance-button" aria-label={`Remover ${FORMAS[forma]}`} onClick={() => { setEscolhidas(formas => formas.filter(f => f !== forma)); setValores(v => ({ ...v, [forma]: '' })); if (forma === 'dinheiro') setEntregue('') }}>Remover</button></div>)}
+            {escolhidas.length < FORMAS_PAGAMENTO.length && <label className="block">Adicionar forma<select className="cr-campo mt-2" value="" onChange={e => {
+              const forma = e.target.value as FormaPagamento
+              if (FORMAS_PAGAMENTO.includes(forma) && !escolhidas.includes(forma)) { setEscolhidas(f => [...f, forma]); setValores(v => ({ ...v, [forma]: '' })) }
+            }}><option value="">Selecione uma forma</option>{FORMAS_PAGAMENTO.filter(f => !escolhidas.includes(f)).map(f => <option key={f} value={f}>{FORMAS[f]}</option>)}</select></label>}
           </fieldset>
+          {dinheiro > 0n && <div className="my-4 space-y-3"><label>Dinheiro entregue pelo paciente (opcional)<input className="cr-campo" inputMode="decimal" value={entregue} onChange={e => setEntregue(e.target.value)}
+            aria-invalid={!!erroEntregue} aria-describedby="troco-ajuda" placeholder="0,00" /></label>
+            <div id="troco-ajuda">{erroEntregue ? <p className="text-sm" role="alert">{erroEntregue}</p> : troco !== null && <div className="cr-troco"><span>Troco a devolver</span><strong>{formatarCentavos(troco)}</strong></div>}
+              <p className="cr-nota mt-2">O valor entregue e o troco são auxiliares da contagem. O registro inclui somente a parcela em dinheiro.</p></div></div>}
           <div aria-live="polite" className="my-5 space-y-2 numero-tabular">
-            <div className="flex justify-between"><span>Total informado</span><strong>{formatarCentavos(previa.totalCentavos)}</strong></div>
+            <div className="flex justify-between"><span>Total distribuído</span><strong>{formatarCentavos(previa.totalCentavos)}</strong></div>
             <div className="flex justify-between"><span>Restante</span><span>{formatarCentavos(diferenca > 0n ? diferenca : 0n)}</span></div>
             <div className="flex justify-between"><span>Excedente</span><span>{formatarCentavos(diferenca < 0n ? -diferenca : 0n)}</span></div>
           </div>
@@ -145,6 +170,7 @@ export function ReceberPagamento({ consulta, usuarioId, onFechar, onRecebido }: 
           <dl className="space-y-3 numero-tabular">
             {pagamentos.map((p) => <div key={p.formaPagamento} className="flex justify-between"><dt>{FORMAS[p.formaPagamento]}</dt><dd>{formatarCentavos(p.valorCentavos)}</dd></div>)}
             <div className="flex justify-between border-t border-[var(--borda)] pt-3 font-semibold"><dt>Total</dt><dd>{formatarCentavos(previa.totalCentavos)}</dd></div>
+            {troco !== null && !erroEntregue && <div className="flex justify-between"><dt>Troco a devolver</dt><dd>{formatarCentavos(troco)}</dd></div>}
           </dl>
           {tentou && erro && <p className="text-sm text-[var(--texto-secundario)]">Tente novamente com os mesmos valores. A tentativa é preservada para evitar cobrança duplicada.</p>}
           <div className="flex flex-col-reverse gap-3 sm:flex-row">

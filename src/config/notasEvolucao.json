@@ -13,6 +13,7 @@
       "Página “Sobre o sistema” com versão em execução, créditos de desenvolvimento e contexto da clínica."
     ],
     "melhorias": [
+      "Caixa da Recepção: indicadores oficiais da sessão, composição recolhível no celular, movimentações e histórico por clínica, acesso ao pagamento pela Agenda e conferência com início explícito. Pagamento dividido mostra somente as formas escolhidas e inclui auxílio de troco, preservando quitação integral e aprovação financeira. O extrato sinaliza parcelas ausentes ou divergentes sem substituir o saldo oficial.",
       "Celular: cadastro de pacientes com etapas em ordem, planejamento de convênios separado e menos espaço antes do nome; a prévia aparece quando há informação preenchida. Recepção com aviso no singular ou plural e abas acessíveis por setas, toque e teclado, mantendo a seleção visível.",
       "Recepção e Pacientes: indicadores com leitura uniforme, abas na cor da clínica, filtros removíveis separadamente e ações para consultas sem resultados. No celular, a foto fica recolhida para priorizar a identificação, mantendo as opções de cadastro e edição.",
       "Pacientes: lista e cartões mais compactos, pendências confirmadas separadas da situação, resumo com ações junto à identificação e prévia do nome e idade no formulário. Indicadores com estados de consulta, seis itens fixos e etapa no rodapé; CPF permanece opcional, com os mesmos serviços e regras de gravação.",

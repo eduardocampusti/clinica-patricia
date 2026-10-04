@@ -4,6 +4,31 @@
 
 ## Objetivo do módulo
 
+### Prévia isolada do Caixa da Recepção — 03/10/2026
+
+Diagnóstico e demonstração concluídos localmente em03/10, com verificações sintéticas,
+sem integração/banco/publicação naquela etapa. Direção visual aprovada em04/10;
+pedido posterior autorizou e concluiu a integração local descrita abaixo.
+Fontes, limites e proposta de primeira integração em [relatório 12](12-CAIXA-RECEPCAO-PREVIA.md).
+Referência visual não aprova cobrança, débito, recibo ou nova regra financeira.
+
+### Caixa da Recepção — integração local, 04/10/2026
+
+Apresentação da Recepção integrada aos contratos existentes: resumo oficial da sessão,
+composição responsiva, Agenda com contexto, formas escolhidas/troco temporário,
+extrato/histórico paginados por SELECT autorizado e início explícito do fechamento.
+Experiências e ações da proprietária/médico preservadas. Testes sintéticos, leitura
+conectada sem operações (Recepção nas duas clínicas), TypeScript/lint/build aprovados;
+limites, fontes, arquivos e capturas no [relatório 13](13-CAIXA-RECEPCAO-INTEGRACAO-LOCAL.md).
+Sem publicação/banco/permissões/dados financeiros reais/commit/push/deploy.
+
+Revisão de04/10 concluída: pronta para publicação controlada do recorte, após autorização
+posterior. Visual preservado; recebimento rolável confirmado e leitura de parcelas
+ausentes/divergentes corrigida.28 verificações dirigidas finais aprovadas, paginação
+acima de uma página e isolamento do pacote conferidos. Manifesto seletivo, capturas,
+contagens completas das execuções e limites atualizados no relatório13 e checkpoint.
+Sem nova dependência de banco/configuração; teclado virtual/físico/zoom nativo pendentes.
+
 Reconstruir o Financeiro da Clínica Patrícia como um domínio:
 
 - integrado à Agenda e ao atendimento;

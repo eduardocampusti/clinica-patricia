@@ -1,5 +1,61 @@
 # CHECKPOINT MESTRE — CLÍNICA PATRÍCIA
 
+## Caixa — publicação controlada autorizada, 04/10/2026, 09:20 -03:00
+
+Commit seletivo, push normal e deploy nas duas clínicas autorizados pelo usuário.
+Sem operações financeiras reais/banco/RPC/permissões/transição do legado.40 hashes
+do manifesto permanecem iguais; remoto/basecdfdec66. Versão anterior e builds para
+retorno registrados no [Financeiro13](docs/modulos/financeiro/13-CAIXA-RECEPCAO-INTEGRACAO-LOCAL.md).
+Seleção por trechos e validação isolada em preparação; trabalhos locais preservados.
+Próximo: confirmar commit validado, deploy e código servido, somente leitura autenticada.
+
+## Caixa — revisão concluída sem publicação, 04/10/2026, 09:10 -03:00
+
+Parecer: pronta para publicação controlada do recorte implementado, após autorização
+posterior. Visual preservado; rolagem/foco desktop e360/390/430 confirmados. Correção
+restrita a parcelas ausentes/divergentes do extrato, sem alteração financeira/banco.
+28 verificações dirigidas finais aprovadas (35 execuções:30 aprovações,5 falhas iniciais
+documentadas); TypeScript/lint/build/diff-check e pacote aprovados. Novas páginas de
+movimentos/histórico/tentativas e contexto concorrente cobertos; leitura conectada
+anterior reaproveitada.8 capturas/manifesto40 arquivos no [Financeiro13](docs/modulos/financeiro/13-CAIXA-RECEPCAO-INTEGRACAO-LOCAL.md).
+Sem operações reais, novas configurações/permissões, commit/push/deploy; teclado virtual,
+aparelho físico e zoom nativo não verificados. HEADcdfdec66da31b20788939885e396eb16555db328,
+branch codex/resgate-local-2026-09-26, alterações locais e contribuições anteriores
+preservadas. Próximo: seleção dos arquivos/trechos e autorização para publicação.
+
+## Caixa da Recepção — integração local concluída, 04/10/2026, 08:33 -03:00
+
+Pedido posterior aprovou visual/autorizou código local; integração viável concluída
+preservando shell/perfis/regras e trabalhos anteriores. Fontes, arquivos, testes,
+11 capturas e pendências no [Financeiro13](docs/modulos/financeiro/13-CAIXA-RECEPCAO-INTEGRACAO-LOCAL.md).
+77 aprovados/1skip na suíte sintética; rodada final39/1skip,2 checks de fixture vazia,
+6 da prévia e15 unitários. TypeScript/lint/build/diff-check e isolamento do pacote aprovados.
+Recepção nas duas clínicas conferida só por leitura: Ipupiara sem sessão, Brotas
+legado e histórico preservados. Sem operação real/banco/permissões/publicação.
+Zoom nativo/teclado virtual/aparelho físico não verificados; mocks não provam RLS
+ou persistência. HEADcdfdec66da31b20788939885e396eb16555db328, mesma branch,
+mudanças não commitadas. Próximo: revisão local; publicação depende de autorização.
+
+## Caixa — exportação JPG, 04/10/2026, 07:38 -03:00
+
+Pacote local das41 capturas JPG criado, dimensões originais e integridade verificadas;
+scratch/Caixa_Recepcao_41_Capturas_JPG.zip. PNGs e aplicação preservados, sem banco,
+permissões/integração/commit/push/deploy; HEADcdfdec6, mesma branch.
+Detalhes em [Financeiro12](docs/modulos/financeiro/12-CAIXA-RECEPCAO-PREVIA.md).
+Próximo: usuário baixar/revisar, mantendo as pendências funcionais anteriores.
+
+## Caixa da Recepção — prévia isolada concluída, 03/10/2026, 23:08 -03:00
+
+Diagnóstico e demonstração local sintética concluídos; AppShell/Sidebar normais preservados.
+TypeScript da entrada, lint e build aprovados;45 execuções Playwright aprovadas em três
+tamanhos (roteiro360/430 só mobile);41 capturas em scratch/caixa-recepcao. Sem banco,
+permissões, src, dependências, operação real, integração normal, commit/push/deploy.
+HEADcdfdec6, branch codex/resgate-local-2026-09-26; mudanças não commitadas e contribuições
+anteriores preservadas. Fonte de detalhes/mapa/pendências/primeira integração proposta:
+[Financeiro12](docs/modulos/financeiro/12-CAIXA-RECEPCAO-PREVIA.md); entrada operacional
+em docs/ia/CHECKPOINT.md. Próximo: avaliação visual do usuário; mocks não comprovam
+persistência, RLS remoto, impressora ou celular físico. Não executar integração sem pedido.
+
 ## Publicação ReUI autorizada — 03/10/2026, 21:24 -03:00
 
 Commit seletivo, push e deploy nos dois domínios autorizados pelo pedido posterior.

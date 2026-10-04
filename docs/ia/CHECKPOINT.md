@@ -1,10 +1,116 @@
 # Checkpoint operacional — Clínica Patrícia
 
-Atualizado: 2026-10-03 21:24 -03:00 (America/Bahia).
-Etapa atual: publicação seletiva ReUI autorizada; pacote e implantação em preparação.
-Demais perfis, Sidebar/AppShell, regras de gravação, banco, permissões e configurações preservados.
-Publicação anterior de Pacientes e pendências conectadas seguem no histórico abaixo.
+Atualizado: 2026-10-04 09:20 -03:00 (America/Bahia).
+Etapa atual: publicação controlada do Caixa autorizada; seleção e validação em preparação.
+Trabalhos de outras tarefas preservados fora desta seleção.
 
+## Caixa — publicação autorizada, 04/10/2026, 09:20 -03:00
+
+Usuário autoriza commit seletivo/push/deploy nas duas clínicas, sem operações reais,
+banco/RPC/permissões/transição do legado.40 hashes iguais ao manifesto e branch/HEAD
+remotos emcdfdec66da31b20788939885e396eb16555db328. Versão anterior0.1.0/cdfdec66,
+builds concluídos e hashes de nove prévias de e-mail por domínio registrados para
+retorno do aplicativo. Versão segue processo vigente, sem incremento manual.
+Seleção por trechos documentais e checkout exato em preparação, sem publicação concluída.
+[Relatório13](../modulos/financeiro/13-CAIXA-RECEPCAO-INTEGRACAO-LOCAL.md) concentra evidências.
+Próximo: validar seleção, commit/push, acompanhar deploys e conferir código servido.
+
+
+## Caixa — revisão concluída, 04/10/2026, 09:10 -03:00
+
+Visual aprovado preservado. Sem corte real: rolagem/foco/validações/confirmar alcançados
+em desktop e360/390/430 com conteúdo extenso. Corrigida somente validação das parcelas
+ausentes/divergentes na leitura do extrato, sem recalcular resumo ou alterar regras.
+28 verificações dirigidas finais aprovadas;35 execuções totais com30 aprovações e5
+falhas iniciais documentadas (reprodução e assertions corrigidas). Paginação24 movimentos,
+45 sessões e23 tentativas; contexto/respostas atrasadas, split/troco, envio incerto e
+retomada de fechamento conferidos em isolamento. TypeScript/lint/build/diff-check
+aprovados; pacote sem artefatos de teste,19 arquivos públicos anteriores preservados.
+Leitura conectada anterior reaproveitada, nenhuma nova operação real; físico/teclado
+virtual/zoom nativo não verificados. [Relatório13](../modulos/financeiro/13-CAIXA-RECEPCAO-INTEGRACAO-LOCAL.md)
+consolida manifesto seletivo40 arquivos,8 capturas, evidências e limites. Sem nova
+dependência de banco/configuração, permissões, commit/push/deploy; alterações locais
+na branch codex/resgate-local-2026-09-26, HEADcdfdec66da31b20788939885e396eb16555db328.
+Próximo: autorização posterior para publicação e seleção dos arquivos/trechos revisados.
+
+## Caixa — revisão em validação, 04/10/2026, 08:48 -03:00
+
+Pedido autoriza revisão/preparação local, preservando visual e trabalhos existentes.
+Histórico ainda não havia sido testado acima de20 sessões. Teste sintético confirmou
+que parcelas relacionadas vazias permitiam forma em branco no extrato. Correção
+local restrita à validação da composição em financeiro.movimentos-leitura.ts;
+testes dirigidos em preparação. Saldo oficial, modal e regras preservados.
+HEADcdfdec6, branch codex/resgate-local-2026-09-26; sem banco/permissões/operações
+reais/commit/push/deploy. Próximo: rolagem/teclado, cursores/histórico/contexto e checks.
+
+## Caixa da Recepção — integração local concluída, 04/10/2026, 08:33 -03:00
+
+Pedido posterior aprovou visual e autorizou integração local. Resumo oficial,
+composição responsiva, Agenda/split/troco, extrato/histórico paginados e fechamento
+explícito entregues, preservando perfis/shell/regras/trabalhos anteriores. Suíte
+sintética77 aprovados/1skip; rodada final39/1skip,2 da fixture vazia,6 da prévia,
+15 unitários. TypeScript/lint/build/diff-check e isolamento do dist verificados.11 capturas eZIP.
+Leitura conectada Recepção: Ipupiara sem sessão/histórico, Estornos/Fiscal vazios;
+Brotas legado/histórico/detalhes preservados. Nenhuma operação real/banco/permissões,
+commit/push/deploy; HEADcdfdec6, branch codex/resgate-local-2026-09-26, alterações locais.
+Limites: mocks não provam operações/RLS remoto; teclado virtual/zoom nativo/aparelho
+físico não verificados. [Financeiro13](../modulos/financeiro/13-CAIXA-RECEPCAO-INTEGRACAO-LOCAL.md)
+consolida arquivos/fontes/links/pendências. Próximo: revisão local do usuário;
+publicação ou contratos adicionais dependem de autorização posterior.
+
+## Caixa da Recepção — integração local em andamento, 04/10/2026, 08:05 -03:00
+
+Pedido posterior autoriza código local e testes sintéticos da integração; substitui
+o limite anterior de somente prévia dentro deste escopo. Apresentação por perfil,
+resumo oficial, leitura paginada existente, Agenda, split/troco e início explícito de
+fechamento implementados, ainda em validação. Sem dados reais/banco/permissões,
+commit/push/deploy; HEAD cdfdec6, branch preservada, alterações não commitadas.
+Trabalhos anteriores e prévia mantidos. [Financeiro 13](../modulos/financeiro/13-CAIXA-RECEPCAO-INTEGRACAO-LOCAL.md)
+registra fontes/limites. Próximo: testes dirigidos de integração, capturas e checks.
+
+## Caixa da Recepção — pacote JPG, 04/10/2026, 07:38 -03:00
+
+41 PNGs sintéticos convertidos para JPG qualidade95, dimensões originais preservadas.
+Pacote scratch/Caixa_Recepcao_41_Capturas_JPG.zip, 7.371.458 bytes;41 entradas JPEG
+e integridade do ZIP verificadas. Originais e aplicação preservados. Sem banco,
+permissões, integração, commit/push/deploy; HEADcdfdec6, mesma branch, alterações locais.
+Detalhes: [Financeiro12](../modulos/financeiro/12-CAIXA-RECEPCAO-PREVIA.md).
+Próximo: baixar/revisar capturas; pendências funcionais da prévia permanecem.
+
+## Caixa da Recepção — prévia isolada concluída, 03/10/2026, 23:08 -03:00
+
+Prévia exclusivamente sintética em tests/financeiro/porta4186, AppShell/Sidebar reais
+preservados, sem import no runtime normal. TypeScript específico/lint/build aprovados;
+Playwright45/45 execuções nos três tamanhos, larguras360/430 exercitadas no mobile;
+41 capturas locais. Cenários incluem split/troco, duplo envio, impressão sem repetir
+recebimento, erro, contexto de clínica, divergência, estorno de outra sessão e revisão
+por papel. Primeira rodada falhou12 casos; corrigidos e suíte completa reexecutada.
+Mapa distingue existente/adaptação/adicional. Cobranças omitidas por padrão; recibo,
+histórico completo e conciliação externa requerem contratos/adaptações próprios.
+ReUI consultado com APIs/exemplos/dependências/licença, sem instalação; TypeSafe só
+avaliada pela descrição, sem IA/API. Nenhuma operação financeira real, banco,
+permissões, src, dependências, integração normal, commit/push/deploy.
+HEADcdfdec6, branch codex/resgate-local-2026-09-26, alterações não commitadas;
+contribuições anteriores preservadas. Registros Financeiro/raiz/índice atualizados.
+Limites: mocks não provam banco/RLS remoto, impressora ou aparelho físico.
+[Relatório12 e links da prévia/galeria](../modulos/financeiro/12-CAIXA-RECEPCAO-PREVIA.md).
+Próximo: avaliação visual pelo usuário; primeira integração proposta exige pedido próprio.
+
+## Caixa da Recepção — diagnóstico e prévia em validação, 03/10/2026, 22:55 -03:00
+
+Contratos/fontes locais mapeados: resumo oficial, split integral, três formas,
+sangria em etapas, estorno por forma original/caixa atual e aprovação separada.
+Cobranças agregadas/recibo não têm contrato operacional comprovado; contagem
+cega não localizada no fluxo atual. ReUI APIs/exemplos/dependências/licença
+consultados; componentes existentes preservados, sem instalações. TypeSafe
+avaliada pela descrição, sem IA/API. Prévia só em tests/financeiro, servidor
+sintético4186, sem ligação com App/rotas normais. TypeScript específico aprovado;
+testes de navegador em andamento, primeiras verificações sintéticas de split,
+troco, duplicidade, impressão, erro e contexto aprovadas em desktop.
+HEADcdfdec6, branch codex/resgate-local-2026-09-26; mudanças não commitadas.
+Nenhum banco/permissão/operação real/commit/push/deploy. Trabalhos anteriores
+preservados. Detalhes/fontes/pendências: [relatório12](../modulos/financeiro/12-CAIXA-RECEPCAO-PREVIA.md).
+Próximo: terminar testes/capturas e registrar resultado final com limites.
 
 ## Publicação ReUI autorizada — 03/10/2026, 21:24 -03:00
 

@@ -50,9 +50,14 @@ async function abrir(page: Page, opcoes: Opcoes = {}) {
   return controle
 }
 async function revisar(page: Page, dinheiro = '', pix = '500,00') {
-  if (dinheiro) await page.getByLabel('Dinheiro', { exact: true }).fill(dinheiro)
-  if (pix) await page.getByLabel('PIX', { exact: true }).fill(pix)
+  if (dinheiro) await preencherForma(page, 'Dinheiro', 'dinheiro', dinheiro)
+  if (pix) await preencherForma(page, 'PIX', 'pix', pix)
   await page.getByRole('button', { name: 'Revisar recebimento' }).click()
+}
+async function preencherForma(page: Page, rotulo: string, forma: string, valor: string) {
+  const campo = page.getByRole('dialog').getByLabel(rotulo, { exact: true })
+  if (!await campo.count()) await page.getByRole('dialog').getByLabel('Adicionar forma').selectOption(forma)
+  await campo.fill(valor)
 }
 async function screenshot(page: Page, nome: string, projeto: string) {
   const dialog = page.getByRole('dialog')
@@ -80,8 +85,8 @@ test('Agenda → PIX → revisão → wrapper → sucesso e invalidação', asyn
 })
 test('split dinheiro 200 + PIX 300', async ({ page }, info) => {
   const { chamadas } = await abrir(page)
-  await page.getByLabel('Dinheiro', { exact: true }).fill('200,00')
-  await page.getByLabel('PIX', { exact: true }).fill('300,00')
+  await preencherForma(page, 'Dinheiro', 'dinheiro', '200,00')
+  await preencherForma(page, 'PIX', 'pix', '300,00')
   await screenshot(page, 'split', info.project.name)
   await page.getByRole('button', { name: 'Revisar recebimento' }).click()
   await page.getByRole('button', { name: 'Confirmar pagamento' }).click()
@@ -91,7 +96,7 @@ test('split dinheiro 200 + PIX 300', async ({ page }, info) => {
 for (const [valor, label] of [['499,99', 'Restante'], ['500,01', 'Excedente']]) {
   test(`${valor} bloqueia revisão (${label})`, async ({ page }) => {
     const { chamadas } = await abrir(page)
-    await page.getByLabel('PIX', { exact: true }).fill(valor)
+    await preencherForma(page, 'PIX', 'pix', valor)
     await expect(page.getByRole('button', { name: 'Revisar recebimento' })).toBeDisabled()
     await expect(page.getByText('R$ 0,01', { exact: true })).toBeVisible()
     expect(chamadas).toHaveLength(0)
@@ -140,7 +145,7 @@ test('médico não recebe ação de cobrança', async ({ page }) => {
 })
 test('proprietária pode cobrar', async ({ page }) => {
   await abrir(page, { papel: 'proprietaria' })
-  await expect(page.getByLabel('PIX', { exact: true })).toBeVisible()
+  await expect(page.getByRole('dialog').getByRole('button', { name: 'PIX', exact: true })).toBeVisible()
 })
 test('preço ausente bloqueia e não utiliza preço global', async ({ page }) => {
   const { chamadas } = await abrir(page, { preco: null })

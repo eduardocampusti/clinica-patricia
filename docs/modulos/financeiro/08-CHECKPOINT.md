@@ -1,6 +1,76 @@
 # CLÍNICA PATRÍCIA
 # CHECKPOINT — MÓDULO FINANCEIRO
 
+## Caixa — publicação autorizada, 04/10/2026, 09:20 -03:00
+
+Pedido posterior autoriza commit seletivo/push/deploy nas duas clínicas, sem banco,
+RPC/permissões/financeiro real/transição do legado.40 hashes conferidos; base/branch
+remota emcdfdec66. Builds e versão anterior0.1.0 por domínio registrados no [relatório13](13-CAIXA-RECEPCAO-INTEGRACAO-LOCAL.md).
+Versão segue processo vigente, sem incremento manual. Seleção/validação isolada em
+preparação; preservar outros trabalhos. Próximo: commit validado, deploy e leitura.
+
+## Caixa — revisão para publicação concluída, 04/10/2026, 09:10 -03:00
+
+Pronta para publicação controlada do recorte, não publicada. Composição/cor/shell/
+perfis preservados. Nenhum corte real no recebimento: teclado/rolagem com conteúdo
+extenso em desktop e360/390/430 alcançam resumo/erros/cancelamento/confirmação.
+Defeito confirmado de parcelas vazias/divergentes corrigido somente na camada de
+leitura, mantendo totais oficiais. Notas de evolução e testes pertinentes atualizados.
+28 verificações dirigidas finais aprovadas;35 execuções,30 aprovações e5 falhas
+iniciais registradas no relatório (reprodução/assertions, sem falha pendente).
+Movimentos24, histórico45 e tentativas23 exercitam mais de uma página; respostas
+atrasadas/contexto, split/troco, envio incerto e fechamento retomável comprovados
+em isolamento. TypeScript/lint/build/diff-check aprovados,19 artefatos públicos
+anteriores idênticos e entradas sintéticas excluídas do pacote.8 capturas novas.
+Evidência conectada anterior somente leitura reaproveitada, sem repetir percurso.
+Mocks não comprovam persistência/RLS; físico/teclado virtual/zoom nativo não verificados.
+Sem nova dependência de banco/configuração, permissões ou operações reais, commit/
+push/deploy. Branch codex/resgate-local-2026-09-26, HEADcdfdec66da31b20788939885e396eb16555db328,
+alterações não commitadas e trabalhos anteriores preservados. [Relatório13](13-CAIXA-RECEPCAO-INTEGRACAO-LOCAL.md)
+contém manifesto seletivo40 arquivos e dependências futuras separadas. Próximo:
+autorização posterior para publicação, seleção por trechos e conferência do checkout.
+
+## Caixa da Recepção — integração local concluída, 04/10/2026, 08:33 -03:00
+
+Direção visual aprovada e integração local expressamente autorizada pelo pedido
+posterior. Resumo oficial, apresentação por papel, Agenda, split/troco, SELECT
+paginado de movimentos/histórico e continuidade explícita de fechamento entregues.
+77 testes sintéticos aprovados/1skip na suíte, 39/1skip na rodada final dirigida;
+2 verificações da fixture vazia e6 da prévia compartilhada;15 unitários. TypeScript,
+lint sem erros (aviso preexistente), build/diff-check e isolamento do dist verificados.
+Recepção conectada só por leitura: Ipupiara sem sessão/histórico, Estornos/Fiscal
+vazios; Brotas legado/histórico/detalhes preservados. Não comprova operações reais
+ou todas as RLS. Celular/teclado automatizados360/390/430; teclado virtual/zoom nativo
+e aparelho físico não verificados.11 capturas sintéticas eZIP em scratch/caixa-integracao.
+HEADcdfdec66da31b20788939885e396eb16555db328, branch codex/resgate-local-2026-09-26;
+mudanças não commitadas e trabalhos anteriores preservados. Sem banco/permissões,
+operações reais/commit/push/deploy. Fontes/arquivos/limites/links no [relatório13](13-CAIXA-RECEPCAO-INTEGRACAO-LOCAL.md).
+Próximo: usuário revisar localmente; publicação e contratos adicionais exigem pedido.
+Entradas anteriores abaixo descrevem as etapas históricas.
+
+## Pacote JPG — 04/10/2026, 07:38 -03:00
+
+41 capturas sintéticas convertidas para JPG sem redimensionamento e reunidas em
+scratch/Caixa_Recepcao_41_Capturas_JPG.zip;41 JPEGs/dimensões/CRC verificados,
+originais preservados. Sem código normal/banco/permissões/integração/commit/deploy.
+HEADcdfdec6, mesma branch; detalhes no [relatório12](12-CAIXA-RECEPCAO-PREVIA.md).
+Próximo: usuário baixar/revisar; pendências anteriores preservadas.
+
+## Caixa da Recepção — prévia isolada concluída, 03/10/2026, 23:08 -03:00
+
+Diagnóstico local e mapa de contratos/permissões concluídos; nenhuma reconfirmação remota.
+Prévia em tests/financeiro, porta4186, com AppShell/Sidebar reais preservados e serviço
+exclusivamente sintético. TypeScript específico, lint e build aprovados; Playwright45/45
+execuções aprovadas em desktop/tablet/celular, roteiro360/430 aplicado no mobile;41 capturas
+geradas. Não comprova persistência/RLS remoto/impressora/celular físico. Referências ReUI
+consultadas, nenhuma instalação; TypeSafe avaliada sem IA/API. Sem fonte agregada de
+cobranças ou recibo comprovada; bloco de cobranças omitido por padrão e proposta explícita.
+Sem mudança de src/banco/permissões/dependências/integração/commit/push/deploy.
+HEADcdfdec6 na branch codex/resgate-local-2026-09-26; alterações não commitadas, trabalhos
+anteriores preservados. [Relatório12](12-CAIXA-RECEPCAO-PREVIA.md) contém fontes, arquivos,
+capturas, limites e primeira integração proposta. Próximo: avaliação visual pelo usuário;
+integração precisa de pedido próprio. Registros anteriores abaixo são históricos.
+
 ## Atualização FASE 13 — 23/09/2026
 
 - Backup lógico completo/aplicação criado com PostgreSQL 17.11 portátil, hashes registrados e restore local realmente ensaiado; contagens financeiras origem/restore coincidiram.
