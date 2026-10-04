@@ -1,5 +1,42 @@
 # CHECKPOINT — PACIENTES
 
+## Publicação ReUI autorizada — 03/10/2026, 21:24 -03:00
+
+Commit seletivo, push e deploy nos dois domínios autorizados pelo pedido posterior.
+Fetch confirma HEAD8e68e303 alinhado0/0, mesma branch codex/resgate-local-2026-09-26;
+nenhum commit adicional pendente. Hostinger automático/Node22/Vite/build/dist confirmado.
+Versão anterior0.1.0/8e68e303 e builds por domínio registrados no relatório para reversão;
+nove prévias de e-mail preservadas.8 testes adicionais de navegação/perfis/Sobre aprovados,
+evidências anteriores correspondem ao runtime atual. Seleção/build/push em andamento,
+sem afirmar implantação. Documentos de outras tarefas permanecem locais fora da seleção.
+Detalhes: [relatório ReUI](../../ia/AVALIACAO-RECEPCAO-PACIENTES-REUI.md). Próximo: pacote seletivo, push e confirmação do commit servido.
+
+## Acabamento móvel implementado — 03/10/2026, 21:05 -03:00
+
+Aviso singular/plural corrigido; etapas ativas em ordem e Convênios em nota secundária;
+prévia vazia oculta só no celular, espaços reduzidos, abas com setas de44px e seleção visível.
+Cabeçalho compartilhado corrigido para eliminar transbordamento de2px em360px, sem mudar Sidebar.
+Normal3000/Recepção/Brotas: Dashboard, cadastro e edição conferidos em360/390/430px e desktop;
+sem salvar.12 cenários direcionados aprovados em dados sintéticos; build/TypeScript/lint aprovados.
+MCP: get_component(tabs), gratuito; TypeSafe consultada sem API. Sem banco/dependências/commit/deploy.
+HEAD8e68e303, branch codex/resgate-local-2026-09-26; alterações não commitadas preservadas.
+Limites: aparelho físico/câmera, outra clínica e persistência real não testados nesta etapa.
+Detalhes: [relatório ReUI](../../ia/AVALIACAO-RECEPCAO-PACIENTES-REUI.md). Próximo: conferência pessoal no celular com os links do relatório.
+
+## Cinco melhorias ReUI implementadas localmente —03/10/2026,20:36 -03:00
+
+Indicadores, seleção na cor da clínica, vazio acionável, filtros individuais e foto móvel
+recolhida implementados. Build/TypeScript/lint e26 testes unitários aprovados;60 cenários de
+navegador aprovados após repetições dirigidas. Normal Recepção/Brotas conferida por leitura,
+cadastro/edição móveis abertos/cancelados sem gravação. Foto persistida só em mocks.
+Servidor normal identificado/reiniciado na pasta do projeto, PID17240/porta3000; Sobre exibe
+0.1.0/8e68e303/alterações locais/20:16:54. MCP ReUI consultado; TypeSafe sem API.
+Sem dependências/banco/autenticação/permissões/commit/push/deploy. HEAD8e68e303 na branch
+codex/resgate-local-2026-09-26, alterações não commitadas. Histórico/contribuições Ipupiara e
+Equipe preservados. Limites: Ipupiara conectada, persistência real, câmera/toque/zoom físico.
+Detalhes e arquivos: [relatório ReUI](../../ia/AVALIACAO-RECEPCAO-PACIENTES-REUI.md).
+Próximo: revisão pessoal das cinco mudanças e sessão legítima disponível para roteiro Ipupiara.
+
 ## Preparação para publicação — 03/10/2026, 10:42 -03:00
 
 Visual aprovado pelo usuário, sem novo acabamento. Integração real e pacote existente revisados:

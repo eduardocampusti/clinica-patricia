@@ -1,5 +1,20 @@
 # PACIENTES — ÍNDICE DO MÓDULO
 
+## Publicação ReUI autorizada — 03/10/2026, 21:24 -03:00
+
+Commit seletivo, push e deploy nos dois domínios autorizados pelo pedido posterior.
+Fetch confirma HEAD8e68e303 alinhado0/0, mesma branch codex/resgate-local-2026-09-26;
+nenhum commit adicional pendente. Hostinger automático/Node22/Vite/build/dist confirmado.
+Versão anterior0.1.0/8e68e303 e builds por domínio registrados no relatório para reversão;
+nove prévias de e-mail preservadas.8 testes adicionais de navegação/perfis/Sobre aprovados,
+evidências anteriores correspondem ao runtime atual. Seleção/build/push em andamento,
+sem afirmar implantação. Documentos de outras tarefas permanecem locais fora da seleção.
+Detalhes: [relatório ReUI](../../ia/AVALIACAO-RECEPCAO-PACIENTES-REUI.md). Próximo: pacote seletivo, push e confirmação do commit servido.
+
+Acabamento móvel de03/10/2026,21:05 -03:00: etapas ativas em ordem, Convênios fora da sequência,
+prévia vazia oculta até620px e espaçamento compacto. Criação/edição preservadas e conferidas
+localmente sem salvar; [evidências e limites](../../ia/AVALIACAO-RECEPCAO-PACIENTES-REUI.md).
+
 **Status:** EM VALIDAÇÃO
 
 03/10/2026 — redesenho e acabamento local de lista, resumo e formulário, verificados em isolamento: [15-REDESENHO-LOCAL.md](15-REDESENHO-LOCAL.md).

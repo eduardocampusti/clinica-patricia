@@ -25,8 +25,8 @@ export default function IndicadoresPacientes({ clinicaId, revisao }: { clinicaId
     return () => abort.abort()
   }, [clinicaId, chave, hoje])
   return <section className="pacientes-indicadores" aria-label="Indicadores da clínica">
-    {([{ titulo: 'Pacientes ativos', apoio: 'Cadastros ativos da unidade', tipo: 'ativos', valor: resultado?.ativos, icone: <IconePessoas /> }, { titulo: 'Novos no mês', apoio: 'Cadastrados neste mês', tipo: 'novos', valor: resultado?.novos, icone: <IconeMais /> }]).map(item => <div key={item.titulo} className={`pacientes-indicador pacientes-indicador--${item.tipo}`}>
-      <div><span>{item.titulo}</span><strong>{resultado?.chave !== chave ? 'Consultando…' : item.valor === null ? 'Indisponível' : item.valor}</strong><small>{item.apoio}</small></div><span aria-hidden="true">{item.icone}</span>
+    {([{ titulo: 'Pacientes ativos', apoio: 'Cadastros ativos da unidade', tipo: 'ativos', valor: resultado?.ativos, icone: <IconePessoas /> }, { titulo: 'Novos no mês', apoio: 'Cadastrados neste mês', tipo: 'novos', valor: resultado?.novos, icone: <IconeMais /> }]).map(item => <div key={item.titulo} className={`pacientes-indicador pacientes-indicador--${item.tipo}`} data-estado={resultado?.chave !== chave ? 'carregando' : item.valor === null ? 'indisponivel' : 'pronto'} aria-busy={resultado?.chave !== chave}>
+      <span aria-hidden="true">{item.icone}</span><div><span>{item.titulo}</span><strong>{resultado?.chave !== chave ? 'Consultando…' : item.valor === null ? 'Indisponível' : item.valor}</strong><small>{item.apoio}</small></div>
     </div>)}
   </section>
 }

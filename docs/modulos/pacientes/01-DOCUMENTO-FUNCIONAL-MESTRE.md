@@ -8,6 +8,26 @@
 
 ## 1. Natureza deste documento
 
+### Decisão específica posterior — acabamento móvel,03/10/2026
+
+Titular autorizou refinar o cadastro existente: adulto com1. Identificação e2. Endereço e contatos;
+menor conserva2. Responsável legal e3. Endereço e contatos. Convênios permanece apenas como nota
+de planejamento, fora das etapas ativas. No celular até620px, prévia da identificação aparece
+quando nome, idade válida ou sexo informado têm conteúdo útil; desktop mantém a prévia.
+Espaços reduzidos preservam foto, orientações, valores, navegação e validações. Sem implementar Convênios.
+
+### Decisão específica posterior — cinco melhorias ReUI,03/10/2026
+
+Autorizadas somente na aplicação local: padronizar apresentação dos indicadores existentes,
+ações contextuais para consulta vazia, filtros removíveis individualmente e foto opcional
+recolhida no celular com nome/prévia preservados. Remover um critério mantém busca, ordem e
+demais filtros. Falha, consulta pendente e ausência de permissão não viram lista vazia.
+Foto/arquivo continuam no mesmo fluxo; edição mantém salvamento de foto separado.
+Sem novos indicadores, dependências, paginação, banco, regras de CPF/responsável/duplicidade,
+autenticação ou publicação. Não aprova o restante do rascunho.
+Execução/evidências: [relatório ReUI](../../ia/AVALIACAO-RECEPCAO-PACIENTES-REUI.md).
+
+
 ### Decisão específica aprovada — apresentação de Pacientes, 03/10/2026
 
 Esta aprovação específica não aprova automaticamente o restante do rascunho.

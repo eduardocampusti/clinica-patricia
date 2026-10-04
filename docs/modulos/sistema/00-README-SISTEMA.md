@@ -1,5 +1,20 @@
 # Sistema — índice
 
+## Publicação ReUI autorizada — 03/10/2026, 21:24 -03:00
+
+Commit seletivo, push e deploy nos dois domínios autorizados pelo pedido posterior.
+Fetch confirma HEAD8e68e303 alinhado0/0, mesma branch codex/resgate-local-2026-09-26;
+nenhum commit adicional pendente. Hostinger automático/Node22/Vite/build/dist confirmado.
+Versão anterior0.1.0/8e68e303 e builds por domínio registrados no relatório para reversão;
+nove prévias de e-mail preservadas.8 testes adicionais de navegação/perfis/Sobre aprovados,
+evidências anteriores correspondem ao runtime atual. Seleção/build/push em andamento,
+sem afirmar implantação. Documentos de outras tarefas permanecem locais fora da seleção.
+Detalhes: [relatório ReUI](../../ia/AVALIACAO-RECEPCAO-PACIENTES-REUI.md). Próximo: pacote seletivo, push e confirmação do commit servido.
+
+Acabamento móvel de03/10/2026,21:05 -03:00: aviso singular/plural, abas com indicação de rolagem,
+setas acessíveis e seleção visível; espaço do cabeçalho corrigido em360px. Sem mudança da Sidebar
+ou das fontes de dados. [Evidências e limites](../../ia/AVALIACAO-RECEPCAO-PACIENTES-REUI.md).
+
 03/10/2026, 18:36 -03:00 — publicação seletiva da Recepção autorizada pelo pedido
 posterior; seleção/commit/envio em execução, sem nova implantação comprovada.
 Branch confirmada/alinhada com origin; reconexão Hostinger solicitada. Manifesto,

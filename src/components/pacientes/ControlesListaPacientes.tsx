@@ -1,5 +1,5 @@
-import { useState, type FormEvent } from 'react'
-import { FILTROS_PACIENTES_INICIAIS, ORDENACOES_PACIENTES, resumoFiltrosPacientes, validarFiltrosPacientes, type FiltrosPacientes, type OrdemPacientes } from '../../lib/pacienteLista'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { FILTROS_PACIENTES_INICIAIS, ORDENACOES_PACIENTES, filtrosAtivosPacientes, removerFiltroPaciente, validarFiltrosPacientes, type FiltrosPacientes, type OrdemPacientes } from '../../lib/pacienteLista'
 
 interface Props {
   ordem: OrdemPacientes; onOrdem: (ordem: OrdemPacientes) => void
@@ -10,7 +10,13 @@ export default function ControlesListaPacientes({ ordem, onOrdem, filtros, onFil
   const [aberto, setAberto] = useState(false)
   const [rascunho, setRascunho] = useState(filtros)
   const [erro, setErro] = useState<string | null>(null)
-  const resumo = resumoFiltrosPacientes(filtros)
+  const resumo = filtrosAtivosPacientes(filtros)
+  const gatilho = useRef<HTMLButtonElement>(null)
+  useEffect(() => { setRascunho(filtros); setErro(null) }, [filtros])
+  function remover(campo: keyof FiltrosPacientes) {
+    onFiltros(removerFiltroPaciente(filtros, campo))
+    gatilho.current?.focus()
+  }
   function aplicar(event: FormEvent) {
     event.preventDefault()
     const mensagem = validarFiltrosPacientes(rascunho)
@@ -32,7 +38,7 @@ export default function ControlesListaPacientes({ ordem, onOrdem, filtros, onFil
             {Object.entries(ORDENACOES_PACIENTES).map(([valor, texto]) => <option key={valor} value={valor}>{texto}</option>)}
           </select>
         </label>
-        <button type="button" className="pacientes-botao-secundario" aria-expanded={aberto} aria-controls="pacientes-filtros" onClick={() => setAberto(!aberto)}>
+        <button ref={gatilho} type="button" className="pacientes-botao-secundario" aria-expanded={aberto} aria-controls="pacientes-filtros" onClick={() => setAberto(!aberto)}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="M4 7h16M4 17h16M9 4v6M15 14v6" /></svg>
           Filtros{resumo.length > 0 && <span className="pacientes-filtros-contagem">{resumo.length}</span>}
         </button>
@@ -55,6 +61,6 @@ export default function ControlesListaPacientes({ ordem, onOrdem, filtros, onFil
       {erro && <p className="pacientes-filtros-erro" role="alert">{erro}</p>}
       <div className="pacientes-filtros-acoes"><button className="pacientes-botao-primario" type="submit">Aplicar filtros</button><button className="pacientes-botao-secundario" type="button" onClick={limpar}>Limpar filtros</button></div>
     </form>}
-    {resumo.length > 0 && <div className="pacientes-filtros-resumo" aria-label="Filtros aplicados"><strong>Aplicados</strong>{resumo.map((texto) => <span key={texto}>{texto}</span>)}</div>}
+    {resumo.length > 0 && <div className="pacientes-filtros-resumo" role="group" aria-label="Filtros aplicados"><strong>Aplicados</strong>{resumo.map(({ campo, texto }) => <button type="button" key={campo} className="pacientes-filtro-removivel" aria-label={`Remover filtro: ${texto}`} onClick={() => remover(campo)}>{texto}<span aria-hidden="true">×</span></button>)}<button type="button" className="pacientes-link" onClick={() => { limpar(); gatilho.current?.focus() }}>Limpar filtros complementares</button></div>}
   </>
 }

@@ -53,6 +53,33 @@ async function preparar(page: Page, opcao: 'normal' | 'limite' | 'erro' | 'sem-c
 }
 const nomesVisiveis = (page: Page) => page.locator('.pacientes-lista-identidade strong')
 
+test('ReUI: retirar um filtro preserva busca, outros critérios, ordem e foco; vazio limpa a consulta', async ({ page }) => {
+  await preparar(page)
+  await page.goto('/tests/operacional/pacientes-pagina.html')
+  await expect(nomesVisiveis(page)).toHaveCount(4)
+  await page.getByRole('searchbox').fill('alvaro')
+  await page.getByRole('combobox', { name: 'Ordenar por' }).selectOption('cadastro_desc')
+  await page.getByRole('button', { name: /^Filtros/ }).click()
+  await page.getByLabel('Data inicial').fill('2026-09-25')
+  await page.getByLabel('Data final').fill('2026-09-25')
+  await page.getByRole('button', { name: 'Aplicar filtros' }).click()
+  await expect(nomesVisiveis(page)).toHaveCount(1)
+  await page.getByRole('button', { name: 'Remover filtro: Cadastro até 25/09/2026', exact: true }).press('Enter')
+  await expect(page.getByRole('button', { name: 'Remover filtro: Cadastro até 25/09/2026', exact: true })).toHaveCount(0)
+  await expect(page.getByRole('button', { name: 'Remover filtro: Cadastro desde 25/09/2026', exact: true })).toBeVisible()
+  await expect(page.getByLabel('Data final')).toHaveValue('')
+  await expect(page.getByRole('searchbox')).toHaveValue('alvaro')
+  await expect(page.getByRole('combobox', { name: 'Ordenar por' })).toHaveValue('cadastro_desc')
+  await expect(page.getByRole('button', { name: /^Filtros/ })).toBeFocused()
+  await page.getByRole('searchbox').fill('consulta inexistente sintética')
+  await expect(page.getByText('Nenhum resultado nesta clínica')).toBeVisible()
+  await page.getByRole('button', { name: 'Limpar busca e filtros' }).press('Enter')
+  await expect(nomesVisiveis(page)).toHaveCount(4)
+  await expect(page.getByRole('searchbox')).toHaveValue('')
+  await expect(page.getByRole('searchbox')).toBeFocused()
+  await expect(page.getByRole('button', { name: /^Remover filtro:/ })).toHaveCount(0)
+})
+
 test('ordenação, filtros aplicados, teclado, resumo e capturas responsivas', async ({ page }, info) => {
   await preparar(page)
   await page.goto('/tests/operacional/pacientes-pagina.html')

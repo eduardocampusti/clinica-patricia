@@ -91,11 +91,21 @@ export function correspondeAosFiltros(p: PacienteOrdenavel, regras: RestricaoPac
     return operador === 'gte' ? a >= b : operador === 'lt' ? a < b : operador === 'gt' ? a > b : a <= b
   })
 }
-export function resumoFiltrosPacientes(f: FiltrosPacientes): string[] {
+export function filtrosAtivosPacientes(f: FiltrosPacientes): { campo: keyof FiltrosPacientes; texto: string }[] {
   const data = (v: string) => v.split('-').reverse().join('/')
-  return [f.inicio && `Cadastro desde ${data(f.inicio)}`, f.fim && `Cadastro até ${data(f.fim)}`,
-    f.idadeMin !== '' && `Idade mínima: ${f.idadeMin} anos`, f.idadeMax !== '' && `Idade máxima: ${f.idadeMax} anos`,
-    f.nascimento !== 'todos' && `Nascimento ${f.nascimento === 'ausente' ? 'não informado' : 'informado'}`].filter(Boolean) as string[]
+  const itens: { campo: keyof FiltrosPacientes; texto: string }[] = []
+  if (f.inicio) itens.push({ campo: 'inicio', texto: `Cadastro desde ${data(f.inicio)}` })
+  if (f.fim) itens.push({ campo: 'fim', texto: `Cadastro até ${data(f.fim)}` })
+  if (f.idadeMin !== '') itens.push({ campo: 'idadeMin', texto: `Idade mínima: ${f.idadeMin} anos` })
+  if (f.idadeMax !== '') itens.push({ campo: 'idadeMax', texto: `Idade máxima: ${f.idadeMax} anos` })
+  if (f.nascimento !== 'todos') itens.push({ campo: 'nascimento', texto: `Nascimento ${f.nascimento === 'ausente' ? 'não informado' : 'informado'}` })
+  return itens
+}
+export function resumoFiltrosPacientes(f: FiltrosPacientes): string[] {
+  return filtrosAtivosPacientes(f).map(item => item.texto)
+}
+export function removerFiltroPaciente(f: FiltrosPacientes, campo: keyof FiltrosPacientes): FiltrosPacientes {
+  return { ...f, [campo]: FILTROS_PACIENTES_INICIAIS[campo] }
 }
 export function respostaCompletaPacientes(quantidade: number, total: number | null): boolean {
   return total !== null && quantidade === total && quantidade <= LIMITE_CONSULTA_PACIENTES

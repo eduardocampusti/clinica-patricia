@@ -18,6 +18,7 @@ import PacienteAvatar from '../components/pacientes/PacienteAvatar'
 import PreenchimentoCadastro from '../components/pacientes/PreenchimentoCadastro'
 import IndicadoresPacientes from '../components/pacientes/IndicadoresPacientes'
 import PreviaIdentificacaoPaciente from '../components/pacientes/PreviaIdentificacaoPaciente'
+import FotoPacienteCompacta from '../components/pacientes/FotoPacienteCompacta'
 import { avaliarPreenchimento } from '../lib/pacientePreenchimento'
 import { IconeCalendario, IconeChevron, IconeLupa, IconeMais, IconePessoas } from '../components/shell/icons'
 import { calcularIdade } from '../lib/pacienteIdade'
@@ -302,6 +303,7 @@ function Pacientes({
   const [erroFotoAdministrativa, setErroFotoAdministrativa] = useState<string | null>(null)
   const requisicaoFotoAtual = useRef(0)
   const modalCadastroRef = useRef<HTMLFormElement>(null)
+  const buscaPacienteRef = useRef<HTMLInputElement>(null)
   const erroFormularioRef = useRef<HTMLDivElement>(null)
   const gatilhoNovoPacienteRef = useRef<HTMLButtonElement>(null)
   const palavrasComGrafiaManual = useRef<Partial<Record<CampoTextoFormatado, Set<string>>>>({})
@@ -803,9 +805,21 @@ function Pacientes({
   function limparBuscaCpf() {
     requisicaoCpfAtual.current += 1
     setBuscaCpf('')
+    setBuscandoCpf(false)
     setResultadoCpf(null)
     setErroBuscaCpf(null)
     fecharResumo()
+  }
+
+  function removerBuscaLista() {
+    setBusca('')
+    limparBuscaCpf()
+    mudarModoBusca('nome')
+    requestAnimationFrame(() => buscaPacienteRef.current?.focus())
+  }
+  function limparFiltrosLista() {
+    setFiltros(FILTROS_PACIENTES_INICIAIS)
+    removerBuscaLista()
   }
 
   function atualizarComMascara(
@@ -1335,8 +1349,10 @@ function Pacientes({
             </div>
           <div className="paciente-form-grid">
             <div className={etapaCadastro === 1 ? 'paciente-foto-area' : 'paciente-oculto'}>
+              <FotoPacienteCompacta avatar={fotoCadastroUrl ? <img src={fotoCadastroUrl} alt="" /> : <IconePessoas />}>
+              {(visivel) => <>
               <EditorFotoPaciente
-                ativo={etapaCadastro === 1}
+                ativo={etapaCadastro === 1 && visivel}
                 nome={form.nomeCompleto}
                 imagemAtualUrl={fotoCadastroUrl}
                 disabled={salvando || Boolean(pacienteCriadoPendente)}
@@ -1355,6 +1371,8 @@ function Pacientes({
                   })
                 }}
               />
+              </>}
+              </FotoPacienteCompacta>
               <PreviaIdentificacaoPaciente nome={form.nomeCompleto} nascimento={form.dataNascimento} sexo={form.sexo} />
             </div>
             <div className={etapaCadastro === 1 ? 'paciente-campo-nome' : 'paciente-oculto'}>
@@ -1537,7 +1555,7 @@ function Pacientes({
             )}
             {etapaCadastro !== 3 ? (
               <button type="button" onClick={avancarCadastro} disabled={salvando} className="paciente-botao-primario">
-                Avançar para {etapaCadastro === 1 && idade !== null && idade < 18 ? 'Responsável legal' : 'Endereço & Contatos'} →
+                Avançar para {etapaCadastro === 1 && idade !== null && idade < 18 ? 'Responsável legal' : 'Endereço e contatos'} →
               </button>
             ) : (
               <button type="button" onClick={() => modalCadastroRef.current?.requestSubmit()} disabled={salvando} className="paciente-botao-primario">
@@ -1628,14 +1646,14 @@ function Pacientes({
                 <label className="pacientes-busca-campo">
                   <span className="sr-only">Buscar paciente por nome</span>
                   <IconeLupa className="pacientes-busca-campo-icone" />
-                  <input type="search" value={busca} onChange={(event) => setBusca(event.target.value)} placeholder="Buscar paciente por nome" />
+                  <input ref={buscaPacienteRef} type="search" value={busca} onChange={(event) => setBusca(event.target.value)} placeholder="Buscar paciente por nome" />
                 </label>
               ) : (
                 <form onSubmit={pesquisarCpf} className="pacientes-busca-cpf">
                   <label className="pacientes-busca-campo">
                     <span className="sr-only">Buscar por CPF exato</span>
                     <IconeLupa className="pacientes-busca-campo-icone" />
-                    <input type="text" inputMode="numeric" autoComplete="off" value={buscaCpf}
+                    <input ref={buscaPacienteRef} type="text" inputMode="numeric" autoComplete="off" value={buscaCpf}
                       onChange={(event) => { requisicaoCpfAtual.current += 1; setBuscandoCpf(false); setBuscaCpf(formatarCpf(event.target.value)); setErroBuscaCpf(null); setResultadoCpf(null); fecharResumo() }}
                       placeholder="000.000.000-00" maxLength={14} aria-describedby="busca-paciente-cpf-ajuda" />
                   </label>
@@ -1647,6 +1665,7 @@ function Pacientes({
               )}
             </div>
             {modoBusca === 'cpf' && <p id="busca-paciente-cpf-ajuda" className="pacientes-busca-ajuda">Informe os 11 dígitos. A busca consulta somente a clínica atual.</p>}
+            {((modoBusca === 'nome' && busca.trim()) || (modoBusca === 'cpf' && (buscaCpf || resultadoCpf !== null))) && <div className="pacientes-busca-aplicada" role="group" aria-label="Busca aplicada"><button type="button" className="pacientes-filtro-removivel" aria-label={modoBusca === 'cpf' ? 'Remover busca por CPF' : 'Remover busca por nome'} onClick={removerBuscaLista}>{modoBusca === 'cpf' ? 'Busca por CPF exato' : 'Busca por nome'}<span aria-hidden="true">×</span></button></div>}
             {erroBuscaCpf && <p role="alert" className="pacientes-busca-erro">{erroBuscaCpf}</p>}
           </section>
 
@@ -1666,9 +1685,9 @@ function Pacientes({
                 ) : modoBusca === 'nome' && !consultaCompleta ? (
                   <div className="pacientes-estado" role="status"><strong>Refine a busca ou os filtros</strong><span>Foram encontrados {totalConsulta} pacientes, acima da quantidade que pode ser exibida nesta consulta. Use um nome ou filtros mais específicos para ver todos os resultados, sem uma lista incompleta.</span></div>
                 ) : modoBusca === 'nome' && pacientes.length === 0 && !busca.trim() && filtrosAtivos.length === 0 ? (
-                  <div className="pacientes-estado"><span className="pacientes-estado-icone" aria-hidden="true"><IconePessoas /></span><strong>Nenhum paciente ativo cadastrado</strong><span>Use “Novo paciente” para iniciar um cadastro nesta clínica.</span></div>
+                  <div className="pacientes-estado"><span className="pacientes-estado-icone" aria-hidden="true"><IconePessoas /></span><strong>Nenhum paciente ativo cadastrado</strong><span>Use “Novo paciente” para iniciar um cadastro nesta clínica.</span><button type="button" className="pacientes-botao-primario" onClick={abrirFormulario}>Cadastrar paciente</button></div>
                 ) : pacientesExibidos.length === 0 ? (
-                  <div className="pacientes-estado"><span className="pacientes-estado-icone" aria-hidden="true"><IconeLupa /></span><strong>Nenhum resultado nesta clínica</strong><span>Tente outra busca ou ajuste os filtros aplicados.</span></div>
+                  <div className="pacientes-estado"><span className="pacientes-estado-icone" aria-hidden="true"><IconeLupa /></span><strong>Nenhum resultado nesta clínica</strong><span>Tente outra busca ou ajuste os filtros aplicados.</span>{(filtrosAtivos.length > 0 || busca.trim() || modoBusca === 'cpf') && <button type="button" className="pacientes-botao-secundario" onClick={limparFiltrosLista}>Limpar busca e filtros</button>}</div>
                 ) : (
                   <div role="table" aria-label="Pacientes encontrados">
                     <div className="pacientes-lista-colunas" role="row">

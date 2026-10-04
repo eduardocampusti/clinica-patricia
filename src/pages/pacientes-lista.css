@@ -438,3 +438,31 @@
   .pacientes-lista-linha > .pacientes-lista-telefone { grid-row: 2; }
   .pacientes-lista-linha > .pacientes-lista-situacao { grid-row: 3; }
 }
+
+/* Mesma hierarquia dos indicadores da Recepção; consultas e estados preservados. */
+.pacientes-pagina .pacientes-indicadores { gap: 12px; }
+.pacientes-pagina .pacientes-indicador { display: flex; align-items: center; gap: 12px; min-height: 106px; padding: 16px; border: 1px solid var(--borda); border-radius: 12px; box-shadow: var(--sombra-baixa); }
+.pacientes-pagina .pacientes-indicador > div { gap: 4px; min-width: 0; }
+.pacientes-pagina .pacientes-indicador strong { font-size: 28px; font-weight: 650; line-height: 1.2; color: var(--texto-principal); font-variant-numeric: tabular-nums; }
+.pacientes-pagina .pacientes-indicador span { font-size: 13px; font-weight: 600; }
+.pacientes-pagina .pacientes-indicador small { font-size: 12px; }
+.pacientes-pagina .pacientes-indicador > span { display: grid; place-items: center; width: 40px; height: 40px; padding: 0; flex-shrink: 0; border-radius: 50%; }
+.pacientes-pagina .pacientes-indicador svg { width: 22px; height: 22px; }
+.pacientes-pagina .pacientes-indicador:not([data-estado=pronto]) strong { font-size: 14px; overflow-wrap: anywhere; }
+.pacientes-busca-aplicada { display: flex; flex-wrap: wrap; gap: 8px; }
+.pacientes-filtros-resumo .pacientes-filtro-removivel, .pacientes-busca-aplicada .pacientes-filtro-removivel { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 8px 12px; border: 1px solid var(--borda); border-radius: 8px; color: var(--texto-principal); background: var(--fundo-pagina); font: inherit; font-size: 12px; cursor: pointer; }
+.pacientes-filtro-removivel > span { font-size: 18px; line-height: 1; background: none; padding: 0; }
+.pacientes-filtro-removivel:hover { border-color: var(--cor-primaria); }
+.pacientes-filtro-removivel:focus-visible { outline: 2px solid var(--cor-primaria); outline-offset: 3px; }
+.pacientes-filtros-resumo .pacientes-link { min-height: 44px; }
+.pacientes-estado > button { margin-top: 8px; }
+@media (max-width: 700px) {
+  .pacientes-pagina .pacientes-indicadores { gap: 8px; }
+  .pacientes-pagina .pacientes-indicador { gap: 8px; padding: 12px; min-height: 82px; }
+  .pacientes-pagina .pacientes-indicador > span { width: 32px; height: 32px; }
+  .pacientes-pagina .pacientes-indicador span { font-size: 12px; }
+  .pacientes-pagina .pacientes-indicador strong { font-size: 24px; }
+  .pacientes-pagina .pacientes-indicador:not([data-estado=pronto]) strong { font-size: 12px; }
+  .pacientes-pagina .pacientes-indicador small { display: none; }
+  .pacientes-pagina .pacientes-indicador svg { width: 20px; height: 20px; }
+}

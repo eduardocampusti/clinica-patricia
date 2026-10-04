@@ -22,36 +22,36 @@ export function NavegacaoFormularioPaciente({
     ? [
         { id: 1, titulo: 'Identificação', subtitulo: 'Dados do paciente' },
         { id: 2, titulo: 'Responsável legal', subtitulo: 'Vínculo do menor' },
-        { id: 3, titulo: 'Endereço & Contatos', subtitulo: 'Dados de contato' },
+        { id: 3, titulo: 'Endereço e contatos', subtitulo: 'Dados de contato' },
       ]
     : [
         { id: 1, titulo: 'Identificação', subtitulo: 'Dados do paciente' },
-        { id: 2, titulo: 'Endereço & Contatos', subtitulo: 'Dados de contato' },
+        { id: 2, titulo: 'Endereço e contatos', subtitulo: 'Dados de contato' },
       ]
 
   return (
+    <div className="paciente-navegacao">
     <nav className={`paciente-etapas ${menor ? 'com-responsavel' : ''}`} aria-label="Etapas do formulário do paciente">
-      <button type="button" className={etapaAtual === 1 ? 'ativa' : etapaAtual > 1 ? 'concluida' : ''} onClick={() => onIrParaEtapa(1)}>
-        <span className="paciente-etapa-numero">{etapaAtual > 1 ? '✓' : '1'}</span>
+      <button type="button" aria-current={etapaAtual === 1 ? 'step' : undefined} className={etapaAtual === 1 ? 'ativa' : etapaAtual > 1 ? 'concluida' : ''} onClick={() => onIrParaEtapa(1)}>
+        <span className="paciente-etapa-numero" aria-hidden="true">{etapaAtual > 1 ? '✓' : '1'}</span>
         <span><strong>1. Identificação</strong><small>Dados do paciente</small></span>
       </button>
-      <span className="paciente-etapa-planejada" role="note" aria-label="Convênios — Em planejamento">
-        <span className="paciente-etapa-planejada-icone" aria-hidden="true">◇</span>
-        <span><strong>Convênios</strong><small>Em planejamento</small></span>
-      </span>
       {etapas.slice(1).map((item) => (
         <button
           key={item.id}
           type="button"
           aria-label={item.titulo}
+          aria-current={etapaAtual === item.id ? 'step' : undefined}
           className={etapaAtual === item.id ? 'ativa' : etapaAtual > item.id ? 'concluida' : ''}
           onClick={() => onIrParaEtapa(item.id)}
         >
-          <span className="paciente-etapa-numero">{etapaAtual > item.id ? '✓' : item.id}</span>
+          <span className="paciente-etapa-numero" aria-hidden="true">{etapaAtual > item.id ? '✓' : item.id}</span>
           <span><strong>{item.id}. {item.titulo}</strong><small>{item.subtitulo}</small></span>
         </button>
       ))}
     </nav>
+    <p className="paciente-planejamento-nota" role="note" aria-label="Convênios — Em planejamento">Convênios — Em planejamento</p>
+    </div>
   )
 }
 

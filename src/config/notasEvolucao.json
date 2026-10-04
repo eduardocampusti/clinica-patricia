@@ -13,6 +13,8 @@
       "Página “Sobre o sistema” com versão em execução, créditos de desenvolvimento e contexto da clínica."
     ],
     "melhorias": [
+      "Celular: cadastro de pacientes com etapas em ordem, planejamento de convênios separado e menos espaço antes do nome; a prévia aparece quando há informação preenchida. Recepção com aviso no singular ou plural e abas acessíveis por setas, toque e teclado, mantendo a seleção visível.",
+      "Recepção e Pacientes: indicadores com leitura uniforme, abas na cor da clínica, filtros removíveis separadamente e ações para consultas sem resultados. No celular, a foto fica recolhida para priorizar a identificação, mantendo as opções de cadastro e edição.",
       "Pacientes: lista e cartões mais compactos, pendências confirmadas separadas da situação, resumo com ações junto à identificação e prévia do nome e idade no formulário. Indicadores com estados de consulta, seis itens fixos e etapa no rodapé; CPF permanece opcional, com os mesmos serviços e regras de gravação.",
       "Agenda: acabamento local com acentos vivos e fundos suaves nos indicadores, identificação cromática dos profissionais, barras de situação, sombras reforçadas e realces por mouse ou teclado. Links mais legíveis no tema escuro, preservando a marca da clínica e a preferência de movimento reduzido.",
       "Agenda no celular: faixa de cinco dias, profissionais em chips, horários e cartões por situação, horários livres dentro do expediente e botão Novo agendamento no rodapé. Na remarcação, a contagem ignora o próprio agendamento; blocos de hoje já passados ficam indisponíveis, sem alterar a marcação manual.",

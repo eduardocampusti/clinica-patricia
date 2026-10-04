@@ -1,5 +1,24 @@
 # Sistema — documento funcional mestre
 
+### Decisão específica posterior — acabamento móvel,03/10/2026
+
+Aviso mantém a contagem atual e usa “1 agendamento com horário passado ainda previsto” ou
+“N agendamentos com horário passado ainda previstos”. Abas existentes mantêm semântica/ações,
+com setas de44px, indicação de rolagem e aba selecionada visível por teclado, toque ou resize.
+Correção mínima do espaço no cabeçalho compartilhado elimina transbordamento em360px,
+sem alterar Sidebar, vínculos, permissões ou regras de negócio. Evidências no relatório ReUI.
+
+### Decisão específica posterior — acabamento ReUI local,03/10/2026
+
+Titular autorizou cinco melhorias de apresentação/usabilidade no Dashboard da Recepção e
+Pacientes. Dashboard conserva fontes/significados/ações: escala uniforme dos indicadores,
+seleção por cor da clínica com borda/peso, vazio com Limpar filtros/Ver previstos/Novo
+agendamento somente quando pertinente, e critérios removíveis separadamente.
+Busca exata já consultada continua aplicada ao remover profissional/situação; outra clínica,
+data/revisão/texto invalidam resposta antiga. Alertas continuam semânticos; sem novos totais,
+estimativas, paginação, banco, permissões, dependências ou publicação.
+Resultado e limites: [relatório ReUI](../../ia/AVALIACAO-RECEPCAO-PACIENTES-REUI.md).
+
 **Estado:** RASCUNHO — comportamento solicitado em 25/09/2026; implementação local, não publicada.
 
 ## Comportamento solicitado

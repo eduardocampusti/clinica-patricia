@@ -46,13 +46,10 @@ function AppShell({
         <header className="app-shell-header flex min-h-16 flex-none items-center gap-3 border-b border-[var(--borda)] bg-[var(--fundo-card)] px-4 sm:px-6 lg:px-8">
           <SidebarTrigger />
 
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-semibold text-[var(--texto-principal)]">{TITULOS_TELA[tela]}</p>
             <p className="hidden text-xs text-[var(--texto-secundario)] sm:block">Gestão clínica</p>
           </div>
-
-          {/* Espaçador */}
-          <div className="flex-1" />
 
           <div className="flex min-w-0 items-center gap-2 sm:gap-3">
             {clinicasDoUsuario.length > 1 ? (

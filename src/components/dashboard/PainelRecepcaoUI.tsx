@@ -13,36 +13,47 @@ export function IconePainel({ tipo }: { tipo: 'calendario' | 'relogio' | 'pessoa
   </svg>
 }
 
+function revelarAba(el: HTMLDivElement, indice: number) {
+  const tab = el.children[indice] as HTMLElement | undefined
+  if (!tab) return
+  const janela = el.getBoundingClientRect(), aba = tab.getBoundingClientRect()
+  if (aba.left < janela.left) el.scrollLeft += aba.left - janela.left
+  else if (aba.right > janela.right) el.scrollLeft += aba.right - janela.right
+}
+
 export function AbasPainelRecepcao({ nomes, contagens, selecionada, onSelecionar, idPainel }: { nomes: readonly string[]; contagens: (number | null)[]; selecionada: number; onSelecionar: (i: number) => void; idPainel: string }) {
   const ref = useRef<HTMLDivElement>(null)
-  const [bordas, setBordas] = useState({ inicio: false, fim: false })
+  const [bordas, setBordas] = useState({ rolavel: false, inicio: false, fim: false })
   const chaveContagens = contagens.join(',')
   useEffect(() => {
     const el = ref.current
     if (!el) return
-    const medir = () => setBordas({ inicio: el.scrollLeft > 2, fim: el.scrollWidth - el.clientWidth - el.scrollLeft > 2 })
-    const observer = new ResizeObserver(medir)
-    observer.observe(el); medir()
+    const medir = () => {
+      const gap = parseFloat(getComputedStyle(el).columnGap) || 0
+      const larguraAbas = Array.from(el.children).reduce((total, tab) => total + (tab as HTMLElement).offsetWidth, 0) + gap * (el.children.length - 1)
+      setBordas({ rolavel: larguraAbas > (el.parentElement?.clientWidth ?? el.clientWidth) + 2, inicio: el.scrollLeft > 2, fim: el.scrollWidth - el.clientWidth - el.scrollLeft > 2 })
+    }
+    const ajustar = () => { revelarAba(el, selecionada); medir() }
+    const observer = new ResizeObserver(ajustar)
+    observer.observe(el)
+    if (el.parentElement) observer.observe(el.parentElement)
+    ajustar()
     el.addEventListener('scroll', medir, { passive: true })
     return () => { observer.disconnect(); el.removeEventListener('scroll', medir) }
-  }, [])
-  useEffect(() => {
-    const el = ref.current, tab = el?.children[selecionada] as HTMLElement | undefined
-    if (!el || !tab) return
-    const margem = 20
-    if (tab.offsetLeft < el.scrollLeft + margem) el.scrollLeft = Math.max(0, tab.offsetLeft - margem)
-    else if (tab.offsetLeft + tab.offsetWidth > el.scrollLeft + el.clientWidth - margem) el.scrollLeft = tab.offsetLeft + tab.offsetWidth - el.clientWidth + margem
   }, [selecionada, chaveContagens])
   function selecionar(i: number, foco = false) {
     onSelecionar(i)
     if (foco) (ref.current?.children[i] as HTMLButtonElement)?.focus({ preventScroll: true })
   }
   return <div className="rp-tabs-wrap">
-    {bordas.inicio && <button className="rp-tabs-edge rp-tabs-edge-start" aria-label="Mostrar abas anteriores" onClick={() => ref.current?.scrollBy({ left: -180 })}>‹</button>}
-    <div ref={ref} className="rp-tabs" role="tablist" aria-label="Situação dos agendamentos">{nomes.map((nome, i) => <button key={nome} id={`${idPainel}-tab-${i}`} role="tab" aria-selected={selecionada === i} aria-controls={idPainel} tabIndex={selecionada === i ? 0 : -1} onClick={() => selecionar(i)} onFocus={() => { if (selecionada !== i) selecionar(i) }} onKeyDown={e => {
+    <div className="rp-tabs-navegacao" data-rolavel={bordas.rolavel}>
+    <button type="button" className="rp-tabs-edge" hidden={!bordas.rolavel} disabled={!bordas.inicio} aria-label="Mostrar abas anteriores" onClick={() => ref.current?.scrollBy({ left: -180 })}>‹</button>
+    <div ref={ref} className="rp-tabs" role="tablist" aria-label="Situação dos agendamentos" aria-describedby={bordas.rolavel ? `${idPainel}-ajuda-abas` : undefined}>{nomes.map((nome, i) => <button type="button" key={nome} id={`${idPainel}-tab-${i}`} role="tab" aria-selected={selecionada === i} aria-controls={idPainel} tabIndex={selecionada === i ? 0 : -1} onClick={() => selecionar(i)} onFocus={() => { if (selecionada !== i) selecionar(i) }} onKeyDown={e => {
       const novo = e.key === 'ArrowRight' ? (i + 1) % nomes.length : e.key === 'ArrowLeft' ? (i + nomes.length - 1) % nomes.length : e.key === 'Home' ? 0 : e.key === 'End' ? nomes.length - 1 : -1
       if (novo >= 0) { e.preventDefault(); selecionar(novo, true) }
     }}>{nome}<span>{contagens[i] ?? '—'}</span></button>)}</div>
-    {bordas.fim && <button className="rp-tabs-edge rp-tabs-edge-end" aria-label="Mostrar próximas abas" onClick={() => ref.current?.scrollBy({ left: 180 })}>›</button>}
+    <button type="button" className="rp-tabs-edge" hidden={!bordas.rolavel} disabled={!bordas.fim} aria-label="Mostrar próximas abas" onClick={() => ref.current?.scrollBy({ left: 180 })}>›</button>
+    </div>
+    {bordas.rolavel && <p className="rp-tabs-ajuda" id={`${idPainel}-ajuda-abas`}>Deslize as abas ou use as setas.</p>}
   </div>
 }

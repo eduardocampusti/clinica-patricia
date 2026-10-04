@@ -64,6 +64,108 @@ async function abrir(page: Page) {
   await expect(page.getByRole('button', { name: 'Atualizar', exact: true })).toBeEnabled()
 }
 
+test('Acabamento móvel: aviso singular e plural preserva a contagem dos previstos', async ({ page }) => {
+  for (const quantidade of [2, 3]) {
+    await page.unrouteAll({ behavior: 'wait' })
+    const estado = await preparar(page, 'recepcao', quantidade)
+    await abrir(page)
+    const texto = quantidade === 2 ? '1 agendamento com horário passado ainda previsto' : '2 agendamentos com horário passado ainda previstos'
+    await expect(page.locator('.rp-warning strong')).toHaveText(texto)
+    expect(estado.escritas).toHaveLength(0)
+    expect(estado.errosPagina).toHaveLength(0)
+  }
+})
+
+test('Acabamento móvel: abas por toque e teclado, seleção visível e sem transbordamento', async ({ page }, info) => {
+  test.skip(info.project.name === 'tablet', 'Larguras direcionadas de celular e computador')
+  const estado = await preparar(page, 'recepcao', 10)
+  await abrir(page)
+  for (const width of info.project.name === 'mobile' ? [360, 390, 430] : [1440]) {
+    await page.setViewportSize({ width, height: 844 })
+    const abas = page.getByRole('tablist', { name: 'Situação dos agendamentos' })
+    const primeira = abas.getByRole('tab').first(), ultima = abas.getByRole('tab').last()
+    await primeira.press('Home')
+    if (width < 500) {
+      await expect(page.getByText('Deslize as abas ou use as setas.')).toBeVisible()
+      await page.getByRole('button', { name: 'Mostrar próximas abas' }).tap()
+      await ultima.tap()
+    } else await ultima.click()
+    await expect(ultima).toHaveAttribute('aria-selected', 'true')
+    await expect.poll(async () => {
+      const janela = await abas.boundingBox(), aba = await ultima.boundingBox()
+      return !!janela && !!aba && aba.x >= janela.x - 1 && aba.x + aba.width <= janela.x + janela.width + 1
+    }).toBe(true)
+    await ultima.press('Home')
+    await expect(primeira).toBeFocused()
+    await primeira.press('End')
+    await expect(ultima).toBeFocused()
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true)
+  }
+  expect(estado.escritas).toHaveLength(0)
+  expect(estado.errosPagina).toHaveLength(0)
+})
+
+test('ReUI: filtros independentes, CPF preservado, vazio acionável e seleção acessível', async ({ page }) => {
+  const s = await preparar(page, 'recepcao', 10); await abrir(page)
+  await page.getByLabel('Buscar paciente').fill('consulta inexistente sintética')
+  await expect(page.getByText('Nenhum agendamento neste filtro', { exact: true })).toBeVisible()
+  await page.locator('.rp-empty').getByRole('button', { name: 'Ver previstos', exact: true }).press('Enter')
+  await expect(page.getByRole('tab', { name: /Previstos/ })).toHaveAttribute('aria-selected', 'true')
+  await expect(page.getByTestId('registro')).toHaveCount(4)
+  await page.getByLabel('Buscar paciente').fill('Paciente 1')
+  await page.getByLabel('Filtrar por profissional').selectOption('prof1')
+  await expect(page.getByTestId('registro')).toHaveCount(1)
+  await page.getByRole('button', { name: 'Remover filtro de profissional', exact: true }).press('Enter')
+  await expect(page.getByLabel('Buscar paciente')).toHaveValue('Paciente 1')
+  await expect(page.getByRole('tab', { name: /Previstos/ })).toHaveAttribute('aria-selected', 'true')
+  await page.getByRole('button', { name: 'Remover busca por nome', exact: true }).click()
+  await expect(page.getByTestId('registro')).toHaveCount(4)
+  await page.getByRole('tab', { name: /Aguardando/ }).click()
+  await page.getByLabel('Modalidade da busca').selectOption('cpf')
+  await page.getByLabel('CPF exato').fill('52998224725')
+  await page.getByRole('button', { name: 'Buscar CPF', exact: true }).click()
+  await expect(page.getByTestId('registro')).toHaveCount(1)
+  await page.getByLabel('Filtrar por profissional').selectOption('prof1')
+  await expect(page.getByText('Nenhum agendamento neste filtro', { exact: true })).toBeVisible()
+  await page.getByRole('button', { name: 'Remover filtro de profissional', exact: true }).click()
+  await expect(page.getByTestId('registro')).toHaveCount(1)
+  await expect(page.getByLabel('CPF exato')).toHaveValue('529.982.247-25')
+  await page.getByRole('button', { name: 'Remover busca por CPF', exact: true }).press('Enter')
+  await expect(page.getByTestId('registro')).toHaveCount(2)
+  await expect(page.getByLabel('Buscar paciente')).toBeFocused()
+  const selecionada = page.getByRole('tab', { selected: true })
+  await expect(selecionada).toHaveCSS('font-weight', '700')
+  await expect(selecionada).toHaveCSS('border-bottom-width', '3px')
+  expect(s.escritas).toEqual([]); expect(s.errosPagina).toEqual([])
+})
+
+test('ReUI: seleção e filtros legíveis nas duas clínicas e temas', async ({ page }) => {
+  const s = await preparar(page, 'recepcao', 5); await abrir(page)
+  const luminancia = (cor: string) => {
+    const valores = (cor.match(/[\d.]+/g) ?? []).slice(0, 3).map(Number)
+    const canais = valores.map(v => { const n = cor.startsWith('color(') ? v : v / 255; return n <= .04045 ? n / 12.92 : ((n + .055) / 1.055) ** 2.4 })
+    return canais[0] * .2126 + canais[1] * .7152 + canais[2] * .0722
+  }
+  for (const clinica of ['22222222-2222-4222-8222-222222222222', '33333333-3333-4333-8333-333333333333']) {
+    await page.getByLabel('Selecionar clínica', { exact: true }).selectOption(clinica)
+    await expect(page.getByRole('button', { name: 'Atualizar', exact: true })).toBeEnabled()
+    await page.getByRole('tab', { name: /Previstos/ }).click()
+    for (const tema of ['claro', 'escuro']) {
+      if (await page.locator('html').getAttribute('data-theme') !== tema) await page.getByRole('button', { name: tema === 'escuro' ? 'Ativar modo escuro' : 'Ativar modo claro' }).click()
+      for (const seletor of ['.rp-tabs [aria-selected="true"]', '.rp-filtro-removivel']) {
+        const cores = await page.locator(seletor).first().evaluate(el => ({ texto: getComputedStyle(el).color, fundo: getComputedStyle(el.closest('.rp-panel')!).backgroundColor }))
+        const a = luminancia(cores.texto), b = luminancia(cores.fundo)
+        expect((Math.max(a, b) + .05) / (Math.min(a, b) + .05)).toBeGreaterThanOrEqual(4.5)
+      }
+      await page.getByRole('tab', { name: /Previstos/ }).press('ArrowRight')
+      await expect(page.getByRole('tab', { name: /Em atendimento/ })).toBeFocused()
+      await page.getByRole('tab', { name: /Em atendimento/ }).press('ArrowLeft')
+      await expect(page.getByRole('tab', { name: /Previstos/ })).toHaveCSS('outline-style', 'solid')
+    }
+  }
+  expect(s.escritas).toEqual([]); expect(s.errosPagina).toEqual([])
+})
+
 test('preparação para publicação: contrato do caixa e destino geral da Agenda', async ({ page }) => {
   const s = await preparar(page, 'recepcao', 15); await abrir(page)
   const abrirCaixa = page.getByRole('button', { name: /Caixa do turno/ })
@@ -156,7 +258,7 @@ test('resposta truncada não produz totais', async ({ page }) => {
   await expect(page.locator('.rp-metrics')).not.toContainText('205')
 })
 
-test('troca de clínica e filtro descarta respostas atrasadas', async ({ page }) => {
+test('troca de clínica descarta respostas atrasadas do movimento e CPF', async ({ page }) => {
   const s = await preparar(page, 'recepcao', 5); s.atraso = 900
   await page.goto('/sistema/brotas/dashboard', { waitUntil: 'domcontentloaded' })
   await expect(page.getByRole('heading', { name: 'Movimento de hoje' })).toBeVisible()
@@ -167,9 +269,14 @@ test('troca de clínica e filtro descarta respostas atrasadas', async ({ page })
   s.cpfAtraso = 500
   await page.getByLabel('Modalidade da busca').selectOption('cpf'); await page.getByLabel('CPF exato').fill('52998224725'); await page.getByRole('button', { name: 'Buscar CPF' }).click()
   await page.getByLabel('Filtrar por profissional').selectOption('prof1')
+  await page.getByLabel('Selecionar clínica', { exact: true }).selectOption('22222222-2222-4222-8222-222222222222')
   await page.getByLabel('Filtrar por profissional').selectOption('todos'); await page.waitForTimeout(600)
-  await expect(page.getByTestId('registro')).toHaveCount(0)
-  await expect(page.getByRole('tabpanel')).toContainText('Informe o CPF válido')
+  // O App remonta o painel ao trocar a clínica: a busca antiga deve ser descartada.
+  await expect(page.getByLabel('Modalidade da busca')).toHaveValue('nome')
+  await expect(page.getByLabel('Buscar paciente')).toHaveValue('')
+  await expect(page.getByTestId('registro')).toHaveCount(1)
+  await expect(page.getByTestId('registro').first()).toContainText('Brotas Paciente 0')
+  await expect(page.locator('.rp-records')).not.toContainText('Ipupiara Paciente')
 })
 
 test('fluxos existentes abrem e cancelam sem gravar; paciente correto', async ({ page }) => {

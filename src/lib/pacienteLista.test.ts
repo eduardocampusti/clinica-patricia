@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { FILTROS_PACIENTES_INICIAIS as vazio, correspondeAosFiltros, hojeNaBahia, ordenarPacientes, padraoBuscaNome, respostaCompletaPacientes, restricoesPacientes, resumoFiltrosPacientes, validarFiltrosPacientes, type PacienteOrdenavel } from './pacienteLista'
+import { FILTROS_PACIENTES_INICIAIS as vazio, correspondeAosFiltros, filtrosAtivosPacientes, hojeNaBahia, ordenarPacientes, padraoBuscaNome, removerFiltroPaciente, respostaCompletaPacientes, restricoesPacientes, resumoFiltrosPacientes, validarFiltrosPacientes, type PacienteOrdenavel } from './pacienteLista'
 
 const pessoas: PacienteOrdenavel[] = [
   { id: '4', nome_completo: 'Zélia Modelo', data_nascimento: null, created_at: null },
@@ -8,6 +8,17 @@ const pessoas: PacienteOrdenavel[] = [
   { id: '1', nome_completo: 'alvaro exemplo', data_nascimento: '2000-09-26', created_at: '2026-01-01T03:00:00Z' },
   { id: '3', nome_completo: 'Beatriz Modelo', data_nascimento: '2010-06-01', created_at: '2026-01-03T03:00:00Z' },
 ]
+
+test('remoção individual relaxa somente o critério escolhido e não altera o original', () => {
+  const original = { inicio: '2026-01-01', fim: '2026-01-03', idadeMin: '20', idadeMax: '30', nascimento: 'informado' as const }
+  for (const { campo } of filtrosAtivosPacientes(original)) {
+    const resultado = removerFiltroPaciente(original, campo)
+    assert.equal(resultado[campo], vazio[campo])
+    for (const outro of Object.keys(original) as (keyof typeof original)[]) if (outro !== campo) assert.equal(resultado[outro], original[outro])
+    assert.equal(validarFiltrosPacientes(resultado), null)
+    assert.equal(filtrosAtivosPacientes(original).length, 5)
+  }
+})
 test('seis ordenações pt-BR, desempate por ID, datas completas e nulos no fim', () => {
   const esperados = { nome_asc: '1234', nome_desc: '4312', cadastro_desc: '3214', cadastro_asc: '1234', nascimento_desc: '3214', nascimento_asc: '1234' } as const
   for (const ordem of Object.keys(esperados) as (keyof typeof esperados)[]) {

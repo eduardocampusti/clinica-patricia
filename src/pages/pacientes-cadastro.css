@@ -66,14 +66,14 @@
 
 .paciente-etapas {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
   padding: 8px 24px;
   overflow-x: auto;
   background: #eef3ff;
   border-bottom: 1px solid #dfe6f1;
 }
-.paciente-etapas.com-responsavel { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.paciente-etapas.com-responsavel { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .paciente-etapas > button {
   display: flex;
   min-width: 0;
@@ -213,8 +213,8 @@
   .paciente-modal-backdrop { padding: 12px; }
   .paciente-modal { width: calc(100vw - 24px); max-height: calc(100dvh - 24px); }
   .paciente-modal-cabecalho, .paciente-modal-scroll, .paciente-modal-rodape { padding-right: 20px; padding-left: 20px; }
-  .paciente-etapas, .paciente-etapas.com-responsavel { grid-template-columns: repeat(3, minmax(0, 1fr)); padding-right: 20px; padding-left: 20px; }
-  .paciente-etapas.com-responsavel { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .paciente-etapas, .paciente-etapas.com-responsavel { grid-template-columns: repeat(2, minmax(0, 1fr)); padding-right: 20px; padding-left: 20px; }
+  .paciente-etapas.com-responsavel { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .paciente-form-grid > div { grid-column: span 6; }
   .paciente-foto-reserva { grid-column: span 4 !important; }
   .paciente-foto-area { grid-column: 1 / span 4 !important; grid-row: 1 / span 3; }
@@ -315,4 +315,22 @@
 }
 @media (max-width: 620px) {
   .paciente-etapa-rodape { flex-basis: 100%; font-size: 12px; }
+}
+
+.paciente-navegacao { min-width: 0; background: var(--fundo-card); border-bottom: 1px solid var(--borda); }
+.paciente-navegacao .paciente-etapas { border-bottom: 0; }
+.paciente-planejamento-nota { margin: 0; padding: 0 24px 8px; color: var(--texto-secundario); font-size: 12px; }
+@media (max-width: 620px) {
+  .paciente-etapas > button { min-height: 44px; }
+  .paciente-etapas strong { font-size: 12px; }
+  .paciente-etapas.com-responsavel > button:last-child { grid-column: 1 / -1; }
+  .paciente-planejamento-nota { padding-inline: 14px; padding-bottom: 6px; }
+  .pacientes-pagina .paciente-modal .paciente-modal-scroll { padding: 12px 14px; }
+  .pacientes-pagina .paciente-modal .paciente-aviso-real { margin-bottom: 8px; padding: 10px 12px; }
+  .pacientes-pagina .paciente-modal .paciente-secao { padding-block: 8px; }
+  .paciente-secao-titulo-linha { padding-bottom: 8px; }
+  .paciente-form-grid { padding-top: 12px; }
+  .paciente-form-grid > div { margin-bottom: 12px; }
+  .paciente-previa-identificacao[data-vazia=true] { display: none; }
+  .paciente-previa-identificacao { margin-top: 10px; padding: 10px; }
 }

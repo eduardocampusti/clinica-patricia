@@ -7,6 +7,7 @@ import { hojeNaBahia } from '../../lib/pacienteLista'
 import { alteracoesAdministrativas, alteracoesEnderecoEstruturado, CAMPOS_EDICAO, CAMPOS_ENDERECO_EDICAO, mensagemErroEdicao, RESPONSAVEL_VAZIO, validarEdicao, type DadosEdicao, type PacienteEdicao, type ResponsavelEdicao } from '../../lib/pacienteEdicao'
 import PacienteAvatar from './PacienteAvatar'
 import PreviaIdentificacaoPaciente from './PreviaIdentificacaoPaciente'
+import FotoPacienteCompacta from './FotoPacienteCompacta'
 import { consultarCpfPendentePaciente, lerCpfPaciente } from '../../lib/pacienteCpf'
 import { cpfLegadoInvalidoConfirmado } from '../../lib/pacienteCpfEstado'
 import CorrigirCpfPaciente from './CorrigirCpfPaciente'
@@ -289,6 +290,8 @@ export default function EditarPaciente({ pacienteId, clinicaId, clinicaNome, pod
       {!dados && <p role="status">{erro ? <button type="button" onClick={() => setTentativa((v) => v + 1)}>Tentar novamente</button> : 'Carregando dados e responsável legal…'}</p>}
       {dados && original && <fieldset disabled={salvando}>
         <section hidden={etapa !== 1} className="paciente-secao">
+          <FotoPacienteCompacta avatar={<span>Foto</span>}>
+          {() => <>
           <div className="edicao-identidade">
             <PacienteAvatar pacienteId={pacienteId} clinicaId={clinicaId} nome={dados.nome_completo ?? ''} caminho={original.foto_path} tamanho="resumo" />
             <div className="edicao-identidade-acoes">
@@ -296,6 +299,8 @@ export default function EditarPaciente({ pacienteId, clinicaId, clinicaNome, pod
               <p>A foto é confirmada separadamente em armazenamento privado. Cancelar esta edição não desfaz uma foto já confirmada.</p>
             </div>
           </div>
+          </>}
+          </FotoPacienteCompacta>
           <PreviaIdentificacaoPaciente nome={dados.nome_completo ?? ''} nascimento={dados.data_nascimento ?? ''} sexo={dados.sexo ?? ''} />
           <section className="edicao-cpf" aria-label="CPF do paciente" aria-busy={situacaoCpf === 'carregando'}>
             <h3>CPF <small>(opcional)</small></h3>
