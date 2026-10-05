@@ -1,5 +1,14 @@
 # Equipe — índice do módulo
 
+## Equipe — listagem principal local, 05/10/2026
+
+Busca nome/cargo/profissão normalizada, filtros tipo/vínculo com limpeza, resumos por
+id e cards móveis; consulta limitada à clínica ativa. Acesso por clínica sem inferências
+ou chamadas por linha.10 cenários novos/8 regressões, build/lint/TypeScript e leitura
+real local3000 em Brotas/Ipupiara passaram. Commit seletivo local em preparação,
+sem publicação; fichas/formulários/dados reais e demais trabalhos preservados.
+[Resultado, contrato, arquivos, testes e limites](30-LISTAGEM-PRINCIPAL.md).
+
 ## Navegação móvel de Cadastros — ajuste local verificado, 05/10/2026
 
 Faixa de abas contida com rolagem própria e seleção/foco visíveis, preservando24–29.

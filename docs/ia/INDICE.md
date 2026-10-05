@@ -1,5 +1,14 @@
 # Memória compartilhada — mapa de leitura
 
+## Equipe — listagem principal local, 05/10/2026
+
+Busca nome/cargo/profissão normalizada, filtros tipo/vínculo com limpeza, resumos por
+id e cards móveis; consulta limitada à clínica ativa. Acesso por clínica sem inferências
+ou chamadas por linha.10 cenários novos/8 regressões, build/lint/TypeScript e leitura
+real local3000 em Brotas/Ipupiara passaram. Commit seletivo local em preparação,
+sem publicação; fichas/formulários/dados reais e demais trabalhos preservados.
+[Resultado, contrato, arquivos, testes e limites](../modulos/equipe/30-LISTAGEM-PRINCIPAL.md).
+
 ## Cadastros — navegação móvel corrigida localmente, 05/10/2026
 
 Faixa de abas sem transbordamento global, seleção/foco revelados.6 testes direcionados

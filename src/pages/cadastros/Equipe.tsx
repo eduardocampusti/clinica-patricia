@@ -3,6 +3,8 @@ import { ConfirmacaoDialog } from '../../components/feedback/ConfirmacaoDialog'
 import { FeedbackAlert } from '../../components/feedback/FeedbackAlert'
 import { ModalBase } from '../../components/ModalBase'
 import './equipe.css'
+import { EquipeListagem } from './EquipeListagem'
+import { filtrarEquipe } from '../../lib/equipeLista'
 import { supabase } from '../../lib/supabase'
 import { formatarCpf } from '../../lib/cpf'
 import { formatarTelefoneBrasil } from '../../lib/pacienteFormulario'
@@ -15,7 +17,7 @@ import {
 } from '../../lib/equipeAcessos'
 import {
   CARGOS_EQUIPE, TIPOS_EQUIPE, cargoEfetivo, formularioAPartirDoDetalhe, formularioEquipeVazio,
-  detalheEquipePermiteEdicao, mascararCpfEquipe, mensagemVinculoInativoEquipe, montarDadosEquipe, rotuloAcessoEquipe, rotuloTipoEquipe, validarFormularioEquipeDetalhada,
+  detalheEquipePermiteEdicao, mascararCpfEquipe, mensagemVinculoInativoEquipe, montarDadosEquipe, rotuloTipoEquipe, validarFormularioEquipeDetalhada,
   type CampoFormularioEquipe, type ClinicaEquipe, type DetalheMembroEquipe, type FormularioEquipe,
   type MembroEquipe, type TipoMembroEquipe,
 } from '../../lib/equipe'
@@ -106,17 +108,6 @@ function papelAcessoValido(papel: unknown): papel is PapelAcessoEquipe {
 function situacaoContaEquipe(usuarioId: unknown): 'vinculada' | 'sem_conta' | 'indisponivel' {
   if (typeof usuarioId === 'string' && usuarioId.trim()) return 'vinculada'
   return usuarioId === null ? 'sem_conta' : 'indisponivel'
-}
-
-function ResumoAcessoLista({ membro, acesso, contexto }: { membro: MembroEquipe; acesso: AcessoEquipe | null | undefined; contexto: string | null }) {
-  if (!acesso) return <span className={`inline-block rounded-full px-2.5 py-1 text-xs font-semibold ${acesso === undefined && membro.acesso_status === 'ativo_na_unidade' ? 'bg-[var(--cor-sucesso-suave)] text-[var(--cor-sucesso)]' : 'bg-[var(--fundo-pagina)] text-[var(--texto-secundario)]'}`}>{acesso === null ? 'Conta e acesso não confirmados' : rotuloAcessoEquipe(membro.acesso_status)}</span>
-  const conta = situacaoContaEquipe(acesso.usuario_id)
-  const clinica = acesso.clinicas.find((item) => item.id === contexto)
-  return <div className="space-y-1 text-xs">
-    <p>{conta === 'vinculada' ? 'Conta de acesso vinculada' : conta === 'sem_conta' ? 'Sem conta vinculada' : 'Não foi possível confirmar a conta'}</p>
-    <p className="font-semibold">{rotuloStatusAcessoEquipe(clinica?.status)}</p>
-    {clinica?.status === 'acesso_ativo' && papelAcessoValido(clinica.papel) && <p>Papel atual: {rotuloPapelAcessoEquipe(clinica.papel)}</p>}
-  </div>
 }
 
 function SeletorNovoPapel({ nome, value, disabled, onChange }: { nome: string; value: PapelAcessoEquipe | ''; disabled: boolean; onChange: (papel: PapelAcessoEquipe | '') => void }) {
@@ -648,11 +639,7 @@ function Equipe({ clinicaAtivaId, souProprietaria }: EquipeProps) {
     alvo?.focus()
   }, [campoErro, form])
 
-  const filtrados = useMemo(() => membros.filter((m) => {
-    const termo = busca.trim().toLocaleLowerCase('pt-BR')
-    return (!termo || `${m.nome_completo} ${m.cargo} ${m.profissao ?? ''}`.toLocaleLowerCase('pt-BR').includes(termo))
-      && (!tipo || m.tipo === tipo) && (!clinicaFiltro || m.clinicas.some((c) => c.id === clinicaFiltro))
-  }), [membros, busca, tipo, clinicaFiltro])
+  const filtrados = useMemo(() => filtrarEquipe(membros, busca, tipo, clinicaFiltro), [membros, busca, tipo, clinicaFiltro])
 
   function fecharFicha() {
     fichaSequencia.current += 1
@@ -782,40 +769,15 @@ function Equipe({ clinicaAtivaId, souProprietaria }: EquipeProps) {
       description={<span>O serviço atual de listagem não foi localizado. A consulta antiga de profissionais de <strong>{clinicaAtual?.nome ?? 'esta clínica'}</strong> permanece somente leitura; cadastro e edição estão bloqueados neste modo.</span>}
     />}
     {erro && <FeedbackAlert variant="destructive" title={erro} onClose={() => setErro(null)} />}
-    <p className="rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-4 py-3 text-sm text-[var(--texto-secundario)]">Contas antigas de recepção e administração não são convertidas automaticamente em funcionários. Cadastrar a pessoa aqui não cria outro login.</p>
-
-    <div className="flex flex-wrap items-end justify-between gap-3">
-      <div>
-        <h2 className="texto-titulo-secao">Equipe &amp; acessos</h2>
-        <p className="text-sm text-[var(--texto-secundario)]">Pessoas vinculadas às clínicas; cadastro e acesso ao sistema são independentes.</p>
-      </div>
-      <div className="flex w-full flex-wrap items-center justify-between gap-3 sm:w-auto sm:justify-end">
-        <div className="rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 py-2 text-sm" aria-label="Clínica ativa" role="status">
-          <span className="mr-1 text-[var(--texto-secundario)]">Clínica ativa:</span>
-          <strong>{clinicaAtual?.nome ?? (clinicaAtivaId ? 'carregando…' : 'nenhuma selecionada')}</strong>
-        </div>
-        {souProprietaria && <button type="button" disabled={compatibilidade || indisponivel || !clinicaAtivaId} onClick={abrirNovo} className="min-h-11 rounded-lg bg-[var(--cor-primaria)] px-4 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50">Novo membro</button>}
-      </div>
-    </div>
-    {!souProprietaria && <p className="text-sm text-[var(--texto-secundario)]">A gestão da equipe é restrita à Proprietária/Administradora. As consultas deste perfil respeitam as autorizações existentes; a consulta operacional de profissionais continua na aba Profissionais.</p>}
-
-    <div className="flex flex-wrap gap-3 rounded-xl bg-[var(--fundo-card)] p-4 shadow-[var(--sombra-baixa)]">
-      <label htmlFor="equipe-busca" className="min-w-[220px] flex-1 text-sm font-medium">Buscar por nome
-        <input id="equipe-busca" type="search" value={busca} onChange={(e) => setBusca(e.target.value)} placeholder="Digite o nome ou cargo" className="mt-1.5 min-h-11 w-full rounded-lg border border-[var(--borda)] bg-transparent px-3 font-normal" />
-      </label>
-      <label htmlFor="equipe-tipo" className="min-w-[190px] text-sm font-medium">Cargo ou tipo
-        <select id="equipe-tipo" value={tipo} onChange={(e) => setTipo(e.target.value as TipoMembroEquipe | '')} className="mt-1.5 min-h-11 w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 font-normal"><option value="">Todos</option>{TIPOS_EQUIPE.map((t) => <option key={t.valor} value={t.valor}>{t.rotulo}</option>)}</select>
-      </label>
-      <label htmlFor="equipe-clinica" className="min-w-[180px] text-sm font-medium">Clínica
-        <select id="equipe-clinica" value={clinicaFiltro} onChange={(e) => setClinicaFiltro(e.target.value)} className="mt-1.5 min-h-11 w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3 font-normal"><option value="">Todas autorizadas</option>{clinicas.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}</select>
-      </label>
-    </div>
-
-    {carregando ? <div className="space-y-2" aria-label="Carregando equipe" aria-busy="true">{[1, 2, 3].map((n) => <div key={n} className="h-20 animate-pulse rounded-xl bg-[var(--fundo-card)]" />)}</div>
-      : indisponivel ? <div className="rounded-xl border border-[var(--feedback-erro-borda)] bg-[var(--feedback-erro-fundo)] p-6 text-center" role="status"><p className="font-semibold text-[var(--feedback-erro-texto)]">Consulta da equipe não concluída</p><p className="mt-1 text-sm text-[var(--feedback-erro-texto)]">Confira a orientação acima antes de consultar novamente.</p><button type="button" onClick={() => void carregar()} className="mt-4 min-h-11 rounded-lg border border-current px-4 text-sm font-semibold text-[var(--feedback-erro-texto)]">Tentar novamente</button></div>
-      : !clinicaAtivaId ? <div className="rounded-xl border border-[var(--borda)] bg-[var(--fundo-card)] p-8 text-center" role="status"><p className="font-semibold">Selecione uma clínica</p><p className="mt-1 text-sm text-[var(--texto-secundario)]">A equipe será carregada somente depois que uma unidade autorizada estiver ativa.</p></div>
-      : filtrados.length === 0 ? <div className="rounded-xl border border-[var(--borda)] bg-[var(--fundo-card)] p-8 text-center"><p className="font-semibold">Nenhum membro encontrado</p><p className="mt-1 text-sm text-[var(--texto-secundario)]">Revise os filtros ou cadastre o primeiro membro desta clínica.</p></div>
-      : <div className="overflow-x-auto rounded-xl bg-[var(--fundo-card)] shadow-[var(--sombra-baixa)]"><table className="w-full min-w-[760px] text-left" aria-label={`Equipe de ${clinicaAtual?.nome ?? 'clínica ativa'}`}><caption className="sr-only">Membros da equipe, clínicas vinculadas, acesso e ações</caption><thead className="border-b border-[var(--borda)] text-xs text-[var(--texto-secundario)]"><tr><th scope="col" className="p-4">Nome e função</th><th scope="col" className="p-4">Clínicas</th><th scope="col" className="p-4">Acesso</th><th scope="col" className="p-4 text-right">Ações</th></tr></thead><tbody>{filtrados.map((m) => <tr key={m.id} className="border-b border-[var(--borda-sutil)] last:border-0"><td className="p-4"><p className="font-semibold">{m.nome_completo}</p><p className="text-sm text-[var(--texto-secundario)]">{m.cargo} · {rotuloTipoEquipe(m.tipo)}</p></td><td className="p-4 text-sm">{m.clinicas.map((c) => c.nome).join(', ')}</td><td className="p-4" data-testid={`resumo-acesso-${m.id}`}><ResumoAcessoLista membro={m} acesso={acessosConsultados[m.id]} contexto={clinicaAtivaId} /></td><td className="p-4 text-right"><div className="flex flex-wrap justify-end gap-2"><button type="button" onClick={() => void abrirFicha(m)} className="min-h-11 rounded-lg px-3 text-sm font-semibold text-[var(--cor-primaria)]" aria-label={`Ver cadastro de ${m.nome_completo}`}>Ver cadastro</button>{souProprietaria && <button type="button" disabled={compatibilidade || indisponivel} onClick={() => void abrirEdicao(m)} className="min-h-11 rounded-lg border border-[var(--borda)] px-3 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-40" aria-label={`Editar cadastro de ${m.nome_completo}`}>Editar</button>}</div></td></tr>)}</tbody></table></div>}
+    <EquipeListagem membros={membros} filtrados={filtrados} clinicas={clinicas} contexto={clinicaAtivaId}
+      clinicaAtual={clinicaAtual?.nome ?? (clinicaAtivaId ? 'clínica selecionada' : 'nenhuma selecionada')}
+      acessos={acessosConsultados} busca={busca} tipo={tipo} clinicaFiltro={clinicaFiltro}
+      onBusca={setBusca} onTipo={setTipo} onClinica={setClinicaFiltro}
+      onLimpar={() => { setBusca(''); setTipo(''); setClinicaFiltro('') }}
+      onNovo={abrirNovo} onVer={m => void abrirFicha(m)} onEditar={m => void abrirEdicao(m)}
+      onReconsultar={() => void carregar()} proprietaria={souProprietaria}
+      bloqueado={compatibilidade || indisponivel} carregando={carregando} indisponivel={indisponivel}
+      semPermissao={erro === erroEquipeSeguro(null, false, 403).mensagem} />
 
     {visualizando && <FichaMembro membro={visualizando} detalhe={detalheFicha} clinicaAtivaId={clinicaAtivaId} carregando={carregandoFicha} erro={erroFicha} indisponivel={fichaIndisponivel} souProprietaria={souProprietaria} onFechar={fecharFicha} onConsultaAcesso={registrarConsultaAcesso} onOperacaoAcesso={atualizarAposOperacaoAcesso} />}
 

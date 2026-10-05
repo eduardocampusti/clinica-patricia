@@ -1,5 +1,27 @@
 # CHECKPOINT MESTRE — CLÍNICA PATRÍCIA
 
+## Equipe — listagem principal evoluída e verificada localmente, 2026-10-05 13:14:32 -03:00
+
+Etapa30 autorizada: busca local por nome/cargo/profissão sem acentos/caixa/espaços,
+tipo/vínculo com limpeza, contagens filtradas por id, tabela com ações visíveis e
+cards360/390/430. A RPC só retorna pessoas da clínica ativa e seus vínculos autorizados;
+filtro de vínculo não expande consulta nem troca sessão. Sem filtro cadastral/acesso:
+contrato coletivo insuficiente. Desconhecido não vira ausência; cache de fichas abertas
+mostra estados por clínica. Fichas/formulários/operações24–29 preservados.
+10 cenários novos e8 regressões pertinentes aprovados;820/1440, foco/contraste claro/
+escuro, vazios/recuperação/continuidade/capturas fictícias conferidos. TypeScript/lint/
+build passaram, somente avisos conhecidos. Leitura real local3000/Proprietário(a):
+Brotas2(1 saúde/1 demais), busca/ficha/Médico/Salvar bloqueado; Ipupiara2(0/2), convite
+pendente refletido na lista, Editar/Novo/CPF(opcional)/Cancelar, cards/Serviços/retorno/F5.
+Sem escritas reais; persistência/e-mails/aparelho físico não homologados.
+Branch codex/resgate-local-2026-09-26, base3e0fc650; commit local seletivo em preparação,
+hash final a registrar após sua criação. Sem push/merge/deploy: publicado segue3e0fc650.
+Servidor local normal funcionando, overrides restaurados. Demais alterações preservadas;
+sem código de Caixa/Agenda/Pacientes, banco/Auth/RLS/SMTP/SQL/Edge ou acesso real alterado.
+Typesafe-ai consultada, sem integração/chave; Jev somente sintético e ReUI sem instalação.
+Sem aprovação pessoal atribuída. Detalhes/arquivos/capturas/limites no relatório30.
+Próxima ação: concluir commit local seletivo; publicação depende de autorização futura.
+
 ## Cadastros — navegação móvel corrigida localmente, 2026-10-05 11:58:46 -03:00
 
 Faixa flex de abas causava documento449px em tela390px; reproduzido pelo agente em

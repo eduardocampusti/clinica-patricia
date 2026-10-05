@@ -68,7 +68,7 @@ async function preparar(page: Page) {
   await page.goto('/tests/operacional/equipe-contexto.html')
   return estado
 }
-const linha = (page: Page, id: Id) => page.getByRole('table').getByRole('row').filter({ has: page.getByRole('button', { name: `Ver cadastro de ${nomes[id]}`, exact: true }) })
+const linha = (page: Page, id: Id) => page.getByTestId(`equipe-pessoa-${id}`)
 async function abrir(page: Page, id: Id) {
   await page.getByRole('button', { name: `Ver cadastro de ${nomes[id]}`, exact: true }).click()
   await expect(page.getByTestId('painel-gestao-acessos')).toBeVisible()

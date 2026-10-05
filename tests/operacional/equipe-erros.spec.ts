@@ -44,7 +44,7 @@ test('permissão, sessão, rede e erro desconhecido não acionam legado nem apre
   ]) {
     estado.lista = falha
     await page.goto('/tests/operacional/equipe-contexto.html')
-    await expect(page.getByText('Consulta da equipe não concluída', { exact: true })).toBeVisible()
+    await expect(page.getByText(falha.status === 403 ? 'Sem permissão para consultar a equipe' : 'Consulta da equipe não concluída', { exact: true })).toBeVisible()
     await expect(page.getByRole('alert')).not.toContainText(privado)
     await expect(page.getByText('Nenhum membro encontrado')).toHaveCount(0)
     await expect(page.getByText('Consulta de cadastros antigos', { exact: true })).toHaveCount(0)
@@ -57,7 +57,7 @@ test('lista realmente vazia é distinta de compatibilidade confirmada', async ({
   const estado = await preparar(page)
   estado.vazio = true
   await page.goto('/tests/operacional/equipe-contexto.html')
-  await expect(page.getByText('Nenhum membro encontrado')).toBeVisible()
+  await expect(page.getByText('Nenhum membro cadastrado neste escopo')).toBeVisible()
   await expect(page.getByRole('alert')).toHaveCount(0)
   expect(estado.legados).toBe(0)
   estado.lista = { status: 404, corpo: { code: 'PGRST202', message: 'equipe_listar ausente' } }

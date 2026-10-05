@@ -1,5 +1,21 @@
 # Equipe — documento funcional mestre
 
+## Listagem principal — evolução autorizada em 05/10/2026
+
+Buscar nome, cargo e profissão pelos campos existentes, ignorando acentos, caixa e
+espaços excedentes; conservar grafia original. Tipo/vínculo são filtros locais,
+com indicação e limpeza que não altera a clínica da sessão. Consulta mantém escopo
+da RPC: pessoas da clínica ativa e vínculos autorizados, sem equipe global presumida.
+Resumos contam ids únicos do resultado exibido, nunca total completo não comprovado.
+Tabela legível com Ver cadastro/Editar; cards no celular, mesma fonte/handlers sem
+consultas duplicadas. Separar cadastro, conta, convite e acesso por clínica; estado
+coletivo não vale automaticamente em outra unidade. Cache de fichas abertas pode
+refinar a leitura, nunca sustentar sozinho filtros de acesso. Informação desconhecida
+fica não confirmada. Filtros cadastral/acesso exigem evolução coletiva futura.
+Vazios, filtros sem resultado, carga, recusa e erro são distintos; manter continuidade,
+foco, tokens e navegação sem overflow global. Fichas/formulários/CPF/permissões24–29
+preservados. Estado local, verificações e limites no relatório30; sem publicação.
+
 ## Navegação de Cadastros — ajuste autorizado em 05/10/2026
 
 A página deve permanecer na largura disponível; somente a faixa de abas pode rolar

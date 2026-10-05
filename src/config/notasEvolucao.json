@@ -13,6 +13,7 @@
       "Página “Sobre o sistema” com versão em execução, créditos de desenvolvimento e contexto da clínica."
     ],
     "melhorias": [
+      "Equipe: busca por nome, cargo e profissão sem diferença de acentos ou caixa, filtros de vínculo e tipo com limpeza, contagens das pessoas exibidas e cards no celular. Conta, cadastro e acesso por clínica ficam separados, mantendo fichas, formulários e permissões.",
       "Equipe: fichas e formulários mais amplos no computador, campos organizados por assunto e uma coluna no celular. Textos longos se adaptam à tela, avisos têm melhor contraste e a rolagem mantém campos e ações alcançáveis, preservando cadastro, vínculos e operações de acesso.",
       "Equipe: edição mantém o tipo e os vínculos existentes, separa os acréscimos de clínica e esclarece que não remove nem reativa vínculos. Dados incompletos bloqueiam a edição para evitar gravações vazias; cargo e demais campos permitidos continuam editáveis.",
       "Equipe: conta vinculada, convite e acesso por clínica aparecem separados, com papel atual distinto do novo acesso. Informação indisponível não vira ausência de conta, e operações confirmadas atualizam a lista sem exigir F5, preservando os filtros.",
