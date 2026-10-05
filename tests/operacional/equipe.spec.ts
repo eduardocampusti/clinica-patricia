@@ -100,8 +100,8 @@ test('troca de clínica limpa a lista anterior e o salvamento sintético bloquei
 test('modo de compatibilidade explica o bloqueio e mantém consulta legada somente leitura', async ({ page }) => {
   await interceptarEquipe(page, { compatibilidade: true })
   await page.goto('/tests/operacional/equipe-contexto.html')
-  await expect(page.getByRole('status').filter({ hasText: 'Cadastro e edição aguardam homologação do banco' })).toBeVisible()
-  await expect(page.getByRole('status').filter({ hasText: 'Cadastro e edição aguardam homologação do banco' })).toContainText('nenhuma alteração será salva')
+  await expect(page.getByRole('status').filter({ hasText: 'Consulta de cadastros antigos' })).toBeVisible()
+  await expect(page.getByRole('status').filter({ hasText: 'Consulta de cadastros antigos' })).toContainText('cadastro e edição estão bloqueados neste modo')
   await expect(page.getByRole('button', { name: 'Novo membro' })).toBeDisabled()
   await expect(page.getByRole('button', { name: 'Editar cadastro de Profissional legado' })).toBeDisabled()
 })

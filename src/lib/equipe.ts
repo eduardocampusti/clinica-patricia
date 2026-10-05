@@ -50,6 +50,7 @@ export interface FormularioEquipe {
   especialidadeId: string
   clinicasIds: string[]
   revisao: number | null
+  edicao?: { tipo: TipoMembroEquipe; clinicas: ClinicaEquipe[] }
 }
 
 export type CampoFormularioEquipe =
@@ -148,20 +149,21 @@ export function validarFormularioEquipe(form: FormularioEquipe): string | null {
 }
 
 export function montarDadosEquipe(form: FormularioEquipe): DadosEquipeRpc {
+  const tipo = form.edicao?.tipo ?? form.tipo
   return {
     nome_completo: formatarTextoPortugues(form.nomeCompleto),
     cargo: cargoEfetivo(form),
-    tipo: form.tipo,
-    profissao: form.tipo === 'profissional_saude' ? normalizarEspacos(form.profissao) : null,
+    tipo,
+    profissao: tipo === 'profissional_saude' ? normalizarEspacos(form.profissao) : null,
     cpf_modo: form.alterarCpf ? (form.cpf.trim() ? 'substituir' : 'remover') : 'preservar',
     cpf: form.alterarCpf && form.cpf.trim() ? apenasDigitos(form.cpf) : null,
     telefone: normalizarEspacos(form.telefone) || null,
     email_contato: form.emailContato.trim().toLocaleLowerCase('pt-BR') || null,
-    conselho_classe: form.tipo === 'profissional_saude' ? normalizarEspacos(form.conselhoClasse).toLocaleUpperCase('pt-BR') || null : null,
-    registro_conselho: form.tipo === 'profissional_saude' ? normalizarEspacos(form.registroConselho).toLocaleUpperCase('pt-BR') || null : null,
-    conselho_uf: form.tipo === 'profissional_saude' ? normalizarEspacos(form.conselhoUf).toLocaleUpperCase('pt-BR') || null : null,
-    especialidade_id: form.tipo === 'profissional_saude' && form.especialidadeId ? form.especialidadeId : null,
-    clinicas_ids: form.clinicasIds,
+    conselho_classe: tipo === 'profissional_saude' ? normalizarEspacos(form.conselhoClasse).toLocaleUpperCase('pt-BR') || null : null,
+    registro_conselho: tipo === 'profissional_saude' ? normalizarEspacos(form.registroConselho).toLocaleUpperCase('pt-BR') || null : null,
+    conselho_uf: tipo === 'profissional_saude' ? normalizarEspacos(form.conselhoUf).toLocaleUpperCase('pt-BR') || null : null,
+    especialidade_id: tipo === 'profissional_saude' && form.especialidadeId ? form.especialidadeId : null,
+    clinicas_ids: form.edicao ? [...new Set([...form.edicao.clinicas.map((clinica) => clinica.id), ...form.clinicasIds])] : form.clinicasIds,
   }
 }
 
@@ -184,15 +186,41 @@ export function formularioAPartirDoDetalhe(detalhe: DetalheMembroEquipe): Formul
     conselhoUf: detalhe.conselho_uf ?? '',
     especialidadeId: detalhe.especialidade_id ?? '',
     clinicasIds: detalhe.clinicas.map((clinica) => clinica.id), revisao: detalhe.revisao,
+    edicao: { tipo: detalhe.tipo, clinicas: detalhe.clinicas.map((clinica) => ({ ...clinica })) },
   }
 }
 
-export function rotuloAcessoEquipe(status: MembroEquipe['acesso_status']): string {
-  if (status === 'ativo_na_unidade') return 'Ativo nesta clínica'
-  if (status === 'conta_vinculada') return 'Conta vinculada (estado não confirmado)'
+/** A edição envia todos os campos: resposta parcial não pode virar dados vazios. */
+export function detalheEquipePermiteEdicao(valor: unknown, membroId: string, contextoId: string): valor is DetalheMembroEquipe {
+  if (!valor || typeof valor !== 'object' || Array.isArray(valor)) return false
+  const detalhe = valor as Record<string, unknown>
+  if (detalhe.id !== membroId || typeof detalhe.nome_completo !== 'string' || typeof detalhe.cargo !== 'string'
+    || !TIPOS_EQUIPE.some((tipo) => tipo.valor === detalhe.tipo)
+    || !Number.isInteger(detalhe.revisao) || (detalhe.revisao as number) < 0) return false
+  const opcionais = ['profissao', 'telefone', 'email_contato', 'conselho_classe', 'registro_conselho', 'conselho_uf', 'especialidade_id', 'cpf']
+  if (opcionais.some((campo) => detalhe[campo] !== null && typeof detalhe[campo] !== 'string')) return false
+  if (!['informado', 'ausente', 'indisponivel'].includes(detalhe.cpf_situacao as string)) return false
+  if (!Array.isArray(detalhe.clinicas) || detalhe.clinicas.some((clinica) => !clinica || typeof clinica.id !== 'string' || !clinica.id || typeof clinica.nome !== 'string')) return false
+  return detalhe.clinicas.some((clinica) => clinica.id === contextoId)
+}
+
+/** Reconhece apenas as duas recusas exatas do contrato, sem exibir texto remoto. */
+export function mensagemVinculoInativoEquipe(error: unknown, status?: number): string | null {
+  if (!error || typeof error !== 'object' || Array.isArray(error)) return null
+  const erro = error as { code?: unknown; message?: unknown }
+  if (erro.code !== '22023' || (status !== undefined && status !== 400 && status !== 422)) return null
+  if (erro.message !== 'Há vínculo inativo; use o fluxo explícito de reativação.'
+    && erro.message !== 'Há vínculo profissional inativo; use o fluxo explícito de reativação.') return null
+  return 'Existe um vínculo inativo entre as clínicas selecionadas. Este formulário não o reativa. Revise apenas as clínicas que tentou acrescentar.'
+}
+
+export function rotuloAcessoEquipe(status: unknown): string {
+  if (status === 'ativo_na_unidade') return 'Acesso ativo nesta clínica'
+  if (status === 'conta_vinculada') return 'Conta de acesso vinculada'
   if (status === 'conta_inativa') return 'Conta inativa'
   if (status === 'sem_acesso_na_unidade') return 'Sem acesso nesta clínica'
-  return 'Sem conta vinculada'
+  if (status === 'sem_conta') return 'Sem conta vinculada'
+  return 'Conta e acesso não confirmados'
 }
 
 export function rotuloTipoEquipe(tipo: TipoMembroEquipe): string {

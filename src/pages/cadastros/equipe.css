@@ -1,0 +1,62 @@
+/* Apenas os diálogos de Equipe optam por esta apresentação. */
+.equipe-modal {
+  width: calc(100% - 2rem);
+  max-height: calc(100dvh - 2rem);
+  padding: 1.5rem 2rem;
+  border: 1px solid var(--borda);
+  box-shadow: var(--sombra-alta);
+  overscroll-behavior: contain;
+  scroll-padding-block: 1.5rem;
+  overflow-wrap: anywhere;
+  line-height: 1.5;
+}
+.equipe-modal > div:first-child {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--borda);
+}
+.equipe-modal > div:first-child > button { flex-shrink: 0; }
+.equipe-modal h2 { font-size: 1.375rem; line-height: 1.35; }
+.equipe-modal > div:first-child .truncate { white-space: normal; overflow: visible; }
+.equipe-modal .grid > *, .equipe-modal fieldset, .equipe-modal dl > * { min-width: 0; }
+.equipe-modal .text-xs { font-size: .875rem; line-height: 1.5; }
+.equipe-modal [data-testid="ficha-conteudo"] > section + section,
+.equipe-modal [data-testid="ficha-secao-acesso"] {
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--borda);
+}
+.equipe-modal .equipe-secao-form { border-top: 1px solid var(--borda); padding-top: .5rem; }
+.equipe-modal .equipe-secao-form > legend { padding-right: 1rem; }
+.equipe-modal .equipe-orientacao,
+.equipe-modal [data-testid="situacao-conta"],
+.equipe-modal [data-testid="resumo-novo-acesso"] {
+  border-radius: .5rem;
+  background: var(--fundo-pagina);
+  padding: .75rem 1rem;
+}
+.equipe-modal input:not([type="checkbox"]):not([type="radio"]), .equipe-modal select { min-width: 0; max-width: 100%; }
+.equipe-modal :is(button, input, select):focus-visible { outline: 2px solid var(--cor-primaria); outline-offset: 2px; }
+.equipe-modal :is(input[type="checkbox"], input[type="radio"]) { flex-shrink: 0; accent-color: var(--cor-primaria); }
+.equipe-modal label:has(input[type="checkbox"]), .equipe-modal label:has(input[type="radio"]) { min-height: 2.75rem; }
+.equipe-modal [data-testid="painel-gestao-acessos"] :is(button, select) { min-height: 2.75rem; }
+.equipe-modal [data-testid="painel-gestao-acessos"] label:has(select) { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
+.equipe-modal [data-testid="painel-gestao-acessos"] label > select { margin-left: 0; }
+.equipe-modal [data-testid="painel-gestao-acessos"] form { margin-top: 1.5rem; padding: 1rem; }
+.equipe-modal .equipe-acao-primaria { background: var(--cor-primaria-hover); color: var(--texto-sobre-primaria); }
+.equipe-modal .equipe-acessos-clinicas { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+.equipe-modal .equipe-acessos-clinicas > h4 { grid-column: 1 / -1; }
+@media (min-width: 1000px) {
+  .equipe-modal .equipe-acessos-clinicas { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (hover: hover) {
+  .equipe-modal button.border:not(:disabled):hover { background: var(--fundo-pagina); }
+}
+@media (max-width: 767px) {
+  .equipe-modal { padding: 1rem; }
+  .equipe-modal .grid { grid-template-columns: minmax(0, 1fr); }
+  .equipe-modal .grid > * { grid-column: auto; }
+  .equipe-modal h2 { font-size: 1.125rem; }
+  .equipe-modal [data-testid="painel-gestao-acessos"] label:has(select) { width: 100%; }
+  .equipe-modal [data-testid="painel-gestao-acessos"] select { width: 100%; }
+  .equipe-modal [data-testid="painel-gestao-acessos"] form { padding: .75rem; }
+}

@@ -82,7 +82,7 @@ test('ficha de profissional mostra seções, CPF mascarado, acesso não confirma
   await expect(dialog.getByTestId('ficha-secao-profissional')).toContainText('Medicina')
   await expect(dialog.getByTestId('ficha-secao-clinicas')).toContainText('Clínica A')
   await expect(dialog.getByTestId('ficha-secao-clinicas')).toContainText('Clínica B')
-  await expect(dialog.getByTestId('ficha-secao-acesso')).toContainText('Conta vinculada (estado não confirmado)')
+  await expect(dialog.getByTestId('ficha-secao-acesso')).toContainText('Conta de acesso vinculada')
   await expect(dialog).toContainText('529.***.***-25')
   await expect(dialog).not.toContainText('52998224725')
 })
@@ -100,7 +100,7 @@ test('ficha de recepção e apoio explicita campos não aplicáveis e indisponí
   dialog = page.getByRole('dialog', { name: /Ficha de Apoio Sintético/ })
   await expect(dialog.getByTestId('ficha-secao-profissional')).toContainText('não se aplicam')
   await expect(dialog.getByTestId('ficha-secao-identificacao')).toContainText('Indisponível nesta consulta')
-  await expect(dialog.getByTestId('ficha-secao-acesso')).toContainText('Conta vinculada (estado não confirmado)')
+  await expect(dialog.getByTestId('ficha-secao-acesso')).toContainText('Conta de acesso vinculada')
 })
 
 test('gestão sintética diferencia acesso ativo e sem acesso sem gravar no banco', async ({ page }) => {
@@ -115,7 +115,7 @@ test('gestão sintética diferencia acesso ativo e sem acesso sem gravar no banc
   dialog = page.getByRole('dialog', { name: /Ficha de Recepção Sintética/ })
   await expect(dialog.getByTestId('painel-gestao-acessos')).toContainText('Sem acesso')
   await expect(dialog.getByTestId('painel-gestao-acessos')).toContainText('Iniciar acesso')
-  await expect(dialog.getByTestId('painel-gestao-acessos')).toContainText('O cadastro da pessoa já existe')
+  await expect(dialog.getByTestId('painel-gestao-acessos')).toContainText('O cadastro pode permanecer sem login')
 })
 
 test('falha de leitura mostra erro compreensível sem detalhes técnicos', async ({ page }) => {

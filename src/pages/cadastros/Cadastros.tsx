@@ -58,7 +58,7 @@ function Cadastros({ clinicaAtivaId, carregandoClinica, usuarioId }: CadastrosPr
         })}
       </div>
 
-      {aba === 'equipe' && <Equipe clinicaAtivaId={clinicaAtivaId} souProprietaria={souProprietaria} />}
+      {aba === 'equipe' && <Equipe key={`${usuarioId}:${clinicaAtivaId}:${souProprietaria}`} clinicaAtivaId={clinicaAtivaId} souProprietaria={souProprietaria} />}
       {aba === 'especialidades' && <Especialidades souProprietaria={souProprietaria} />}
       {aba === 'profissionais' && (
         <Profissionais

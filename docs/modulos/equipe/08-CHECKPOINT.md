@@ -1,5 +1,191 @@
 # Equipe — checkpoint da primeira entrega
 
+## Equipe — consolidação das etapas24–29, 2026-10-05 08:16:49 -03:00
+
+Revisão combinada das etapas24–29: papel confirmado por pessoa/clínica, erros seguros
+e compatibilidade restrita, escolha explícita nas novas operações, conta/convite/acesso
+distintos, atualização da lista e edição com tipo fixo/vínculos aditivos; acabamento
+responsivo preservado. Ajuste atual somente do rótulo para **CPF (opcional)**; validação,
+proteção/persistência e decisão pendente de obrigatoriedade não alteradas.
+
+Evidências e falhas/reconferências históricas nos relatórios24–29, sem somar execuções
+repetidas nem aprovar integralmente rodadas parciais. Leitura conectada anterior de
+Proprietário(a) em Brotas/Ipupiara reaproveitada; hoje, formulário vazio normal3000
+mostrou o rótulo curto e Salvar cadastro bloqueado, sendo fechado sem preencher/salvar.
+Agenda com ModalBase padrão já conferida na etapa29; defaults e isolamento CSS revisados.
+Seleção de33 arquivos exportada do índice para cópia isolada, sem .env e usando as
+dependências já instaladas: build (inclui TypeScript/notas), lint,1 teste Node de CPF
+opcional e1 UI sintética de criação aprovados. Avisos preexistentes de ThemeProvider
+e empacotamento registrados; sem repetição da bateria. Fontes/testes da seleção
+conferem com a cópia testada; diff preparado sem erro de whitespace, sem segredos,
+dados pessoais reais ou artefatos temporários nas adições. Baseline92:84 arquivos
+idênticos e8 mudanças autorizadas; nenhum trabalho externo alterado.
+
+Limites: escrita/convites/falhas apenas simulados nos cenários24–29; sem persistência
+real comprovada por mocks, Recepção real ou teclado virtual em aparelho físico.
+Pendente: CPF obrigatório (divergência histórica preservada), consulta completa de Equipe
+pela Recepção, conversão de tipo, remoção, identificação antecipada de vínculos inativos
+e futuras evoluções de listagem. Não atribuir aprovação pessoal do resultado ao usuário.
+
+Branch codex/resgate-local-2026-09-26; HEAD de partida
+2a6e88d09c0a8a51cd73649bf45530c2db6a6923. Commit local autorizado, em preparação
+seletiva; trechos de Caixa, outros módulos, SMTP anterior e ferramentas Jev preservados
+fora do pacote. Sem push/merge/deploy/GitHub/publicação ou banco/Auth/RLS/migration/
+SMTP/Edge/dados/convites/acessos reais modificados. Aplicação normal mantida em
+http://127.0.0.1:3000/sistema/brotas/equipe.
+Detalhes, arquivos e conclusão: docs/modulos/equipe/29-ACABAMENTO-VISUAL-FICHAS-FORMULARIOS.md.
+Próxima ação: criar o único commit local com a seleção revisada; depois registrar
+seu hash observado, sem push ou publicação.
+
+## Equipe — acabamento visual conferido localmente, 2026-10-05 07:56 -03:00
+
+Fichas/formulários até960px com opção específica em ModalBase, duas colunas
+quando cabíveis, uma no celular, assuntos separados e rolagem única. Tokens
+existentes para contraste/avisos, controles44px e foco/ações preservados.
+Operações/regras24–28 e listagem mantidas; sem novas dependências/backend.
+UI9/9, reconferência final6/6, regressões selecionadas24/24, Node19/19;
+TypeScript/build/lint aprovados com avisos anteriores. Primeiro teste da Agenda
+teve localizador incorreto (6/9); corrigido e conferido, sem defeito do produto.
+Imagens sintéticas desktop1440/tablet820/mobile360/390/430 inspecionadas; Agenda
+padrão também. Altura420 simula teclado; dispositivos físicos/tema escuro/leitor
+de tela não conferidos. Escritas, erros, convite/inativos/parcial somente mocks.
+Proprietário(a) confirmado na interface local3000: ficha/edição e criação vazia
+Brotas; ficha sem conta, edição e outra ficha com Recepção em Ipupiara. Só leitura;
+sem preenchimento/salvamento/operação de acesso real. Retorno à lista Brotas.
+Jev inicial com resumo sintético pelo canal autorizado: code_change/confiança0,93;
+835,1072ms,987/119 tokens,US$0,000041454; sem dados privados/segredos/IA no produto.
+Baseline89 arquivos e revisão incremental preservam demais tarefas e histórico
+simultâneo Jev. Branch codex/resgate-local-2026-09-26,
+HEAD2a6e88d09c0a8a51cd73649bf45530c2db6a6923;12 arquivos desta etapa locais.
+Sem SQL/banco/Auth/RLS/SMTP/Edge/migration/CPF/permissões/dados reais/commit/push/
+merge/deploy/publicação. Sem aprovação pessoal atribuída; próximo: titular pode
+conferir F5 → Cadastros → Equipe, Ver/Editar/Novo e Cancelar, sem salvar.
+[Detalhes, arquivos, capturas e limitações](29-ACABAMENTO-VISUAL-FICHAS-FORMULARIOS.md).
+
+
+## Equipe — edição alinhada e conferida localmente, 2026-10-05 07:24 -03:00
+
+Codex confirmou controles divergentes do contrato equipe_salvar: tipo editável
+recusado e desmarcação sem remoção. Ajustados tipo informativo na edição, vínculos
+existentes mantidos e acréscimos separados; demais campos e criação preservados.
+Detalhe parcial bloqueia edição de vazios; payload mantém tipo/revisão/vínculos
+conhecidos. Inativos omitidos pelo serviço não são declarados livres: orientação
+honesta e recusa segura sem reativação; identificação prévia exige contrato futuro.
+19 Node aprovados; UI35/36 (timeout antes da lista desktop), reconferência e
+regressões24–27 15/15 separadas; TypeScript/build/lint finais aprovados, avisos
+preexistentes. Visual desktop1440/celular360/390, teclado/foco e tablet conferidos.
+Proprietário(a)/local3000: formulários saúde/admin em Brotas e admin em Ipupiara
+com tipo fixo, vínculos mantidos e acréscimos distintos. Apenas leitura, sem campos
+alterados ou salvamento. Escrita/inativos/falhas/visões parciais somente sintéticos.
+Detalhes e12 arquivos no relatório28. Comparação com54 entradas preserva acesso/
+erros/testes anteriores/relatórios24–27 e notas antigas; registros simultâneos Jev
+mantidos. Triagem desta etapa bloqueada antes de HTTP por DPAPI, sem resposta/
+confiança/tokens/custo ou repetição; decisão local Codex. Regra posterior de canal
+autorizado recebida para próximas chamadas. Sem IA nas regras da aplicação.
+Branch codex/resgate-local-2026-09-26, HEAD2a6e88d09c0a8a51cd73649bf45530c2db6a6923,
+não commitado. Sem dados/vínculos/convites/acessos reais, SQL/backend/banco/Auth/
+RLS/SMTP/Edge/CPF/permissões/Ibitiara/dependências/commit/push/merge/deploy/GitHub/
+publicação. Aprovação pessoal não atribuída. Etapa encerrada; próximo: titular
+pode conferir F5 → Cadastros → Equipe → Editar e Cancelar sem salvar. Conversão/
+remoção/reativação cadastral e consulta completa por Recepção continuam fora do
+escopo; nenhuma outra melhoria iniciada.
+
+## Equipe — clareza de conta/acesso concluída localmente, 2026-10-05 06:40 -03:00
+
+Codex: captura26 do mesmo registro sintético tinha fontes simuladas contraditórias;
+não comprova defeito conectado. Confirmados fallback ausente como sem conta e
+lista sem atualização após concessão simulada. Frontend distingue cadastro/conta/
+convite/acesso/papel atual/rascunho, compartilha leitura da ficha e relê lista
+coletiva após sucesso sem F5, mantendo filtros; sem consulta de conta por linha.
+Proprietário(a)/local3000: Brotas ativo/conta vinculada, Ipupiara sem conta+convite
+pendente e outra conta ativa; texto/seletor Recepção e Salvar bloqueado. Lista
+reflete leitura da ficha. Nenhuma divergência na amostra; escrita/falhas/estados
+ausentes somente simulados. UI98/102 (3 textos antigos,1 timeout antes da ficha);
+reconferência12/12 separada;15 Node, TypeScript/build/lint finais aprovados,
+avisos preexistentes. Visual desktop1440/celular360/390 examinado, teclado/foco.
+Diff/hashes preservam erros, contratos e relatórios24/25/26; trabalhos simultâneos
+Jev e demais módulos mantidos. Detalhes/arquivos/limites no relatório27 de Equipe.
+Branch codex/resgate-local-2026-09-26, HEAD2a6e88d09c0a8a51cd73649bf45530c2db6a6923;
+alterações não commitadas. Sem dado/convite/vínculo/acesso real alterado, SQL,
+banco/Auth/RLS/SMTP/Edge/dependência/commit/push/merge/deploy/GitHub/publicação.
+Typesafe-ai consultada; estados determinísticos sem IA. Etapa concluída pelo
+agente; aprovação pessoal não atribuída. Próximo: titular pode conferir local
+F5 → Cadastros → Equipe → Ver cadastro, sem salvar/enviar. Consulta completa
+por Recepção continua pendente fora do escopo; nenhuma melhoria adicional iniciada.
+
+## Escolha explícita concluída localmente — 04/10/2026, 22:06 -03:00
+
+Frontend remove padrão por profissão/tipo em convite/vínculo/concessão. Papel
+vazio, resumo pessoa/clínica/papel, validação por clínica e trava de envio.
+Escolha mantida em falha; trocas limpam rascunho. Cadastro sem login, referência
+confirmada e erros24/25 preservados. Leitura de pendente em erro corrigida:
+Ipupiara mostra papel original Recepção e reenvio, sem nova escolha/operação real.
+Proprietário(a)/local3000: fichas ativas em Brotas/Ipupiara com texto/seletor
+Recepção e Salvar bloqueado. Novas operações apenas simuladas.75 UI:74 passaram,
+1 timeout no descarte desktop; reconferência15/15 aprovada.15 Node, TypeScript,
+lint/build finais aprovados; avisos preexistentes. Imagens simuladas desktop/mobile
+examinadas. Arquivos/contratos/limites no relatório26. Branch
+codex/resgate-local-2026-09-26, HEAD2a6e88d09c0a8a51cd73649bf45530c2db6a6923,
+não commitado. Sem SQL/banco/Auth/Edge/acessos/convites/vínculos reais ou
+commit/push/merge/deploy/GitHub/publicação. Histórico e tarefas simultâneas
+preservados. Etapa encerrada pelo agente; aprovação pessoal não atribuída.
+Próximo: titular pode conferir F5/Cadastros/Equipe somente leitura.
+
+## Erros e compatibilidade concluídos localmente — 04/10/2026, 21:11 -03:00
+
+Leitura assíncrona de Response no SDK2.111 com códigos/status e textos seguros;
+compatibilidade somente por ausência específica da função. Sessão, permissão,
+rede e desconhecido não viram lista vazia/migração. Campos preservados e loading
+liberado; navegação/consulta Profissionais e permissões mantidas. Seletor intacto;
+falha incerta bloqueia nova tentativa até reabrir. 75 UI,15 Node e3 de convite
+sintéticos aprovados; aviso fora da tela mobile ajustado e conferido sem rolagem
+manual. Reconferência seletor/leitura6/6, TypeScript/build/lint finais aprovados,
+apenas avisos preexistentes. Proprietário(a) real/local3000: Brotas/Ipupiara listagem/ficha sem erro,
+Recepção no texto/seletor e Salvar bloqueado. Recepção real não conferida.
+Relatório25 com causas/arquivos/mensagens/limites; decisão de consulta completa
+da equipe por Recepção continua pendente. Branch codex/resgate-local-2026-09-26,
+HEAD2a6e88d09c0a8a51cd73649bf45530c2db6a6923, não commitado/publicado. Sem banco,
+SQL, RLS, Auth, Edge, permissões/acessos/convites reais ou commit/push/merge/deploy.
+Diff revisado e hashes relatório24/testes seletor preservados. Etapa encerrada;
+próximo: titular pode conferir F5/Cadastros/Equipe sem salvar. Aprovação expressa
+não atribuída; nenhuma melhoria adicional iniciada automaticamente.
+
+
+## Seletor — conferência autenticada por leitura, 04/10/2026 20:28 -03:00
+
+Local3000, navegador interno, Proprietário(a) observado em Brotas/Ipupiara.
+Administrativo Recepção nas duas clínicas e saúde Médico/Brotas: texto/seletor
+correspondentes e Salvar papel desabilitado. Reabertura/F5 nos dois contextos e
+troca de pessoa conferidos; outra ficha Ipupiara sem conta não apresenta edição
+de papel existente. Nenhuma divergência na amostra. Papéis diferentes do tipo,
+papéis diferentes por clínica, falhas/escrita/respostas atrasadas somente testes
+sintéticos anteriores, sem repetição nesta rodada. Comparação com dado de serviço
+renderizado via clinica.papel; corpo JSON de rede não capturado independentemente.
+Relatório24/README/checkpoints atualizados; código/testes intactos. Aprovação
+expressa do usuário não atribuída. Branch codex/resgate-local-2026-09-26,
+HEAD2a6e88d09c0a8a51cd73649bf45530c2db6a6923, não commitado/não publicado.
+Sem SQL, banco, Auth, papel, convite, suspensão/reativação, commit/push/merge/deploy.
+Próximo sob pedido próprio; nenhuma outra correção iniciada.
+
+
+## Seletor corrigido localmente — 04/10/2026, 20:10 -03:00
+
+Implementado em Equipe.tsx: papel confirmado por clínica, edição separada de
+convites, bloqueio sem mudança/papel válido, proteção contra repetição/resposta
+antiga e releitura após gravação confirmada. Retorno inválido/falhas não anunciam
+sucesso nem atualizam por suposição.
+13 cenários novos x3 tamanhos +24 regressões UI =63 aprovados;18 regras Node,
+TypeScript/lint/build aprovados. Avisos preexistentes preservados. Testes somente
+sintéticos; nenhuma escrita real, SQL, convite ou alteração servidor. Local3000
+mostrou login, sem sessão Administradora; conferência real por leitura pendente.
+README/mestre/notas/checkpoints atualizados; relatório24 detalha arquivos/evidências.
+Branch codex/resgate-local-2026-09-26, HEAD2a6e88d09c0a8a51cd73649bf45530c2db6a6923;
+correção não commitada, sem GitHub/publicação.31 modificados/4 não versionados
+preexistentes preservados. Próximo: roteiro local do relatório24, sem salvar papéis
+reais; nenhuma outra melhoria iniciada.
+
+
+
 **Estado:** implementação local e homologação Supabase principal concluídas em 29/09/2026; cadastro e edição autenticados de Equipe disponíveis para perfis autorizados. Sem publicação de frontend em produção.
 
 ## Estado vigente — e-mails institucionais — 30/09/2026

@@ -1,5 +1,90 @@
 # Equipe — índice do módulo
 
+## Consolidação local das etapas24–29 — 05/10/2026
+
+Pacote revisto para commit seletivo local: seletor confirmado, erros seguros, papel
+explícito, estados/lista, edição permitida e acabamento. Rótulo **CPF (opcional)**
+compatível com comportamento atual, sem resolver a obrigatoriedade pendente.
+Histórico de testes/conferências e limitações preservado; sem aprovação pessoal
+atribuída ao usuário, alterações reais ou publicação.
+[Consolidação, arquivos, evidências e situação Git](29-ACABAMENTO-VISUAL-FICHAS-FORMULARIOS.md).
+
+## Acabamento visual — implementação local em 05/10/2026
+
+Fichas/formulários até960px, assuntos separados e uma coluna no celular, com
+rolagem única e controles acessíveis. Cores/avisos existentes com contraste
+melhorado; operações24–28 preservadas. Conferência conectada de Proprietário(a)
+em Brotas/Ipupiara somente leitura; cenários de escrita/erro/convite simulados.
+9 UI visuais,24 regressões selecionadas,19 Node e reconferência6 UI aprovados;
+TypeScript/build/lint aprovados. Agenda padrão conferida por causa de ModalBase.
+[Arquivos, capturas, métricas e limites](29-ACABAMENTO-VISUAL-FICHAS-FORMULARIOS.md).
+Sem dados reais alterados ou publicação; aprovação pessoal ainda não informada.
+
+## Edição e operações permitidas — ajuste local em 05/10/2026
+
+Tipo fixo na edição, seleção preservada na criação. Vínculos ativos existentes
+mantidos como informação, acréscimos separados; edição não remove nem reativa.
+Detalhe parcial bloqueia gravação de vazios. Contrato não informa inativos antes
+de salvar; orientação honesta e recusa segura, sem nova leitura ou backend.
+Proprietário(a)/local: formulários Brotas/Ipupiara examinados sem preencher/salvar.
+19 Node; UI35/36 e reconferência/regressões15/15 separadas; build/lint aprovados.
+[Operações, arquivos, evidências e limites](28-EDICAO-E-OPERACOES-PERMITIDAS.md).
+Correções24–27 preservadas; sem dado real/commit/GitHub/publicação.
+
+## Estados de conta e acesso — melhoria local em 05/10/2026
+
+Cadastro, conta, convite, vínculo e acesso por clínica separados. Informação ausente
+não confirma ausência de conta; leitura da ficha alimenta o resumo da lista e sucesso
+confirmado atualiza a consulta coletiva sem F5, preservando filtros. Resumo vazio
+orienta escolher papel; referência atual e correções24/25/26 preservadas.
+Proprietário(a)/local: Brotas e Ipupiara conferidas somente por leitura; novas
+operações/falhas/estados ausentes somente simulados. UI98/102 e reconferência12/12
+registradas separadamente;15 Node, TypeScript/build/lint aprovados.
+[Causas, arquivos e limites](27-CLAREZA-ESTADOS-CONTA-ACESSO.md). Não publicado,
+sem alteração real ou aprovação pessoal atribuída ao usuário.
+
+## Escolha explícita de papel — melhoria local em 04/10/2026
+
+Convite, vínculo por confirmação e concessão para conta vinculada exigem papel
+escolhido em cada clínica, sem padrão por cargo/profissão. Resumo perto da ação,
+botão bloqueado sem escolha, falhas preservando campos e cadastro sem login.
+Papéis existentes/reenvios mantidos; solicitação em erro mostra o papel original.
+Conferência real Brotas/Ipupiara somente leitura; novas operações só simuladas.
+Resultados e limitações no [relatório26](26-ESCOLHA-EXPLICITA-PAPEL.md).
+Sem alteração de acesso real, banco, GitHub ou publicação.
+
+## Erros e compatibilidade — correção local em 04/10/2026
+
+Erro da função é interpretado como Response, com código/status e mensagem segura;
+recusa, sessão e rede não acionam listagem legada nem aviso de migração.
+Campos/carregamento preservados, sem repetição automática de escrita. Gestão
+restrita à Proprietária/Administradora e consulta operacional Profissionais
+mantidas. Consulta completa de Equipe para Recepção aguarda decisão funcional.
+Seletor preservado; conferência real normal em Brotas/Ipupiara somente leitura,
+falhas/Recepção somente sintéticos. [Causas, testes e limites](25-TRATAMENTO-ERROS-E-COMPATIBILIDADE.md).
+Sem banco/acesso real/commit/publicação; ver checkpoint para conclusão atual.
+
+
+## Conferência autenticada do seletor — 04/10/2026, 20:28 -03:00
+
+Agente conferiu aplicação local com Proprietário(a) em Brotas/Ipupiara: texto e
+seletor correspondentes, Salvar papel bloqueado, reabertura/F5 e outra pessoa sem
+reutilização de papel. Amostra: administrativo Recepção nas duas, saúde Médico em
+Brotas e outro administrativo sem conta em Ipupiara. Papéis diferentes do tipo e
+operações de escrita continuam apenas sintéticos. Sem alteração de acesso real,
+código, SQL ou publicação; não atribuir aprovação ao usuário. Limites da leitura
+do serviço e resultados no [relatório24](24-CORRECAO-SELETOR-PAPEL.md).
+
+
+## Correção local do seletor — 04/10/2026, 20:10 -03:00
+
+Papel de acessos existentes passa a usar a referência confirmada pelo serviço,
+com edição por clínica e salvamento bloqueado sem mudança válida. 63 testes UI
+sintéticos e 18 de regras aprovados; TypeScript/lint/build aprovados. Não publicado;
+conferência real com Administradora local pendente. Novos convites/concessões e
+regras servidor preservados. [Entrega, arquivos e limites](24-CORRECAO-SELETOR-PAPEL.md).
+
+
 Continuação01/10: aceite institucional real confirmado; correção do botão Continuar para o sistema com navegação efetiva/feedback imediato e nova leitura autorizada. Dois testes sintéticos dirigidos e build/lint aprovados; publicação/conferência, login posterior, recuperação e limpeza acompanhados no relatório23.
 
 **Vigente30/09 — configuração institucional aplicada:** SMTP habilitado após salvamento pelo titular; templates convite/magic link/recuperação efetivamente salvos no Supabase e retornos/bases públicas por unidade configurados. Recuperação publicada nas duas aplicações no commit4c89c13, builds completed e telas públicas conferidas. Entrega real ainda pendente; nenhum envio/fixture nesta atualização. Relatório23 separa aplicação/testes sintéticos de recebimento/aceite. Cadastro/edição e gestão existentes preservados. Parágrafos abaixo são histórico da preparação, não estado remoto atual.

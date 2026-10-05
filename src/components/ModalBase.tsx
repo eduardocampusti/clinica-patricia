@@ -1,11 +1,12 @@
 import { useEffect, useId, useRef, type ReactNode } from 'react'
 
-export function ModalBase({ titulo, subtitulo, onFechar, children, largura = 'md', ocupado = false, suspenso = false, apresentacao = 'modal' }: {
+export function ModalBase({ titulo, subtitulo, onFechar, children, largura = 'md', ocupado = false, suspenso = false, apresentacao = 'modal', className = '' }: {
   titulo: string
   subtitulo?: string
   onFechar: () => void
   children: ReactNode
-  largura?: 'md' | 'lg'
+  largura?: 'md' | 'lg' | 'xl'
+  className?: string
   ocupado?: boolean
   suspenso?: boolean
   apresentacao?: 'modal' | 'painel'
@@ -52,7 +53,7 @@ export function ModalBase({ titulo, subtitulo, onFechar, children, largura = 'md
         }
       }}
       onCancel={(evento) => { evento.preventDefault(); if (!ocupado) onFechar() }}
-      className={apresentacao === 'painel' ? 'painel-agenda ml-auto mr-0 h-dvh max-h-dvh w-full max-w-none overflow-hidden bg-[var(--fundo-card)] text-[var(--texto-principal)] backdrop:bg-[var(--sobreposicao)] sm:max-w-xl' : `m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] overflow-y-auto rounded-xl bg-[var(--fundo-card)] p-5 text-[var(--texto-principal)] backdrop:bg-[var(--sobreposicao)] sm:p-6 ${largura === 'lg' ? 'max-w-lg' : 'max-w-md'}`}>
+      className={`${apresentacao === 'painel' ? 'painel-agenda ml-auto mr-0 h-dvh max-h-dvh w-full max-w-none overflow-hidden bg-[var(--fundo-card)] text-[var(--texto-principal)] backdrop:bg-[var(--sobreposicao)] sm:max-w-xl' : `m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] overflow-y-auto rounded-xl bg-[var(--fundo-card)] p-5 text-[var(--texto-principal)] backdrop:bg-[var(--sobreposicao)] sm:p-6 ${largura === 'xl' ? 'max-w-[60rem]' : largura === 'lg' ? 'max-w-lg' : 'max-w-md'}`} ${className}`}>
       <div className={apresentacao === 'painel' ? 'flex shrink-0 items-center justify-between gap-3 border-b border-[var(--borda)] px-5 py-3' : 'mb-5 flex items-start justify-between gap-3'}>
         {subtitulo ? <div className="min-w-0">
           <h2 id={id} ref={heading} tabIndex={-1} className="texto-titulo-secao outline-none">{titulo}</h2>

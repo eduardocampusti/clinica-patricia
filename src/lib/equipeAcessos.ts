@@ -1,4 +1,7 @@
 import { supabase } from './supabase'
+import { erroEquipeSeguro, interpretarErroAcessoEquipe, respostaAcessoEquipeReconhecida } from './equipeErros'
+export type { ErroAcessoEquipe } from './equipeErros'
+import type { ErroAcessoEquipe } from './equipeErros'
 
 export type StatusAcessoEquipe =
   | 'sem_acesso'
@@ -48,23 +51,18 @@ export interface EscopoAcessoEquipe {
   papel: PapelAcessoEquipe
 }
 
-export interface ErroAcessoEquipe {
-  codigo: string
-  mensagem: string
-  status?: number
-}
-
-function textoErro(error: unknown, fallback: string): ErroAcessoEquipe {
-  const candidato = error as { context?: { body?: { codigo?: string; erro?: string } }; message?: string; status?: number } | null
-  const corpo = candidato?.context?.body
-  if (corpo?.codigo && corpo.erro) return { codigo: corpo.codigo, mensagem: corpo.erro, status: candidato?.status }
-  return { codigo: 'OPERACAO_INDISPONIVEL', mensagem: fallback, status: candidato?.status }
-}
-
 async function invocar<T>(body: Record<string, unknown>): Promise<{ data: T | null; error: ErroAcessoEquipe | null }> {
-  const { data, error } = await supabase.functions.invoke<T>('equipe-acessos', { body })
-  if (error) return { data: null, error: textoErro(error, 'A gestão de acessos ainda não está disponível neste ambiente.') }
-  return { data, error: null }
+  const escrita = body.acao !== 'listar'
+  try {
+    const { data, error } = await supabase.functions.invoke<T>('equipe-acessos', { body })
+    if (error) return { data: null, error: await interpretarErroAcessoEquipe(error, escrita) }
+    if (!data || typeof data !== 'object' || Array.isArray(data) || Object.keys(data).length === 0) return { data: null, error: erroEquipeSeguro(null, escrita) }
+    if ('erro' in data || 'codigo' in data) return { data: null, error: erroEquipeSeguro(data, escrita) }
+    if (!respostaAcessoEquipeReconhecida(data, body.acao)) return { data: null, error: erroEquipeSeguro(null, escrita) }
+    return { data, error: null }
+  } catch (error) {
+    return { data: null, error: await interpretarErroAcessoEquipe(error, escrita) }
+  }
 }
 
 export async function buscarAcessoEquipe(membroId: string, clinicaContextoId: string): Promise<{ data: AcessoEquipe | null; error: ErroAcessoEquipe | null }> {
@@ -107,12 +105,13 @@ export async function aceitarAcessoEquipe(conviteId: string): Promise<{ data: Re
   return invocar<Record<string, unknown>>({ acao: 'aceitar', conviteId })
 }
 
-export function rotuloStatusAcessoEquipe(status: StatusAcessoEquipe): string {
+export function rotuloStatusAcessoEquipe(status: unknown): string {
   if (status === 'convite_pendente') return 'Convite pendente'
   if (status === 'acesso_ativo') return 'Acesso ativo'
   if (status === 'acesso_suspenso') return 'Acesso suspenso'
   if (status === 'conta_inativa') return 'Conta inativa'
-  return 'Sem acesso'
+  if (status === 'sem_acesso') return 'Sem acesso a esta clínica'
+  return 'Acesso não confirmado'
 }
 
 export function rotuloPapelAcessoEquipe(papel: PapelAcessoEquipe | null | undefined): string {

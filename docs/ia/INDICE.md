@@ -1,5 +1,12 @@
 # Memória compartilhada — mapa de leitura
 
+## Equipe — pacote local24–29 consolidado, 05/10/2026
+
+Entrada: [checkpoint de Equipe](../modulos/equipe/08-CHECKPOINT.md).
+Revisão, arquivos, evidências e limites: [consolidação no relatório29](../modulos/equipe/29-ACABAMENTO-VISUAL-FICHAS-FORMULARIOS.md).
+Preparação seletiva de um commit local; nenhum envio ao GitHub ou publicação autorizado.
+
+
 Estado: IMPLEMENTADO LOCALMENTE. Entrada comum: [AGENTS.md](../../AGENTS.md).
 Comece pelo [checkpoint operacional](CHECKPOINT.md); veja [compatibilidade e conferência](COMPATIBILIDADE-AGENTES.md).
 Resultado da conferência por arquivos/Git: [validação de retomada](VALIDACAO-RETOMADA.md).
@@ -27,7 +34,7 @@ Esta memória usa arquivos do repositório, não histórico de chat, banco de me
 - [Sistema](../modulos/sistema/00-README-SISTEMA.md): [checkpoint](../modulos/sistema/08-CHECKPOINT.md), [F5 e rotas](../modulos/sistema/10-RESTAURACAO-SESSAO-E-ROTAS.md).
 - [Login](../modulos/login/00-README-LOGIN.md): [mestre](../modulos/login/01-DOCUMENTO-FUNCIONAL-MESTRE.md), [arquitetura](../modulos/login/06-ARQUITETURA-TECNICA.md), [checkpoint](../modulos/login/08-CHECKPOINT.md). Para recuperação/convite posteriores, consultar também Equipe 23 e Sistema 10.
 - [Pacientes](../modulos/pacientes/00-README-PACIENTES.md): [checkpoint](../modulos/pacientes/08-CHECKPOINT.md), [confirmações](../modulos/pacientes/13-CONFIRMACOES-VISIVEIS-CADASTRO.md), [CPF legado](../modulos/pacientes/14-CPF-LEGADO-INVALIDO.md), [integridade](../modulos/pacientes/12-DIAGNOSTICO-INTEGRIDADE.md).
-- [Equipe](../modulos/equipe/00-README-EQUIPE.md): [checkpoint](../modulos/equipe/08-CHECKPOINT.md), [gestão](../modulos/equipe/20-CORRECOES-GESTAO-DE-ACESSOS.md), [convites/suspensão](../modulos/equipe/21-AJUSTES-FINAIS-CONVITES-E-SUSPENSAO.md), [e-mails](../modulos/equipe/23-EMAILS-INSTITUCIONAIS.md).
+- [Equipe](../modulos/equipe/00-README-EQUIPE.md): [checkpoint](../modulos/equipe/08-CHECKPOINT.md), [gestão](../modulos/equipe/20-CORRECOES-GESTAO-DE-ACESSOS.md), [convites/suspensão](../modulos/equipe/21-AJUSTES-FINAIS-CONVITES-E-SUSPENSAO.md), [e-mails](../modulos/equipe/23-EMAILS-INSTITUCIONAIS.md), [seletor](../modulos/equipe/24-CORRECAO-SELETOR-PAPEL.md), [erros e compatibilidade](../modulos/equipe/25-TRATAMENTO-ERROS-E-COMPATIBILIDADE.md), [escolha explícita do papel](../modulos/equipe/26-ESCOLHA-EXPLICITA-PAPEL.md), [clareza de conta/acesso](../modulos/equipe/27-CLAREZA-ESTADOS-CONTA-ACESSO.md), [edição e operações permitidas](../modulos/equipe/28-EDICAO-E-OPERACOES-PERMITIDAS.md), [acabamento visual de fichas/formulários](../modulos/equipe/29-ACABAMENTO-VISUAL-FICHAS-FORMULARIOS.md).
 - [Financeiro](../modulos/financeiro/00-README-FINANCEIRO.md): [mestre](../modulos/financeiro/01-DOCUMENTO-FUNCIONAL-MESTRE.md), [permissões](../modulos/financeiro/02-MATRIZ-PAPEIS-PERMISSOES.md), [checkpoint](../modulos/financeiro/08-CHECKPOINT.md), [migração frontend](../modulos/financeiro/11-MIGRACAO-FRONTEND.md).
 
 Para módulos ainda sem índice próprio, localizar fontes existentes sem criar documentação vazia.
