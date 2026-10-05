@@ -1,5 +1,11 @@
 # Memória compartilhada — mapa de leitura
 
+## Cadastros — navegação móvel corrigida localmente, 05/10/2026
+
+Faixa de abas sem transbordamento global, seleção/foco revelados.6 testes direcionados
+e TypeScript/lint/build aprovados; envio seletivo autorizado, em preparação.
+[Registro e acompanhamento](../modulos/equipe/29-ACABAMENTO-VISUAL-FICHAS-FORMULARIOS.md).
+
 ## Equipe — pacote local24–29 consolidado, 05/10/2026
 
 Entrada: [checkpoint de Equipe](../modulos/equipe/08-CHECKPOINT.md).

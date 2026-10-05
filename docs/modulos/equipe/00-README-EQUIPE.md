@@ -1,5 +1,12 @@
 # Equipe — índice do módulo
 
+## Navegação móvel de Cadastros — ajuste local verificado, 05/10/2026
+
+Faixa de abas contida com rolagem própria e seleção/foco visíveis, preservando24–29.
+6 testes direcionados e TypeScript/lint/build aprovados; publicação específica
+expressamente autorizada, ainda em preparação. Sem dados reais alterados.
+[Diagnóstico, captura e publicação](29-ACABAMENTO-VISUAL-FICHAS-FORMULARIOS.md).
+
 ## Consolidação local das etapas24–29 — 05/10/2026
 
 Pacote revisto para commit seletivo local: seletor confirmado, erros seguros, papel

@@ -1,5 +1,13 @@
 # Equipe — documento funcional mestre
 
+## Navegação de Cadastros — ajuste autorizado em 05/10/2026
+
+A página deve permanecer na largura disponível; somente a faixa de abas pode rolar
+horizontalmente. Todas as seções, inclusive Serviços, permanecem alcançáveis, com
+rótulos legíveis e seleção/foco visíveis. Teclado, toque, rotas e seleção inicial
+após recarga preservados. Não esconder transbordamento globalmente nem alterar regras
+ou operações de Equipe. Estado técnico/publicação no relatório29.
+
 ## Rótulo de CPF — ajuste autorizado em 05/10/2026
 
 Apresentar **CPF (opcional)**, refletindo o comportamento atual sem alterar validação,

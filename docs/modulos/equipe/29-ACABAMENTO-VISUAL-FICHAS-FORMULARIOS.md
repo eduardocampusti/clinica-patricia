@@ -1,5 +1,78 @@
 # Equipe — acabamento visual de fichas e formulários
 
+## Navegação móvel de Cadastros — correção verificada; publicação em preparação
+
+Data: 2026-10-05 11:58:46 -03:00. Pedido autoriza correção, commit seletivo, push e
+publicação apenas deste ajuste em Brotas/Ipupiara. Não equivale à aprovação pessoal.
+Este registro é o estado atual do ajuste; seções seguintes conservam o histórico29.
+
+**Causa confirmada:** a faixa flex de quatro abas não possuía rolagem horizontal
+própria. Main/SidebarInset já tinham min-w-0; o transbordamento vinha dos botões,
+não do conteúdo Serviços. Brotas publicada/Proprietário(a),390×844: documento449px,
+Serviços x359,765625–448,6875; Equipe permanecia aberta. Teste isolado reproduziu o
+transbordamento antes da correção. Primeira execução parou aos30s preparando o Vite;
+com tempo proporcional e cache preparado, falhou especificamente na largura global.
+Não contabilizar timeout inicial como reprodução ou aprovação.
+
+**Correção:** src/pages/cadastros/Cadastros.tsx limita a raiz/faixa com min-w-0 e
+max-w-full; nav Seções de Cadastros com overflow-x-auto/overscroll-x-contain. Botões
+sem encolhimento ou quebra, fonte existente e altura mínima44px, foco com contorno
+interno e estado aria-pressed. Seleção/foco revelam apenas a faixa, por scrollLeft,
+sem mudar foco ou deslocar a página. Padrões locais finance-nav/rp-tabs examinados;
+nenhum compartilhado alterado, nenhuma ocultação global/body ou dependência nova.
+Rotas, seleção inicial após F5, permissões e componentes24–29 preservados.
+
+**Conjunto relacionado:** Cadastros.tsx, nota em src/config/notasEvolucao.json,
+tests/operacional/cadastros-contexto.tsx, cadastros-navegacao.spec.ts e vite.config.ts
+(somente entrada sintética), este relatório, README/mestre/checkpoint de Equipe,
+checkpoints raiz/IA e índice. Docs selecionados por trechos novos; conteúdo anterior
+não relacionado não será incluído indiscriminadamente.
+
+**Verificação local:**6 testes direcionados aprovados em46,6s, usando AppShell e
+Cadastros reais com endpoints sintéticos e bloqueio de destinos externos.360/390/430,
+820 tablet e1440 computador; largura global contida, faixa rolável quando precisa,
+todas as abas por toque emulado e Tab/Shift+Tab/Enter/Espaço, foco/seleção visíveis,
+Serviços selecionado programaticamente sem ajuda da rolagem do locator, recarga na
+rota correta e abertura de ficha/Médico preservados. Escritas sintéticas0. Ipupiara
+sintética e tema escuro incluídos; isto não comprova sessão publicada dessa clínica.
+TypeScript, lint e build do conjunto isolado aprovados; aviso novo do harness removido,
+só aviso antigo ThemeProvider e avisos conhecidos de chunks/importação Supabase.
+Cinco fontes/testes/notas conferidos por SHA256 entre original testado e cópia isolada.
+Não repetida a bateria geral de Equipe; emulação não é teste em aparelho físico.
+
+**Capturas sem dados reais:** scratch/cadastros-navegacao-movel/antes-sintetico-390.png,
+390-inicio.png,390-servicos.png, demais larguras e ipupiara-escuro.png. Imagens vistas
+pelo agente: antes Serviços cortado e rótulo Equipe quebrado; depois faixa própria,
+rótulo legível e Serviços inteiramente alcançável. Capturas são sintéticas; a leitura
+publicada anterior forneceu a medição causal, sem fotografar pessoas reais.
+
+**Git/publicação antes do envio:** fetch confirmou local/origin em
+96b964419192db04db5eaf56de870b65c3cbac39,0/0, sem avanço ou conflito. Repositório
+eduardocampusti/clinica-patricia, branch codex/resgate-local-2026-09-26. Hostinger
+is_enabled=true em ambos, mesma origem/branch; push aciona ambos sem alterar configuração.
+Brotas anterior build01a10bde-91de-72c3-8360-1c026d7a2b22 completed11:42:22UTC;
+Ipupiara01a10bde-923f-714e-bf2f-dad4f446f304 completed11:42:25UTC,05/10/2026.
+Pacote público anterior96b96441 preservado como base; cópia isolada sobre essa ponta,
+sem .env ou instalação.0.1.0 permanece em desenvolvimento, sem release/tag.
+Próxima ação: revisar/commitar somente o conjunto exato, push normal, acompanhar
+ambos os builds e confirmar SHA entregue; Brotas leitura com sessão disponível,
+Ipupiara leitura interna apenas se autenticada. Falta de login não impede versão/build.
+Se aparecer regressão concreta causada pelo ajuste, recuperar frontend anterior,
+preservando dados; nenhuma restauração necessária ou executada neste registro.
+
+**Ferramentas/limites:** typesafe-ai consultada, correção determinística sem IA no
+produto nem acesso a TYPESAFE_API_KEY. Impeccable/contexto product e referência adapt
+aplicados com identidade existente. ReUI avaliada sem benefício de instalar/consultar
+novo componente para esta faixa local. Jev único com resumo sintético: code_change,
+confiança0,93; complexidade1,04 em0–2/confiança0,93; Noul0,36 incerto resolvido pelo
+Codex com leituras suficientes.869 entrada/119 saída,2357,1411ms,US$0,000036498;
+sem envio de arquivos privados ou promessa de economia. Sem SQL, banco, RLS, Auth,
+SMTP, migrations/Edge, pessoas, convites, vínculos ou acessos reais alterados.
+Conferência de escrita/e-mails e aprovação pessoal não atribuídas. Pendências24–29
+anteriores, incluindo login interno de Ipupiara, permanecem sem homologação automática.
+
+## Histórico da etapa29 e conferências anteriores
+
 Estado: IMPLEMENTADO E CONFERIDO LOCALMENTE PELO CODEX; NÃO PUBLICADO.
 Data: 05/10/2026, America/Bahia (-03:00). Pedido de implementação visual do titular;
 não representa aprovação pessoal do resultado. Etapas24–28 preservadas.

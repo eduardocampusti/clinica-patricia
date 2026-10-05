@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { usePapelNaClinica } from '../../hooks/usePapelNaClinica'
 import Especialidades from './Especialidades'
 import Profissionais from './Profissionais'
@@ -20,13 +20,29 @@ interface CadastrosProps {
   usuarioId: string
 }
 
+// Revela só a faixa de navegação, sem deslocar a página ou transferir o foco.
+function revelarAba(botao: HTMLButtonElement) {
+  const faixa = botao.parentElement
+  if (!faixa) return
+  const limite = faixa.getBoundingClientRect()
+  const posicao = botao.getBoundingClientRect()
+  const margem = 4
+  if (posicao.left < limite.left + margem) faixa.scrollLeft += posicao.left - limite.left - margem
+  else if (posicao.right > limite.right - margem) faixa.scrollLeft += posicao.right - limite.right + margem
+}
+
 function Cadastros({ clinicaAtivaId, carregandoClinica, usuarioId }: CadastrosProps) {
   const [aba, setAba] = useState<Aba>('equipe')
+  const abaAtivaRef = useRef<HTMLButtonElement>(null)
   const { papel, souProprietaria } = usePapelNaClinica(usuarioId, clinicaAtivaId)
   const podeGerenciarAgenda = papel === 'proprietaria' || papel === 'recepcao'
 
+  useEffect(() => {
+    if (abaAtivaRef.current) revelarAba(abaAtivaRef.current)
+  }, [aba])
+
   return (
-    <div className="space-y-6">
+    <div className="min-w-0 max-w-full space-y-6">
       <div>
         <h1 className="texto-titulo-tela text-[var(--texto-principal)]">Cadastros</h1>
         <p className="text-sm text-[var(--texto-secundario)]">
@@ -34,15 +50,18 @@ function Cadastros({ clinicaAtivaId, carregandoClinica, usuarioId }: CadastrosPr
         </p>
       </div>
 
-      <div className="flex gap-1 border-b border-[var(--borda)]">
+      <nav aria-label="Seções de Cadastros" className="flex min-w-0 max-w-full gap-1 overflow-x-auto overscroll-x-contain border-b border-[var(--borda)] p-1">
         {ABAS.map(({ chave, titulo }) => {
           const ativa = aba === chave
           return (
             <button
               key={chave}
               type="button"
+              ref={ativa ? abaAtivaRef : undefined}
+              aria-pressed={ativa}
               onClick={() => setAba(chave)}
-              className={`relative px-4 py-2.5 text-sm font-medium transition ${
+              onFocus={(evento) => revelarAba(evento.currentTarget)}
+              className={`relative min-h-11 shrink-0 whitespace-nowrap rounded-sm px-4 py-2.5 text-sm font-medium transition focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--cor-primaria)] ${
                 ativa
                   ? 'text-[var(--cor-primaria)]'
                   : 'text-[var(--texto-secundario)] hover:text-[var(--texto-principal)]'
@@ -56,7 +75,7 @@ function Cadastros({ clinicaAtivaId, carregandoClinica, usuarioId }: CadastrosPr
             </button>
           )
         })}
-      </div>
+      </nav>
 
       {aba === 'equipe' && <Equipe key={`${usuarioId}:${clinicaAtivaId}:${souProprietaria}`} clinicaAtivaId={clinicaAtivaId} souProprietaria={souProprietaria} />}
       {aba === 'especialidades' && <Especialidades souProprietaria={souProprietaria} />}

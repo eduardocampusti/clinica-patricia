@@ -47,6 +47,7 @@
       "Equipe: a gestão de acessos por clínica foi instalada no Supabase autorizado e publicada na Edge Function, com consulta real de acesso em Brotas e estado vazio correto em Ipupiara; convite e aceite aguardam redirect allowlisted e conta de teste autorizada."
     ],
     "correcoes": [
+      "Cadastros no celular: as abas deslizam dentro da própria faixa, mantendo a página na largura da tela e a seção selecionada ou em foco visível.",
       "Equipe & acessos: falhas de sessão, permissão, dados, conflito, tentativas, conexão e serviço recebem mensagens seguras. Falhas não ativam indiscriminadamente a consulta antiga; dados preenchidos são preservados e resultados não confirmados exigem conferência antes de repetir.",
       "Equipe: o seletor de acessos existentes respeita o papel confirmado em cada clínica; Salvar papel só fica disponível após uma mudança válida, sem reutilizar seleções de outra ficha.",
       "Agenda: criação e correção usam política manual comum, com aviso e confirmação fora da faixa habitual ou sem expediente; folgas, limites explícitos, conflitos e permissões continuam obrigatórios. Serviço incompatível orienta atualização sem gravação alternativa.",

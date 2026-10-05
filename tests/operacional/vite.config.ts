@@ -6,10 +6,11 @@ export default mergeConfig(base, defineConfig({
     server.middlewares.use(async (req, res, next) => {
       const url = new URL(req.url ?? '/', 'http://127.0.0.1')
       const previa = url.searchParams.get('previa')
-      if (!url.pathname.startsWith('/sistema/') || (previa !== 'agenda' && previa !== 'shell')) return next()
+    if (!url.pathname.startsWith('/sistema/') || !['agenda', 'shell', 'cadastros'].includes(previa ?? '')) return next()
       // Só no Vite sintético: mantém as rotas reais ao navegar/recarregar o harness.
       try {
-        const html = await server.transformIndexHtml(req.url!, `<!doctype html><html lang="pt-BR"><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>Prévia isolada</title></head><body><div id="root"></div><script type="module" src="/tests/operacional/${previa === 'agenda' ? 'agenda-preview' : 'shell'}.tsx"></script></body></html>`)
+        const entrada = previa === 'agenda' ? 'agenda-preview' : previa === 'cadastros' ? 'cadastros-contexto' : 'shell'
+        const html = await server.transformIndexHtml(req.url!, `<!doctype html><html lang="pt-BR"><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>Prévia isolada</title></head><body><div id="root"></div><script type="module" src="/tests/operacional/${entrada}.tsx"></script></body></html>`)
         res.setHeader('Content-Type', 'text/html'); res.end(html)
       } catch (error) { next(error as Error) }
     })

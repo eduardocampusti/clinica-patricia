@@ -1,5 +1,24 @@
 # Equipe — checkpoint da primeira entrega
 
+## Cadastros — navegação móvel corrigida localmente, 2026-10-05 11:58:46 -03:00
+
+Faixa flex de abas causava documento449px em tela390px; reproduzido pelo agente em
+Brotas publicada/Proprietário(a) e por teste sintético antes do ajuste. Cadastros.tsx
+agora limita largura mínima/máxima e mantém rolagem somente nas abas, rótulos sem
+quebra, controles44px, foco interno e revelação da seleção/foco sem deslocar a página.
+Padrão local de Financeiro/Recepção reaproveitado, sem componente global alterado.
+Seis testes direcionados passaram (360/390/430/820/1440, toque emulado, teclado,
+recarga/ficha, Ipupiara sintética/escuro); TypeScript/lint/build na cópia isolada passaram.
+Avisos antigos ThemeProvider/empacotamento preservados; nenhum dado real escrito.
+
+Base Git local/remota96b964419192db04db5eaf56de870b65c3cbac39, branch
+codex/resgate-local-2026-09-26,0/0; auto-deploy Hostinger confirmado nas duas clínicas.
+Publicação anterior96b96441 e builds completed registrados no relatório29. Commit
+seletivo/push do ajuste autorizados, ainda não executados neste registro; trabalhos
+anteriores fora da seleção preservados. Ipupiara interna continua pendente de login,
+sem novo registro repetitivo; Brotas será reconferida após entrega. Detalhes, capturas,
+limites e próxima ação no relatório29. Sem banco/Auth/SQL/SMTP/convites/acessos reais.
+
 ## Equipe — consolidação das etapas24–29, 2026-10-05 08:16:49 -03:00
 
 Revisão combinada das etapas24–29: papel confirmado por pessoa/clínica, erros seguros
