@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { execFileSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
 
 const { version } = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')) as { version: string }
 
@@ -28,6 +29,7 @@ function alteracoesLocais(): boolean | null {
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
   define: {
     __APP_BUILD_INFO__: JSON.stringify({ version, commit: commitCurto(), alteracoesLocais: alteracoesLocais(), compiladoEm: new Date().toISOString() }),
   },

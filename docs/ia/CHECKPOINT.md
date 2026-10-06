@@ -639,3 +639,29 @@ Autorizações anteriores não são autorização permanente para mudança de ba
 Sem bloqueio documental. Limitações de novas sessões: [guia](COMPATIBILIDADE-AGENTES.md).
 Reler checkpoint e mudanças recentes antes de encerrar/trocar; preservar outros trabalhos.
 Não há garantia de salvamento em interrupção abrupta.
+
+## Equipe31–33 — consolidação e publicação autorizadas, 2026-10-06 09:58:40 -03:00
+
+Usuário confirmou pessoalmente **“baixei e funcionou”**: download do documento
+fictício v2 validado manualmente pelo usuário. Não é download observado pelo agente,
+aprovação global dos recursos nem homologação de escritas/e-mails.
+Pedido posterior autoriza commit, GitHub e frontend nas duas clínicas. Ressalva Auth
+preservada: baseline só impressão digital da linha, campos/causa não identificáveis;
+auditoria pertinente já examinada sem evidência concreta de alteração indevida.
+Logs de runtime não consultados. Não é incidente confirmado nem mudança comprovadamente
+inofensiva. A limitação histórica, por si só, deixa de impedir esta publicação
+conforme decisão explícita do usuário. Nenhuma conta, sessão ou permissão restaurada.
+Base local/remota e última publicação das duas clínicas: eff05f60e07c4042bbb931d1c14d19432612d01d.
+Branch codex/resgate-local-2026-09-26; Git automático habilitado nas duas clínicas,
+repositório eduardocampusti/clinica-patricia, Vite/Node22/build/dist existentes.
+Backend confirmado ACTIVE: equipe-recursos v3, equipe-fichas v3, equipe-acessos v8;
+sem reaplicar migrations ou funções. Cinco bloqueios finitos até06/10/2027 mantidos.
+Seleção94 referências conferida por hashes, sem mudança posterior de código/dependências.
+Tipos/build/lint (0 erros,16 avisos),5 unidades e4 UI sintéticas da cópia reaproveitados;
+28 conectados anteriores não repetidos. Commit/push/deploy ainda pendentes neste registro.
+Versão0.1.0 em desenvolvimento preservada: publicação do commit não cria tag/release.
+Outros trabalhos locais e trechos compartilhados excluídos do pacote são preservados.
+Próximo: commit exato na cópia, envio sem force, confirmação dos dois builds e leitura
+publicada nas sessões autorizadas. Resultado posterior pode permanecer só local.
+
+[Registro consolidado](<../modulos/equipe/34-CONSOLIDACAO-HOMOLOGACAO-REAL.md>).

@@ -18,7 +18,8 @@ async function preparar(page:Page, opcoes:{vazio?:boolean;erro?:number;unidade?:
     if(u.pathname.endsWith('/clinicas'))return json(clinicas)
     if(u.pathname.endsWith('/rpc/equipe_listar')){estado.lista++;return estado.erro?json({code:estado.erro===403?'42501':'XX000',message:'Detalhe interno que não pode aparecer'},estado.erro):json(estado.vazio?[]:[...membros,membros[0]])}
     if(u.pathname.endsWith('/rpc/equipe_detalhar')){const id=route.request().postDataJSON().p_membro_id;estado.detalhes.push(id);return json({...membros.find(m=>m.id===id),cpf:null,cpf_situacao:'ausente'})}
-    if(u.pathname.includes('/functions/')){
+    if(u.pathname.endsWith('/functions/v1/equipe-fichas'))return json({codigo:'CONSULTA_INDISPONIVEL'},503)
+    if(u.pathname.endsWith('/functions/v1/equipe-acessos')){
       const b=route.request().postDataJSON();if(b.acao==='listar'){
         estado.acessos.push(b.membroId)
         return json({membro_id:b.membroId,usuario_id:b.membroId==='um'?'u-sintetico':null,login_email:null,conta_confirmada:false,clinicas:clinicas.map((c,i)=>({...c,usuario_id:b.membroId==='um'?'u-sintetico':null,ativo:b.membroId==='um'&&i===0,status:b.membroId==='um'?(i===0?'acesso_ativo':'acesso_suspenso'):i===0?'convite_pendente':'sem_acesso',papel:b.membroId==='um'?(i===0?estado.papel:'medico'):null})),convites:[]})
@@ -109,7 +110,7 @@ for(const largura of [360,390,430,820,1440])test(`layout ${largura}px, cards/tab
     const pessoa=page.getByTestId(`equipe-pessoa-${m}`);await expect(pessoa).toBeVisible()
     for(const b of await pessoa.getByRole('button').all())expect(await b.evaluate(el=>el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44)
   }
-  await page.screenshot({path:`scratch/equipe-listagem/${largura}-lista.png`,fullPage:true})
+  await page.screenshot({path:`scratch/equipe-reui-visual/${largura}-lista.png`,fullPage:true})
   if(largura===820)for(const botao of await page.getByTestId('equipe-pessoa-um').getByRole('button').all())expect(await botao.evaluate(el=>{const r=el.getBoundingClientRect(),a=el.closest('.equipe-tabela-area')!.getBoundingClientRect();return r.left>=a.left&&r.right<=a.right})).toBe(true)
   await page.getByRole('button',{name:`Ver cadastro de ${nomes[1]}`,exact:true}).click();await expect(page.getByTestId('painel-gestao-acessos')).toBeVisible();await page.getByRole('button',{name:'Fechar',exact:true}).click()
   await expect(page.getByTestId('resumo-acesso-dois')).toContainText('Convite pendente')
@@ -142,6 +143,6 @@ test('Ipupiara e tema escuro: textos/foco, contraste e resultado contido',async(
     for(const c of contrastes)expect(c.valor,`${tema}: ${c.seletor}`).toBeGreaterThanOrEqual(4.5)
   }
   await page.evaluate(()=>document.documentElement.setAttribute('data-theme','escuro'))
-  await page.screenshot({path:'scratch/equipe-listagem/ipupiara-escuro.png',fullPage:true})
+  await page.screenshot({path:'scratch/equipe-reui-visual/ipupiara-escuro.png',fullPage:true})
   await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true)
 })

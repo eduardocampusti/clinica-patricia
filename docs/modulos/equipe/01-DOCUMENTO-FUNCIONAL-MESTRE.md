@@ -1,5 +1,99 @@
 # Equipe — documento funcional mestre
 
+## Fichas ampliadas — etapa33 autorizada em05/10/2026
+
+Pessoa, cargo/profissão, empresa contratante, contrato, unidades, login e acesso são
+independentes e vinculados por IDs. Médico CLT reúne os conjuntos profissional e
+trabalhista; atuar em duas unidades não cria dois contratos ou empregador presumido.
+Tipo permanece fixo; CPF opcional e contato separado de login. Filiação/nacionalidade/
+dependentes exigem finalidade. Contratos guardam vigência e versões de cargo, remuneração
+e jornada, sem folha/eSocial/ponto ou suspensão automática de login.
+
+Formação admite múltiplos conselhos e especialidades/RQE associado ao CRM/UF, mantendo
+referências principais dos módulos existentes. Informação declarada e conferência da
+versão salva são distintas; responsável/data/fonte/evidência ficam registrados. Não
+inventar vencimentos, certificar especialidade por curso ou conformidade por checklist.
+
+Documento privado exige autorização de todo o escopo, validação de arquivo no servidor
+e confirmação do arquivo mais registro antes de “salvo”. Leitura/download/conferência
+por ID também autorizados; substituir preserva a versão anterior e exige nova conferência.
+Falha parcial admite retomada idempotente e limpeza só de candidata comprovada; não
+excluir versões confirmadas automaticamente. Ocupacional somente administrativo, com
+autorização específica por unidade e sem diagnósticos/prontuário/resultados clínicos.
+Recepção/Médico não ganham acesso a documentos, contratos, salários ou banco.
+
+Seções independentes preservam rascunhos/falhas e distinguem ausência de indisponibilidade.
+Pendências usam estados/datas existentes sem modificar acessos/atuação/contrato. Histórico
+restrito conserva versões e metadados de auditoria sem conteúdo sensível nos eventos.
+Foto/recebimento32 reutilizados; dados financeiros não entram na consulta geral.
+
+Estado técnico atualizado em06/10/2026: backend aplicado no principal autorizado,
+com validação conectada e frontend normal local; frontend dos domínios ainda anterior.
+As ressalvas e a preparação do pacote estão no relatório34. Não é aprovação pessoal.
+[Modelo, matriz, arquivos, evidências e limitações33](33-FICHAS-CONTRATOS-DOCUMENTOS.md).
+
+## Fotos e recebimento — etapa32 autorizada em05/10/2026
+
+Foto opcional na ficha do membro já cadastrado, vinculada à identidade canônica,
+independente de login e compartilhada pelos vínculos autorizados. Adicionar,
+substituir, prévia, Salvar foto, Cancelar e remoção confirmada; imagem anterior
+preservada até confirmar a nova, fallback por iniciais. Leitura autorizada no
+contexto; escrita por Proprietário(a)/Administradora, exigindo administração dos
+vínculos ativos para alterar essa identificação global. Não amplia Recepção/Médico.
+Fotos privadas e separadas de pacientes, com validação raster/processamento seguro.
+
+Dados para recebimento são opcionais e exclusivos de profissional de saúde,
+vinculados a profissional + clínica. PIX, conta ou ambos com preferência explícita;
+agência/código/dígitos opcionais, números como strings preservando zeros. Favorecido
+PF/PJ e indicação declarada de pessoa diferente; validação de formato não comprova
+titularidade. Não copiar CPF/telefone da pessoa, não alterar seu CPF nem bloquear
+cadastro/atuação na ausência da configuração.
+
+Somente Proprietário(a)/Administradora autorizada nessa clínica lê/altera a
+configuração, com autorização no servidor e políticas/grants. Estrutura protegida
+separada da listagem geral, campos sensíveis mascarados, sem valores na auditoria,
+notas, busca, convites ou localStorage. Revisão, edição preservada em falhas,
+reconsulta explícita após conflito/incerteza e limpeza de estado na saída/troca.
+Salvamentos próprios, sem pagamentos, novos papéis ou mudança de repasses históricos.
+
+Estado técnico atualizado em06/10/2026: migration/Edge aplicadas no principal,
+persistência e restrições verificadas no escopo conectado descrito no relatório34.
+Frontend novo permanece local. A restrição de fotos da correção31 abaixo é histórica.
+[Modelo, matriz de permissões, verificações, limites e ordem futura](32-FOTOS-RECEBIMENTO.md).
+
+## Composição visual da etapa31 — correção autorizada em05/10/2026
+
+Computador: Seleção/Pessoa/Função/Clínicas vinculadas/Conta e acesso/Ações.
+Pessoa combina avatar circular32–36px, nome moderado e e-mail_contato disponível,
+sem login de Auth ou aviso repetido de ausência. Cargo principal; tipo/profissão
+secundários sem repetir texto equivalente. Vínculos cadastrais distintos de acesso;
+resumo compacto preserva clínica e desconhecido, detalhes na ficha. Linhas naturais,
+separadores finos, checkbox pequeno com alvo acessível, ações visíveis lado a lado,
+paginação no mesmo conjunto. Cards usam a mesma fonte/estado e avatar; seletor de
+ordem só no celular, evitando duplicação com cabeçalhos do computador.
+
+Fotos somente por identificador da pessoa e clínica com fonte autorizada existente.
+Ausência/falha: até duas iniciais, mesmo tamanho; sem associação por nome/e-mail,
+indicador online, upload ou mudança de banco/bucket/permissões nesta correção.
+Contrato coletivo atual não entrega fotos: aplicação real usa iniciais e componente
+preparado, demonstrações com foto só em teste isolado. Isso não implementa cadastro
+de fotos. [Estado técnico, comparação, testes e limites](31-REUI-DATA-GRID.md).
+
+## Data Grid — etapa31 autorizada em 05/10/2026
+
+Listagem normal usa ReUI c-data-grid-7 no computador e conserva cards no celular,
+com a mesma fonte filtrada/deduplicada, ordenação e paginação local10/25/50 (inicial10).
+Ordenar antes de paginar por nome/tipo-profissão; contar todo resultado recebido
+filtrado, explicitando alcance da consulta sem presumir total global. Busca/filtro
+voltam à primeira página e resultado menor ajusta página válida. Ficha preserva
+filtros/página/foco; operações existentes podem reconsultar dados sem repetir escrita.
+Seleção visual por ID estável, com quantidade; cabeçalho somente página atual.
+Limpar por clínica, filtros, página/tamanho, ordenação e atualização da lista.
+Sem operação em lote, clique automático na ficha ou ampliação de permissões.
+Identidade por clínica, textos em português, altura natural e rolagem só na tabela.
+Demais contratos24–30 preservados. Estado técnico/testes/local e limites no
+[relatório31](31-REUI-DATA-GRID.md); nenhuma publicação autorizada nesta etapa.
+
 ## Listagem principal — evolução autorizada em 05/10/2026
 
 Buscar nome, cargo e profissão pelos campos existentes, ignorando acentos, caixa e
@@ -131,10 +225,9 @@ tipo, remoção e identificação prévia de inativos/listagem futura ficam fora
   não altera papéis, autorização, convites/concessões ou banco.
 
 
-
 ## E-mails — decisão aprovada em 30/09/2026
 
-Usar modelos compartilhados em português, identidade Brotas/Ipupiara/conjunta derivada no servidor e link oficial do Auth preservado. Ausência de contexto usa identidade conjunta. Marca/metadados não autorizam acesso; não trocar template global por destinatário nem mutar metadados de contas existentes por envio. Recuperação somente quando houver fluxo disponível. Estado técnico/previews e bloqueio de aplicação remota registrados no relatório 23, sem contratação ou alteração SMTP.
+Usar modelos compartilhados em português, identidade Brotas/Ipupiara/conjunta derivada no servidor e link oficial do Auth preservado. Ausência de contexto usa identidade conjunta. Marca/metadados não autorizam acesso; não trocar template global por destinatário nem mutar metadados de contas existentes por envio. Remetente/usuário SMTP compartilhado aprovado: administracao@clinicabrotas.com.br; nome Clínicas Brotas e Ipupiara, Hostinger465/TLS. Caixa Ipupiara preservada para administração da unidade. Recuperação altera apenas senha, não vínculos/permissões; mensagens não revelam existência de conta. Estado aplicado, prévias e pendência de entrega real registrados no relatório23; histórico de bloqueio remoto preservado, sem contratação.
 
 **Estado:** APROVADO em 28/09/2026 para a primeira entrega.
 

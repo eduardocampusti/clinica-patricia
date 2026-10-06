@@ -75,7 +75,7 @@ test('troca de clínica/perfil com recusa limpa lista e ficha anteriores; Recep�
   estado.lista = { status: 403, corpo: { code: '42501', message: privado } }
   await page.getByRole('button', { name: 'Fechar', exact: true }).click()
   await page.getByRole('button', { name: 'Trocar para Clínica B' }).click()
-  await expect(page.getByText('Consulta da equipe não concluída', { exact: true })).toBeVisible()
+  await expect(page.getByText('Sem permissão para consultar a equipe', { exact: true })).toBeVisible()
   await expect(page.getByRole('button', { name: 'Ver cadastro de Pessoa Sintética' })).toHaveCount(0)
   await page.getByRole('button', { name: 'Simular perfil de recepção' }).click()
   await expect(page.getByRole('alert')).toContainText('Proprietária/Administradora')

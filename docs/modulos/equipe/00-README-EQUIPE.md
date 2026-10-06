@@ -150,3 +150,29 @@ O relatório `19-GESTAO-DE-ACESSOS.md` registra a aplicação autorizada: o cada
 O relatório `20-CORRECOES-GESTAO-DE-ACESSOS.md` registra os defeitos encontrados na versão 1 e a conclusão autorizada em 30/09/2026. A migration corretiva foi aplicada isoladamente, o catálogo e a integridade foram verificados e a Edge Function versão 2 foi publicada com JWT obrigatório. A interface autenticada confirmou consulta sem gravação e isolamento Brotas/Ipupiara; o ensaio remoto reversível confirmou negativas, sincronização, idempotência, reserva de envio, suspensão/reativação e autobloqueio. Convite e aceite por e-mail permanecem pendentes porque não há redirect nem caixa de teste autorizada.
 
 O complemento `21-AJUSTES-FINAIS-CONVITES-E-SUSPENSAO.md` registra a migration `20260930100000` e a Edge Function versão 3. Um novo preparo pode substituir convite vencido sem apagar o histórico; finalizações atrasadas não reabrem cancelados/aceitos; o reenvio registra ou recupera a conta Auth exata sem conceder acesso. Chamadas autenticadas foram conferidas nas portas 3000 e 5173. Sessões sintéticas reais comprovaram que um token já emitido perde a leitura protegida imediatamente após suspensão e a recupera após reativação. As fixtures foram removidas por IDs exatos e a auditoria foi preservada.
+
+## Equipe31–33 — consolidação e publicação autorizadas, 2026-10-06 09:58:40 -03:00
+
+Usuário confirmou pessoalmente **“baixei e funcionou”**: download do documento
+fictício v2 validado manualmente pelo usuário. Não é download observado pelo agente,
+aprovação global dos recursos nem homologação de escritas/e-mails.
+Pedido posterior autoriza commit, GitHub e frontend nas duas clínicas. Ressalva Auth
+preservada: baseline só impressão digital da linha, campos/causa não identificáveis;
+auditoria pertinente já examinada sem evidência concreta de alteração indevida.
+Logs de runtime não consultados. Não é incidente confirmado nem mudança comprovadamente
+inofensiva. A limitação histórica, por si só, deixa de impedir esta publicação
+conforme decisão explícita do usuário. Nenhuma conta, sessão ou permissão restaurada.
+Base local/remota e última publicação das duas clínicas: eff05f60e07c4042bbb931d1c14d19432612d01d.
+Branch codex/resgate-local-2026-09-26; Git automático habilitado nas duas clínicas,
+repositório eduardocampusti/clinica-patricia, Vite/Node22/build/dist existentes.
+Backend confirmado ACTIVE: equipe-recursos v3, equipe-fichas v3, equipe-acessos v8;
+sem reaplicar migrations ou funções. Cinco bloqueios finitos até06/10/2027 mantidos.
+Seleção94 referências conferida por hashes, sem mudança posterior de código/dependências.
+Tipos/build/lint (0 erros,16 avisos),5 unidades e4 UI sintéticas da cópia reaproveitados;
+28 conectados anteriores não repetidos. Commit/push/deploy ainda pendentes neste registro.
+Versão0.1.0 em desenvolvimento preservada: publicação do commit não cria tag/release.
+Outros trabalhos locais e trechos compartilhados excluídos do pacote são preservados.
+Próximo: commit exato na cópia, envio sem force, confirmação dos dois builds e leitura
+publicada nas sessões autorizadas. Resultado posterior pode permanecer só local.
+
+[Registro consolidado](<34-CONSOLIDACAO-HOMOLOGACAO-REAL.md>).

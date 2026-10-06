@@ -9,8 +9,11 @@ export default mergeConfig(base, defineConfig({
     if (!url.pathname.startsWith('/sistema/') || !['agenda', 'shell', 'cadastros'].includes(previa ?? '')) return next()
       // Só no Vite sintético: mantém as rotas reais ao navegar/recarregar o harness.
       try {
-        const entrada = previa === 'agenda' ? 'agenda-preview' : previa === 'cadastros' ? 'cadastros-contexto' : 'shell'
-        const html = await server.transformIndexHtml(req.url!, `<!doctype html><html lang="pt-BR"><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>Prévia isolada</title></head><body><div id="root"></div><script type="module" src="/tests/operacional/${entrada}.tsx"></script></body></html>`)
+        const demo = previa === 'cadastros' && url.searchParams.get('demo') === 'recursos'
+        const fichas = previa === 'cadastros' && url.searchParams.get('demo') === 'fichas'
+        const entrada = fichas ? 'equipe-fichas-demo' : demo ? 'equipe-recursos-demo' : previa === 'agenda' ? 'agenda-preview' : previa === 'cadastros' ? 'cadastros-contexto' : 'shell'
+        const aviso=fichas?'<aside style="padding:12px;font-family:system-ui">DEMONSTRAÇÃO SINTÉTICA33: somente fictícios. Fichas/documentos persistem apenas no navegador; sem banco, Storage ou RLS reais. Fotos/recebimento em memória. <button onclick="window.dispatchEvent(new Event(\'reiniciar-demo-fichas\'))">Reiniciar dados fictícios</button></aside>':''
+        const html = await server.transformIndexHtml(req.url!, `<!doctype html><html lang="pt-BR"><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>Prévia isolada</title></head><body>${aviso}<div id="root"></div><script type="module" src="/tests/operacional/${entrada}.tsx"></script></body></html>`)
         res.setHeader('Content-Type', 'text/html'); res.end(html)
       } catch (error) { next(error as Error) }
     })
