@@ -1,5 +1,71 @@
 # Equipe — índice do módulo
 
+
+## Etapas35–36 — publicação autorizada em preparação, 2026-10-06 16:06:15 -03:00
+
+O usuário autorizou commit, envio à branch codex/resgate-local-2026-09-26 e
+publicação do estado funcional nas aplicações existentes de Brotas e Ipupiara.
+**Não aprovou o acabamento visual: considera o design abaixo do esperado.**
+Nenhum redesenho nesta execução; nova proposta estética permanece pendente.
+Base local/remota e versão anterior dos dois destinos: 1b0fc2c13132ac72f13ef89c7c6c9bd04a79c813,
+0.1.0 em desenvolvimento. Git automático existente habilitado nos dois destinos,
+mesmo repositório/branch, Node22/Vite/build/dist; o push iniciará um deploy em cada.
+Pacote exclusivo35–36 preparado em cópia física, sem outras alterações locais.
+Migration20261006150000 já aplicada e incluída somente como registro versionado;
+nenhum SQL, backend, Auth, configuração ou documento armazenado será reaplicado.
+Leitura local real por Proprietário(a) em Brotas/Ipupiara concluída anteriormente;
+22 cenários sintéticos36 e negativas SQL com claims simuladas são evidências distintas.
+Outros JWTs, escritas reais, expiração, aparelho físico e vínculos individuais de
+serviços seguem limites. Tipos/build do pacote, commit/push/deploy e conferência
+publicada ainda pendentes neste registro; resultados posteriores ficarão locais
+para evitar outra publicação só por documentação. Caixa e outros módulos preservados.
+
+[Escopo, evidências e limites](<36-REFORMA-VISUAL-FICHAS.md>).
+
+
+## Estado atual35–36 — 06/10/2026, 15:17 -03:00
+
+Conferência somente por leitura concluída na aplicação normal5173, sessão real
+Proprietário(a), Brotas/Ipupiara: funcionário/profissional fictícios, todas as seções
+aplicáveis, documentos/histórico/acesso, papéis confirmados, atuação, editores
+cancelados, reabertura/troca/recarga. Desktop/celular emulado e quatro capturas
+fictícias atuais. Nenhum defeito concreto/novo código; testes sintéticos36 anteriores
+reaproveitados. Backend35 aplicado, frontend35–36 local não publicado. Sem escrita
+real/SQL/contas/permissões/commit/push/deploy. Outros JWTs/escritas/teclado físico/
+expiração/modelo de serviços individuais seguem limites. Aba Ipupiara/Visão geral
+preservada para avaliação humana; sem aprovação pessoal atribuída.
+[Matriz, capturas e limites36](36-REFORMA-VISUAL-FICHAS.md) e
+[conferência final35](35-ATUACAO-POR-CLINICA.md). Entradas datadas seguintes são históricas.
+
+## Etapa36 — reforma local das fichas, 06/10/2026, 14:57 -03:00
+
+[Reforma visual, ações, testes e roteiro](36-REFORMA-VISUAL-FICHAS.md).
+Integrada aos componentes normais: cabeçalho compacto, lateral/seletor móvel, seção
+única, documentos em lista e conservação de rascunhos/arquivos. Tipos/build/lint e
+22 cenários sintéticos distintos passaram; frontend35–36 ainda não publicado.
+Backend35 aplicado preservado, sem SQL ou escrita real nesta etapa. Última sessão
+normal5173 observada em login; documentos/histórico/acessos nas duas clínicas e
+revisão36 com sessão real pendentes. Controle de navegador indisponível no fim;
+capturas fictícias disponíveis, sem afirmar ficha real aberta. Próximo: entrada
+pessoal5173 e conferência somente por leitura. Histórico datado abaixo preservado.
+
+Atualização06/10/2026,13:09 -03:00: atuação35 conferida por leitura com sessão real
+Proprietário(a) em Brotas/Ipupiara, computador/celular simulado, reabertura/recarga.
+Backend aplicado e testes anteriores de claims simuladas preservados. Origem4182
+impediu serviços de fichas/acessos; preview5173 permitido aberto, aguarda login pessoal.
+[Estado atualizado35 e limites](35-ATUACAO-POR-CLINICA.md).
+
+## Etapa35 — atuação por clínica, 06/10/2026
+
+[Atuação, fontes, APIs e verificações](35-ATUACAO-POR-CLINICA.md).
+Integração local concluída e backend35 aplicado exclusivamente em xftnkusbyqzyvzrovroj.
+Sem publicação do frontend. Serviços individuais indisponíveis por modelo ausente.
+Atuação normal conferida; escritas e sessões reais dos demais perfis não verificadas.
+Regressão de documentos/histórico/acessos aguarda sessão na origem local5173.
+Histórico31–34 e demais alterações locais preservados.
+
+
+
 ## Equipe — listagem principal local, 05/10/2026
 
 Busca nome/cargo/profissão normalizada, filtros tipo/vínculo com limpeza, resumos por

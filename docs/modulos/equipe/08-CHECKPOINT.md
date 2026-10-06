@@ -1,5 +1,27 @@
 # Equipe — checkpoint da primeira entrega
 
+## Etapas35–36 — publicação autorizada em preparação, 2026-10-06 16:06:15 -03:00
+
+O usuário autorizou commit, envio à branch codex/resgate-local-2026-09-26 e
+publicação do estado funcional nas aplicações existentes de Brotas e Ipupiara.
+**Não aprovou o acabamento visual: considera o design abaixo do esperado.**
+Nenhum redesenho nesta execução; nova proposta estética permanece pendente.
+Base local/remota e versão anterior dos dois destinos: 1b0fc2c13132ac72f13ef89c7c6c9bd04a79c813,
+0.1.0 em desenvolvimento. Git automático existente habilitado nos dois destinos,
+mesmo repositório/branch, Node22/Vite/build/dist; o push iniciará um deploy em cada.
+Pacote exclusivo35–36 preparado em cópia física, sem outras alterações locais.
+Migration20261006150000 já aplicada e incluída somente como registro versionado;
+nenhum SQL, backend, Auth, configuração ou documento armazenado será reaplicado.
+Leitura local real por Proprietário(a) em Brotas/Ipupiara concluída anteriormente;
+22 cenários sintéticos36 e negativas SQL com claims simuladas são evidências distintas.
+Outros JWTs, escritas reais, expiração, aparelho físico e vínculos individuais de
+serviços seguem limites. Tipos/build do pacote, commit/push/deploy e conferência
+publicada ainda pendentes neste registro; resultados posteriores ficarão locais
+para evitar outra publicação só por documentação. Caixa e outros módulos preservados.
+
+[Resultado35–36](<36-REFORMA-VISUAL-FICHAS.md>).
+
+
 ## Equipe — listagem principal evoluída e verificada localmente, 2026-10-05 13:14:32 -03:00
 
 Etapa30 autorizada: busca local por nome/cargo/profissão sem acentos/caixa/espaços,

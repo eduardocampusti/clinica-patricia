@@ -1,7 +1,10 @@
-import { Fragment, useCallback, useEffect, useState, type FormEvent } from 'react'
+import { Fragment, useCallback, useEffect, useRef, useState, type FormEvent } from 'react'
+import type { EstadoRecursoFicha } from '../../components/cadastros/EquipeFotoPainel'
+import { mensagemAtuacao } from '../../lib/equipeAtuacao'
 import { supabase } from '../../lib/supabase'
 import { apenasDigitos, cpfValido, formatarCpf } from '../../lib/cpf'
 import { FeedbackAlert } from '../../components/feedback/FeedbackAlert'
+import { ConfirmacaoDialog } from '../../components/feedback/ConfirmacaoDialog'
 
 interface Especialidade {
   id: string
@@ -84,9 +87,12 @@ interface ProfissionaisProps {
   carregandoClinica: boolean
   souProprietaria: boolean
   podeGerenciarAgenda: boolean
+  profissionalAlvoId?: string
+  somenteHorarios?: boolean
+  onEstadoHorarios?: (s: EstadoRecursoFicha) => void
 }
 
-function Profissionais({ clinicaAtivaId, carregandoClinica, souProprietaria, podeGerenciarAgenda }: ProfissionaisProps) {
+function Profissionais({ clinicaAtivaId, carregandoClinica, souProprietaria, podeGerenciarAgenda, profissionalAlvoId, somenteHorarios, onEstadoHorarios }: ProfissionaisProps) {
   const [especialidades, setEspecialidades] = useState<Especialidade[]>([])
   const [profissionais, setProfissionais] = useState<Profissional[]>([])
   const [carregandoLista, setCarregandoLista] = useState(true)
@@ -113,15 +119,23 @@ function Profissionais({ clinicaAtivaId, carregandoClinica, souProprietaria, pod
   const [carregandoHorarios, setCarregandoHorarios] = useState(false)
   const [salvandoHorarios, setSalvandoHorarios] = useState(false)
   const [erroHorarios, setErroHorarios] = useState<string | null>(null)
+  const [horariosAlterados, setHorariosAlterados] = useState(false)
+  const [horariosConfirmados, setHorariosConfirmados] = useState(false)
+  const horarioGeracao = useRef(0)
+  const horariosAnteriores = useRef<unknown[]>([])
+  const envioHorarios = useRef(false)
+  const [confirmarHorarios, setConfirmarHorarios] = useState(false)
+  useEffect(() => { onEstadoHorarios?.({ ocupado: salvandoHorarios, alterado: horariosAlterados }); return () => onEstadoHorarios?.({ ocupado: false, alterado: false }) }, [onEstadoHorarios, salvandoHorarios, horariosAlterados])
 
   useEffect(() => {
+    if (somenteHorarios) return
     supabase
       .from('especialidades')
       .select('id, nome')
       .eq('ativo', true)
       .order('nome', { ascending: true })
       .then(({ data }) => setEspecialidades(data ?? []))
-  }, [])
+  }, [somenteHorarios])
 
   const carregarProfissionais = useCallback(async (clinicaId: string) => {
     setCarregandoLista(true)
@@ -185,6 +199,7 @@ function Profissionais({ clinicaAtivaId, carregandoClinica, souProprietaria, pod
   }, [])
 
   useEffect(() => {
+    if (somenteHorarios) return
     if (!clinicaAtivaId) {
       setProfissionais([])
       setDisponiveis([])
@@ -193,7 +208,7 @@ function Profissionais({ clinicaAtivaId, carregandoClinica, souProprietaria, pod
     }
     carregarProfissionais(clinicaAtivaId)
     if (souProprietaria) carregarDisponiveis(clinicaAtivaId)
-  }, [clinicaAtivaId, souProprietaria, carregarProfissionais, carregarDisponiveis])
+  }, [clinicaAtivaId, souProprietaria, carregarProfissionais, carregarDisponiveis, somenteHorarios])
 
   function abrirFormulario() {
     setForm(FORM_INICIAL)
@@ -345,13 +360,16 @@ function Profissionais({ clinicaAtivaId, carregandoClinica, souProprietaria, pod
     if (clinicaAtivaId) await carregarProfissionais(clinicaAtivaId)
   }
 
-  async function abrirHorarios(profissionalId: string) {
+  const abrirHorarios = useCallback(async (profissionalId: string) => {
     if (!clinicaAtivaId) return
+    const g = ++horarioGeracao.current
     setEditandoHorariosId(profissionalId)
     setErroHorarios(null)
     setCarregandoHorarios(true)
+    setHorariosConfirmados(false)
+    setHorariosAlterados(false)
 
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('disponibilidade_padrao')
       .select('id, dia_semana, hora_inicio, hora_fim')
       .eq('profissional_id', profissionalId)
@@ -359,36 +377,48 @@ function Profissionais({ clinicaAtivaId, carregandoClinica, souProprietaria, pod
       .eq('ativo', true)
       .order('dia_semana', { ascending: true })
 
+    if (g !== horarioGeracao.current) return
+    if (error) { setErroHorarios('Não foi possível consultar os horários. Reabra a configuração antes de editar.'); setLinhasHorarios([]); setCarregandoHorarios(false); return }
+    horariosAnteriores.current = data ?? []
+
     const linhas = (data ?? []).map((linha) => ({
       id: linha.id,
       diaSemana: linha.dia_semana,
       horaInicio: linha.hora_inicio.slice(0, 5),
       horaFim: linha.hora_fim.slice(0, 5),
     }))
-    setLinhasHorarios(linhas.length > 0 ? linhas : [novaLinhaHorario()])
+    setLinhasHorarios(linhas)
+    setHorariosConfirmados(true)
     setCarregandoHorarios(false)
-  }
+  }, [clinicaAtivaId])
+  useEffect(() => { if (somenteHorarios && profissionalAlvoId) void abrirHorarios(profissionalAlvoId); const invalidar = () => { horarioGeracao.current++ }; return invalidar }, [abrirHorarios, profissionalAlvoId, somenteHorarios])
 
   function fecharHorarios() {
+    setConfirmarHorarios(false)
+    setHorariosAlterados(false)
     setEditandoHorariosId(null)
     setErroHorarios(null)
   }
 
   function adicionarLinhaHorario() {
+    setHorariosAlterados(true)
     setLinhasHorarios((linhas) => [...linhas, novaLinhaHorario()])
   }
 
   function removerLinhaHorario(id: string) {
+    setHorariosAlterados(true)
     setLinhasHorarios((linhas) => linhas.filter((l) => l.id !== id))
   }
 
   function atualizarLinhaHorario(id: string, campo: 'diaSemana' | 'horaInicio' | 'horaFim', valor: string) {
+    setHorariosAlterados(true)
     setLinhasHorarios((linhas) =>
       linhas.map((l) => (l.id === id ? { ...l, [campo]: campo === 'diaSemana' ? Number(valor) : valor } : l)),
     )
   }
 
   async function salvarHorarios(profissionalId: string) {
+    if (!horariosConfirmados || salvandoHorarios || envioHorarios.current) return
     setErroHorarios(null)
 
     for (const linha of linhasHorarios) {
@@ -400,6 +430,18 @@ function Profissionais({ clinicaAtivaId, carregandoClinica, souProprietaria, pod
 
     if (!clinicaAtivaId) return
     setSalvandoHorarios(true)
+
+    if (somenteHorarios) {
+      envioHorarios.current = true
+      try {
+        const { data, error } = await supabase.rpc('equipe_atuacao_horarios_salvar', { p_profissional_id: profissionalId, p_clinica_id: clinicaAtivaId, p_anteriores: horariosAnteriores.current,
+          p_horarios: linhasHorarios.map(l => ({ dia_semana: l.diaSemana, hora_inicio: l.horaInicio, hora_fim: l.horaFim })) })
+        if (error || data !== true) { setErroHorarios(mensagemAtuacao(error, true)); setHorariosConfirmados(false); return }
+        setHorariosAlterados(false); setEditandoHorariosId(null)
+      } catch (e) { setErroHorarios(mensagemAtuacao(e, true)); setHorariosConfirmados(false) }
+      finally { envioHorarios.current = false; setSalvandoHorarios(false) }
+      return
+    }
 
     const { error: erroDelete } = await supabase
       .from('disponibilidade_padrao')
@@ -432,8 +474,15 @@ function Profissionais({ clinicaAtivaId, carregandoClinica, souProprietaria, pod
     }
 
     setSalvandoHorarios(false)
+    setHorariosAlterados(false)
     setEditandoHorariosId(null)
   }
+
+  if (somenteHorarios && profissionalAlvoId) return <div className="equipe-atuacao-horarios min-w-0 max-w-full">
+    <p>Horários habituais da clínica escolhida, no cadastro existente de Profissionais.</p>
+    {editandoHorariosId ? horariosConfirmados || carregandoHorarios || horariosAlterados ? <><PainelHorarios linhas={linhasHorarios} carregando={carregandoHorarios} salvando={salvandoHorarios} bloqueado={!horariosConfirmados} erro={erroHorarios} onAdicionar={adicionarLinhaHorario} onRemover={removerLinhaHorario} onAtualizar={atualizarLinhaHorario} onSalvar={() => void salvarHorarios(profissionalAlvoId)} onCancelar={() => horariosAlterados ? setConfirmarHorarios(true) : fecharHorarios()}/> {horariosAlterados && !horariosConfirmados && <p>O preenchimento foi preservado. Cancele com descarte explícito e reabra para conferir o resultado antes de outra gravação.</p>}</> : <FeedbackAlert variant="warning" title="Horários indisponíveis" description={erroHorarios ?? 'Reabra a configuração.'}/> : <p role="status">Editor fechado. Feche a configuração para atualizar o resumo da atuação.</p>}
+    <ConfirmacaoDialog open={confirmarHorarios} onOpenChange={setConfirmarHorarios} title="Descartar horários não salvos?" description="O preenchimento será descartado. Horários já confirmados serão preservados." confirmLabel="Descartar horários" tone="warning" disabled={salvandoHorarios} onConfirm={fecharHorarios}/>
+  </div>
 
   return (
     <div className="space-y-5">
@@ -925,6 +974,7 @@ function Profissionais({ clinicaAtivaId, carregandoClinica, souProprietaria, pod
 }
 
 interface PainelHorariosProps {
+  bloqueado?: boolean
   linhas: LinhaHorario[]
   carregando: boolean
   salvando: boolean
@@ -940,6 +990,7 @@ interface PainelHorariosProps {
 // tokens (--sombra-neutra, raio 18px) por ser um bloco separado do resto da
 // linha (01-DESIGN-SYSTEM.md §4 — sombra em vez de borda no card).
 function PainelHorarios({
+  bloqueado,
   linhas,
   carregando,
   salvando,
@@ -1021,7 +1072,7 @@ function PainelHorarios({
             <button
               type="button"
               onClick={onSalvar}
-              disabled={salvando}
+              disabled={salvando || bloqueado}
               className="rounded-xl bg-[var(--cor-primaria)] px-4 py-2 text-sm font-medium text-white transition hover:bg-[var(--cor-primaria-hover)] disabled:cursor-not-allowed disabled:opacity-70"
             >
               {salvando ? 'Salvando...' : 'Salvar horários'}

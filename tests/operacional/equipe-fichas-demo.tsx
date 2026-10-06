@@ -1,3 +1,4 @@
+import { simularAtuacao } from './equipe-atuacao-simulador';
 import { simularFicha, reiniciarFichaDemo } from './equipe-fichas-simulador';
 // Entry only in the existing isolated Vite test configuration. Never imported by src.
 import { comporRecebimento, mascararRecebimento, type DadosRecebimento } from '../../supabase/functions/_shared/equipeRecebimento';
@@ -35,6 +36,8 @@ let controleDemo: {
     ocupacional?: boolean;
     falha?: string;
     adiar?: boolean;
+    conta?: boolean;
+    papelConfirmado?: string | null;
 } = {};
 window.addEventListener('controle-demo-ficha', e => { controleDemo = { ...(e as CustomEvent).detail }; });
 const realFetch = window.fetch.bind(window);
@@ -46,10 +49,12 @@ window.fetch = async (input, init) => {
     if (url.hostname !== 'operacional.synthetic.invalid')
         throw new Error('Rede externa bloqueada na demonstração.');
     const json = (d: unknown, status = 200) => new Response(JSON.stringify(d), { status, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
+    const atuacao = await simularAtuacao(request.clone());
+    if (atuacao) return atuacao;
     if (url.pathname.endsWith('/functions/v1/equipe-fichas')) {
         if (controleDemo.adiar)
             await new Promise<void>(resolve => window.addEventListener('liberar-demo-ficha', () => resolve(), { once: true }));
-        return simularFicha(request, controleDemo);
+        return simularFicha(request, {...controleDemo,novosMembros:membros.slice(3).map(m=>m.id)});
     }
     if (url.pathname.endsWith('/auth/v1/user'))
         return json(user);
@@ -62,6 +67,15 @@ window.fetch = async (input, init) => {
     if (url.pathname.endsWith('/rpc/equipe_detalhar')) {
         const b = await request.json();
         return json({ ...membros.find(m => m.id === b.p_membro_id), cpf: null, cpf_situacao: 'ausente' });
+    }
+    if (url.pathname.endsWith('/rpc/equipe_salvar')) {
+        const b = await request.json();
+        // Only this explicitly synthetic initial-registration scenario is writable.
+        if (b.p_membro_id) return json({code:'42501'},403);
+        const anterior=membros.find(m=>m.id===b.p_chave_idempotencia);
+        if(anterior)return json(anterior.id);
+        membros.push({...membros[1],id:b.p_chave_idempotencia,nome_completo:b.p_dados.nome_completo,cargo:b.p_dados.cargo,tipo:b.p_dados.tipo,clinicas:clinicas.filter(c=>b.p_dados.clinicas_ids.includes(c.id))});
+        return json(b.p_chave_idempotencia);
     }
     if (url.pathname.endsWith('/rpc/equipe_fotos_listar')) {
         const b = await request.json();
@@ -82,7 +96,7 @@ window.fetch = async (input, init) => {
         const b = await request.json();
         if (b.acao !== 'listar')
             return json({ codigo: 'NAO_AUTORIZADO' }, 403);
-        return json({ membro_id: b.membroId, usuario_id: null, login_email: null, conta_confirmada: false, clinicas: clinicas.map(c => ({ ...c, usuario_id: null, ativo: false, status: 'sem_acesso', papel: null })), convites: [] });
+        return json({ membro_id: b.membroId, usuario_id: controleDemo.conta ? 'conta-ficticia' : null, login_email: null, conta_confirmada: false, clinicas: clinicas.map(c => ({ ...c, usuario_id: null, ativo: Boolean(controleDemo.conta), status: controleDemo.conta?'acesso_ativo':'sem_acesso', papel: controleDemo.conta ? (controleDemo.papelConfirmado===undefined?'recepcao':controleDemo.papelConfirmado) : null })), convites: [] });
     }
     if (url.pathname.endsWith('/functions/v1/equipe-recursos')) {
         try {

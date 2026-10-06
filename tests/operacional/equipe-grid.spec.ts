@@ -39,6 +39,11 @@ const selecionadas=(page:Page,n:number)=>expect(page.getByRole('status').filter(
 const todas=(page:Page)=>page.getByRole('checkbox',{name:'Selecionar todas as pessoas desta página',exact:true})
 const proxima=(page:Page)=>page.getByRole('button',{name:'Próxima página',exact:true})
 const busca=(page:Page)=>page.getByRole('searchbox',{name:'Buscar por nome, cargo ou profissão'})
+async function abrirAcessos(page:Page) {
+  const seletor=page.getByRole('combobox',{name:'Seção',exact:true})
+  if(await seletor.isVisible())await seletor.selectOption({label:'Acesso ao sistema'})
+  else await page.getByRole('navigation',{name:'Seções da ficha'}).getByRole('button',{name:'Acesso ao sistema',exact:true}).click()
+}
 
 test('ordena antes de paginar, cabeçalho e tamanhos 10/25/50; contagem filtrada por ID',async({page})=>{
   const e=await preparar(page);const consultas=e.leituras
@@ -95,11 +100,12 @@ test('ficha preserva página/filtro/foco; atualização simulada reduz resultado
   await proxima(page).click();await proxima(page).click();await proxima(page).click()
   expect((await ids(page))[0]).toBe('p31');await todas(page).check();await selecionadas(page,6)
   const ver=page.getByRole('button',{name:'Ver cadastro de Pessoa Sintética 31',exact:true});await ver.click()
+  await abrirAcessos(page)
   await expect(page.getByLabel('Papel de Clínica Brotas')).toHaveValue('recepcao')
   await expect(page.getByRole('button',{name:'Salvar papel',exact:true}).first()).toBeDisabled()
   await page.getByRole('button',{name:'Fechar',exact:true}).click();await expect(ver).toBeFocused()
   expect((await ids(page))[0]).toBe('p31');await selecionadas(page,6);await expect(busca(page)).toHaveValue('Sintética')
-  await ver.click();await page.getByLabel('Papel de Clínica Brotas').selectOption('medico');e.limite=12
+  await ver.click();await abrirAcessos(page);await page.getByLabel('Papel de Clínica Brotas').selectOption('medico');e.limite=12
   await page.getByRole('button',{name:'Salvar papel',exact:true}).first().click()
   await expect.poll(()=>e.leituras).toBeGreaterThan(consultas)
   await expect(page.getByLabel('Papel de Clínica Brotas')).toHaveValue('medico')

@@ -1,5 +1,18 @@
 # 12 — Diagnóstico de integridade e lições aprendidas
 
+## Registro transversal — Equipe35 aplicada, consolidação 2026-10-06 16:06:15 -03:00
+
+Evidência anterior06/10/2026,12:02–12:12: migration35 aplicada exclusivamente em
+xftnkusbyqzyvzrovroj. Três APIs, assinaturas, security definer/search_path, grants
+e dependências confirmados no catálogo, além do registro operacional na mesma
+transação. Nove SELECTs oficiais de verificar-integridade.sql passaram após35;
+baseline agregado de23 tabelas preservado. Fontes nas duas clínicas e18 negativas
+SQL com claims simuladas passaram em READ ONLY; não equivalem a outros JWTs reais.
+Nenhuma API anterior substituída. Nesta publicação só o arquivo já aplicado é
+versionado: sem SQL, nova investigação de Pacientes ou reaplicação.
+[Resultado anterior e limites35](../equipe/35-ATUACAO-POR-CLINICA.md).
+
+
 **Data:** 26/09/2026
 **Autor:** Eduardo (arquiteto) + Claude (senior engineer)
 **Escopo:** Módulo 2 — Pacientes

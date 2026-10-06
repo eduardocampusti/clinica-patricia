@@ -1,5 +1,82 @@
 # Equipe — documento funcional mestre
 
+
+Estado técnico posterior06/10/2026,15:17 -03:00: conferência de leitura35–36 concluída
+na aplicação normal5173 com sessão Proprietário(a), Brotas/Ipupiara. Funcionário e
+profissional fictícios, seções aplicáveis/documentos/histórico/acessos/atuação e
+reabertura/recarga corretos; desktop/celular emulado e foco conferidos. Nenhum defeito
+concreto ou regra alterada nesta rodada. Backend35 aplicado e frontend35–36 local
+não publicado. Outros JWTs/escritas/expiração/aparelho físico e serviços individuais
+seguem limites. [Evidência atual36](36-REFORMA-VISUAL-FICHAS.md).
+Estados técnicos datados seguintes são históricos; requisitos funcionais preservados.
+
+## Apresentação e navegação — etapa36 autorizada em06/10/2026
+
+A ficha apresenta uma seção principal por vez, com identificação/clínica compactas,
+navegação lateral no computador e seletor acessível Seção no celular. Visão geral
+reúne vínculos e resumos existentes autorizados, com pendências acionáveis; não
+carrega novos dados privados, CPF completo, recebimento ou indicadores inventados.
+Cadastro, contrato, conta, convite e acesso permanecem conceitos distintos.
+
+Dados pessoais, Contratos e jornada, Atuação e atendimentos, Formação e registros,
+Recebimento, Documentos, Acesso ao sistema e Histórico mantêm aplicabilidade e
+permissões anteriores; médico CLT tem acesso às áreas contratual e profissional.
+Consulta/edição preservam as unidades de gravação dos serviços. Navegar conserva
+rascunhos/arquivos em memória; sair protege descarte. Sem salvamento automático ou
+rascunhos privados persistidos no navegador. Novo cadastro mantém CPF opcional e,
+após confirmação, permite continuar na ficha criada mediante consulta autorizada.
+
+Documentos exibem categoria/escopo/versão/data/armazenamento/conferência em lista,
+Visualizar/Baixar acessíveis, demais ações identificadas e versões anteriores em
+área expansível. Documentos distintos não viram versões de um só. Envio conserva
+cancelamento, recuperação e estados confirmados/incertos sem percentual inventado.
+
+Estado técnico06/10/2026,14:57 -03:00: implementado e compilado localmente, com testes
+sintéticos pertinentes aprovados; sem publicação36. Conferência normal5173 aguarda
+sessão pessoal. Nenhuma mudança de regra de negócio, serviço backend ou permissão.
+Backend35 e suas evidências anteriores preservados; serviços individuais seguem sem
+modelo definido. [Resultado36 e limites](36-REFORMA-VISUAL-FICHAS.md).
+Os estados datados seguintes são históricos.
+
+Estado técnico posterior06/10/2026,13:09 -03:00: após autorização específica,
+migration35 aplicada no Supabase oficial pelo navegador interno autorizado nesta
+sessão. Objetos/registro/grants/integridade e preservação agregada de23 tabelas
+conferidos; fontes de duas clínicas e18 recusas passaram com claims simuladas.
+Atuação UI normal conferida por leitura com sessão Proprietário(a) nas duas clínicas,
+computador/celular simulado e recarga. Demais perfis/escritas não verificados; origem
+local4182 bloqueia Edge de fichas/acessos, preview5173 aguarda entrada pessoal.
+Regras funcionais abaixo preservadas; sem mudança visual/backend nesta rodada.
+[Conferência35 e limites](35-ATUACAO-POR-CLINICA.md).
+
+## Atuação e atendimentos — etapa35 autorizada em06/10/2026
+
+A ficha profissional reúne a atuação por unidade, reutilizando IDs/vínculos
+existentes. Pessoa, profissão, contrato, empregador, unidade, login e papel permanecem
+independentes. A clínica da seção não muda o contexto geral do aplicativo.
+
+Mostrar origem efetiva da duração, preço, participação e disponibilidade. Agenda
+utiliza duração global do profissional; edição exige administração de todos os
+vínculos conforme permissões existentes. Preço da consulta pertence ao vínculo
+profissional/clínica. Participação segue regra vigente da clínica, somente consultada
+nesta ficha. Alterar configuração não remarca horários nem recalcula valores históricos.
+
+Reutilizar editor de horários com profissional/unidade corretos; jornada contratual
+é distinta da disponibilidade. Folgas, bloqueios e conflitos continuam na Agenda.
+Catálogo por unidade não equivale a serviços individuais: enquanto não existir modelo
+aprovado de vínculo/permissões, sua configuração permanece indisponível, sem atribuição
+automática. PIX/conta permanecem em Recebimento e não executam pagamentos.
+
+Conferir autorização no servidor; manter preenchimento em falha, distinguir ausência
+de indisponibilidade e exigir reconsulta/descarte explícito após escrita incerta.
+Preservar funcionalidades31–33, histórico, filtros e responsividade. Sem redesenho total.
+
+Estado técnico06/10/2026: implementação local validada; migration35 aplicada no
+Supabase autorizado. Teste conectado SQL somente leitura não equivale a login JWT
+real dos demais perfis ou persistência pela UI. Frontend35 não publicado.
+Fontes, provas e pendências no [relatório35](35-ATUACAO-POR-CLINICA.md).
+
+
+
 ## Fichas ampliadas — etapa33 autorizada em05/10/2026
 
 Pessoa, cargo/profissão, empresa contratante, contrato, unidades, login e acesso são

@@ -38,6 +38,7 @@ async function gravar(s: EstadoSimulado) { const db = await banco(); return new 
 let fila = Promise.resolve();
 export async function reiniciarFichaDemo() { await gravar(inicial()); }
 export async function simularFicha(request: Request, opcoes: {
+    novosMembros?: string[];
     papel?: string;
     permitidas?: string[];
     ocupacional?: boolean;
@@ -55,6 +56,7 @@ export async function simularFicha(request: Request, opcoes: {
     }
 }
 async function executar(request: Request, opcoes: {
+    novosMembros?: string[];
     papel?: string;
     permitidas?: string[];
     ocupacional?: boolean;
@@ -71,7 +73,7 @@ async function executar(request: Request, opcoes: {
         b = await request.json();
     const membro = String(b.membroId), clinica = String(b.clinicaId);
     const permitidas = opcoes.permitidas ?? [UNIDADE_A, UNIDADE_B], pode = (u: string[]) => u.every(id => permitidas.includes(id)), s = await ler();
-    if (opcoes.papel && opcoes.papel !== 'proprietaria' || ![MID, FUNC, MED_CLT].includes(membro) || !permitidas.includes(clinica))
+    if (opcoes.papel && opcoes.papel !== 'proprietaria' || ![MID, FUNC, MED_CLT, ...(opcoes.novosMembros ?? [])].includes(membro) || !permitidas.includes(clinica))
         return json({ codigo: 'NAO_AUTORIZADO' }, 403);
     const records = s.registros.filter(r => r.membro_id === membro && r.unidades.includes(clinica) && pode(r.unidades)), docs = s.documentos.filter(d => d.membro_id === membro && d.unidades.includes(clinica) && pode(d.unidades) && (!d.ocupacional || opcoes.ocupacional));
     const ficha: FichaCompleta = { membro_id: membro, clinica_id: clinica, pode_global: pode([UNIDADE_A, UNIDADE_B]), pode_ocupacional: opcoes.ocupacional ?? false, ocupacional_unidades: opcoes.ocupacional ? permitidas : [], registros: records, empresas: s.registros.filter(r => r.tipo === 'empresa' && r.unidades.includes(clinica) && pode(r.unidades)), documentos: docs, historico: s.eventos.filter(e => records.some(r => r.id === e.registro_id) || docs.some(d => d.id === e.registro_id)) };

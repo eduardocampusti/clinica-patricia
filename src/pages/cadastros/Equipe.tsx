@@ -4,9 +4,11 @@ import { FeedbackAlert } from '../../components/feedback/FeedbackAlert'
 import { ModalBase } from '../../components/ModalBase'
 import './equipe.css'
 import { EquipeListagem } from './EquipeListagem'
+import { EquipeAvatar } from '../../components/cadastros/EquipeAvatar'
 import { EquipeFotoPainel, type EstadoRecursoFicha } from '../../components/cadastros/EquipeFotoPainel'
 import { EquipeRecebimentoPainel } from '../../components/cadastros/EquipeRecebimentoPainel'
 import { useEquipeFotos } from '../../components/cadastros/useEquipeFotos'
+import { EquipeAtuacaoPainel } from '../../components/cadastros/EquipeAtuacaoPainel'
 import { EquipeFichaAmpliada } from '../../components/cadastros/EquipeFichaAmpliada'
 import { filtrarEquipe } from '../../lib/equipeLista'
 import { supabase } from '../../lib/supabase'
@@ -43,6 +45,7 @@ interface FichaMembroProps extends AtualizacaoAcessoEquipe {
   indisponivel: boolean
   souProprietaria: boolean
   onFechar: () => void
+  onEditar: () => void
   fotos: ReturnType<typeof useEquipeFotos>
 }
 
@@ -121,7 +124,7 @@ function SeletorNovoPapel({ nome, value, disabled, onChange }: { nome: string; v
   </select>
 }
 
-function AcessoEquipePainel({ membro, clinicaAtivaId, souProprietaria, onConsultaAcesso, onOperacaoAcesso }: { membro: MembroEquipe; clinicaAtivaId: string | null; souProprietaria: boolean } & AtualizacaoAcessoEquipe) {
+function AcessoEquipePainel({ membro, clinicaAtivaId, souProprietaria, onConsultaAcesso, onOperacaoAcesso, onEstado }: { membro: MembroEquipe; clinicaAtivaId: string | null; souProprietaria: boolean; onEstado?: (estado: EstadoRecursoFicha) => void } & AtualizacaoAcessoEquipe) {
   const [acesso, setAcesso] = useState<AcessoEquipe | null>(null)
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState<string | null>(null)
@@ -133,6 +136,10 @@ function AcessoEquipePainel({ membro, clinicaAtivaId, souProprietaria, onConsult
   const salvandoPapel = useRef(false)
   const enviandoAcesso = useRef<number | null>(null)
   const [operacao, setOperacao] = useState<string | null>(null)
+  const escopoInicial = acesso?.usuario_id === null && acesso.clinicas.some(c=>c.id===clinicaAtivaId && c.status==='sem_acesso') ? {[clinicaAtivaId!]:''} : {}
+  const acessoAlterado = JSON.stringify(Object.entries(escopo).sort()) !== JSON.stringify(Object.entries(escopoInicial).sort()) || modo !== 'convite' || email !== (membro.email_contato ?? '')
+    || Object.entries(papeisEditados).some(([id,papel])=>papel !== acesso?.clinicas.find(c=>c.id===id)?.papel)
+  useEffect(()=>{onEstado?.({ocupado:Boolean(operacao),alterado:acessoAlterado});return()=>onEstado?.({ocupado:false,alterado:false})},[onEstado,operacao,acessoAlterado])
   const [mensagem, setMensagem] = useState<string | null>(null)
   const [resultadoIncerto, setResultadoIncerto] = useState(false)
   const avisoRef = useRef<HTMLDivElement>(null)
@@ -409,24 +416,34 @@ function AcessoEquipePainel({ membro, clinicaAtivaId, souProprietaria, onConsult
   </div>
 }
 
-function FichaMembro({ membro, detalhe, clinicaAtivaId, carregando, erro, indisponivel, souProprietaria, onFechar, onConsultaAcesso, onOperacaoAcesso, fotos }: FichaMembroProps) {
+function FichaMembro({ membro, detalhe, clinicaAtivaId, carregando, erro, indisponivel, souProprietaria, onFechar, onConsultaAcesso, onOperacaoAcesso, fotos, onEditar }: FichaMembroProps) {
   const [fotoEstado,setFotoEstado]=useState<EstadoRecursoFicha>({ocupado:false,alterado:false})
   const [recebimentoEstado,setRecebimentoEstado]=useState<EstadoRecursoFicha>({ocupado:false,alterado:false})
   const [ampliadaEstado,setAmpliadaEstado]=useState<EstadoRecursoFicha>({ocupado:false,alterado:false})
+  const [atuacaoEstado,setAtuacaoEstado]=useState<EstadoRecursoFicha>({ocupado:false,alterado:false})
+  const [acessoEstado,setAcessoEstado]=useState<EstadoRecursoFicha>({ocupado:false,alterado:false})
   const [confirmarSaida,setConfirmarSaida]=useState(false)
-  const ocupado=fotoEstado.ocupado||recebimentoEstado.ocupado||ampliadaEstado.ocupado
-  function fechar(){if(ocupado)return;if(fotoEstado.alterado||recebimentoEstado.alterado||ampliadaEstado.alterado)setConfirmarSaida(true);else onFechar()}
-  return <ModalBase titulo={`Ficha de ${membro.nome_completo}`} subtitulo={`${rotuloTipoEquipe((detalhe ?? membro).tipo)} · ${textoFicha((detalhe ?? membro).cargo)}`} onFechar={fechar} ocupado={ocupado} largura="xl" className="equipe-modal">
+  const [acaoSaida,setAcaoSaida]=useState<'fechar'|'editar'>('fechar')
+  const ocupado=fotoEstado.ocupado||recebimentoEstado.ocupado||ampliadaEstado.ocupado||atuacaoEstado.ocupado||acessoEstado.ocupado
+  const alterado=fotoEstado.alterado||recebimentoEstado.alterado||ampliadaEstado.alterado||atuacaoEstado.alterado||acessoEstado.alterado
+  useEffect(()=>{if(!alterado)return;const proteger=(e:BeforeUnloadEvent)=>{e.preventDefault();e.returnValue=''};window.addEventListener('beforeunload',proteger);return()=>window.removeEventListener('beforeunload',proteger)},[alterado])
+  function fechar(){setAcaoSaida('fechar');if(ocupado)return;if(alterado)setConfirmarSaida(true);else onFechar()}
+  function editar(){if(ocupado)return;setAcaoSaida('editar');if(alterado)setConfirmarSaida(true);else onEditar()}
+  const ampliadaDisponivel=!carregando&&!erro&&!indisponivel&&detalhe&&!membro.origem_legada&&clinicaAtivaId&&souProprietaria
+  return <ModalBase titulo={`Ficha de ${membro.nome_completo}`} subtitulo={`${rotuloTipoEquipe((detalhe ?? membro).tipo)} · ${textoFicha((detalhe ?? membro).cargo)} · ${(detalhe ?? membro).clinicas.find(c=>c.id===clinicaAtivaId)?.nome ?? 'Clínica selecionada'}`}  onFechar={fechar} ocupado={ocupado} largura="xl" className={`equipe-modal${ampliadaDisponivel?' equipe-ficha-workspace':''}`}>
+    {ampliadaDisponivel && <div className="equipe-ficha-retrato"><EquipeAvatar membroId={membro.id} clinicaId={clinicaAtivaId} nome={membro.nome_completo} foto={fotos.fotos[membro.id]}/></div>}
     {carregando && <div role="status" aria-busy="true" className="space-y-3" data-testid="ficha-carregando"><div className="h-5 w-2/3 animate-pulse rounded bg-[var(--fundo-pagina)]" /><div className="h-20 animate-pulse rounded-lg bg-[var(--fundo-pagina)]" /><p className="text-sm text-[var(--texto-secundario)]">Carregando dados autorizados da ficha…</p></div>}
     {!carregando && erro && <div className="space-y-4" data-testid="ficha-erro"><FeedbackAlert variant="destructive" title="Não foi possível carregar a ficha" description={erro} urgent /><FichaResumo membro={membro} detalhe={null} clinicaAtivaId={clinicaAtivaId} /></div>}
     {!carregando && !erro && indisponivel && <div className="space-y-4" data-testid="ficha-indisponivel"><FeedbackAlert variant="warning" title="Dados ampliados indisponíveis" description="Os dados completos não estão disponíveis agora. A ficha mostra as informações já confirmadas para esta pessoa." /><FichaResumo membro={membro} detalhe={null} clinicaAtivaId={clinicaAtivaId} /></div>}
     {!carregando && !erro && !indisponivel && detalhe && (!membro.origem_legada&&clinicaAtivaId&&souProprietaria?<EquipeFichaAmpliada key={`completa:${membro.id}:${clinicaAtivaId}`} detalhe={detalhe} clinicaId={clinicaAtivaId} clinicas={detalhe.clinicas} onEstado={setAmpliadaEstado}
+      atuacao={<EquipeAtuacaoPainel membroId={membro.id} clinicaId={clinicaAtivaId} clinicas={detalhe.clinicas} onEstado={setAtuacaoEstado}/>}
+      cadastroAcao={<button type="button" disabled={ocupado} onClick={editar}>Editar cadastro básico</button>}
       resumo={<FichaResumo membro={membro} detalhe={detalhe} clinicaAtivaId={clinicaAtivaId}/>}
       foto={<EquipeFotoPainel key={`foto:${membro.id}:${clinicaAtivaId}`} membroId={membro.id} nome={membro.nome_completo} clinicaId={clinicaAtivaId} meta={fotos.metas[membro.id]} foto={fotos.fotos[membro.id]} erroConsulta={fotos.erro} carregando={fotos.carregando} onReconsultar={fotos.reconsultar} onEstado={setFotoEstado}/>}
       recebimento={onSituacao=><EquipeRecebimentoPainel key={`recebimento:${membro.id}:${clinicaAtivaId}`} membroId={membro.id} clinicaId={clinicaAtivaId} clinicas={detalhe.clinicas} onEstado={setRecebimentoEstado} onSituacao={onSituacao}/>}
-      acessos={<section aria-labelledby="ficha-acesso-titulo" data-testid="ficha-secao-acesso"><h3 id="ficha-acesso-titulo" className="mb-3 text-base font-semibold">Acesso ao sistema</h3><AcessoEquipePainel membro={membro} clinicaAtivaId={clinicaAtivaId} souProprietaria={souProprietaria} onConsultaAcesso={onConsultaAcesso} onOperacaoAcesso={onOperacaoAcesso}/></section>}/>:<FichaResumo membro={membro} detalhe={detalhe} clinicaAtivaId={clinicaAtivaId}/>)}
+      acessos={<section aria-label="Gestão de acessos" data-testid="ficha-secao-acesso"><AcessoEquipePainel onEstado={setAcessoEstado} membro={membro} clinicaAtivaId={clinicaAtivaId} souProprietaria={souProprietaria} onConsultaAcesso={onConsultaAcesso} onOperacaoAcesso={onOperacaoAcesso}/></section>}/>:<FichaResumo membro={membro} detalhe={detalhe} clinicaAtivaId={clinicaAtivaId}/>)}
     {!carregando && (erro||indisponivel||!detalhe||membro.origem_legada||!clinicaAtivaId||!souProprietaria) && <section className="mt-6" aria-labelledby="ficha-acesso-titulo" data-testid="ficha-secao-acesso"><h3 id="ficha-acesso-titulo" className="mb-3 text-base font-semibold">Acesso ao sistema</h3><AcessoEquipePainel membro={membro} clinicaAtivaId={clinicaAtivaId} souProprietaria={souProprietaria} onConsultaAcesso={onConsultaAcesso} onOperacaoAcesso={onOperacaoAcesso} /></section>}
-    <ConfirmacaoDialog open={confirmarSaida} onOpenChange={setConfirmarSaida} title="Descartar alterações desta ficha?" description="Os rascunhos e arquivos selecionados ainda não salvos serão descartados. Dados já confirmados serão preservados." confirmLabel="Descartar e fechar" tone="warning" onConfirm={onFechar} disabled={ocupado}/>
+    <ConfirmacaoDialog open={confirmarSaida} onOpenChange={setConfirmarSaida} title="Descartar alterações desta ficha?" description="Os rascunhos e arquivos selecionados ainda não salvos serão descartados. Dados já confirmados serão preservados." confirmLabel="Descartar e fechar" tone="warning" onConfirm={acaoSaida==='editar'?onEditar:onFechar} disabled={ocupado}/>
   </ModalBase>
 }
 
@@ -482,6 +499,8 @@ function Equipe({ clinicaAtivaId, souProprietaria }: EquipeProps) {
   const [salvando, setSalvando] = useState(false)
   const [erroForm, setErroForm] = useState<string | null>(null)
   const [campoErro, setCampoErro] = useState<CampoFormularioEquipe | null>(null)
+  const [novoMembroId,setNovoMembroId]=useState<string|null>(null)
+  const [continuando,setContinuando]=useState(false)
   const [sucesso, setSucesso] = useState<string | null>(null)
   const [formAlterado, setFormAlterado] = useState(false)
   const [confirmandoDescarte, setConfirmandoDescarte] = useState(false)
@@ -635,6 +654,7 @@ function Equipe({ clinicaAtivaId, souProprietaria }: EquipeProps) {
     setErroForm(null)
     setCampoErro(null)
     setSucesso(null)
+    setNovoMembroId(null)
     setBusca('')
     setTipo('')
     setClinicaFiltro('')
@@ -667,7 +687,7 @@ function Equipe({ clinicaAtivaId, souProprietaria }: EquipeProps) {
     setFichaIndisponivel(false)
   }
 
-  async function abrirFicha(membro: MembroEquipe) {
+  async function abrirFicha(membro: MembroEquipe, confirmado?: DetalheMembroEquipe) {
     const contexto = clinicaAtivaId
     if (!contexto) return
     const requisicao = ++fichaSequencia.current
@@ -676,6 +696,8 @@ function Equipe({ clinicaAtivaId, souProprietaria }: EquipeProps) {
     setErroFicha(null)
     setFichaIndisponivel(false)
     setCarregandoFicha(!membro.origem_legada)
+
+    if(confirmado?.id===membro.id){setDetalheFicha(confirmado);setCarregandoFicha(false);return}
 
     // O modo legado só dispõe dos campos já retornados pela consulta antiga.
     // Não fazemos uma segunda consulta para tentar completar dados ausentes.
@@ -735,7 +757,7 @@ function Equipe({ clinicaAtivaId, souProprietaria }: EquipeProps) {
     setCampoErro(null)
     const dados = montarDadosEquipe(form)
     try {
-      const { error: salvarErro, status } = await supabase.rpc('equipe_salvar', {
+      const { data: membroSalvo, error: salvarErro, status } = await supabase.rpc('equipe_salvar', {
         p_membro_id: editandoId, p_clinica_contexto_id: clinicaAtivaId, p_revisao_esperada: form.revisao, p_dados: dados,
         p_chave_idempotencia: form.chaveIdempotencia,
       })
@@ -743,6 +765,7 @@ function Equipe({ clinicaAtivaId, souProprietaria }: EquipeProps) {
         setErroForm(salvarErro.code === '40001' ? mensagemErro(salvarErro) : mensagemVinculoInativoEquipe(salvarErro, status) ?? erroEquipeSeguro(salvarErro, true, status).mensagem)
         return
       }
+      setNovoMembroId(!editandoId && typeof membroSalvo === 'string' && /^[0-9a-f-]{36}$/i.test(membroSalvo) ? membroSalvo : null)
       const mensagemSucesso = editandoId ? 'Cadastro atualizado com sucesso.' : 'Funcionário cadastrado com sucesso.'
       limparFormulario()
       await carregar()
@@ -778,6 +801,18 @@ function Equipe({ clinicaAtivaId, souProprietaria }: EquipeProps) {
     setForm(formularioEquipeVazio(clinicaAtivaId))
   }
 
+  async function continuarCadastro(){
+    if(!novoMembroId||!clinicaAtivaId||continuando)return
+    const id=novoMembroId, contexto=clinicaAtivaId, geracao=fichaSequencia.current
+    setContinuando(true)
+    try{
+      const {detalhe,error}=await consultarDetalheEquipe(id,contexto)
+      if(geracao!==fichaSequencia.current)return
+      if(error||!detalhe||detalhe.id!==id){setErro(mensagemErroFicha(error));return}
+      await abrirFicha(detalhe,detalhe)
+    }catch{if(geracao===fichaSequencia.current)setErro(mensagemErroFicha(null))}
+    finally{setContinuando(false)}
+  }
   return <div className="space-y-5" data-testid="equipe-modulo">
     {sucesso && <FeedbackAlert variant="success" title={sucesso} onClose={() => setSucesso(null)} autoDismissMs={6000} />}
     {compatibilidade && <FeedbackAlert
@@ -796,9 +831,10 @@ function Equipe({ clinicaAtivaId, souProprietaria }: EquipeProps) {
       bloqueado={compatibilidade || indisponivel} carregando={carregando} indisponivel={indisponivel}
       semPermissao={erro === erroEquipeSeguro(null, false, 403).mensagem} />
 
-    {visualizando && <FichaMembro key={`${visualizando.id}:${clinicaAtivaId}`} fotos={fotos} membro={visualizando} detalhe={detalheFicha} clinicaAtivaId={clinicaAtivaId} carregando={carregandoFicha} erro={erroFicha} indisponivel={fichaIndisponivel} souProprietaria={souProprietaria} onFechar={fecharFicha} onConsultaAcesso={registrarConsultaAcesso} onOperacaoAcesso={atualizarAposOperacaoAcesso} />}
+    {novoMembroId && <button type="button" className="equipe-continuar-cadastro" disabled={continuando} onClick={()=>void continuarCadastro()}>{continuando?'Abrindo ficha…':'Continuar na ficha criada'}</button>}
+    {visualizando && <FichaMembro key={`${visualizando.id}:${clinicaAtivaId}`} fotos={fotos} membro={visualizando} detalhe={detalheFicha} clinicaAtivaId={clinicaAtivaId} carregando={carregandoFicha} erro={erroFicha} indisponivel={fichaIndisponivel} souProprietaria={souProprietaria} onFechar={fecharFicha} onEditar={()=>{const membro=visualizando;fecharFicha();void abrirEdicao(membro)}} onConsultaAcesso={registrarConsultaAcesso} onOperacaoAcesso={atualizarAposOperacaoAcesso} />}
 
-    {form && <ModalBase titulo={editandoId ? 'Editar membro da equipe' : 'Novo membro da equipe'} subtitulo={editandoId ? form.nomeCompleto : 'Cadastre a pessoa e os vínculos com as clínicas.'} onFechar={fecharFormulario} ocupado={salvando} largura="xl" className="equipe-modal"><form ref={formRef} aria-label={editandoId ? 'Editar membro da equipe' : 'Novo membro da equipe'} onSubmit={salvar} className="space-y-6">
+    {form && <ModalBase titulo={editandoId ? 'Editar membro da equipe' : 'Novo membro da equipe'} subtitulo={editandoId ? form.nomeCompleto : 'Cadastre a pessoa e os vínculos com as clínicas.'} onFechar={fecharFormulario} ocupado={salvando} largura="xl" className="equipe-modal equipe-cadastro-workspace"><form ref={formRef} aria-label={editandoId ? 'Editar membro da equipe' : 'Novo membro da equipe'} onSubmit={salvar} className="space-y-6">
       {erroForm && <FeedbackAlert variant="destructive" title="Revise o cadastro" description={erroForm} urgent />}
       <p className="equipe-orientacao text-sm text-[var(--texto-secundario)]">Salvar o cadastro não cria login nem concede acesso ao sistema.</p>
       {!editandoId&&<p className="equipe-orientacao text-sm text-[var(--texto-secundario)]">Para adicionar uma foto, salve o membro e abra sua ficha. Dados para recebimento ficam na ficha do profissional, separados deste cadastro.</p>}
