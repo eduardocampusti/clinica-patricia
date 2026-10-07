@@ -118,6 +118,30 @@ test('gestão sintética diferencia acesso ativo e sem acesso sem gravar no banc
   await expect(dialog.getByTestId('painel-gestao-acessos')).toContainText('O cadastro pode permanecer sem login')
 })
 
+test('fechar a ficha sem alteração não pede descarte quando o e-mail de login difere do contato', async ({ page }) => {
+  await interceptarFicha(page)
+  await page.goto('/tests/operacional/equipe-contexto.html')
+  await page.getByRole('button', { name: 'Ver cadastro de Dra. Saúde Sintética' }).click()
+  const dialog = page.getByRole('dialog', { name: /Dra\. Saúde Sintética/ })
+  // Login (login-membro-saude@…) diferente do contato (saude@…), já carregado no painel de acesso.
+  await expect(dialog.getByTestId('painel-gestao-acessos')).toContainText('login-membro-saude@synthetic.invalid')
+  await dialog.getByRole('button', { name: 'Fechar', exact: true }).click()
+  await expect(page.getByRole('alertdialog')).toHaveCount(0)
+  await expect(dialog).toHaveCount(0)
+  // Alteração real do e-mail de login continua protegida pelo aviso de descarte.
+  await page.getByRole('button', { name: 'Ver cadastro de Recepção Sintética' }).click()
+  const recepcao = page.getByRole('dialog', { name: /Recepção Sintética/ })
+  await expect(recepcao.getByTestId('painel-gestao-acessos')).toContainText('Iniciar acesso')
+  const seletor = recepcao.getByRole('combobox', { name: 'Seção', exact: true })
+  if (await seletor.isVisible()) await seletor.selectOption({ label: 'Acesso ao sistema' })
+  else await recepcao.getByRole('navigation', { name: 'Seções da ficha' }).getByRole('button', { name: 'Acesso ao sistema', exact: true }).click()
+  await recepcao.getByLabel('E-mail de login').fill('outro@synthetic.invalid')
+  await recepcao.getByRole('button', { name: 'Fechar', exact: true }).click()
+  await expect(page.getByRole('alertdialog')).toContainText('Descartar alterações desta ficha?')
+  await page.getByRole('button', { name: 'Cancelar', exact: true }).click()
+  await expect(recepcao.getByLabel('E-mail de login')).toHaveValue('outro@synthetic.invalid')
+})
+
 test('falha de leitura mostra erro compreensível sem detalhes técnicos', async ({ page }) => {
   await interceptarFicha(page)
   await page.goto('/tests/operacional/equipe-contexto.html')

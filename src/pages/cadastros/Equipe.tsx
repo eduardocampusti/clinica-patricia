@@ -129,6 +129,8 @@ function AcessoEquipePainel({ membro, clinicaAtivaId, souProprietaria, onConsult
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState<string | null>(null)
   const [email, setEmail] = useState(membro.email_contato ?? '')
+  // Referência do campo: o e-mail carregado (login ou contato), para não marcar alteração sem ação do usuário.
+  const [emailReferencia, setEmailReferencia] = useState(membro.email_contato ?? '')
   const [modo, setModo] = useState<ModoConcessaoEquipe>('convite')
   const [escopo, setEscopo] = useState<Record<string, PapelAcessoEquipe | ''>>({})
   const [papeisEditados, setPapeisEditados] = useState<Record<string, PapelAcessoEquipe>>({})
@@ -137,7 +139,7 @@ function AcessoEquipePainel({ membro, clinicaAtivaId, souProprietaria, onConsult
   const enviandoAcesso = useRef<number | null>(null)
   const [operacao, setOperacao] = useState<string | null>(null)
   const escopoInicial = acesso?.usuario_id === null && acesso.clinicas.some(c=>c.id===clinicaAtivaId && c.status==='sem_acesso') ? {[clinicaAtivaId!]:''} : {}
-  const acessoAlterado = JSON.stringify(Object.entries(escopo).sort()) !== JSON.stringify(Object.entries(escopoInicial).sort()) || modo !== 'convite' || email !== (membro.email_contato ?? '')
+  const acessoAlterado = JSON.stringify(Object.entries(escopo).sort()) !== JSON.stringify(Object.entries(escopoInicial).sort()) || modo !== 'convite' || email !== emailReferencia
     || Object.entries(papeisEditados).some(([id,papel])=>papel !== acesso?.clinicas.find(c=>c.id===id)?.papel)
   useEffect(()=>{onEstado?.({ocupado:Boolean(operacao),alterado:acessoAlterado});return()=>onEstado?.({ocupado:false,alterado:false})},[onEstado,operacao,acessoAlterado])
   const [mensagem, setMensagem] = useState<string | null>(null)
@@ -161,6 +163,7 @@ function AcessoEquipePainel({ membro, clinicaAtivaId, souProprietaria, onConsult
     setEscopo({})
     setModo('convite')
     setEmail(membro.email_contato ?? '')
+    setEmailReferencia(membro.email_contato ?? '')
     setOperacao(null)
     if (!souProprietaria || !clinicaAtivaId || membro.origem_legada) {
       setCarregando(false)
@@ -176,7 +179,9 @@ function AcessoEquipePainel({ membro, clinicaAtivaId, souProprietaria, onConsult
       }
       setAcesso(data)
       onConsultaAcesso(membro.id, clinicaAtivaId, data)
-      setEmail(data.login_email ?? membro.email_contato ?? '')
+      const emailCarregado = data.login_email ?? membro.email_contato ?? ''
+      setEmail(emailCarregado)
+      setEmailReferencia(emailCarregado)
       // A clínica do contexto fica indicada, mas nenhum papel é inferido do cadastro.
       setEscopo(data.usuario_id === null && data.clinicas.some((clinica) => clinica.id === clinicaAtivaId && clinica.status === 'sem_acesso') ? { [clinicaAtivaId]: '' } : {})
     }).catch(() => {
