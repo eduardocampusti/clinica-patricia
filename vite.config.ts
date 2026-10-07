@@ -29,7 +29,11 @@ function alteracoesLocais(): boolean | null {
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
+  resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) }, dedupe: ['react', 'react-dom'] },
+  // Cópias do projeto em scratch/ (algumas com node_modules próprio) ficam fora da varredura e da observação:
+  // sem isso o Vite pode carregar uma segunda cópia do React. Os configs de teste herdam estas opções.
+  optimizeDeps: { entries: ['**/*.html', '!**/scratch/**'] },
+  server: { watch: { ignored: ['**/scratch/**'] } },
   define: {
     __APP_BUILD_INFO__: JSON.stringify({ version, commit: commitCurto(), alteracoesLocais: alteracoesLocais(), compiladoEm: new Date().toISOString() }),
   },
