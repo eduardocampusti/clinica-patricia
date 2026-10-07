@@ -413,7 +413,7 @@
 .equipe-ficha-workspace .equipe-documentos-anteriores { margin-block:1rem;border-top:1px solid var(--borda); }
 .equipe-ficha-workspace .equipe-documentos-anteriores>summary { display:list-item;padding:.625rem 0; }
 .equipe-ficha-workspace .equipe-documento-arquivo { overflow-wrap:anywhere; }
-.equipe-modal.equipe-cadastro-workspace { max-width:1000px; }
+.equipe-modal.equipe-cadastro-workspace { max-width:960px; }
 .equipe-cadastro-workspace .equipe-orientacao { margin-block:.5rem; }
 
 /* Abaixo de 900px: menu em faixa horizontal rolável no topo. */
