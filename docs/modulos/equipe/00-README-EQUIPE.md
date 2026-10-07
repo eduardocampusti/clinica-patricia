@@ -1,6 +1,18 @@
 # Equipe — índice do módulo
 
 
+## Equipe38 — ficha do membro, Fase 2A (casca, Visão geral, Dados pessoais), 2026-10-07 -03:00
+
+Claude Code. Aprovada pelo usuário em 2026-10-07; commit local, **sem push/publicação**.
+Só apresentação: consultas, RLS, tipos, permissões, rotas, sidebar e topbar preservados.
+Cabeçalho de identidade (avatar “Gerenciar foto”, nome, selos, pendências, “Atualizar
+informações da ficha”, “Editar cadastro básico”), menu agrupado Pessoa/Trabalho/Sistema,
+Visão geral e Dados pessoais em cartões; abaixo de 640px o cabeçalho rola e o menu fica
+fixo. Demais seções com o conteúdo anterior (Contratos e Acesso na 2B; demais na 2C).
+Teste local: sem falha nova; “gestão sintética” corrigida (f95e7fa); helper da listagem
+sem corrida (c5935a2, 20/20). Financeiro 84/84 em ambiente isolado. Detalhes, decisões e
+verificações alteradas: [38-EVOLUCAO-VISUAL-FICHA.md](38-EVOLUCAO-VISUAL-FICHA.md).
+
 ## Equipe37 — listagem Equipe & acessos, Fase 1 rodada 2 local, 2026-10-06 -03:00
 
 Claude Code. Visual aprovado pelo usuário no computador e tema escuro; ajustes da

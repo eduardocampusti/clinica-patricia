@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode, type FormEvent } from 'react';
-import { LayoutDashboard, UserRound, BriefcaseBusiness, CalendarDays, GraduationCap, Wallet, Files, KeyRound, History, type LucideIcon } from 'lucide-react';
+import { createPortal } from 'react-dom';
+import { LayoutDashboard, UserRound, BriefcaseBusiness, CalendarDays, GraduationCap, Wallet, Files, KeyRound, History, RefreshCw, type LucideIcon } from 'lucide-react';
 import { Button } from '../ui/button';
 import { FeedbackAlert } from '../feedback/FeedbackAlert';
 import { ConfirmacaoDialog } from '../feedback/ConfirmacaoDialog';
@@ -10,9 +11,14 @@ import { camposDoTipo, gruposDoTipo, enderecoPeloCep, type OpcoesFicha } from '.
 import { EquipeDocumentosPainel } from './EquipeDocumentosPainel';
 import type { ClinicaEquipe, DetalheMembroEquipe } from '../../lib/equipe';
 import type { EstadoRecursoFicha } from './EquipeFotoPainel';
+import type { AcessoEquipe } from '../../lib/equipeAcessos';
+import { Selo } from './EquipeSelos';
+import { CabecalhoSecao } from './EquipeFichaUI';
+import { DadosPessoaisCartoes, VisaoGeral } from './EquipeFichaSecoes';
+import { secaoDaPendencia, type ResumoAtuacao, type ResumoRecebimento } from '../../lib/equipeApresentacao';
 const nomes: Record<TipoRegistroFicha, string> = { pessoal: 'dados pessoais', contrato: 'contrato', formacao: 'formação e registros', empresa: 'empresa contratante', checklist: 'checklist', ocupacional: 'acompanhamento ocupacional' };
 const defaults = (t: TipoRegistroFicha): Record<string, unknown> => t === 'pessoal' ? pessoalVazio() : t === 'contrato' ? contratoVazio() : t === 'formacao' ? formacaoVazia() : t === 'empresa' ? { nome: '', cnpj: '' } : t === 'checklist' ? checklistVazio() : { aso_data: '', proxima_avaliacao: '', responsavel: '', documento_id: '', capacitacoes: [] };
-function RegistroEditor({ tipo, atual, membro, clinica, clinicas, opcoes, referencia = null, permitido = true, onSalvo, onEstado }: {
+function RegistroEditor({ tipo, atual, membro, clinica, clinicas, opcoes, referencia = null, permitido = true, onSalvo, onEstado, apresentacao = 'completa', registrarAbrir }: {
     tipo: TipoRegistroFicha;
     atual?: RegistroFicha;
     membro: string;
@@ -23,6 +29,9 @@ function RegistroEditor({ tipo, atual, membro, clinica, clinicas, opcoes, refere
     permitido?: boolean;
     onSalvo: (r: RegistroFicha) => void;
     onEstado: (id: string, s: EstadoRecursoFicha) => void;
+    /** 'formulario': resumo e botão ficam no cartão da seção (que abre a edição por registrarAbrir); aqui só o formulário. */
+    apresentacao?: 'completa' | 'formulario';
+    registrarAbrir?: (abrir: () => void) => void;
 }) {
     const novoId = useRef(crypto.randomUUID());
     const ident = atual?.id ?? novoId.current;
@@ -32,6 +41,7 @@ function RegistroEditor({ tipo, atual, membro, clinica, clinicas, opcoes, refere
     dadosRef.current = dados;
     useEffect(() => { onEstado(ident, { alterado: sujo, ocupado }); return () => onEstado(ident, { alterado: false, ocupado: false }); }, [ident, sujo, ocupado, onEstado]);
     useEffect(() => () => { generation.current++; cepController.current?.abort(); }, []);
+    useEffect(() => { registrarAbrir?.(() => { setEditando(true); setSucesso(null); }); }, [registrarAbrir]);
     function mudar(novo: Record<string, unknown>) { setDados(novo); setSujo(true); setSucesso(null); setErro(null); }
     function cancelar() { setDados(structuredClone(atual?.dados ?? defaults(tipo))); setUnidades(atual?.unidades ?? referencia?.unidades ?? [clinica]); setSujo(false); setEditando(false); setConfirmar(false); setErro(null); setSucesso(null); setBloqueado(false); cepController.current?.abort(); setCepMsg(null); }
     async function salvar(e: FormEvent) {
@@ -95,7 +105,7 @@ function RegistroEditor({ tipo, atual, membro, clinica, clinicas, opcoes, refere
         }
     }
     return <div className="equipe-registro-editor" data-registro-tipo={tipo}>
-  {!permitido ? <p>Dados canônicos restritos: é necessário administrar todos os vínculos ativos desta pessoa.</p> : !editando ? <><ResumoRegistro tipo={tipo} dados={atual?.dados ?? null}/><button type="button" onClick={() => { setEditando(true); setSucesso(null); }}>{atual ? 'Editar' : 'Adicionar'} {nomes[tipo]}</button></> : <form onSubmit={salvar} aria-label={`Salvar ${nomes[tipo]}`}>
+  {!permitido ? <p>Dados canônicos restritos: é necessário administrar todos os vínculos ativos desta pessoa.</p> : !editando ? apresentacao === 'formulario' ? null : <><ResumoRegistro tipo={tipo} dados={atual?.dados ?? null}/><button type="button" onClick={() => { setEditando(true); setSucesso(null); }}>{atual ? 'Editar' : 'Adicionar'} {nomes[tipo]}</button></> : <form onSubmit={salvar} aria-label={`Salvar ${nomes[tipo]}`}>
    {tipo !== 'pessoal' && tipo !== 'formacao' && <UnidadesFicha clinicas={clinicas} unidades={unidades} disabled={ocupado || Boolean(atual) || Boolean(referencia)} onChange={v => { setUnidades(v); setSujo(true); }}/>}
    <CamposFicha campos={camposDoTipo(tipo)} dados={dados} onChange={mudar} opcoes={{ ...opcoes, unidades: opcoes.unidades.filter(([id]) => unidades.includes(id)) }} disabled={ocupado}/>
    {tipo === 'pessoal' && <><button type="button" disabled={ocupado || String(objeto(dados.endereco).cep).replace(/\D/g, '').length !== 8} onClick={() => void cep()}>Consultar CEP</button>{cepMsg && <p role="status">{cepMsg}</p>}<p>CPF, contatos e nome civil continuam no cadastro existente. E-mail de contato não altera login.</p></>}
@@ -212,26 +222,44 @@ function HistoricoFicha({ ficha, membro, clinica }: {
     }
     return <><p>Histórico administrativo do escopo autorizado. Não representa entrega de e-mails nem histórico de acessos completo.</p>{ficha.historico.length ? <ol className="equipe-ficha-historico">{ficha.historico.slice(0, 100).map(e => <li key={e.id}><time>{new Date(e.instante).toLocaleString('pt-BR')}</time><span>{e.tipo.replaceAll('_', ' ')} · versão {e.revisao} · responsável registrado</span>{ficha.registros.some(r => r.id === e.registro_id) && <button type="button" disabled={ocupado} onClick={() => void abrir(e.registro_id, e.revisao)}>Consultar versão {e.revisao}</button>}</li>)}</ol> : <p>Nenhum evento confirmado nesta consulta.</p>}{ocupado && <p role="status">Consultando versão autorizada…</p>}{erro && <FeedbackAlert variant="warning" title="Versão indisponível" description={erro}/>} {versao && <div className="equipe-ficha-item"><h4>Versão {versao.revisao} · somente leitura</h4><ResumoRegistro tipo={versao.tipo} dados={versao.dados}/><button type="button" onClick={() => setVersao(null)}>Fechar versão</button></div>}</>;
 }
-export function EquipeFichaAmpliada({ detalhe, clinicaId, clinicas, resumo, cadastroAcao, foto, recebimento, acessos, atuacao, onEstado }: {
+/** Abaixo de 640px quem rola é o diálogo (cabeçalho junto): a nova seção começa logo abaixo do menu fixo. */
+function rolarDialogoAteMenu(ampliada: HTMLElement | null) {
+    const dialogo = ampliada?.closest('dialog');
+    if (!ampliada || !dialogo || dialogo.scrollHeight <= dialogo.clientHeight) return;
+    const topo = ampliada.getBoundingClientRect().top - dialogo.getBoundingClientRect().top + dialogo.scrollTop;
+    if (dialogo.scrollTop > topo) dialogo.scrollTo({ top: topo });
+}
+const ICONES: Record<string, LucideIcon> = { resumo: LayoutDashboard, pessoal: UserRound, contratos: BriefcaseBusiness, atuacao: CalendarDays, formacao: GraduationCap, recebimento: Wallet, documentos: Files, acessos: KeyRound, historico: History };
+const ROTULOS: Record<string, string> = { resumo: 'Visão geral', pessoal: 'Dados pessoais', contratos: 'Contratos e jornada', atuacao: 'Atuação e atendimentos', formacao: 'Formação e registros', recebimento: 'Recebimento', documentos: 'Documentos', acessos: 'Acesso ao sistema', historico: 'Histórico' };
+export function EquipeFichaAmpliada({ detalhe, clinicaId, clinicas, acesso, foto, fotoAberta, onFecharFoto, recebimento, acessos, atuacao, onEstado, slotAcoes, slotPendencias, podeEditarCadastro, desabilitarEdicao = false, onEditarCadastro }: {
     detalhe: DetalheMembroEquipe;
     clinicaId: string;
     clinicas: ClinicaEquipe[];
-    resumo: ReactNode;
-    cadastroAcao?: ReactNode;
+    acesso?: AcessoEquipe | null;
     foto: ReactNode;
-    recebimento: (onSituacao: (s: 'configurado' | 'ausente' | 'indisponivel') => void) => ReactNode;
+    fotoAberta: boolean;
+    onFecharFoto: () => void;
+    recebimento: (onSituacao: (s: 'configurado' | 'ausente' | 'indisponivel') => void, onResumo: (r: ResumoRecebimento | null) => void) => ReactNode;
     acessos: ReactNode;
-    atuacao?: ReactNode;
+    atuacao?: (onResumo: (r: ResumoAtuacao | null) => void) => ReactNode;
     onEstado: (s: EstadoRecursoFicha) => void;
+    slotAcoes?: HTMLElement | null;
+    slotPendencias?: HTMLElement | null;
+    podeEditarCadastro: boolean;
+    desabilitarEdicao?: boolean;
+    onEditarCadastro?: () => void;
 }) {
     useEffect(() => { const body = document.body, html = document.documentElement; const anteriorBody = body.style.overflow, anteriorHtml = html.style.overflow; body.style.overflow = 'hidden'; html.style.overflow = 'hidden'; return () => { body.style.overflow = anteriorBody; html.style.overflow = anteriorHtml; }; }, []);
     const [ficha, setFicha] = useState<FichaCompleta | null>(null), [carregando, setCarregando] = useState(true), [erro, setErro] = useState<string | null>(null), [estados, setEstados] = useState<Record<string, EstadoRecursoFicha>>({}), [confirmar, setConfirmar] = useState(false), [autenticada, setAutenticada] = useState(true), [recebimentoSituacao, setRecebimentoSituacao] = useState<'configurado' | 'ausente' | 'indisponivel'>('indisponivel');
+    const [resumoAtuacao, setResumoAtuacao] = useState<ResumoAtuacao | null>(null), [resumoRecebimento, setResumoRecebimento] = useState<ResumoRecebimento | null>(null);
     const [secao, setSecao] = useState('resumo');
     const conteudo = useRef<HTMLDivElement>(null);
     const mudouSecao = useRef(false);
     const navegar = (id: string) => { mudouSecao.current = true; setSecao(id); };
-    useEffect(() => { if (mudouSecao.current) { conteudo.current?.scrollTo({top: 0}); conteudo.current?.querySelector<HTMLElement>(`[data-ficha-secao="${secao}"] h3`)?.focus({preventScroll:true}); mudouSecao.current = false; } }, [secao]);
+    useEffect(() => { if (mudouSecao.current) { conteudo.current?.scrollTo({top: 0}); rolarDialogoAteMenu(raiz.current); conteudo.current?.querySelector<HTMLElement>(`[data-ficha-secao="${secao}"] h3`)?.focus({preventScroll:true}); mudouSecao.current = false; } }, [secao]);
     const gen = useRef(0), raiz = useRef<HTMLDivElement>(null);
+    const abrirComplementar = useRef<(() => void) | null>(null);
+    const registrarAbrirComplementar = useCallback((abrir: () => void) => { abrirComplementar.current = abrir; }, []);
     const ocupado = Object.values(estados).some(s => s.ocupado), sujo = Object.values(estados).some(s => s.alterado);
     const estado = useCallback((id: string, s: EstadoRecursoFicha) => setEstados(a => a[id]?.ocupado === s.ocupado && a[id]?.alterado === s.alterado ? a : { ...a, [id]: s }), []);
     useEffect(() => { onEstado({ ocupado, alterado: sujo }); return () => onEstado({ ocupado: false, alterado: false }); }, [ocupado, sujo, onEstado]);
@@ -298,32 +326,40 @@ export function EquipeFichaAmpliada({ detalhe, clinicaId, clinicas, resumo, cada
     }, [detalhe.id, clinicaId]);
     const salvarLocal = useCallback((r: RegistroFicha) => { setFicha(f => f ? { ...f, [r.tipo === 'empresa' ? 'empresas' : 'registros']: [...(r.tipo === 'empresa' ? f.empresas : f.registros).filter(a => a.id !== r.id), r] } : f); void reconsultarHistorico(); }, [reconsultarHistorico]);
     const documentoLocal = useCallback((v: unknown) => { const d = conferirDocumento(v, detalhe.id); setFicha(f => f ? { ...f, documentos: [d, ...f.documentos.filter(a => a.id !== d.id).map(a => a.id === d.substitui_id ? { ...a, arquivado: true } : a)] } : f); void reconsultarHistorico(); }, [detalhe.id, reconsultarHistorico]);
-    const seccoes = [['resumo', 'Visão geral'], ['pessoal', 'Dados pessoais'], ['contratos', 'Contratos e jornada'], ...(detalhe.tipo === 'profissional_saude' ? [['atuacao', 'Atuação e atendimentos'], ['formacao', 'Formação e registros'], ['recebimento', 'Recebimento']] : []), ['documentos', 'Documentos'], ['acessos', 'Acesso ao sistema'], ['historico', 'Histórico']];
+    const saude = detalhe.tipo === 'profissional_saude';
+    // Mesmas seções e regras de exibição de antes; só o agrupamento visual do menu mudou.
+    const grupos: [string, string[]][] = [['Pessoa', ['resumo', 'pessoal', ...(saude ? ['formacao'] : [])]], ['Trabalho', ['contratos', ...(saude ? ['atuacao', 'recebimento'] : [])]], ['Sistema', ['documentos', 'acessos', 'historico']]];
     const opcoes: OpcoesFicha = { unidades: clinicas.map(c => [c.id, c.nome]), empresas: ficha?.empresas ?? [], documentos: ficha?.documentos.filter(d => !d.arquivado).map(d => [d.id, `${d.categoria.replaceAll('_', ' ')} · versão ${d.versao}`]) ?? [], registros: [] };
     const registro = (tipo: TipoRegistroFicha) => ficha?.registros.find(r => r.tipo === tipo);
     const props = { membro: detalhe.id, clinica: clinicaId, clinicas, opcoes, onSalvo: salvarLocal, onEstado: estado };
+    const pendencias = ficha ? pendenciasFicha(ficha, new Date().toLocaleDateString('sv-SE'), recebimentoSituacao) : [];
+    const pendenciasPorSecao = pendencias.reduce<Record<string, number>>((a, p) => { const s = secaoDaPendencia(p); a[s] = (a[s] ?? 0) + 1; return a; }, {});
+    const desabilitarConsulta = ocupado || carregando || !autenticada;
+    const atualizar = () => sujo ? setConfirmar(true) : void consultar();
+    const clinicaNome = clinicas.find(c => c.id === clinicaId)?.nome ?? 'Clínica selecionada';
     return <div className="equipe-ficha-ampliada" ref={raiz}>
-  <aside className="equipe-ficha-lateral"><nav aria-label="Seções da ficha" className="equipe-ficha-nav">{seccoes.map(([id, label]) => { const Icone: LucideIcon = ({resumo:LayoutDashboard,pessoal:UserRound,contratos:BriefcaseBusiness,atuacao:CalendarDays,formacao:GraduationCap,recebimento:Wallet,documentos:Files,acessos:KeyRound,historico:History} as Record<string,LucideIcon>)[id]; return <Button key={id} variant="ghost" type="button" aria-current={secao === id ? 'page' : undefined} aria-controls={`ficha-secao-${id}`} onClick={() => navegar(id)}><Icone size={17} aria-hidden="true"/><span>{label}</span></Button>; })}</nav><p className="equipe-ficha-contexto">{clinicas.find(c=>c.id===clinicaId)?.nome ?? 'Clínica selecionada'}<br/>Consulta no contexto desta clínica.</p></aside>
-  <div className="equipe-ficha-mobile"><label htmlFor="equipe-secao-atual">Seção</label><select id="equipe-secao-atual" value={secao} onChange={e=>navegar(e.target.value)}>{seccoes.map(([id,label])=><option key={id} value={id}>{label}</option>)}</select></div>
+  {slotAcoes && createPortal(<button type="button" className="equipe-icone-acao" aria-label="Atualizar informações da ficha" title="Atualizar informações da ficha" disabled={desabilitarConsulta} onClick={atualizar}><RefreshCw size={18} aria-hidden="true"/></button>, slotAcoes)}
+  {slotPendencias && pendencias.length > 0 && createPortal(<Selo tom="alerta" testId="ficha-total-pendencias">{pendencias.length} {pendencias.length === 1 ? 'pendência' : 'pendências'}</Selo>, slotPendencias)}
+  <aside className="equipe-ficha-lateral"><nav aria-label="Seções da ficha" className="equipe-ficha-nav">{grupos.map(([grupo, ids]) => <div key={grupo} className="equipe-ficha-nav-grupo" role="group" aria-labelledby={`ficha-grupo-${grupo}`}><p id={`ficha-grupo-${grupo}`} className="equipe-ficha-nav-rotulo">{grupo}</p>{ids.map(id => { const Icone = ICONES[id], n = pendenciasPorSecao[id] ?? 0; return <span key={id} className="contents"><Button variant="ghost" type="button" aria-current={secao === id ? 'page' : undefined} aria-controls={`ficha-secao-${id}`} aria-describedby={n ? `ficha-pendencias-${id}` : undefined} onClick={() => navegar(id)}><Icone size={17} aria-hidden="true"/><span>{ROTULOS[id]}</span>{n > 0 && <span className="equipe-ficha-nav-pilula" aria-hidden="true">{n}</span>}</Button>{n > 0 && <span id={`ficha-pendencias-${id}`} hidden>{n} {n === 1 ? 'pendência' : 'pendências'}</span>}</span>; })}</div>)}</nav></aside>
   <div className="equipe-ficha-conteudo" ref={conteudo}>
-  <section id="ficha-secao-resumo" data-ficha-secao="resumo" hidden={secao !== 'resumo'} tabIndex={-1}><h3 tabIndex={-1}>Visão geral</h3><p className="equipe-ficha-introducao">Vínculos, contratos e pendências das informações autorizadas.</p>
-   <h4>Vínculos com clínicas</h4><ul className="equipe-ficha-vinculos">{clinicas.map(c=><li key={c.id}><strong>{c.nome}</strong><span>{c.id===clinicaId?'Clínica selecionada':'Vínculo cadastral'}</span></li>)}</ul><p>Cadastro, contrato e acesso ao sistema são conferidos separadamente.</p>
-   {detalhe.tipo==='profissional_saude' && <div className="equipe-ficha-visao-linha"><div><h4>Atuação profissional</h4><p>{detalhe.profissao || 'Profissão não informada'} · {detalhe.especialidade_nome || 'Especialidade não informada'}</p></div><button type="button" onClick={()=>navegar('atuacao')}>Consultar atuação</button></div>}
-   {ficha && <div className="equipe-ficha-visao-linha"><div><h4>Contratos autorizados</h4>{ficha.registros.filter(r=>r.tipo==='contrato').length ? ficha.registros.filter(r=>r.tipo==='contrato').map(r=><p key={r.id}>{String(r.dados.cargo || 'Cargo não informado')} · {String(r.dados.vinculo || 'Vínculo não informado')} · {String(r.dados.situacao || 'Situação não informada')}</p>) : <p>Nenhum contrato retornado no escopo desta consulta.</p>}</div><button type="button" onClick={()=>navegar('contratos')}>Consultar contratos</button></div>}
-   <h4 className="mt-5 font-semibold">Pendências específicas</h4>{carregando ? <p role="status">Consultando informações adicionais…</p> : ficha ? <ul className="equipe-ficha-pendencias">{pendenciasFicha(ficha,new Date().toLocaleDateString('sv-SE'),recebimentoSituacao).map((p,i)=><li key={i}><span>{p}</span><button type="button" onClick={()=>navegar(p.startsWith('Documento')?'documentos':p.startsWith('Contrato')?'contratos':p.startsWith('Inscrição')?'formacao':'recebimento')}>Conferir<span className="sr-only">: {p}</span></button></li>)}{!pendenciasFicha(ficha,new Date().toLocaleDateString('sv-SE'),recebimentoSituacao).length && <li>Nenhuma pendência encontrada nos dados confirmados desta consulta.</li>}</ul> : <p>Pendências não consultadas. Falha de leitura não confirma ausência.</p>}{detalhe.tipo==='profissional_saude' && recebimentoSituacao==='indisponivel' && <p>Recebimento não consultado: configuração não confirmada nesta clínica.</p>}
-   <details className="equipe-ficha-ajuda"><summary>Sobre estas pendências</summary><p>A janela de próximos vencimentos é de 30 dias. As pendências não alteram acesso, atuação profissional ou situação contratual.</p></details><details className="equipe-ficha-ajuda"><summary>Gerenciar foto</summary>{foto}</details>
-  </section>
+  <div id="ficha-foto-painel" className="equipe-ficha-foto" hidden={!fotoAberta}><div className="equipe-cartao">{foto}<div className="equipe-ficha-foto-rodape"><button type="button" className="equipe-botao-secundario" onClick={onFecharFoto}>Ocultar foto</button></div></div></div>
+  {sujo && <p role="status" className="equipe-ficha-aviso">Há alterações não salvas. Trocar de seção preserva o preenchimento.</p>}
   {erro && <FeedbackAlert variant="warning" title="Informações adicionais indisponíveis" description={erro}/>}
-  <div className="equipe-ficha-reconsulta">{sujo && <p role="status">Há alterações não salvas. Trocar de seção preserva o preenchimento.</p>}<button type="button" disabled={ocupado || carregando || !autenticada} onClick={() => sujo ? setConfirmar(true) : void consultar()}>Reconsultar informações adicionais</button></div>
-  <section id="ficha-secao-pessoal" data-ficha-secao="pessoal" hidden={secao !== 'pessoal'} tabIndex={-1}><h3 tabIndex={-1}>Dados pessoais</h3>{cadastroAcao}{resumo}{ficha && <RegistroEditor key={`pessoal:${registro('pessoal')?.revisao ?? 0}:${gen.current}`} tipo="pessoal" atual={registro('pessoal')} permitido={ficha.pode_global} {...props}/>}</section>
+  <section id="ficha-secao-resumo" data-ficha-secao="resumo" hidden={secao !== 'resumo'} tabIndex={-1}><h3 tabIndex={-1}>Visão geral</h3><CabecalhoSecao descricao="Pendências e resumo das informações autorizadas nesta clínica."/>
+   <VisaoGeral detalhe={detalhe} clinicaId={clinicaId} clinicaNome={clinicaNome} ficha={ficha} carregando={carregando} autenticada={autenticada} desabilitarConsulta={desabilitarConsulta} pendencias={pendencias} rotulos={ROTULOS} recebimentoSituacao={recebimentoSituacao} resumoAtuacao={resumoAtuacao} resumoRecebimento={resumoRecebimento} acesso={acesso} saude={saude} navegar={navegar} onTentarNovamente={atualizar}/>
+  </section>
+  <section id="ficha-secao-pessoal" data-ficha-secao="pessoal" hidden={secao !== 'pessoal'} tabIndex={-1}><h3 tabIndex={-1}>Dados pessoais</h3><CabecalhoSecao descricao="Cadastro básico e dados complementares autorizados."/>
+   <DadosPessoaisCartoes detalhe={detalhe} clinicaId={clinicaId} clinicas={clinicas} ficha={ficha} carregando={carregando} podeEditarCadastro={podeEditarCadastro} desabilitarEdicao={desabilitarEdicao || ocupado} onEditarCadastro={onEditarCadastro} onEditarComplementar={ficha?.pode_global ? () => abrirComplementar.current?.() : undefined}
+    editorComplementar={ficha && <RegistroEditor key={`pessoal:${registro('pessoal')?.revisao ?? 0}:${gen.current}`} tipo="pessoal" atual={registro('pessoal')} permitido={ficha.pode_global} apresentacao="formulario" registrarAbrir={registrarAbrirComplementar} {...props}/>}/>
+  </section>
   <section id="ficha-secao-contratos" data-ficha-secao="contratos" hidden={secao !== 'contratos'} tabIndex={-1}><h3 tabIndex={-1}>Contratos e jornada</h3><p>Empresa contratante, contrato e unidades são independentes. Um contrato pode atender duas unidades; não são criados contratos automaticamente.</p>{ficha && <>
    <details className="equipe-ficha-grupo"><summary>Empresas contratantes autorizadas</summary>{!ficha.empresas.length && <p>Nenhuma empresa cadastrada. Informe somente a empresa real, após a definição responsável.</p>}{ficha.empresas.map(r => <RegistroEditor key={r.id + ':' + r.revisao} tipo="empresa" atual={r} {...props}/>)}<RegistroEditor key={'novaempresa:' + gen.current + ':' + ficha.empresas.length} tipo="empresa" {...props}/></details>
    {ficha.registros.filter(r => r.tipo === 'contrato').map(r => <div key={r.id} className="equipe-ficha-contrato"><h4>{String(r.dados.cargo)} · {ficha.empresas.find(e => e.id === r.dados.empresa_id)?.dados.nome as string || 'Empresa autorizada'}</h4><p>{r.unidades.map(id => clinicas.find(c => c.id === id)?.nome ?? 'Unidade autorizada').join(' · ')} · versão {r.revisao}</p><RegistroEditor key={r.id + ':' + r.revisao} tipo="contrato" atual={r} {...props}/><details><summary>Checklist deste contrato</summary><p>Exigências dependem do vínculo e função. Pendências da contabilidade/responsável ocupacional não viram obrigação automática nem prova legal.</p><RegistroEditor key={`check:${r.id}:${ficha.registros.find(c => c.tipo === 'checklist' && c.referencia_id === r.id)?.revisao ?? 0}`} tipo="checklist" atual={ficha.registros.find(c => c.tipo === 'checklist' && c.referencia_id === r.id)} referencia={r} {...props}/></details>{ficha.pode_ocupacional && r.unidades.every(id => ficha.ocupacional_unidades?.includes(id)) && <details><summary>Acompanhamento ocupacional administrativo autorizado</summary><p>Somente datas e comprovantes pertinentes. Não incluir diagnósticos, resultados clínicos ou prontuário ocupacional.</p><RegistroEditor key={`ocup:${r.id}:${ficha.registros.find(c => c.tipo === 'ocupacional' && c.referencia_id === r.id)?.revisao ?? 0}`} tipo="ocupacional" atual={ficha.registros.find(c => c.tipo === 'ocupacional' && c.referencia_id === r.id)} referencia={r} {...props}/></details>}</div>)}
    <RegistroEditor key={'novocontrato:' + gen.current + ':' + ficha.registros.filter(r => r.tipo === 'contrato').length} tipo="contrato" {...props}/>
   </>}</section>
-  {detalhe.tipo === 'profissional_saude' && autenticada && <section id="ficha-secao-atuacao" data-ficha-secao="atuacao" hidden={secao !== 'atuacao'} tabIndex={-1}><h3 tabIndex={-1}>Atuação e atendimentos</h3>{atuacao}</section>}
-  {detalhe.tipo === 'profissional_saude' && <section id="ficha-secao-formacao" data-ficha-secao="formacao" hidden={secao !== 'formacao'} tabIndex={-1}><h3 tabIndex={-1}>Formação e registros</h3><p>Profissão e especialidade principal atuais: {detalhe.profissao || 'não informada'} · {detalhe.especialidade_nome || 'não informada'}. Novas inscrições e especialidades não modificam essa referência nem agenda, preços ou serviços.</p>{ficha && <><RegistroEditor key={`formacao:${registro('formacao')?.revisao ?? 0}:${gen.current}`} tipo="formacao" atual={registro('formacao')} permitido={ficha.pode_global} {...props}/>{registro('formacao') && ficha.pode_global && <ConferenciaRegistros key={'conf:' + registro('formacao')!.revisao} r={registro('formacao')!} membro={detalhe.id} clinica={clinicaId} documentos={opcoes.documentos} onSalvo={salvarLocal} onEstado={estado}/>}</>}</section>}
-  {detalhe.tipo === 'profissional_saude' && <section id="ficha-secao-recebimento" data-ficha-secao="recebimento" hidden={secao !== 'recebimento'} tabIndex={-1}><h3 tabIndex={-1}>Recebimento</h3>{recebimento(setRecebimentoSituacao)}</section>}
+  {saude && autenticada && <section id="ficha-secao-atuacao" data-ficha-secao="atuacao" hidden={secao !== 'atuacao'} tabIndex={-1}><h3 tabIndex={-1}>Atuação e atendimentos</h3>{atuacao?.(setResumoAtuacao)}</section>}
+  {saude && <section id="ficha-secao-formacao" data-ficha-secao="formacao" hidden={secao !== 'formacao'} tabIndex={-1}><h3 tabIndex={-1}>Formação e registros</h3><p>Profissão e especialidade principal atuais: {detalhe.profissao || 'não informada'} · {detalhe.especialidade_nome || 'não informada'}. Novas inscrições e especialidades não modificam essa referência nem agenda, preços ou serviços.</p>{ficha && <><RegistroEditor key={`formacao:${registro('formacao')?.revisao ?? 0}:${gen.current}`} tipo="formacao" atual={registro('formacao')} permitido={ficha.pode_global} {...props}/>{registro('formacao') && ficha.pode_global && <ConferenciaRegistros key={'conf:' + registro('formacao')!.revisao} r={registro('formacao')!} membro={detalhe.id} clinica={clinicaId} documentos={opcoes.documentos} onSalvo={salvarLocal} onEstado={estado}/>}</>}</section>}
+  {saude && <section id="ficha-secao-recebimento" data-ficha-secao="recebimento" hidden={secao !== 'recebimento'} tabIndex={-1}><h3 tabIndex={-1}>Recebimento</h3>{recebimento(setRecebimentoSituacao, setResumoRecebimento)}</section>}
   <section id="ficha-secao-documentos" data-ficha-secao="documentos" hidden={secao !== 'documentos'} tabIndex={-1}><h3 tabIndex={-1}>Documentos</h3>{ficha && <EquipeDocumentosPainel membroId={detalhe.id} clinicaId={clinicaId} clinicas={clinicas} ficha={ficha} onConfirmado={documentoLocal} onEstado={estado}/>}</section>
   <section id="ficha-secao-acessos" data-ficha-secao="acessos" hidden={secao !== 'acessos'} tabIndex={-1}><h3 tabIndex={-1}>Acesso ao sistema</h3>{acessos}</section>
   <section id="ficha-secao-historico" data-ficha-secao="historico" hidden={secao !== 'historico'} tabIndex={-1}><h3 tabIndex={-1}>Histórico</h3>{erroHistorico && <FeedbackAlert variant="warning" title="Histórico não atualizado" description={erroHistorico}/>} {ficha && <HistoricoFicha ficha={ficha} membro={detalhe.id} clinica={clinicaId}/>}</section>

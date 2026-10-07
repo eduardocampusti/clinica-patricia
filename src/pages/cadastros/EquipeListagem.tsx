@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { createPortal } from 'react-dom'
 import { useTable, type ColumnDef, type PaginationState, type Row, type RowSelectionState, type SortingState } from '@tanstack/react-table'
 import { ChevronRight, Ellipsis, Info, Search } from 'lucide-react'
@@ -12,6 +12,8 @@ import { TIPOS_EQUIPE, rotuloTipoEquipe, type ClinicaEquipe, type MembroEquipe, 
 import type { AcessoEquipe } from '../../lib/equipeAcessos'
 import { estadosListaEquipe, filtrarEquipe, normalizarBuscaEquipe, resumirEquipe } from '../../lib/equipeLista'
 import { EquipeAvatar, type FotoEquipeDisponivel } from '../../components/cadastros/EquipeAvatar'
+import { Selo } from '../../components/cadastros/EquipeSelos'
+import { nomeCurtoClinica, seloDoStatus, seloPessoa } from '../../lib/equipeApresentacao'
 
 interface Props {
   membros: MembroEquipe[]
@@ -41,7 +43,6 @@ interface Props {
   acaoCabecalho?: HTMLElement | null
 }
 
-type Tom = 'ativo' | 'alerta' | 'erro' | 'neutro'
 
 // Larguras da grade pela largura disponível da lista (tablet ou computador com a barra lateral aberta):
 // abaixo da soma da grade completa, a coluna Clínicas sai (fica na linha expandida) e o restante cabe sem rolagem.
@@ -80,38 +81,6 @@ function useMedia(consulta: string) {
     return () => media.removeEventListener('change', atualizar)
   }, [consulta])
   return ativa
-}
-
-/** Só apresentação: "Clínica Brotas" vira "Brotas" na pílula; o nome completo continua no título. */
-function nomeCurtoClinica(nome: string) {
-  return nome.replace(/^cl[ií]nicas?\s+/iu, '').trim() || nome
-}
-
-// Traduz os rótulos já derivados por estadosListaEquipe; nenhum estado novo é inferido aqui.
-function seloDoStatus(status: string): { tom: Tom; texto: string } {
-  if (status.startsWith('Acesso ativo')) return { tom: 'ativo', texto: 'Acesso ativo' }
-  if (status === 'Acesso não confirmado' || status === 'Conta e acesso não confirmados') return { tom: 'neutro', texto: 'Não confirmado' }
-  if (status === 'Acesso suspenso') return { tom: 'erro', texto: status }
-  if (status === 'Conta inativa' || status === 'Convite pendente') return { tom: 'alerta', texto: status }
-  return { tom: 'neutro', texto: status }
-}
-
-/** Um selo por pessoa, baseado na clínica ativa (relatório 27). */
-function seloPessoa(membro: MembroEquipe, acesso: AcessoEquipe | null | undefined, contexto: string | null): { tom: Tom; texto: string } {
-  const estado = estadosListaEquipe(membro, acesso, contexto, '')
-  const status = estado.clinicas.find(c => c.id === contexto)?.status
-  if (status?.startsWith('Acesso ativo')) return { tom: 'ativo', texto: 'Acesso ativo' }
-  // Convite pendente e acesso suspenso só chegam aqui quando a ficha já confirmou o estado.
-  if (status === 'Acesso suspenso') return { tom: 'erro', texto: status }
-  if (status === 'Convite pendente') return { tom: 'alerta', texto: status }
-  if (estado.conta === 'Conta inativa' || status === 'Conta inativa') return { tom: 'alerta', texto: 'Conta inativa' }
-  if (estado.conta === 'Sem conta vinculada') return { tom: 'neutro', texto: 'Sem conta' }
-  if (status === 'Sem acesso nesta clínica' || status === 'Sem acesso a esta clínica') return { tom: 'neutro', texto: 'Sem acesso nesta clínica' }
-  return { tom: 'neutro', texto: 'Não confirmado' }
-}
-
-function Selo({ tom, children, testId }: { tom: Tom; children: ReactNode; testId?: string }) {
-  return <span className={`equipe-selo equipe-selo-${tom}`} data-testid={testId}><span className="equipe-selo-ponto" aria-hidden="true" />{children}</span>
 }
 
 function Pessoa({ membro, contexto, foto, mobile = false }: { membro: MembroEquipe; contexto: string | null; foto?: FotoEquipeDisponivel; mobile?: boolean }) {

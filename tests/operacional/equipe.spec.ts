@@ -88,7 +88,7 @@ test('troca de clínica limpa a lista anterior e o salvamento sintético bloquei
   await expect(page.getByText('Profissional B')).toBeVisible()
   await expect(page.getByText('Profissional A')).toHaveCount(0)
   await page.getByRole('button', { name: 'Ver cadastro de Profissional B' }).click()
-  await expect(page.getByRole('dialog', { name: /Ficha de Profissional B/ })).toContainText('Clínica B')
+  await expect(page.getByRole('dialog', { name: /Profissional B/ })).toContainText('Clínica B')
   await page.getByRole('button', { name: 'Fechar' }).click()
   await page.getByRole('button', { name: 'Novo membro' }).click()
   await page.getByLabel('Nome completo *').fill('Funcionário Sintético')

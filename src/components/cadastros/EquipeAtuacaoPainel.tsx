@@ -3,6 +3,7 @@ import { buscarAtuacao, mensagemAtuacao, salvarAtuacao, valorAtuacao, type Atuac
 import { supabase } from '../../lib/supabase'
 import type { ClinicaEquipe } from '../../lib/equipe'
 import type { EstadoRecursoFicha } from './EquipeFotoPainel'
+import type { ResumoAtuacao } from '../../lib/equipeApresentacao'
 import { FeedbackAlert } from '../feedback/FeedbackAlert'
 import { ConfirmacaoDialog } from '../feedback/ConfirmacaoDialog'
 import Profissionais from '../../pages/cadastros/Profissionais'
@@ -10,8 +11,9 @@ import Profissionais from '../../pages/cadastros/Profissionais'
 const dias = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado']
 const preco = (v: number | null) => v === null ? 'Não configurado' : v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 
-export function EquipeAtuacaoPainel({ membroId, clinicaId, clinicas, onEstado }: {
+export function EquipeAtuacaoPainel({ membroId, clinicaId, clinicas, onEstado, onResumo }: {
   membroId: string; clinicaId: string; clinicas: ClinicaEquipe[]; onEstado: (s: EstadoRecursoFicha) => void
+  onResumo?: (r: ResumoAtuacao | null) => void
 }) {
   const [unidade, setUnidade] = useState(clinicaId)
   const [dados, setDados] = useState<AtuacaoEquipe | null>(null)
@@ -37,6 +39,10 @@ export function EquipeAtuacaoPainel({ membroId, clinicaId, clinicas, onEstado }:
     const invalidar = () => { gen.current++ }
     return () => { invalidar(); data.subscription.unsubscribe() }
   }, [consultar])
+  // Resumo da Visão geral, somente com o dado já consultado da clínica de contexto.
+  useEffect(() => {
+    if (unidade === clinicaId) onResumo?.(dados ? { duracao_minutos: dados.duracao_minutos, valor_consulta: dados.valor_consulta, percentual_clinica: dados.percentual_clinica } : null)
+  }, [dados, unidade, clinicaId, onResumo])
   useEffect(() => {
     onEstado({ ocupado: ocupado || horarioEstado.ocupado, alterado: campo !== null || horarioEstado.alterado })
     return () => onEstado({ ocupado: false, alterado: false })

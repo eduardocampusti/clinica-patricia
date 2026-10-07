@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useId, useRef, useState, type FormEvent } from 'react'
 import { FeedbackAlert } from '../feedback/FeedbackAlert'
 import { ConfirmacaoDialog } from '../feedback/ConfirmacaoDialog'
+import type { ResumoRecebimento } from '../../lib/equipeApresentacao'
 import { buscarRecebimentoEquipe, CAMPOS_PROTEGIDOS, erroRecursosSeguro, salvarRecebimentoEquipe, validarRecebimento, type DadosRecebimento, type RecebimentoEquipe } from '../../lib/equipeRecursos'
 import type { ClinicaEquipe } from '../../lib/equipe'
 import type { EstadoRecursoFicha } from './EquipeFotoPainel'
@@ -13,7 +14,7 @@ function prepararEdicao(d:DadosRecebimento|null):{dados:DadosRecebimento;preserv
   for(const p of CAMPOS_PROTEGIDOS){const [g,c]=p.split('.');const grupo=dados[g as 'pix'|'conta'|'favorecido'] as unknown as Record<string,string>|null;if(grupo?.[c]){preservar.push(p);grupo[c]=''}}
   return {dados,preservar}
 }
-function EditorRecebimento({membroId,clinicaId,clinicaNome,onEstado,onModo,onSituacao}:{membroId:string;clinicaId:string;clinicaNome:string;onEstado:(s:EstadoRecursoFicha)=>void;onModo:(b:boolean)=>void;onSituacao?:(s:'configurado'|'ausente'|'indisponivel')=>void}) {
+function EditorRecebimento({membroId,clinicaId,clinicaNome,onEstado,onModo,onSituacao,onResumo}:{membroId:string;clinicaId:string;clinicaNome:string;onEstado:(s:EstadoRecursoFicha)=>void;onModo:(b:boolean)=>void;onSituacao?:(s:'configurado'|'ausente'|'indisponivel')=>void;onResumo?:(r:ResumoRecebimento|null)=>void}) {
   const [atual,setAtual]=useState<RecebimentoEquipe|null>(null)
   const [carregando,setCarregando]=useState(true);const [editando,setEditando]=useState(false)
   const [dados,setDados]=useState<DadosRecebimento>(vazio);const [preservar,setPreservar]=useState<string[]>([])
@@ -21,6 +22,8 @@ function EditorRecebimento({membroId,clinicaId,clinicaNome,onEstado,onModo,onSit
   const [ocupado,setOcupado]=useState(false);const [bloqueado,setBloqueado]=useState(false);const [descartar,setDescartar]=useState(false)
   const trava=useRef(false);const geracao=useRef(0);const form=useRef<HTMLFormElement>(null);const id=useId()
   useEffect(()=>{onSituacao?.(carregando||!atual?'indisponivel':atual.dados?'configurado':'ausente')},[atual,carregando,onSituacao])
+  // Resumo da Visão geral: só preferência e nome do favorecido, já carregados aqui (sem chave nem conta).
+  useEffect(()=>{onResumo?.(atual?.dados?{preferencia:atual.dados.preferencia,favorecido:atual.dados.favorecido.nome}:null)},[atual,onResumo])
   useEffect(()=>{onEstado({ocupado,alterado:editando});onModo(editando||ocupado)},[editando,ocupado,onEstado,onModo])
   const consultar=useCallback(async()=>{
     const versao=++geracao.current;setCarregando(true);setErro(null)
@@ -80,12 +83,12 @@ function EditorRecebimento({membroId,clinicaId,clinicaNome,onEstado,onModo,onSit
     <ConfirmacaoDialog open={descartar} onOpenChange={setDescartar} title={bloqueado?'Reconsultar dados confirmados?':'Cancelar edição de recebimento?'} description="Os dados digitados nesta edição serão descartados. Nenhum pagamento, acesso ou cadastro de pessoa será alterado." confirmLabel={bloqueado?'Descartar edição e reconsultar':'Descartar edição'} tone="warning" onConfirm={()=>{cancelar();if(bloqueado)void consultar()}} disabled={ocupado}/>
   </div>
 }
-export function EquipeRecebimentoPainel({membroId,clinicaId,clinicas,onEstado,onSituacao}:{membroId:string;clinicaId:string;clinicas:ClinicaEquipe[];onEstado:(s:EstadoRecursoFicha)=>void;onSituacao?:(s:'configurado'|'ausente'|'indisponivel')=>void}) {
+export function EquipeRecebimentoPainel({membroId,clinicaId,clinicas,onEstado,onSituacao,onResumo}:{membroId:string;clinicaId:string;clinicas:ClinicaEquipe[];onEstado:(s:EstadoRecursoFicha)=>void;onSituacao?:(s:'configurado'|'ausente'|'indisponivel')=>void;onResumo?:(r:ResumoRecebimento|null)=>void}) {
   const [selecionada,setSelecionada]=useState(clinicaId);const [emEdicao,setEmEdicao]=useState(false)
   const opcoes=clinicas.filter(c=>c.id===clinicaId||c.nome.toLowerCase().includes('brotas')||c.nome.toLowerCase().includes('ipupiara'))
   return <section className="equipe-recurso" aria-labelledby="equipe-recebimento-titulo" data-testid="equipe-recebimento-painel"><div className="equipe-recurso-cabecalho"><div><h3 id="equipe-recebimento-titulo">Dados para recebimento</h3><p>Configuração opcional do profissional nesta clínica. Não executa PIX, pagamentos ou alterações em repasses.</p></div></div>
     <div className="equipe-recebimento-clinica"><label htmlFor="equipe-recebimento-clinica">Clínica dos dados de recebimento</label><select id="equipe-recebimento-clinica" value={selecionada} disabled={emEdicao} onChange={e=>setSelecionada(e.target.value)}>{opcoes.map(c=><option key={c.id} value={c.id}>{c.nome}</option>)}</select>{emEdicao&&<p className="equipe-recurso-ajuda">Conclua ou cancele a edição antes de consultar outra clínica.</p>}</div>
-    <EditorRecebimento key={`${membroId}:${selecionada}`} membroId={membroId} clinicaId={selecionada} clinicaNome={opcoes.find(c=>c.id===selecionada)?.nome??'clínica selecionada'} onEstado={onEstado} onModo={setEmEdicao} onSituacao={selecionada===clinicaId?onSituacao:undefined}/>
+    <EditorRecebimento key={`${membroId}:${selecionada}`} membroId={membroId} clinicaId={selecionada} clinicaNome={opcoes.find(c=>c.id===selecionada)?.nome??'clínica selecionada'} onEstado={onEstado} onModo={setEmEdicao} onSituacao={selecionada===clinicaId?onSituacao:undefined} onResumo={selecionada===clinicaId?onResumo:undefined}/>
     <p className="equipe-recurso-ajuda">A titularidade da chave e da conta não foi verificada. O favorecido é informado pela administração. Somente Proprietário(a)/Administradora autorizada consulta e altera esta configuração.</p>
   </section>
 }

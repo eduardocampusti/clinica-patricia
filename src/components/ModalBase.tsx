@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, type ReactNode } from 'react'
 
-export function ModalBase({ titulo, subtitulo, onFechar, children, largura = 'md', ocupado = false, suspenso = false, apresentacao = 'modal', className = '' }: {
+export function ModalBase({ titulo, subtitulo, onFechar, children, largura = 'md', ocupado = false, suspenso = false, apresentacao = 'modal', className = '', inicioCabecalho, detalhesCabecalho, acoesCabecalho }: {
   titulo: string
   subtitulo?: string
   onFechar: () => void
@@ -10,7 +10,12 @@ export function ModalBase({ titulo, subtitulo, onFechar, children, largura = 'md
   ocupado?: boolean
   suspenso?: boolean
   apresentacao?: 'modal' | 'painel'
+  /** Espaços opcionais do cabeçalho; sem eles o cabeçalho é o mesmo de sempre. */
+  inicioCabecalho?: ReactNode
+  detalhesCabecalho?: ReactNode
+  acoesCabecalho?: ReactNode
 }) {
+  const cabecalhoAmpliado = inicioCabecalho != null || detalhesCabecalho != null || acoesCabecalho != null
   const dialog = useRef<HTMLDialogElement>(null)
   const heading = useRef<HTMLHeadingElement>(null)
   const id = useId()
@@ -54,14 +59,24 @@ export function ModalBase({ titulo, subtitulo, onFechar, children, largura = 'md
       }}
       onCancel={(evento) => { evento.preventDefault(); if (!ocupado) onFechar() }}
       className={`${apresentacao === 'painel' ? 'painel-agenda ml-auto mr-0 h-dvh max-h-dvh w-full max-w-none overflow-hidden bg-[var(--fundo-card)] text-[var(--texto-principal)] backdrop:bg-[var(--sobreposicao)] sm:max-w-xl' : `m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] overflow-y-auto rounded-xl bg-[var(--fundo-card)] p-5 text-[var(--texto-principal)] backdrop:bg-[var(--sobreposicao)] sm:p-6 ${largura === 'xl' ? 'max-w-[60rem]' : largura === 'lg' ? 'max-w-lg' : 'max-w-md'}`} ${className}`}>
-      <div className={apresentacao === 'painel' ? 'flex shrink-0 items-center justify-between gap-3 border-b border-[var(--borda)] px-5 py-3' : 'mb-5 flex items-start justify-between gap-3'}>
+      {cabecalhoAmpliado ? <div className="modal-cabecalho-ampliado flex items-start gap-3">
+        {inicioCabecalho}
+        <div className="min-w-0 flex-1">
+          <h2 id={id} ref={heading} tabIndex={-1} className="texto-titulo-secao outline-none">{titulo}</h2>
+          {subtitulo && <p className="text-sm text-[var(--texto-secundario)]">{subtitulo}</p>}
+          {detalhesCabecalho}
+        </div>
+        {acoesCabecalho}
+        <button type="button" aria-label="Fechar" disabled={ocupado} onClick={onFechar}
+          className="min-h-11 min-w-11 rounded-lg text-[var(--texto-secundario)] focus-visible:outline-2 disabled:opacity-40">✕</button>
+      </div> : <div className={apresentacao === 'painel' ? 'flex shrink-0 items-center justify-between gap-3 border-b border-[var(--borda)] px-5 py-3' : 'mb-5 flex items-start justify-between gap-3'}>
         {subtitulo ? <div className="min-w-0">
           <h2 id={id} ref={heading} tabIndex={-1} className="texto-titulo-secao outline-none">{titulo}</h2>
           <p className="truncate text-sm text-[var(--texto-secundario)]">{subtitulo}</p>
         </div> : <h2 id={id} ref={heading} tabIndex={-1} className="texto-titulo-secao outline-none">{titulo}</h2>}
         <button type="button" aria-label="Fechar" disabled={ocupado} onClick={onFechar}
           className="min-h-11 min-w-11 rounded-lg text-[var(--texto-secundario)] focus-visible:outline-2 disabled:opacity-40">✕</button>
-      </div>
+      </div>}
       {children}
     </dialog>
   )
