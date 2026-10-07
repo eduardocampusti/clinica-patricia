@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { abrirAcessoFicha } from './equipe-ficha-helpers'
 import { resumoAcesso } from './equipe-listagem-helpers'
 
 const clinicas = [{ id: 'clinica-a', nome: 'Clínica A' }, { id: 'clinica-b', nome: 'Clínica B' }]
@@ -11,7 +12,7 @@ async function preparar(page: Page) {
   const estado = {
     contas: { sem: null, vinculada: 'u-vinculada', ativa: 'u-ativa', pendente: null, desconhecida: undefined } as Record<Id, string | null | undefined>,
     clinicas: Object.fromEntries(Object.keys(nomes).map((id) => [id, clinicas.map(() => ({ status: 'sem_acesso', papel: null }))])) as Record<Id, EstadoClinica[]>,
-    escritas: [] as Pedido[], leiturasLista: 0, leiturasAcesso: [] as Pedido[], falha: '' as '' | 'validacao' | 'rede', falharConsulta: false, falharLista: false, semEmailLogin: false,
+    escritas: [] as Pedido[], leiturasLista: 0, leiturasAcesso: [] as Pedido[], falha: '' as '' | 'validacao' | 'rede', falharConsulta: false, falharLista: false as false | 'generica' | 'permissao', semEmailLogin: false,
   }
   estado.clinicas.ativa = [{ status: 'acesso_ativo', papel: 'recepcao' }, { status: 'acesso_suspenso', papel: 'medico' }]
   estado.clinicas.pendente[0] = { status: 'convite_pendente', papel: 'proprietaria' }
@@ -32,7 +33,9 @@ async function preparar(page: Page) {
     const json = (data: unknown, status = 200) => route.fulfill({ status, headers, contentType: 'application/json', body: JSON.stringify(data) })
     if (url.pathname.endsWith('/rpc/equipe_listar')) {
       estado.leiturasLista++
-      if (estado.falharLista) return json({ code: '42501' }, 403)
+      // Falha genérica (500) e recusa de permissão (403/42501) são estados distintos na listagem.
+      if (estado.falharLista === 'permissao') return json({ code: '42501' }, 403)
+      if (estado.falharLista) return json({ message: 'Falha sintética do serviço' }, 500)
       return json((Object.keys(nomes) as Id[]).map((id) => membro(id, route.request().postDataJSON().p_clinica_contexto_id)))
     }
     if (url.pathname.endsWith('/rpc/equipe_detalhar')) {
@@ -74,6 +77,7 @@ async function abrir(page: Page, id: Id) {
   // Na grade, expande a linha antes da ficha para o resumo da lista ficar legível com o diálogo aberto.
   await resumoAcesso(page, id, nomes[id])
   await page.getByRole('button', { name: `Ver cadastro de ${nomes[id]}`, exact: true }).click()
+  await abrirAcessoFicha(page.getByRole('dialog'))
   await expect(page.getByTestId('painel-gestao-acessos')).toBeVisible()
   return page.getByRole('dialog')
 }
@@ -135,6 +139,7 @@ test('falha de leitura e conta sem e-mail não são apresentadas como sem conta'
   estado.falharConsulta = true
   await page.getByRole('button', { name: `Ver cadastro de ${nomes.ativa}`, exact: true }).click()
   ficha = page.getByRole('dialog')
+  await abrirAcessoFicha(ficha)
   await expect(ficha.getByText('Consulta de acessos não concluída', { exact: true })).toBeVisible()
   await expect(page.getByTestId('resumo-acesso-ativa').locator('.equipe-conta')).toHaveText('Conta e acesso não confirmados')
   await expect(ficha.getByRole('button', { name: 'Conceder acesso', exact: true })).toHaveCount(0)
@@ -219,11 +224,26 @@ test('convite simulado atualiza resumo da lista; falha de atualização não apr
   await ficha.getByRole('button', { name: 'Fechar', exact: true }).click()
   ficha = await abrir(page, 'vinculada')
   await ficha.getByRole('combobox', { name: 'Papel para concessão em Clínica A', exact: true }).selectOption('recepcao')
-  estado.falharLista = true
+  estado.falharLista = 'generica'
   await ficha.getByRole('button', { name: 'Conceder acesso', exact: true }).first().click()
   await expect(ficha.getByRole('combobox', { name: 'Papel de Clínica A', exact: true })).toHaveValue('recepcao')
   await ficha.getByRole('button', { name: 'Fechar', exact: true }).click()
   await expect(page.getByText('Consulta da equipe não concluída', { exact: true })).toBeVisible()
   await expect(page.getByRole('table')).toHaveCount(0)
   expect(estado.escritas).toHaveLength(2)
+})
+
+test('recarga recusada por permissão (403) mostra Sem permissão e nenhuma tabela', async ({ page }) => {
+  const estado = await preparar(page)
+  const ficha = await abrir(page, 'vinculada')
+  await ficha.getByRole('combobox', { name: 'Papel para concessão em Clínica A', exact: true }).selectOption('recepcao')
+  estado.falharLista = 'permissao'
+  await ficha.getByRole('button', { name: 'Conceder acesso', exact: true }).first().click()
+  await expect(ficha.getByRole('combobox', { name: 'Papel de Clínica A', exact: true })).toHaveValue('recepcao')
+  await ficha.getByRole('button', { name: 'Fechar', exact: true }).click()
+  await expect(page.getByText('Sem permissão para consultar a equipe', { exact: true })).toBeVisible()
+  await expect(page.getByText('Consulta da equipe não concluída', { exact: true })).toHaveCount(0)
+  await expect(page.getByRole('table')).toHaveCount(0)
+  await expect(page.locator('[data-testid^="equipe-pessoa-"]')).toHaveCount(0)
+  expect(estado.escritas).toHaveLength(1)
 })

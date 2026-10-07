@@ -60,3 +60,16 @@ export async function controleEdicao(page: Page, nome: string): Promise<Locator>
   }
   return botao
 }
+
+const COLUNA_ORDENACAO = { pessoa: 'nome', 'função': 'tipo' } as const
+/**
+ * Mesma ordenação nos dois modos: na grade clica no cabeçalho; nos cartões usa o seletor "Ordenar por",
+ * alternando crescente/decrescente como o cabeçalho faz (mesma coluna crescente vira decrescente).
+ */
+export async function ordenarPor(page: Page, coluna: keyof typeof COLUNA_ORDENACAO) {
+  const cabecalho = page.getByRole('button', { name: `Ordenar por ${coluna}`, exact: true })
+  const seletor = page.getByLabel('Ordenar por', { exact: true })
+  if (await naGrade(cabecalho, seletor)) return cabecalho.click()
+  const id = COLUNA_ORDENACAO[coluna], [atual, direcao] = (await seletor.inputValue()).split('-')
+  await seletor.selectOption(`${id}-${atual === id && direcao === 'asc' ? 'desc' : 'asc'}`)
+}

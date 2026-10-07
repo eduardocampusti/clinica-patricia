@@ -1,9 +1,14 @@
 import { expect, test, type Page } from '@playwright/test'
+import { abrirAcessoFicha } from './equipe-ficha-helpers'
 
 test.use({ hasTouch: true })
 test.setTimeout(90_000)
 const nome = 'Pessoa Sintética da Navegação'
 const abas = ['Equipe & acessos', 'Especialidades', 'Profissionais', 'Serviços']
+
+// Leituras da ficha feitas por POST. Lista explícita: qualquer outra função continua contando
+// como escrita até ser incluída aqui de propósito.
+const LEITURAS_POST = { funcoes: { 'equipe-fichas': ['obter'] } as Record<string, string[]>, rpc: ['equipe_atuacao_obter', 'equipe_recebimento_obter'] }
 
 async function preparar(page: Page, unidade = 'brotas') {
   let escritas = 0
@@ -23,11 +28,12 @@ async function preparar(page: Page, unidade = 'brotas') {
     if (url.pathname.endsWith('/rpc/equipe_listar')) return json([pessoa])
     if (url.pathname.endsWith('/rpc/equipe_detalhar')) return json({ ...pessoa, cpf: null, cpf_situacao: 'ausente' })
     if (url.pathname.includes('/functions/')) {
-      if (route.request().postDataJSON().acao !== 'listar') { escritas++; return json({}) }
+      const acao = route.request().postDataJSON().acao
+      if (acao !== 'listar') { if (!LEITURAS_POST.funcoes[url.pathname.split('/').pop() ?? '']?.includes(acao)) escritas++; return json({}) }
       return json({ membro_id: pessoa.id, usuario_id: 'usuario-sintetico', login_email: 'login@synthetic.invalid', conta_confirmada: true,
         clinicas: clinicas.map(c => ({ ...c, status: 'acesso_ativo', papel: 'medico' })), convites: [] })
     }
-    if (route.request().method() !== 'GET' && !url.pathname.includes('listar')) escritas++
+    if (route.request().method() !== 'GET' && !url.pathname.includes('listar') && !(url.pathname.includes('/rpc/') && LEITURAS_POST.rpc.includes(url.pathname.split('/').pop() ?? ''))) escritas++
     return json([])
   })
   await page.goto(`/sistema/${unidade}/equipe?previa=cadastros`)
@@ -82,6 +88,7 @@ for (const largura of [360, 390, 430, 820, 1440]) {
     await expect(faixa.getByRole('button', { name: abas[0], exact: true })).toHaveAttribute('aria-pressed', 'true')
     await expect(page).toHaveURL(/\/sistema\/brotas\/equipe\?previa=cadastros$/)
     await page.getByRole('button', { name: `Ver cadastro de ${nome}` }).click()
+    await abrirAcessoFicha(page.getByRole('dialog'));
     await expect(page.getByTestId('painel-gestao-acessos')).toBeVisible()
     await expect(page.getByLabel('Papel de Clínica Brotas')).toHaveValue('medico')
     await page.getByRole('button', { name: 'Fechar', exact: true }).click()

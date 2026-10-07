@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { abrirAcessoFicha } from './equipe-ficha-helpers'
 
 // Serviços simulados; destinos externos não previstos são bloqueados.
 const clinicas = [{ id: 'clinica-a', nome: 'Clínica A' }, { id: 'clinica-b', nome: 'Clínica B' }]
@@ -48,6 +49,7 @@ async function preparar(page: Page) {
 }
 async function abrir(page: Page, nome = 'Administrativa Sintética') {
   await page.getByRole('button', { name: `Ver cadastro de ${nome}`, exact: true }).click()
+  await abrirAcessoFicha(page.getByRole('dialog'))
   await expect(page.getByTestId('painel-gestao-acessos')).toBeVisible()
   return page.getByRole('dialog')
 }
@@ -65,6 +67,9 @@ test('administrativo e enfermagem começam sem papel; fechar, reabrir e F5 não 
     expect(estado.escritas).toEqual([])
     await papel(page).selectOption('proprietaria')
     await ficha.getByRole('button', { name: 'Fechar', exact: true }).click()
+    // Seleção de papel feita pelo próprio teste e não salva: a ficha pede descarte (comportamento mantido).
+    await expect(page.getByRole('alertdialog')).toContainText('Descartar alterações desta ficha?')
+    await page.getByRole('button', { name: 'Descartar e fechar', exact: true }).click()
   }
   await abrir(page)
   await expect(papel(page)).toHaveValue('')
@@ -105,6 +110,9 @@ test('vínculo por confirmação exige papel; trocar clínica ou desmarcar limpa
   let ficha = await abrir(page)
   await papel(page).selectOption('medico')
   await ficha.getByRole('button', { name: 'Fechar', exact: true }).click()
+  // Seleção de papel feita pelo próprio teste e não salva: a ficha pede descarte (comportamento mantido).
+  await expect(page.getByRole('alertdialog')).toContainText('Descartar alterações desta ficha?')
+  await page.getByRole('button', { name: 'Descartar e fechar', exact: true }).click()
   await page.getByRole('button', { name: 'Trocar para Clínica B', exact: true }).click()
   ficha = await abrir(page)
   await expect(papel(page, 'B')).toHaveValue('')

@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { ordenarPor } from './equipe-listagem-helpers'
 
 // A primeira otimização do Vite no Windows pode exceder o limite padrão.
 test.setTimeout(90_000)
@@ -54,9 +55,9 @@ test('ordena antes de paginar, cabeçalho e tamanhos 10/25/50; contagem filtrada
   await expect(page.getByTestId('equipe-contagem-pessoas')).toHaveText('36')
   await expect(page.getByTestId('equipe-contagem-saude')).toHaveText('18')
   await proxima(page).click();expect((await ids(page))[0]).toBe('p11')
-  await page.getByRole('button',{name:'Ordenar por pessoa',exact:true}).click()
+  await ordenarPor(page,'pessoa')
   expect((await ids(page))[0]).toBe('p26')
-  await page.getByRole('button',{name:'Ordenar por pessoa'}).click()
+  await ordenarPor(page,'pessoa')
   expect((await ids(page))[0]).toBe('p11')
   const tamanho=page.getByRole('combobox',{name:'Pessoas por página',exact:true})
   await todas(page).check();await selecionadas(page,10)
@@ -93,7 +94,7 @@ test('seleção apenas da página, teclado e limpeza por filtro/página/ordenaç
   await todas(page).check();await selecionadas(page,1)
   await page.getByRole('button',{name:'Limpar filtros',exact:true}).first().click();await selecionadas(page,0)
   expect((await ids(page))[0]).toBe('p01')
-  await todas(page).check();await page.getByRole('button',{name:'Ordenar por função',exact:true}).click();await selecionadas(page,0)
+  await todas(page).check();await ordenarPor(page,'função');await selecionadas(page,0)
   await todas(page).check();await page.getByLabel('Selecionar clínica',{exact:true}).selectOption('clinica-b');await selecionadas(page,0)
   await expect(page.getByLabel('Selecionar clínica',{exact:true})).toHaveValue('clinica-b')
   expect(e.escritas).toBe(0)

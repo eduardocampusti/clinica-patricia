@@ -1,6 +1,17 @@
 # Equipe — índice do módulo
 
 
+## Equipe38 — ficha do membro, Fase 2B (Contratos e Acesso), 2026-10-07 -03:00
+
+Claude Code. Aprovada pelo usuário; commit local, **sem push/publicação**. Só apresentação.
+Contratos em cartões (vigente aberto, demais recolhidos), remuneração montada no HTML só
+depois de “Mostrar valor”; Acesso ao sistema em cartões com os mesmos textos, validações
+e chamadas. Testes navegam até a seção; contadores de escrita com lista explícita de
+leituras; decisões de descarte, salvamento, acabamento e ordenação aplicadas. Teste local
+isolado: 49/49/52 → 11/11/12 falhas, 0 novas (restantes: recebimento/foto, Fase 2C).
+Linha expandida da listagem em commit próprio (e38fb1f). Detalhes:
+[38-EVOLUCAO-VISUAL-FICHA.md](38-EVOLUCAO-VISUAL-FICHA.md).
+
 ## Equipe38 — ficha do membro, Fase 2A (casca, Visão geral, Dados pessoais), 2026-10-07 -03:00
 
 Claude Code. Aprovada pelo usuário em 2026-10-07; commit local, **sem push/publicação**.

@@ -1,10 +1,15 @@
 import { expect, test, type Locator, type Page } from '@playwright/test'
+import { abrirAcessoFicha } from './equipe-ficha-helpers'
 import { editarCadastro } from './equipe-listagem-helpers'
 
 const pasta = 'scratch/equipe-29'
 const clinicas = [{ id: 'clinica-a', nome: 'Clínica A' }, { id: 'clinica-b', nome: 'Clínica B' }]
 const nome = 'Pessoa Sintética com Nome Extenso para Conferência da Ficha e dos Formulários'
 const email = `contato.${'exemplo'.repeat(9)}@synthetic.invalid`
+
+// Leituras da ficha feitas por POST (mesma lista explícita de cadastros-navegacao): qualquer outra
+// função continua contando como escrita até ser incluída aqui de propósito.
+const LEITURAS_POST: Record<string, string[]> = { 'equipe-fichas': ['obter'] }
 
 async function preparar(page: Page) {
   const estado = { falha: false, lenta: false, liberar: [] as (() => void)[], escritas: 0 }
@@ -29,7 +34,7 @@ async function preparar(page: Page) {
     if (url.pathname.endsWith('/especialidades')) return json([])
     if (url.pathname.includes('/functions/')) {
       const pedido = route.request().postDataJSON()
-      if (pedido.acao !== 'listar') { estado.escritas++; return json({}, 400) }
+      if (pedido.acao !== 'listar') { if (!LEITURAS_POST[url.pathname.split('/').pop() ?? '']?.includes(pedido.acao)) estado.escritas++; return json({}, 400) }
       const ativa = pedido.membroId === 'ativa'
       const pendente = pedido.membroId === 'pendente'
       return json({ membro_id: pedido.membroId, usuario_id: ativa ? 'usuario-sintetico' : null, login_email: ativa ? email : null, conta_confirmada: ativa,
@@ -44,15 +49,65 @@ async function preparar(page: Page) {
   return estado
 }
 
+/**
+ * Ficha ampliada (layout aprovado nas etapas 36 e 2A): uma rolagem interna no conteúdo (640px ou mais), faixa de
+ * menu rolável na horizontal abaixo de 900px e tela cheia abaixo de 640px, com o próprio diálogo rolando.
+ * Mantém o que conferirLargura protege: sem rolagem lateral na página nem no diálogo, nada cortado fora da faixa,
+ * no máximo uma barra de rolagem vertical e ações sempre alcançáveis.
+ */
+async function conferirFichaAmpla(dialog: Locator, largura: number) {
+  const medidas = await dialog.evaluate(el => {
+    const d = el.getBoundingClientRect()
+    const faixa = el.querySelector('.equipe-ficha-lateral')!
+    const cortados = Array.from(el.querySelectorAll('input, select, button, h2, dd, .app-alert')).filter(e => e.getClientRects().length && !(innerWidth < 900 && faixa.contains(e))).map(e => e.getBoundingClientRect()).filter(r => r.left < d.left || r.right > d.right + 1).length
+    const rolaVertical = (e: Element) => !e.matches('input, select, textarea') && /auto|scroll/.test(getComputedStyle(e).overflowY) && e.scrollHeight > e.clientHeight + 1
+    const verticais = [el, ...Array.from(el.querySelectorAll('*'))].filter(rolaVertical).map(e => e === el ? 'dialogo' : e.className)
+    const f = faixa.getBoundingClientRect()
+    // Ações alcançáveis: com o diálogo rolado até o fim, o menu continua no topo (fixo) ou fora da rolagem.
+    const antes = el.scrollTop; el.scrollTop = el.scrollHeight
+    const menuNoTopo = faixa.getBoundingClientRect().top - el.getBoundingClientRect().top
+    el.scrollTop = antes
+    return { largura: d.width, esquerda: d.left, direita: d.right, transborda: el.scrollWidth > el.clientWidth + 1, pagina: document.documentElement.scrollWidth > innerWidth,
+      cortados, verticais, faixaRolavel: /auto|scroll/.test(getComputedStyle(faixa).overflowX), faixaDentro: f.left >= d.left - .5 && f.right <= d.right + 1, menuNoTopo }
+  })
+  expect(medidas.pagina).toBe(false)
+  expect(medidas.transborda).toBe(false)
+  expect(medidas.cortados).toBe(0)
+  expect(medidas.verticais.length).toBeLessThanOrEqual(1)
+  if (largura < 640) {
+    expect(medidas.esquerda).toBeLessThanOrEqual(1)
+    expect(Math.abs(medidas.largura - largura)).toBeLessThanOrEqual(1)
+    if (medidas.verticais.length) expect(medidas.verticais).toEqual(['dialogo'])
+    expect(Math.abs(medidas.menuNoTopo)).toBeLessThanOrEqual(2)
+  } else {
+    expect(medidas.esquerda).toBeGreaterThanOrEqual(15)
+    expect(medidas.direita).toBeLessThanOrEqual(largura - 15)
+    if (medidas.verticais.length) expect(medidas.verticais).toEqual(['equipe-ficha-conteudo'])
+  }
+  if (largura < 900) { expect(medidas.faixaRolavel).toBe(true); expect(medidas.faixaDentro).toBe(true) }
+  if (largura >= 1000) { expect(medidas.largura).toBeGreaterThanOrEqual(880); expect(medidas.largura).toBeLessThanOrEqual(1180) }
+  await expect(dialog.getByRole('button', { name: 'Fechar', exact: true })).toBeInViewport()
+}
+
 async function conferirLargura(dialog: Locator, largura: number) {
   const medidas = await dialog.evaluate(el => {
     const d = el.getBoundingClientRect()
     const cortados = Array.from(el.querySelectorAll('input, select, button, h2, dd, .app-alert')).filter(e => e.getClientRects().length).map(e => e.getBoundingClientRect()).filter(r => r.left < d.left || r.right > d.right + 1).length
     const rolagens = Array.from(el.querySelectorAll('*')).filter(e => !e.matches('input, select, textarea') && /auto|scroll/.test(getComputedStyle(e).overflowY) && e.scrollHeight > e.clientHeight + 1).length
-    return { largura: d.width, esquerda: d.left, direita: d.right, transborda: el.scrollWidth > el.clientWidth + 1, cortados, rolagens }
+    return { largura: d.width, esquerda: d.left, direita: d.right, transborda: el.scrollWidth > el.clientWidth + 1, cortados, rolagens,
+      cadastro: el.classList.contains('equipe-cadastro-workspace'), pagina: document.documentElement.scrollWidth > innerWidth }
   })
-  expect(medidas.esquerda).toBeGreaterThanOrEqual(15)
-  expect(medidas.direita).toBeLessThanOrEqual(largura - 15)
+  if (medidas.cadastro && largura < 768) {
+    // Formulário de cadastro em tela cheia abaixo de 768px (decisão do usuário): sem margem lateral, sem rolagem lateral
+    // na página e com o botão Fechar visível; as demais verificações seguem iguais.
+    expect(medidas.esquerda).toBeLessThanOrEqual(1)
+    expect(Math.abs(medidas.largura - largura)).toBeLessThanOrEqual(1)
+    expect(medidas.pagina).toBe(false)
+    await expect(dialog.getByRole('button', { name: 'Fechar', exact: true })).toBeInViewport()
+  } else {
+    expect(medidas.esquerda).toBeGreaterThanOrEqual(15)
+    expect(medidas.direita).toBeLessThanOrEqual(largura - 15)
+  }
   expect(medidas.transborda).toBe(false)
   expect(medidas.cortados).toBe(0)
   expect(medidas.rolagens).toBe(0)
@@ -142,19 +197,20 @@ test('acabamento Equipe: fichas, nomes longos, controles de acesso, alerta e car
   for (const [id, nomePessoa] of [['ativa', nome], ['sem', 'Pessoa Sem Conta Sintética'], ['pendente', 'Convite Sintético']]) {
     await page.getByRole('button', { name: `Ver cadastro de ${nomePessoa}`, exact: true }).click()
     const dialog = page.getByRole('dialog')
+    await abrirAcessoFicha(dialog)
     await expect(dialog.getByTestId('painel-gestao-acessos')).toBeVisible()
-    await conferirLargura(dialog, page.viewportSize()!.width)
+    await conferirFichaAmpla(dialog, page.viewportSize()!.width)
     await page.screenshot({ path: `${pasta}/${info.project.name}-${tamanho.width}-ficha-${id}-inicio.png` })
     if (id === 'ativa') {
       await expect(dialog.getByLabel('Papel de Clínica A', { exact: true })).toHaveValue('medico')
       await expect(dialog.getByRole('button', { name: 'Salvar papel' })).toBeDisabled()
-      await conferirContraste(dialog.getByText('Acesso ativo', { exact: true }))
+      await conferirContraste(dialog.getByTestId('painel-gestao-acessos').getByText('Acesso ativo', { exact: true }))
       await dialog.getByTestId('ficha-secao-acesso').scrollIntoViewIfNeeded()
       await page.screenshot({ path: `${pasta}/${info.project.name}-${tamanho.width}-ficha-ativa-acessos.png` })
       await expect(dialog.getByLabel('Papel para concessão em Clínica B')).toHaveValue('')
       await expect(dialog.getByRole('button', { name: 'Conceder acesso' })).toBeDisabled()
     } else {
-      if (id === 'pendente') await conferirContraste(dialog.getByText('Convite pendente', { exact: true }))
+      if (id === 'pendente') await conferirContraste(dialog.getByTestId('painel-gestao-acessos').getByText('Convite pendente', { exact: true }))
       await dialog.getByRole('button', { name: 'Enviar convite', exact: true }).scrollIntoViewIfNeeded()
       await expect(dialog.getByRole('button', { name: 'Enviar convite', exact: true })).toBeDisabled()
       await page.screenshot({ path: `${pasta}/${info.project.name}-${tamanho.width}-ficha-${id}-fim.png` })

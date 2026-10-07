@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { abrirAcessoFicha } from './equipe-ficha-helpers'
 
 // Todos os serviços são sintéticos. Qualquer destino externo não previsto é bloqueado.
 const clinicas = [{ id: 'clinica-a', nome: 'Clínica A' }, { id: 'clinica-b', nome: 'Clínica B' }]
@@ -69,6 +70,7 @@ async function preparar(page: Page) {
 
 async function abrir(page: Page, nome = 'Administrativa Sintética') {
   await page.getByRole('button', { name: `Ver cadastro de ${nome}`, exact: true }).click()
+  await abrirAcessoFicha(page.getByRole('dialog'))
   return page.getByRole('dialog')
 }
 const seletorA = (page: Page) => page.getByRole('combobox', { name: 'Papel de Clínica A', exact: true })
@@ -129,6 +131,9 @@ test('falha não altera o papel confirmado nem anuncia sucesso', async ({ page }
   await expect(dialog.getByText('Papel atualizado nesta clínica.', { exact: true })).toHaveCount(0)
   await expect(salvarA(page)).toBeEnabled()
   await dialog.getByRole('button', { name: 'Fechar', exact: true }).click()
+  // Seleção de papel feita pelo próprio teste e não salva: a ficha pede descarte (comportamento mantido).
+  await expect(page.getByRole('alertdialog')).toContainText('Descartar alterações desta ficha?')
+  await page.getByRole('button', { name: 'Descartar e fechar', exact: true }).click()
   await abrir(page)
   await expect(seletorA(page)).toHaveValue('proprietaria')
   await expect(salvarA(page)).toBeDisabled()
@@ -163,6 +168,9 @@ test('reabrir, trocar membro e trocar contexto descartam seleção não salva', 
   let dialog = await abrir(page)
   await seletorA(page).selectOption('medico')
   await dialog.getByRole('button', { name: 'Fechar', exact: true }).click()
+  // Seleção de papel feita pelo próprio teste e não salva: a ficha pede descarte (comportamento mantido).
+  await expect(page.getByRole('alertdialog')).toContainText('Descartar alterações desta ficha?')
+  await page.getByRole('button', { name: 'Descartar e fechar', exact: true }).click()
   dialog = await abrir(page)
   await expect(seletorA(page)).toHaveValue('proprietaria')
   await dialog.getByRole('button', { name: 'Fechar', exact: true }).click()
@@ -170,6 +178,9 @@ test('reabrir, trocar membro e trocar contexto descartam seleção não salva', 
   await expect(seletorA(page)).toHaveValue('recepcao')
   await seletorA(page).selectOption('proprietaria')
   await dialog.getByRole('button', { name: 'Fechar', exact: true }).click()
+  // Seleção de papel feita pelo próprio teste e não salva: a ficha pede descarte (comportamento mantido).
+  await expect(page.getByRole('alertdialog')).toContainText('Descartar alterações desta ficha?')
+  await page.getByRole('button', { name: 'Descartar e fechar', exact: true }).click()
   await page.getByRole('button', { name: 'Trocar para Clínica B', exact: true }).click()
   await expect(page.getByRole('status', { name: 'Clínica ativa' })).toContainText('Clínica B')
   await abrir(page, 'Profissional Sintético')
@@ -240,14 +251,17 @@ test('resultado atrasado de salvamento não aparece em outra pessoa ou clínica'
   await seletorA(page).selectOption('recepcao')
   await salvarA(page).click()
   await expect.poll(() => estado.alteracoes.length).toBe(1)
+  // A ficha não fecha durante o salvamento (comportamento mantido): espera o fim antes de trocar de pessoa e clínica.
+  await expect(dialog.getByRole('button', { name: 'Fechar', exact: true })).toBeDisabled()
+  const resposta = page.waitForResponse((response) => response.url().includes('/functions/v1/equipe-acessos') && response.request().postDataJSON()?.acao === 'alterar')
+  espera.liberar()
+  await resposta
+  await expect(dialog.getByRole('button', { name: 'Fechar', exact: true })).toBeEnabled()
   await dialog.getByRole('button', { name: 'Fechar', exact: true }).click()
   await page.getByRole('button', { name: 'Trocar para Clínica B', exact: true }).click()
   await expect(page.getByRole('status', { name: 'Clínica ativa' })).toContainText('Clínica B')
   await abrir(page, 'Profissional Sintético')
   await expect(seletorA(page)).toHaveValue('recepcao')
-  const resposta = page.waitForResponse((response) => response.url().includes('/functions/v1/equipe-acessos') && response.request().postDataJSON()?.acao === 'alterar')
-  espera.liberar()
-  await resposta
   await expect(seletorB(page)).toHaveValue('medico')
   await expect(page.getByText('Papel atualizado nesta clínica.', { exact: true })).toHaveCount(0)
   await expect(salvarA(page)).toBeDisabled()

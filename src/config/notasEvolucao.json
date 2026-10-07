@@ -16,6 +16,7 @@
       "Página “Sobre o sistema” com versão em execução, créditos de desenvolvimento e contexto da clínica."
     ],
     "melhorias": [
+      "Equipe: na ficha, cada contrato aparece em um cartão com situação, vínculo, versão, unidades e jornada; o contrato vigente fica aberto e os demais recolhidos. A remuneração restrita só aparece depois de “Mostrar valor”. Acesso ao sistema ganhou cartões para a situação da conta, o acesso por clínica e o convite, com as mesmas regras e validações.",
       "Equipe: ficha do membro com cabeçalho de identidade (foto, nome, função, selos de tipo, clínicas, acesso e pendências), menu agrupado em Pessoa, Trabalho e Sistema e botão único para atualizar as informações. Visão geral mostra o que falta no cadastro e resumos de contrato, atendimento, acesso e recebimento; Dados pessoais aparecem em cartões com campos vazios como “Não informado”. No celular o cabeçalho rola com o conteúdo e o menu fica fixo no topo.",
       "Equipe: listagem reorganizada com filtros em uma linha, tipo de membro com contagens, selo único de acesso pela clínica ativa, pílulas de clínica e linha expansível com contato e acesso por clínica. Em telas estreitas a coluna de clínicas passa à linha expandida, sem rolagem lateral; o celular mantém os cartões.",
       "Equipe: ficha com Visão geral, navegação lateral no computador e seletor de seção no celular. Formulários e arquivos selecionados são preservados entre seções; documentos aparecem em lista com ações e versões anteriores recolhíveis.",

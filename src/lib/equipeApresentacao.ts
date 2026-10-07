@@ -2,6 +2,7 @@ import type { MembroEquipe } from './equipe'
 import type { AcessoEquipe } from './equipeAcessos'
 import { estadosListaEquipe } from './equipeLista'
 import { camposDoTipo } from './equipeFichaFormulario'
+import { objeto } from './equipeFicha'
 
 // Regras de apresentação da Equipe (listagem e ficha). Só formatam o que já existe; nenhum dado é alterado.
 
@@ -83,4 +84,14 @@ export function naUnidade(nome: string): string {
 /** Valor vazio, pelo mesmo critério usado no campo e na ação do cartão. */
 export function valorVazio(valor: unknown): boolean {
   return valor === null || valor === undefined || valor === false || (typeof valor === 'string' && !valor.trim())
+}
+
+/** Mesmo texto da jornada que o resumo do contrato já mostrava. */
+export function textoJornada(jornada: unknown): string {
+  return (Array.isArray(jornada) ? jornada : []).map(v => { const j = objeto(v); return `Dia ${j.dia}: ${j.inicio}–${j.fim}${j.intervalo_inicio ? ` · intervalo ${j.intervalo_inicio}–${j.intervalo_fim}` : ''}` }).join('; ')
+}
+
+/** Remuneração e periodicidade, como antes: valor ou "Não informado", seguido da periodicidade. */
+export function textoRemuneracao(dados: Record<string, unknown>): string {
+  return `${String(dados.remuneracao ?? '') || 'Não informado'} · ${dados.periodicidade ? rotuloOpcao('contrato', 'periodicidade', dados.periodicidade) : 'periodicidade não informada'}`
 }

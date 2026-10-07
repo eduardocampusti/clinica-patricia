@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { abrirAcessoFicha } from './equipe-ficha-helpers'
 
 const clinicas = [{ id: 'clinica-a', nome: 'Clínica A' }, { id: 'clinica-b', nome: 'Clínica B' }]
 const pessoa = { id: 'pessoa-sintetica', nome_completo: 'Pessoa Sintética', cargo: 'Administração', tipo: 'administrativo',
@@ -89,6 +90,7 @@ test('falhas do serviço preservam preenchimento, liberam botão e não repetem 
   await page.goto('/tests/operacional/equipe-contexto.html')
   await page.getByRole('button', { name: 'Ver cadastro de Pessoa Sintética' }).click()
   const ficha = page.getByRole('dialog')
+  await abrirAcessoFicha(ficha)
   const email = ficha.getByLabel('E-mail de login')
   await email.fill('pessoa@synthetic.invalid')
   await ficha.getByRole('combobox', { name: 'Papel para Clínica A', exact: true }).selectOption('medico')

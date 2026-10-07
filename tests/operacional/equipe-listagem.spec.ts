@@ -105,6 +105,7 @@ test('operação simulada recarrega a lista sem perder filtros ou duplicar pesso
   const e=await preparar(page);await busca(page).fill('Álvaro');await filtrarTipo(page,'profissional_saude')
   await resumoAcesso(page,'um',nomes[0])
   await page.getByRole('button',{name:`Ver cadastro de ${nomes[0]}`,exact:true}).click()
+  await abrirAcessoFicha(page.getByRole('dialog'));
   await page.getByLabel('Papel de Clínica Brotas').selectOption('medico')
   const antes=e.lista;await page.getByRole('button',{name:'Salvar papel',exact:true}).click()
   await expect(page.getByLabel('Papel de Clínica Brotas')).toHaveValue('medico')
@@ -152,7 +153,7 @@ for(const largura of [360,390,430,820,1440])test(`layout ${largura}px, cards/tab
   }
   if(largura>=768)await expect(page.getByRole('columnheader',{name:'Ações'})).toHaveCount(1)
   if(largura===820)for(const botao of await page.getByTestId('equipe-pessoa-um').getByRole('button').all())expect(await botao.evaluate(el=>{const r=el.getBoundingClientRect(),a=el.closest('.equipe-tabela-area')!.getBoundingClientRect();return r.left>=a.left&&r.right<=a.right})).toBe(true)
-  await page.getByRole('button',{name:`Ver cadastro de ${nomes[1]}`,exact:true}).click();await expect(page.getByTestId('painel-gestao-acessos')).toBeVisible();await page.getByRole('button',{name:'Fechar',exact:true}).click()
+  await page.getByRole('button',{name:`Ver cadastro de ${nomes[1]}`,exact:true}).click();await abrirAcessoFicha(page.getByRole('dialog'));await expect(page.getByTestId('painel-gestao-acessos')).toBeVisible();await page.getByRole('button',{name:'Fechar',exact:true}).click()
   await expect(await resumoAcesso(page,'dois',nomes[1])).toContainText('Convite pendente')
   await editarCadastro(page,nomes[1]);await expect(page.getByTestId('tipo-membro-atual')).toContainText('Administrativo ou recepção');await page.getByRole('button',{name:'Cancelar',exact:true}).click()
   expect(e.detalhes).toEqual(['dois','dois'])
