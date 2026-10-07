@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { createPortal } from 'react-dom'
-import { useTable, type ColumnDef, type PaginationState, type Row, type RowSelectionState, type SortingState } from '@tanstack/react-table'
+import { useTable, type ColumnDef, type ExpandedState, type PaginationState, type Row, type RowSelectionState, type SortingState } from '@tanstack/react-table'
 import { ChevronRight, Ellipsis, Info, Search } from 'lucide-react'
 import { DataGrid, DataGridContainer, dataGridFeatures, type DataGridFeatures } from '../../components/reui/data-grid/data-grid'
 import { DataGridTable, DataGridTableRowSelect, DataGridTableRowSelectAll } from '../../components/reui/data-grid/data-grid-table'
@@ -185,6 +185,8 @@ export function EquipeListagem(p: Props) {
   const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 })
   const [sorting, setSorting] = useState<SortingState>([{ id: 'nome', desc: false }])
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+  // Expansão por id da pessoa e sem reinício automático: a linha aberta continua aberta quando a lista recarrega.
+  const [expanded, setExpanded] = useState<ExpandedState>({})
   // Renderers stay stable so opening a dialog does not replace its focus trigger.
   const atual = useRef(p)
   atual.current = p
@@ -236,10 +238,10 @@ export function EquipeListagem(p: Props) {
   const table = useTable({
     features: dataGridFeatures, columns, data: p.carregando ? [] : p.filtrados,
     getRowId: m => m.id, rowCount: p.filtrados.length,
-    state: { pagination, sorting, rowSelection, columnVisibility: { clinicas: gradeCompleta } },
-    enableRowSelection: true, autoResetPageIndex: false,
+    state: { pagination, sorting, rowSelection, expanded, columnVisibility: { clinicas: gradeCompleta } },
+    enableRowSelection: true, autoResetPageIndex: false, autoResetExpanded: false,
     getRowCanExpand: () => true,
-    onPaginationChange: setPagination, onSortingChange: setSorting, onRowSelectionChange: setRowSelection,
+    onPaginationChange: setPagination, onSortingChange: setSorting, onRowSelectionChange: setRowSelection, onExpandedChange: setExpanded,
   })
   const linhas = table.getRowModel().rows
   const selecionadas = Object.values(rowSelection).filter(Boolean).length

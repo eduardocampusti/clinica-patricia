@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { abrirAcessoFicha } from './equipe-ficha-helpers'
 import { conferirTipo, editarCadastro, filtrarTipo, resumoAcesso } from './equipe-listagem-helpers'
 
 test.setTimeout(90_000)
@@ -112,6 +113,24 @@ test('operação simulada recarrega a lista sem perder filtros ou duplicar pesso
   await page.getByRole('button',{name:'Fechar',exact:true}).click()
   await expect(busca(page)).toHaveValue('Álvaro');await conferirTipo(page,'profissional_saude')
   await expect(page.getByTestId('equipe-contagem-pessoas')).toHaveText('1');expect(e.escritas).toBe(1)
+})
+
+test('linha expandida continua aberta quando a lista recarrega',async({page})=>{
+  const e=await preparar(page)
+  const resumo=await resumoAcesso(page,'um',nomes[0]);await expect(resumo).toBeVisible()
+  const detalhes=page.getByRole('button',{name:`Detalhes de ${nomes[0]}`,exact:true})
+  const naGrade=await detalhes.count()>0
+  if(naGrade)await expect(detalhes).toHaveAttribute('aria-expanded','true')
+  // Recarga forçada: operação confirmada na ficha relê a lista.
+  await page.getByRole('button',{name:`Ver cadastro de ${nomes[0]}`,exact:true}).click()
+  await abrirAcessoFicha(page.getByRole('dialog'))
+  await page.getByLabel('Papel de Clínica Brotas').selectOption('medico')
+  const antes=e.lista;await page.getByRole('button',{name:'Salvar papel',exact:true}).click()
+  await expect.poll(()=>e.lista).toBeGreaterThan(antes)
+  await page.getByRole('button',{name:'Fechar',exact:true}).click()
+  await expect(page.getByTestId('resumo-acesso-um')).toBeVisible()
+  await expect(page.getByTestId('resumo-acesso-um')).toContainText('Papel atual: Médico')
+  if(naGrade)await expect(detalhes).toHaveAttribute('aria-expanded','true')
 })
 
 for(const largura of [360,390,430,820,1440])test(`layout ${largura}px, cards/tabela e navegação de Cadastros`,async({page})=>{
