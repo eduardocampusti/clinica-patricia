@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { controleEdicao } from './equipe-listagem-helpers'
 
 type OpcoesEquipe = { compatibilidade?: boolean }
 
@@ -103,5 +104,5 @@ test('modo de compatibilidade explica o bloqueio e mantém consulta legada somen
   await expect(page.getByRole('status').filter({ hasText: 'Consulta de cadastros antigos' })).toBeVisible()
   await expect(page.getByRole('status').filter({ hasText: 'Consulta de cadastros antigos' })).toContainText('cadastro e edição estão bloqueados neste modo')
   await expect(page.getByRole('button', { name: 'Novo membro' })).toBeDisabled()
-  await expect(page.getByRole('button', { name: 'Editar cadastro de Profissional legado' })).toBeDisabled()
+  await expect(await controleEdicao(page, 'Profissional legado')).toBeDisabled()
 })

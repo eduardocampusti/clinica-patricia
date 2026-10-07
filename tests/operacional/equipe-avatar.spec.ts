@@ -36,7 +36,8 @@ for (const largura of [360,390,430,820,1440]) test(`avatar e composição compac
     await expect(page.getByLabel('Ordenar por',{exact:true})).toHaveCount(0)
     const botoes = await foto.getByRole('button').evaluateAll(els => els.map(el => ({top:el.getBoundingClientRect().top,height:el.getBoundingClientRect().height})))
     expect(botoes[0].top).toBe(botoes[1].top)
-    expect(botoes[0].height).toBeGreaterThanOrEqual(44)
+    // Na grade os alvos têm no mínimo 36px; nos cartões, 44px.
+    expect(botoes[0].height).toBeGreaterThanOrEqual(36)
     expect(await foto.evaluate(el => el.getBoundingClientRect().height)).toBeLessThanOrEqual(80)
     await expect(page.locator('.equipe-grade-conjunto .equipe-paginacao')).toBeVisible()
   } else {

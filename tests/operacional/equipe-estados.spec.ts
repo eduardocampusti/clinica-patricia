@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { resumoAcesso } from './equipe-listagem-helpers'
 
 const clinicas = [{ id: 'clinica-a', nome: 'Clínica A' }, { id: 'clinica-b', nome: 'Clínica B' }]
 const nomes = { sem: 'Cadastro Sintético', vinculada: 'Conta Sintética', ativa: 'Acesso Sintético', pendente: 'Convite Sintético', desconhecida: 'Informação Sintética' }
@@ -70,6 +71,8 @@ async function preparar(page: Page) {
 }
 const linha = (page: Page, id: Id) => page.getByTestId(`equipe-pessoa-${id}`)
 async function abrir(page: Page, id: Id) {
+  // Na grade, expande a linha antes da ficha para o resumo da lista ficar legível com o diálogo aberto.
+  await resumoAcesso(page, id, nomes[id])
   await page.getByRole('button', { name: `Ver cadastro de ${nomes[id]}`, exact: true }).click()
   await expect(page.getByTestId('painel-gestao-acessos')).toBeVisible()
   return page.getByRole('dialog')
@@ -93,7 +96,8 @@ test('operação confirmada atualiza painel e lista sem F5 e preserva filtros', 
 
 test('conta, convite e acesso por clínica são distintos e nenhum campo ausente vira ausência', async ({ page }) => {
   const estado = await preparar(page)
-  await expect(linha(page, 'desconhecida')).toContainText('Conta e acesso não confirmados')
+  await expect(linha(page, 'desconhecida')).toContainText('Não confirmado')
+  await expect(await resumoAcesso(page, 'desconhecida', nomes.desconhecida)).toContainText('Conta e acesso não confirmados')
   expect(estado.leiturasAcesso).toEqual([])
   for (const id of ['sem', 'vinculada', 'ativa', 'pendente', 'desconhecida'] as Id[]) {
     const ficha = await abrir(page, id)
@@ -132,7 +136,7 @@ test('falha de leitura e conta sem e-mail não são apresentadas como sem conta'
   await page.getByRole('button', { name: `Ver cadastro de ${nomes.ativa}`, exact: true }).click()
   ficha = page.getByRole('dialog')
   await expect(ficha.getByText('Consulta de acessos não concluída', { exact: true })).toBeVisible()
-  await expect(page.getByTestId('resumo-acesso-ativa')).toHaveText('Conta e acesso não confirmados')
+  await expect(page.getByTestId('resumo-acesso-ativa').locator('.equipe-conta')).toHaveText('Conta e acesso não confirmados')
   await expect(ficha.getByRole('button', { name: 'Conceder acesso', exact: true })).toHaveCount(0)
   expect(estado.escritas).toEqual([])
 })
@@ -150,7 +154,7 @@ test('falha conhecida mantém estado confirmado; resultado incerto não inventa 
   const leiturasAntes = estado.leiturasLista
   await ficha.getByRole('button', { name: 'Conceder acesso', exact: true }).first().click()
   await expect(ficha).toContainText('Situação da última consulta')
-  await expect(page.getByTestId('resumo-acesso-vinculada')).toHaveText('Conta e acesso não confirmados')
+  await expect(page.getByTestId('resumo-acesso-vinculada').locator('.equipe-conta')).toHaveText('Conta e acesso não confirmados')
   await expect(seletor).toHaveValue('recepcao')
   await expect(ficha.getByText('Operação concluída', { exact: true })).toHaveCount(0)
   expect(estado.escritas).toHaveLength(2)
@@ -195,7 +199,8 @@ test('pessoa e clínica não reaproveitam conta, estado ou papel do contexto ant
   await expect(ficha.getByRole('combobox', { name: 'Papel de Clínica A', exact: true })).toHaveCount(0)
   await ficha.getByRole('button', { name: 'Fechar', exact: true }).click()
   await page.getByRole('button', { name: 'Trocar para Clínica B', exact: true }).click()
-  await expect(page.getByTestId('resumo-acesso-ativa')).toContainText('Sem acesso nesta clínica')
+  await expect(page.getByTestId('equipe-pessoa-ativa')).toBeVisible()
+  await expect(await resumoAcesso(page, 'ativa', nomes.ativa)).toContainText('Sem acesso nesta clínica')
   ficha = await abrir(page, 'ativa')
   await expect(ficha).toContainText('Papel do acesso suspenso: Médico')
   await expect(page.getByTestId('resumo-acesso-ativa')).toContainText('Acesso suspenso')

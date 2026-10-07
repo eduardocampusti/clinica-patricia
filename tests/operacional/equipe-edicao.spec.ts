@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { editarCadastro } from './equipe-listagem-helpers'
 
 type Clinica = { id: string; nome: string }
 const clinicas: Clinica[] = [{ id: 'clinica-a', nome: 'Clínica A' }, { id: 'clinica-b', nome: 'Clínica B' }]
@@ -47,12 +48,12 @@ async function simular(page: Page, opcoes: Opcoes = {}) {
     return json([])
   })
   await page.goto('/tests/operacional/equipe-contexto.html')
-  await expect(page.getByRole('button', { name: 'Editar cadastro de Pessoa Sintética' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Ver cadastro de Pessoa Sintética', exact: true })).toBeVisible()
   return estado
 }
 
 async function editar(page: Page) {
-  await page.getByRole('button', { name: 'Editar cadastro de Pessoa Sintética' }).click()
+  await editarCadastro(page, 'Pessoa Sintética')
   const dialog = page.getByRole('dialog', { name: 'Editar membro da equipe', exact: true })
   await expect(dialog).toBeVisible()
   return dialog
@@ -166,7 +167,7 @@ test('falta de autorização global recusa sem revelar unidade oculta ou ajustar
 
 test('detalhe incompleto bloqueia edição e não envia campos vazios', async ({ page }) => {
   const estado = await simular(page, { detalheAlterado: { telefone: undefined } })
-  await page.getByRole('button', { name: 'Editar cadastro de Pessoa Sintética' }).click()
+  await editarCadastro(page, 'Pessoa Sintética')
   await expect(page.getByRole('alert')).toContainText('Não foi possível carregar todos os dados para editar')
   await expect(page.getByRole('dialog')).toHaveCount(0)
   expect(estado.envios).toHaveLength(0)

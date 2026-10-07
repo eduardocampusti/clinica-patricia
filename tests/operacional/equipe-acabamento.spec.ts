@@ -1,4 +1,5 @@
 import { expect, test, type Locator, type Page } from '@playwright/test'
+import { editarCadastro } from './equipe-listagem-helpers'
 
 const pasta = 'scratch/equipe-29'
 const clinicas = [{ id: 'clinica-a', nome: 'Clínica A' }, { id: 'clinica-b', nome: 'Clínica B' }]
@@ -103,7 +104,7 @@ test('acabamento Equipe: formulários sem cortes, uma rolagem, teclado e viewpor
     await expect(page.getByRole('alertdialog')).toContainText('Descartar alterações não salvas?')
     await page.getByRole('button', { name: 'Descartar alterações', exact: true }).click()
     await expect(dialog).toHaveCount(0)
-    await page.getByRole('button', { name: `Editar cadastro de ${nome}`, exact: true }).click()
+    const origemEdicao = await editarCadastro(page, nome)
     dialog = page.getByRole('dialog', { name: 'Editar membro da equipe', exact: true })
     await expect(dialog.getByTestId('vinculos-existentes')).toContainText('Clínica B')
     await expect(dialog.getByTestId('tipo-membro-atual')).toContainText('Profissional de saúde')
@@ -125,7 +126,7 @@ test('acabamento Equipe: formulários sem cortes, uma rolagem, teclado e viewpor
     }
     await page.keyboard.press('Escape')
     await expect(dialog).toHaveCount(0)
-    await expect(page.getByRole('button', { name: `Editar cadastro de ${nome}`, exact: true })).toBeFocused()
+    await expect(origemEdicao).toBeFocused()
     expect(estado.escritas).toBe(0)
     await page.unrouteAll({ behavior: 'wait' })
   }

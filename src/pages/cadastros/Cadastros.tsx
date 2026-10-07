@@ -34,6 +34,7 @@ function revelarAba(botao: HTMLButtonElement) {
 function Cadastros({ clinicaAtivaId, carregandoClinica, usuarioId }: CadastrosProps) {
   const [aba, setAba] = useState<Aba>('equipe')
   const abaAtivaRef = useRef<HTMLButtonElement>(null)
+  const [acaoCabecalho, setAcaoCabecalho] = useState<HTMLDivElement | null>(null)
   const { papel, souProprietaria } = usePapelNaClinica(usuarioId, clinicaAtivaId)
   const podeGerenciarAgenda = papel === 'proprietaria' || papel === 'recepcao'
 
@@ -43,11 +44,15 @@ function Cadastros({ clinicaAtivaId, carregandoClinica, usuarioId }: CadastrosPr
 
   return (
     <div className="min-w-0 max-w-full space-y-6">
-      <div>
-        <h1 className="texto-titulo-tela text-[var(--texto-principal)]">Cadastros</h1>
-        <p className="text-sm text-[var(--texto-secundario)]">
-          Pessoas, profissionais, especialidades e serviços das clínicas.
-        </p>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="min-w-0">
+          <h1 className="texto-titulo-tela text-[var(--texto-principal)]">Cadastros</h1>
+          <p className="text-sm text-[var(--texto-secundario)]">
+            Pessoas, profissionais, especialidades e serviços das clínicas.
+          </p>
+        </div>
+        {/* A aba ativa pode publicar aqui sua ação principal (hoje, Novo membro da Equipe). */}
+        <div ref={setAcaoCabecalho} className="flex shrink-0 empty:hidden" />
       </div>
 
       <nav aria-label="Seções de Cadastros" className="flex min-w-0 max-w-full gap-1 overflow-x-auto overscroll-x-contain border-b border-[var(--borda)] p-1">
@@ -77,7 +82,7 @@ function Cadastros({ clinicaAtivaId, carregandoClinica, usuarioId }: CadastrosPr
         })}
       </nav>
 
-      {aba === 'equipe' && <Equipe key={`${usuarioId}:${clinicaAtivaId}:${souProprietaria}`} clinicaAtivaId={clinicaAtivaId} souProprietaria={souProprietaria} />}
+      {aba === 'equipe' && <Equipe key={`${usuarioId}:${clinicaAtivaId}:${souProprietaria}`} clinicaAtivaId={clinicaAtivaId} souProprietaria={souProprietaria} acaoCabecalho={acaoCabecalho} />}
       {aba === 'especialidades' && <Especialidades souProprietaria={souProprietaria} />}
       {aba === 'profissionais' && (
         <Profissionais

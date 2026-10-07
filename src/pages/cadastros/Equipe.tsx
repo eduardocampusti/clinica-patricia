@@ -29,7 +29,7 @@ import {
 } from '../../lib/equipe'
 
 interface Especialidade { id: string; nome: string }
-interface EquipeProps { clinicaAtivaId: string | null; souProprietaria: boolean }
+interface EquipeProps { clinicaAtivaId: string | null; souProprietaria: boolean; acaoCabecalho?: HTMLElement | null }
 
 interface AtualizacaoAcessoEquipe {
   onConsultaAcesso: (membroId: string, contexto: string, acesso: AcessoEquipe | null) => void
@@ -476,7 +476,7 @@ async function consultarDetalheEquipe(membroId: string, clinicaId: string) {
   return { detalhe: extrairDetalheEquipe(data), error: error ? { ...error, status } : null }
 }
 
-function Equipe({ clinicaAtivaId, souProprietaria }: EquipeProps) {
+function Equipe({ clinicaAtivaId, souProprietaria, acaoCabecalho }: EquipeProps) {
   const [membros, setMembros] = useState<MembroEquipe[]>([])
   const fotos=useEquipeFotos(clinicaAtivaId,membros.map(m=>m.id).sort().join(','),souProprietaria)
   const [acessosConsultados, setAcessosConsultados] = useState<Record<string, AcessoEquipe | null>>({})
@@ -829,7 +829,7 @@ function Equipe({ clinicaAtivaId, souProprietaria }: EquipeProps) {
       onNovo={abrirNovo} onVer={m => void abrirFicha(m)} onEditar={m => void abrirEdicao(m)}
       onReconsultar={() => void carregar()} proprietaria={souProprietaria}
       bloqueado={compatibilidade || indisponivel} carregando={carregando} indisponivel={indisponivel}
-      semPermissao={erro === erroEquipeSeguro(null, false, 403).mensagem} />
+      semPermissao={erro === erroEquipeSeguro(null, false, 403).mensagem} acaoCabecalho={acaoCabecalho} />
 
     {novoMembroId && <button type="button" className="equipe-continuar-cadastro" disabled={continuando} onClick={()=>void continuarCadastro()}>{continuando?'Abrindo ficha…':'Continuar na ficha criada'}</button>}
     {visualizando && <FichaMembro key={`${visualizando.id}:${clinicaAtivaId}`} fotos={fotos} membro={visualizando} detalhe={detalheFicha} clinicaAtivaId={clinicaAtivaId} carregando={carregandoFicha} erro={erroFicha} indisponivel={fichaIndisponivel} souProprietaria={souProprietaria} onFechar={fecharFicha} onEditar={()=>{const membro=visualizando;fecharFicha();void abrirEdicao(membro)}} onConsultaAcesso={registrarConsultaAcesso} onOperacaoAcesso={atualizarAposOperacaoAcesso} />}

@@ -17,7 +17,8 @@ const dados: MembroEquipe[] = [
   { id:'foto', nome_completo:'Ana Oliveira', cargo:'Médico(a)', tipo:'profissional_saude', profissao:'Clínica médica', email_contato:'ana@exemplo.invalid' },
   { id:'iniciais', nome_completo:'Bruno Costa', cargo:'Recepcionista', tipo:'administrativo', profissao:null, email_contato:null },
   { id:'falha', nome_completo:'Carla Almeida de Souza — nome extenso para conferir múltiplos vínculos', cargo:'Serviços gerais', tipo:'apoio', profissao:null, email_contato:null },
-].map((m,i) => ({ ...m, telefone:null, conselho_classe:null, registro_conselho:null, conselho_uf:null, especialidade_id:null, especialidade_nome:null, acesso_status:i===2?'sem_conta':'ativo_na_unidade', clinicas:i===2?clinicas:[clinicas[0]], revisao:1 })) as MembroEquipe[]
+// Profissional de saúde com conselho/registro, para a linha secundária mostrar o e-mail de contato.
+].map((m,i) => ({ ...m, telefone:null, conselho_classe:i===0?'CRM':null, registro_conselho:i===0?'00000':null, conselho_uf:i===0?'BA':null, especialidade_id:null, especialidade_nome:null, acesso_status:i===2?'sem_conta':'ativo_na_unidade', clinicas:i===2?clinicas:[clinicas[0]], revisao:1 })) as MembroEquipe[]
 
 export function Demonstracao() {
   const [clinica,setClinica] = useState(clinicas[0])

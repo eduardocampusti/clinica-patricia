@@ -35,7 +35,10 @@ async function preparar(page:Page, adiar=false) {
 }
 const linhas=(page:Page)=>page.locator('.equipe-listagem [data-row-id]')
 const ids=(page:Page)=>linhas(page).evaluateAll(els=>els.map(e=>e.getAttribute('data-row-id')))
-const selecionadas=(page:Page,n:number)=>expect(page.getByRole('status').filter({hasText:new RegExp(`^${n} pessoa(s)? selecionada(s)?$`)})).toBeVisible()
+// A barra de seleção só aparece com ao menos uma pessoa selecionada.
+const selecionadas=(page:Page,n:number)=>n===0
+  ?expect(page.getByRole('status').filter({hasText:/pessoas? selecionadas?/})).toHaveCount(0)
+  :expect(page.getByRole('status').filter({hasText:new RegExp(`^${n} pessoa(s)? selecionada(s)?$`)})).toBeVisible()
 const todas=(page:Page)=>page.getByRole('checkbox',{name:'Selecionar todas as pessoas desta página',exact:true})
 const proxima=(page:Page)=>page.getByRole('button',{name:'Próxima página',exact:true})
 const busca=(page:Page)=>page.getByRole('searchbox',{name:'Buscar por nome, cargo ou profissão'})
@@ -70,7 +73,8 @@ test('ordena antes de paginar, cabeçalho e tamanhos 10/25/50; contagem filtrada
 test('carga atrasada não mostra totais nem grade vazia; resposta alimenta a mesma listagem',async({page})=>{
   const e=await preparar(page,true)
   await expect(page.getByTestId('equipe-contagem-pessoas')).toHaveCount(0)
-  await expect(page.getByRole('table')).toHaveCount(0)
+  // O carregamento usa linhas de esqueleto na própria grade, sem pessoas nem estado vazio.
+  await expect(linhas(page)).toHaveCount(0)
   await expect(page.getByText('Nenhum membro cadastrado neste escopo',{exact:true})).toHaveCount(0)
   e.liberar();await expect(linhas(page)).toHaveCount(10)
   await expect(page.getByTestId('equipe-contagem-pessoas')).toHaveText('36')

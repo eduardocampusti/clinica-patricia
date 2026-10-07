@@ -1,6 +1,31 @@
 # Equipe — índice do módulo
 
 
+## Equipe37 — listagem Equipe & acessos, Fase 1 rodada 2 local, 2026-10-06 -03:00
+
+Claude Code. Visual aprovado pelo usuário no computador e tema escuro; ajustes da
+revisão implementados localmente, **sem commit/push/publicação**. Só apresentação:
+consultas, RLS, tipos, permissões, sidebar, topbar e rotas preservados. Grade estreita
+(tablet ou barra lateral aberta) oculta Clínicas e cabe sem rolagem; linha expandida só
+Contato/Acesso por clínica; nota condicional; nome 2 linhas/e-mail 1 linha; selo
+“Acesso suspenso” vermelho e “Convite pendente” âmbar; selects empilhados até 480px.
+Nenhum token de cor alterado (azul-petróleo era cor fictícia dos harnesses).
+Verificado: prévia real 5173 do zero, sessão Proprietário(a) Brotas, só leitura, sem
+React duplicado; linha expandida e menu por teclado; chamadas iguais à versão anterior.
+Comparação completa com stash nos três tamanhos: 0 falhas novas, 0 corrigidas
+(51/50/53 anteriores). Conferência manual do agente no app real: foco após editar pelo
+menu e alinhamento compacto corrigidos; specs reexecutadas sem falha nova. tsc, lint e build passaram. Causa do React duplicado: cache
+`node_modules/.vite` regravado a cada início do Vite (define com hora) e compartilhado
+entre servidores simultâneos; usar um servidor Vite por vez.
+**Pendência antes da Fase 2:** falhas antigas das specs de fichas (painel de acesso
+desde a etapa36, papéis, foto/recebimento, acabamento) e 2 de equipe-grid no celular,
+todas reproduzidas na versão anterior; ficha pede descarte ao fechar sem alteração
+(estado em memória, etapa36). Próxima ação: revisão final e commit pelo usuário.
+Branch codex/resgate-local-2026-09-26, HEAD fc045e0, alterações não commitadas.
+
+[Escopo, decisões, verificações e limites](<37-EVOLUCAO-VISUAL-LISTAGEM.md>).
+
+
 ## Etapas35–36 — publicação autorizada em preparação, 2026-10-06 16:06:15 -03:00
 
 O usuário autorizou commit, envio à branch codex/resgate-local-2026-09-26 e

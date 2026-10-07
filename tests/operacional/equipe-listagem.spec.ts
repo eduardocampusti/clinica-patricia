@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { conferirTipo, editarCadastro, filtrarTipo, resumoAcesso } from './equipe-listagem-helpers'
 
 test.setTimeout(90_000)
 const clinicas = [{id:'clinica-a',nome:'Clínica Brotas'},{id:'clinica-b',nome:'Clínica Ipupiara'}]
@@ -42,18 +43,27 @@ test('busca normalizada, combinação e limpeza; contagens por pessoa e sem cons
   await expect(page.getByTestId('equipe-contagem-pessoas')).toHaveText('3')
   await expect(page.getByTestId('equipe-contagem-saude')).toHaveText('1')
   await expect(page.getByTestId('equipe-contagem-demais')).toHaveText('2')
+  // Saúde sem conselho/registro sinaliza a pendência; demais mostram e-mail ou a ausência dele.
+  await expect(page.getByTestId('equipe-pessoa-um')).toContainText('Conselho e registro pendentes')
+  await expect(page.getByTestId('equipe-pessoa-dois')).toContainText('Sem e-mail de contato')
+  const segmentado=await page.getByLabel('Tipo de membro',{exact:true}).count()===0
+  if(segmentado)for(const [valor,n] of [['todos','3'],['profissional_saude','1'],['administrativo','1'],['apoio','1'],['outro','0']])await expect(page.getByTestId(`equipe-segmento-${valor}`)).toHaveText(n)
   const leituras=e.lista
   for(const termo of ['  ALVARO   DE   SA  ','clinica MEDICA','MEDICO']){
     await busca(page).fill(termo);await expect(page.getByTestId('equipe-contagem-pessoas')).toHaveText('1');await expect(page.getByTestId('equipe-pessoa-um')).toBeVisible()
   }
-  await page.getByLabel('Tipo de membro',{exact:true}).selectOption('administrativo')
-  await expect(page.getByText('Nenhum resultado para os filtros',{exact:true})).toBeVisible()
+  await filtrarTipo(page,'administrativo')
+  await expect(page.getByText('Nenhuma pessoa encontrada',{exact:true})).toBeVisible()
   await expect(page.getByTestId('equipe-contagem-pessoas')).toHaveText('0')
+  // Os números dos segmentos seguem a busca e ignoram o tipo escolhido.
+  if(segmentado)await expect(page.getByTestId('equipe-segmento-todos')).toHaveText('1')
   await limpar(page).click();await expect(busca(page)).toHaveValue('')
   await page.getByLabel('Vínculo cadastral com clínica',{exact:true}).selectOption('clinica-b')
   await expect(page.getByTestId('equipe-contagem-pessoas')).toHaveText('1')
   await expect(page.getByLabel('Selecionar clínica',{exact:true})).toHaveValue('clinica-a')
-  await expect(page.getByTestId('resumo-acesso-um')).toContainText('Acesso não confirmado')
+  await expect(await resumoAcesso(page,'um',nomes[0])).toContainText('Não confirmado')
+  // A nota só acompanha clínicas não confirmadas.
+  await expect(page.getByText(/^Não confirmado não significa sem acesso/)).toBeVisible()
   await expect(page.getByTestId('resumo-acesso-um')).not.toContainText('Acesso ativo')
   await limpar(page).click();await expect(page.getByTestId('equipe-contagem-pessoas')).toHaveText('3')
   expect(e.lista).toBe(leituras);expect(e.acessos).toEqual([]);expect(e.escritas).toBe(0)
@@ -61,7 +71,7 @@ test('busca normalizada, combinação e limpeza; contagens por pessoa e sem cons
 
 test('estado por clínica, desconhecido, contexto e foco preservados ao fechar ficha; ações corretas',async({page})=>{
   const e=await preparar(page)
-  await expect(page.getByTestId('resumo-acesso-tres')).toContainText('Conta e acesso não confirmados')
+  await expect(await resumoAcesso(page,'tres',nomes[2])).toContainText('Conta e acesso não confirmados')
   await expect(page.getByTestId('resumo-acesso-tres')).not.toContainText('Sem conta vinculada')
   await busca(page).fill('ALVARO');await page.getByLabel('Vínculo cadastral com clínica',{exact:true}).selectOption('clinica-b')
   const botao=page.getByRole('button',{name:`Ver cadastro de ${nomes[0]}`,exact:true});await botao.click()
@@ -69,9 +79,10 @@ test('estado por clínica, desconhecido, contexto e foco preservados ao fechar f
   await expect(page.getByRole('dialog')).toContainText('Acesso suspenso')
   await page.getByRole('button',{name:'Fechar',exact:true}).click()
   await expect(busca(page)).toHaveValue('ALVARO');await expect(page.getByLabel('Vínculo cadastral com clínica',{exact:true})).toHaveValue('clinica-b')
-  await expect(botao).toBeFocused();await expect(page.getByTestId('resumo-acesso-um')).toContainText('Clínica Ipupiara')
+  await expect(botao).toBeFocused();await expect(await resumoAcesso(page,'um',nomes[0])).toContainText('Clínica Ipupiara')
   await expect(page.getByTestId('resumo-acesso-um')).toContainText('Acesso suspenso');await expect(page.getByTestId('resumo-acesso-um')).not.toContainText('Acesso ativo')
-  await page.getByRole('button',{name:`Editar cadastro de ${nomes[0]}`,exact:true}).click()
+  await expect(page.getByText(/^Não confirmado não significa sem acesso/)).toHaveCount(0)
+  await editarCadastro(page,nomes[0])
   await expect(page.getByTestId('tipo-membro-atual')).toContainText('Profissional de saúde');await page.getByRole('button',{name:'Cancelar',exact:true}).click()
   expect(e.detalhes.every(id=>id==='um')).toBe(true);expect(e.acessos.every(id=>id==='um')).toBe(true);expect(e.escritas).toBe(0)
 })
@@ -90,7 +101,8 @@ test('vazio, erro com recuperação e permissão recusada são estados distintos
 })
 
 test('operação simulada recarrega a lista sem perder filtros ou duplicar pessoas',async({page})=>{
-  const e=await preparar(page);await busca(page).fill('Álvaro');await page.getByLabel('Tipo de membro',{exact:true}).selectOption('profissional_saude')
+  const e=await preparar(page);await busca(page).fill('Álvaro');await filtrarTipo(page,'profissional_saude')
+  await resumoAcesso(page,'um',nomes[0])
   await page.getByRole('button',{name:`Ver cadastro de ${nomes[0]}`,exact:true}).click()
   await page.getByLabel('Papel de Clínica Brotas').selectOption('medico')
   const antes=e.lista;await page.getByRole('button',{name:'Salvar papel',exact:true}).click()
@@ -98,7 +110,7 @@ test('operação simulada recarrega a lista sem perder filtros ou duplicar pesso
   await expect.poll(()=>e.lista).toBeGreaterThan(antes)
   await expect(page.getByTestId('resumo-acesso-um')).toContainText('Papel atual: Médico')
   await page.getByRole('button',{name:'Fechar',exact:true}).click()
-  await expect(busca(page)).toHaveValue('Álvaro');await expect(page.getByLabel('Tipo de membro',{exact:true})).toHaveValue('profissional_saude')
+  await expect(busca(page)).toHaveValue('Álvaro');await conferirTipo(page,'profissional_saude')
   await expect(page.getByTestId('equipe-contagem-pessoas')).toHaveText('1');expect(e.escritas).toBe(1)
 })
 
@@ -108,13 +120,22 @@ for(const largura of [360,390,430,820,1440])test(`layout ${largura}px, cards/tab
   await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true)
   for(const m of ['um','dois','tres']){
     const pessoa=page.getByTestId(`equipe-pessoa-${m}`);await expect(pessoa).toBeVisible()
-    for(const b of await pessoa.getByRole('button').all())expect(await b.evaluate(el=>el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44)
+    // Alvos de no mínimo 36px na grade e 44px nos cartões.
+    for(const b of await pessoa.getByRole('button').all())expect(await b.evaluate(el=>el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(largura<768?44:36)
   }
   await page.screenshot({path:`scratch/equipe-reui-visual/${largura}-lista.png`,fullPage:true})
+  // Tablet: sem a coluna Clínicas, Acesso e ações cabem sem rolagem horizontal.
+  if(largura===820){
+    await expect(page.getByRole('columnheader',{name:'Clínicas'})).toHaveCount(0)
+    await expect(page.getByRole('columnheader',{name:'Acesso'})).toBeInViewport({ratio:1})
+    expect(await page.locator('.equipe-tabela-area [data-slot=scroll-area-viewport]').evaluate(el=>el.scrollWidth<=el.clientWidth+1)).toBe(true)
+    await expect(page.locator('.equipe-tabela-area [data-slot=data-grid-scrollbar][data-orientation=horizontal]')).toHaveCount(0)
+  }
+  if(largura>=768)await expect(page.getByRole('columnheader',{name:'Ações'})).toHaveCount(1)
   if(largura===820)for(const botao of await page.getByTestId('equipe-pessoa-um').getByRole('button').all())expect(await botao.evaluate(el=>{const r=el.getBoundingClientRect(),a=el.closest('.equipe-tabela-area')!.getBoundingClientRect();return r.left>=a.left&&r.right<=a.right})).toBe(true)
   await page.getByRole('button',{name:`Ver cadastro de ${nomes[1]}`,exact:true}).click();await expect(page.getByTestId('painel-gestao-acessos')).toBeVisible();await page.getByRole('button',{name:'Fechar',exact:true}).click()
-  await expect(page.getByTestId('resumo-acesso-dois')).toContainText('Convite pendente')
-  await page.getByRole('button',{name:`Editar cadastro de ${nomes[1]}`,exact:true}).click();await expect(page.getByTestId('tipo-membro-atual')).toContainText('Administrativo ou recepção');await page.getByRole('button',{name:'Cancelar',exact:true}).click()
+  await expect(await resumoAcesso(page,'dois',nomes[1])).toContainText('Convite pendente')
+  await editarCadastro(page,nomes[1]);await expect(page.getByTestId('tipo-membro-atual')).toContainText('Administrativo ou recepção');await page.getByRole('button',{name:'Cancelar',exact:true}).click()
   expect(e.detalhes).toEqual(['dois','dois'])
   const nav=page.getByRole('navigation',{name:'Seções de Cadastros'});await nav.getByRole('button',{name:'Serviços',exact:true}).click();await expect(nav.getByRole('button',{name:'Serviços',exact:true})).toHaveAttribute('aria-pressed','true')
   await nav.getByRole('button',{name:'Equipe & acessos',exact:true}).click();await expect(page.getByTestId('equipe-pessoa-um')).toBeVisible()
@@ -131,7 +152,7 @@ test('Ipupiara e tema escuro: textos/foco, contraste e resultado contido',async(
     const contrastes = await page.evaluate(() => {
       const canvas = document.createElement('canvas'), ctx = canvas.getContext('2d')!
       const luz = (rgb:number[]) => rgb.slice(0,3).map(n=>{const c=n/255;return c<=.04045?c/12.92:((c+.055)/1.055)**2.4}).reduce((a,n,i)=>a+n*[.2126,.7152,.0722][i],0)
-      return ['.equipe-botao-principal','#equipe-busca','.equipe-contagem','.equipe-estado-ativo'].map(seletor=>{
+      return ['.equipe-botao-principal','#equipe-busca','.equipe-info-lista','.equipe-selo-ativo','.equipe-selo-neutro'].map(seletor=>{
         const el=document.querySelector(seletor)!, estilo=getComputedStyle(el), ancestrais:Element[]=[]
         for(let n:Element|null=el;n;n=n.parentElement)ancestrais.unshift(n)
         ctx.clearRect(0,0,1,1);for(const n of ancestrais){ctx.fillStyle=getComputedStyle(n).backgroundColor;ctx.fillRect(0,0,1,1)}
