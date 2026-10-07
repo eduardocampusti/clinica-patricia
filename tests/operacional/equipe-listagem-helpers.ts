@@ -20,22 +20,32 @@ export async function conferirTipo(page: Page, valor: string) {
   await expect(segmento(page, valor)).toBeChecked()
 }
 
+/**
+ * Espera a pessoa aparecer na grade ou nos cartões antes de escolher o caminho.
+ * Ler count() uma única vez falhava quando a lista ainda estava recarregando.
+ */
+async function naGrade(grade: Locator, cartao: Locator): Promise<boolean> {
+  await expect(grade.or(cartao).filter({ visible: true }).first()).toBeVisible()
+  return await grade.filter({ visible: true }).count() > 0
+}
+
 /** Na grade (768px ou mais) o acesso por clínica fica na linha expandida; nos cartões, sempre visível. */
 export async function resumoAcesso(page: Page, id: string, nome: string): Promise<Locator> {
   const detalhes = page.getByRole('button', { name: `Detalhes de ${nome}`, exact: true })
-  if (await detalhes.count() && await detalhes.getAttribute('aria-expanded') === 'false') await detalhes.click()
-  return page.getByTestId(`resumo-acesso-${id}`)
+  const resumo = page.getByTestId(`resumo-acesso-${id}`)
+  if (await naGrade(detalhes, resumo) && await detalhes.getAttribute('aria-expanded') === 'false') await detalhes.click()
+  return resumo
 }
 
 /** Na grade a edição fica em "Mais ações"; nos cartões, no botão Editar da própria pessoa. */
 export async function editarCadastro(page: Page, nome: string) {
   const menu = page.getByRole('button', { name: `Mais ações para ${nome}`, exact: true })
-  if (await menu.count()) {
+  const botao = page.getByRole('button', { name: `Editar cadastro de ${nome}`, exact: true })
+  if (await naGrade(menu, botao)) {
     await menu.click()
     await page.getByRole('menuitem', { name: 'Editar cadastro', exact: true }).click()
     return menu
   }
-  const botao = page.getByRole('button', { name: `Editar cadastro de ${nome}`, exact: true })
   await botao.click()
   return botao
 }
@@ -43,9 +53,10 @@ export async function editarCadastro(page: Page, nome: string) {
 /** Item ou botão de edição de uma pessoa, para conferir estado desabilitado. */
 export async function controleEdicao(page: Page, nome: string): Promise<Locator> {
   const menu = page.getByRole('button', { name: `Mais ações para ${nome}`, exact: true })
-  if (await menu.count()) {
+  const botao = page.getByRole('button', { name: `Editar cadastro de ${nome}`, exact: true })
+  if (await naGrade(menu, botao)) {
     await menu.click()
     return page.getByRole('menuitem', { name: 'Editar cadastro', exact: true })
   }
-  return page.getByRole('button', { name: `Editar cadastro de ${nome}`, exact: true })
+  return botao
 }
