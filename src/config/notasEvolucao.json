@@ -58,6 +58,7 @@
       "Equipe: a gestão de acessos por clínica foi instalada no Supabase autorizado e publicada na Edge Function, com consulta real de acesso em Brotas e estado vazio correto em Ipupiara; convite e aceite aguardam redirect allowlisted e conta de teste autorizada."
     ],
     "correcoes": [
+      "Dashboard do Proprietário(a): acesso direto aos cadastros administrativos e ao Financeiro da clínica selecionada, com orientação sobre as opções existentes no menu Equipe. Os atalhos seguem as permissões existentes.",
       "Equipe: conflitos de revisão nas novas fichas, fotos e documentos retornam a orientação de reconsulta, sem repetição automática da operação pelo servidor.",
       "Equipe: serviços de fotos, recebimento e fichas usam a distribuição de imagens compatível com o ambiente do Supabase, corrigindo a falha de inicialização das funções.",
       "Cadastros no celular: as abas deslizam dentro da própria faixa, mantendo a página na largura da tela e a seção selecionada ou em foco visível.",

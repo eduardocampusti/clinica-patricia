@@ -277,6 +277,7 @@ function App() {
       onSair={handleSignOut}
     >
       {tela === 'dashboard' && <Dashboard clinicaAtivaId={clinicaAtivaId} clinicaNome={clinicaAtiva?.nome ?? 'Clínica selecionada'} papel={papel}
+        unidade={lerRotaInterna(caminhoAtual)?.unidade} onCadastros={() => setTela('equipe')}
         onNovoPaciente={() => encaminharPainel('pacientes', { novoPaciente: true })}
         onNovoAgendamento={() => encaminharPainel('agenda', { novoAgendamento: true })}
         onAbrirPaciente={pacienteId => encaminharPainel('pacientes', { pacienteId })}

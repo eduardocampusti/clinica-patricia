@@ -1,9 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { supabase } from '../lib/supabase'
 import { iniciais } from '../lib/texto'
 import { FeedbackAlert } from '../components/feedback/FeedbackAlert'
 import type { Papel } from '../hooks/usePapelNaClinica'
 import PainelRecepcao, { type AcoesPainelRecepcao } from '../components/dashboard/PainelRecepcao'
+import type { ClinicBrandSlug } from '../config/clinicBrands'
+import { caminhoInterno } from '../lib/routePaths'
 
 function paraISODate(data: Date): string {
   const ano = data.getFullYear()
@@ -26,7 +28,7 @@ interface DashboardProps {
   clinicaAtivaId: string | null
 }
 
-function DashboardBasico({ clinicaAtivaId }: DashboardProps) {
+function DashboardBasico({ clinicaAtivaId, administracao }: DashboardProps & { administracao?: ReactNode }) {
   const [proximoPaciente, setProximoPaciente] = useState<ProximoPaciente | null>(null)
   const [carregandoProximo, setCarregandoProximo] = useState(true)
   const [erroProximo, setErroProximo] = useState(false)
@@ -80,6 +82,7 @@ function DashboardBasico({ clinicaAtivaId }: DashboardProps) {
       <h1 className="texto-titulo-tela text-[var(--texto-principal)]">Olá!</h1>
       <p className="mt-1.5 text-sm text-[var(--texto-secundario)]">{dataFormatada} · Painel do dia</p>
     </header>
+    {administracao}
     <section className="rounded-[18px] bg-[var(--fundo-card)] px-5 py-4 shadow-[var(--sombra-neutra)]">
       {carregandoProximo ? <p role="status" className="text-sm text-[var(--texto-secundario)]">Carregando próximo paciente…</p>
         : erroProximo ? <FeedbackAlert variant="warning" title="Próximo paciente indisponível" description="Não foi possível consultar o próximo paciente." />
@@ -101,8 +104,28 @@ function DashboardBasico({ clinicaAtivaId }: DashboardProps) {
   </div>
 }
 
-export default function Dashboard(props: DashboardProps & AcoesPainelRecepcao & { papel: Papel | null; clinicaNome: string }) {
+export default function Dashboard(props: DashboardProps & AcoesPainelRecepcao & {
+  papel: Papel | null; clinicaNome: string; unidade?: ClinicBrandSlug; onCadastros?: () => void
+}) {
+  const administracao = props.papel === 'proprietaria' && props.clinicaAtivaId && props.unidade
+    ? <section aria-labelledby="administracao-titulo" className="rounded-[18px] border border-[var(--borda)] bg-[var(--fundo-card)] p-5">
+      <h2 id="administracao-titulo" className="texto-titulo-secao">Administração da clínica</h2>
+      <p className="mt-2 text-sm text-[var(--texto-secundario)]">Cadastros e gestão de {props.clinicaNome}.</p>
+      <p className="mt-2 text-sm text-[var(--texto-secundario)]">Equipe e acessos, especialidades, profissionais, horários e serviços ficam no menu Equipe. Os valores oficiais ficam no Financeiro.</p>
+      <nav aria-label="Acessos administrativos" className="mt-4 flex flex-wrap gap-3">
+        {([
+          ['equipe', 'Abrir cadastros', props.onCadastros],
+          ['financeiro', 'Abrir Financeiro', props.onFinanceiro],
+        ] as const).map(([tela, titulo, navegar]) => <a key={tela} href={caminhoInterno(props.unidade!, tela)}
+          onClick={evento => {
+            if (!navegar || evento.ctrlKey || evento.metaKey || evento.shiftKey || evento.altKey || evento.button !== 0) return
+            evento.preventDefault(); navegar()
+          }}
+          className="inline-flex min-h-11 items-center justify-center rounded-lg border border-[var(--borda)] px-4 py-2 text-sm font-semibold text-[var(--cor-primaria)] hover:bg-[var(--cor-primaria-suave)] focus-visible:outline-2 focus-visible:outline-[var(--cor-primaria)]">{titulo}</a>)}
+      </nav>
+    </section>
+    : undefined
   return props.papel === 'recepcao' && props.clinicaAtivaId
     ? <PainelRecepcao key={props.clinicaAtivaId} clinicaId={props.clinicaAtivaId} {...props}/>
-    : <DashboardBasico clinicaAtivaId={props.clinicaAtivaId}/>
+    : <DashboardBasico clinicaAtivaId={props.clinicaAtivaId} administracao={administracao}/>
 }

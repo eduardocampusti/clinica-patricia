@@ -1,5 +1,67 @@
 # CHECKPOINT MESTRE — CLÍNICA PATRÍCIA
 
+## Dashboard Proprietário(a) — pacote exato validado, 08/10/2026 07:44 -03:00
+
+Hostinger conectada confirmou dois sites/repositório/branchresgate-local/auto-deploy
+existentes, ambos em ad493861; configuração preservada. Pacote isolado sobre versão
+atual com14 caminhos próprios, sem trabalhos alheios nem normalização histórica.
+Notas/tipos/build e12 testes desktop/mobile aprovados;35+7 anteriores reaproveitados.
+Ainda sem commit/push/deploy nesta fotografia. Próximo: revisão final e envio normal
+à branch configurada, depois confirmar cada deploy/bundle/sessão. Detalhes Sistema14.
+
+## Dashboard Proprietário(a) — autorização específica de publicação, 08/10/2026 07:34 -03:00
+
+Titular autorizou commit/push/deploy somente dos acessos administrativos nas duas
+clínicas existentes, sem aprovação visual ou inclusão de outras tarefas. GitHub,
+HEAD e ramos remotos relevantes reconfirmados ad493861; ambos bundles públicos seguem
+0.1.0/ad493861 sem novos atalhos. Worktree gerenciado anexado sobre essa versão para
+pacote seletivo14 caminhos; árvore principal e mudanças posteriores a fc045e0 preservadas.
+Hostinger pediu login, aba aberta para entrada pessoal; origem configurada a consultar
+antes do push/deploy. Ainda sem commit/push/deploy ou alterações de servidor/banco.
+Próximo: validar pacote exato, confirmar origem, publicar e registrar provas por destino.
+Detalhes no Sistema14; evidências locais/sintéticas anteriores reaproveitadas.
+
+## Dashboard Proprietário(a) — conferência final, 08/10/2026 07:09 -03:00
+
+Sessão real local de Proprietário(a) em Brotas/Ipupiara, somente leitura: seção
+Administração, destinos Cadastros/Financeiro e recursos anunciados acessíveis;
+retorno, troca de clínica, recarga e computador/celular emulado conferidos. Serviços
+Ipupiara vazio explícito, demais consultas terminaram sem erro observado. Capturas
+seguras em scratch/dashboard-proprietaria/conferencia; dashboard local deixada aberta.
+35 cenários prévios reaproveitados + 7 navegações por perfil aprovadas; outros perfis
+simulados, sem nova sessão real. Notas ajustadas somente no texto, sem claim de
+preservação histórica de valores. Build/lint anteriores do mesmo código continuam
+válidos; validação de notas/diff registrada no checkpoint operacional.
+HTTP público reconfirmou 0.1.0/ad493861 nos dois domínios; correção ainda não publicada.
+fc045e0 é histórico; 10 commits posteriores foram conferidos, sem rollback.
+Branch codex/equipe-fase2-2026-10-07/HEADad493861, alterações não commitadas.
+Pronta tecnicamente para futura publicação autorizada; manifesto seletivo de14
+caminhos no relatório14, isolando mudanças de outras sessões. Nenhum formulário
+salvo, convite, operação financeira, backend, migration, Docker ou operação Git de
+publicação. Sem aprovação pessoal presumida. Limites de sessões/perfis físicos,
+comparação histórica e origem do deploy no relatório14. Próximo: autorização própria
+para publicar e nova conferência da árvore atual, nunca base antiga automática.
+Fechamento07:14-03: validação das notas/diff aprovada; patch5 arquivos conferido sem
+aplicar, manifesto14 caminhos e hashes preparado, HEAD/index preservados.
+
+Registros anteriores preservados como histórico; pendência de sessão local e estado
+público fc045e0 citados neles foram superados pela conferência acima.
+
+## Dashboard Proprietário(a) — correção local, 08/10/2026 06:42 -03:00
+
+Investigação recuperou a origem dos destinos: Configurações era tela em construção,
+retirada do menu em f39faab; números fictícios retirados/documentados em60d22e2;
+cadastros funcionais continuam na rota Equipe. Implementados orientação e links de
+Administração da clínica na dashboard, sem dados/permissões/visual dos módulos.
+33 cenários sintéticos+2 regressões financeiras, build/tipos/lint aprovados.
+Leitura real Proprietário(a) nas duas unidades confirmou destinos existentes; valores
+salvos parcialmente observados, sem comparação integral. Bundles públicos atuais
+ad493861/0.1.0 (compilados07/10,21:44-03), superando fc045e0 histórico; origem do deploy
+não apurada. Esta execução não publicou/commitou/enviou/alterou banco ou contas.
+Branch codex/equipe-fase2-2026-10-07, HEADad493861, correção não commitada.
+Detalhes/capturas/prévia/limites: [Sistema14](docs/modulos/sistema/14-DASHBOARD-PROPRIETARIO-ACESSOS.md).
+Próximo: revisão pessoal em localhost5173; publicação depende de autorização futura.
+
 ## Etapas35–36 — publicação autorizada em preparação, 2026-10-06 16:06:15 -03:00
 
 O usuário autorizou commit, envio à branch codex/resgate-local-2026-09-26 e

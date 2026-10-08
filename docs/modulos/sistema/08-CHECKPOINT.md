@@ -1,5 +1,58 @@
 # Sistema — checkpoint de implementação local
 
+## Dashboard Proprietário(a) — pacote validado, 08/10/2026 07:44 -03:00
+
+Origem Hostinger confirmada nas duas aplicações: eduardocampusti/clinica-patricia,
+codex/resgate-local-2026-09-26, auto-deploy ativo, ad493861 atual, configuração mantida.
+Pacote seletivo14 caminhos sobre essa versão; notas/tipos/build e12 casos dirigidos
+desktop/mobile aprovados,35+7 anteriores reaproveitados. Sem trabalhos alheios,
+segredos, alterações de ambiente/banco/backend/migration. Commit/push/deploy ainda
+pendentes desta fotografia. Próximo: index exato, commit/push normal e provas por clínica.
+[Relatório14](14-DASHBOARD-PROPRIETARIO-ACESSOS.md).
+
+## Dashboard Proprietário(a) — publicação autorizada, preparação08/10/2026 07:34 -03:00
+
+Autorização específica para commit/push/deploy da correção, sem aprovação visual ou
+outras tarefas. GitHub/ramos/HEAD/bundles reconfirmados ad493861; atalhos ainda locais.
+Worktree gerenciado para pacote seletivo14 caminhos, árvore original preservada.
+Origem Hostinger a consultar após login pessoal; aba aberta, nenhuma senha solicitada.
+Ainda sem commit/push/deploy/banco/backend/migration. Próximo: pacote exato validado,
+origem conferida e publicação com provas de deploy e sessão por clínica.
+[Relatório14](14-DASHBOARD-PROPRIETARIO-ACESSOS.md).
+
+## Dashboard Proprietário(a) — conferência final, 08/10/2026 07:09 -03:00
+
+Sessão real local nas duas clínicas: Administração, Cadastros/abas/Acesso/horários e
+Financeiro acessíveis; consultas terminaram sem erro observado. Brotas Serviços com
+registros, Ipupiara vazio explícito. Retorno/troca/F5, 1440×1000 e 360×844 conferidos;
+12 capturas seguras. 35 cenários anteriores reaproveitados + 7 navegações existentes
+aprovadas; Recepção/Médico somente simulação/código nesta sessão. HTTP público segue
+0.1.0/ad493861 nas duas clínicas e não contém os novos atalhos. Dez commits desde
+fc045e0 conferidos; histórico antigo não autoriza rollback. Pronta tecnicamente para
+futura publicação autorizada; manifesto seletivo14 caminhos/trechos no relatório14.
+Branch codex/equipe-fase2-2026-10-07, HEADad493861; não commitado/publicado, sem escrita
+real/backend/migration/Docker. Nota de evolução teve somente redação ajustada para
+não sugerir comparação histórica de valores. Sem aprovação pessoal atribuída.
+Limites: outros perfis reais, aparelho físico, comparação histórica e origem do deploy.
+Próximo: autorização de publicação com HEAD/diff novamente conferidos.
+Fechamento07:14-03: notas/diff aprovados; patch5 arquivos conferido sem aplicar,
+manifesto14 caminhos/hashes preparado; HEAD inalterado/index vazio.
+[Relatório14](14-DASHBOARD-PROPRIETARIO-ACESSOS.md).
+
+Registro06:42 abaixo é histórico; a pendência de sessão local foi superada.
+
+## Dashboard Proprietário(a), 08/10/2026 06:42 -03:00
+
+Correção local dos acessos administrativos concluída; Dashboard/App/notas e dois
+arquivos de teste.33 cenários distintos+2 financeiros aprovados; build/tipos/lint
+aprovados. Sessão real de Proprietário(a) nas duas clínicas conferiu painel básico
+e Cadastros existentes por leitura; não comprova todos os valores históricos.
+Produção observada ad493861/0.1.0 nos dois domínios, diferente do checkpoint anterior.
+Esta tarefa sem publicação/commit/push/banco. Branch codex/equipe-fase2-2026-10-07,
+HEADad493861, alterações não commitadas e trabalhos anteriores preservados.
+Prévia normal localhost5173 abre login; revisão pessoal da correção pendente.
+[Relatório14](14-DASHBOARD-PROPRIETARIO-ACESSOS.md).
+
 ## Publicação ReUI autorizada — 03/10/2026, 21:24 -03:00
 
 Commit seletivo, push e deploy nos dois domínios autorizados pelo pedido posterior.

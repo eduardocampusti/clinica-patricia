@@ -1,5 +1,18 @@
 # Equipe — checkpoint da primeira entrega
 
+## Observação de versão pública — 08/10/2026 07:09 -03:00
+
+Branch local codex/equipe-fase2-2026-10-07/HEADad493861. Leitura pública atual nos
+dois domínios reconfirmou 0.1.0/ad493861 (compilação07/10,21:44-03), diferente da
+fotografia fc045e0 e dos registros Fase2 não publicada de07/10 abaixo. Preservados
+como histórico; não usar como estado vivo nem base de rollback. Dez commits posteriores
+a fc045e0 conferidos. Origem/autor da implantação não auditados; sem aprovação pessoal
+presumida. Nesta tarefa não houve commit/push/deploy, backend/migration ou escrita real.
+Dashboard local corrigida conferida com sessão de Proprietário(a), Brotas/Ipupiara:
+Cadastros, ficha/Acessos, Especialidades, Profissionais/horários e Serviços consultados.
+Não altera decisões funcionais da Equipe nem comprova preservação histórica de valores.
+[Resultados, limites e seleção de arquivos Sistema14](../sistema/14-DASHBOARD-PROPRIETARIO-ACESSOS.md).
+
 ## Equipe38 — ficha do membro, Fase 2C (seções restantes), 2026-10-07 -03:00
 
 Claude Code. Commit local, **sem push** (o ramo tem deploy automático na Hostinger).

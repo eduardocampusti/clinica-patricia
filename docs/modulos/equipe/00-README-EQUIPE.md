@@ -1,5 +1,16 @@
 # Equipe — índice do módulo
 
+## Identificação pública reconferida — 08/10/2026 07:09 -03:00
+
+Codex, leitura dos arquivos públicos dos dois domínios: 0.1.0/ad493861,
+alterações locais false, compilados07/10,21:44-03. Os registros de07/10 abaixo sobre
+Fase2 sem publicação/fc045e0 descrevem o momento anterior e estão superados como
+estado atual de produção; origem/autor do deploy não auditados nem aprovação pessoal
+inferida. Git fc045e0..ad493861 contém10 commits posteriores conferidos, preservados.
+Conferência da correção local da dashboard do Proprietário(a) em Brotas/Ipupiara foi
+somente leitura de recursos existentes, sem mudança funcional da Equipe/banco.
+[Resultado e manifesto seletivo Sistema14](../sistema/14-DASHBOARD-PROPRIETARIO-ACESSOS.md).
+
 
 ## Equipe38 — ficha do membro, Fase 2C (seções restantes), 2026-10-07 -03:00
 

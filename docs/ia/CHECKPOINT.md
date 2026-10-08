@@ -1,5 +1,96 @@
 # Checkpoint operacional — Clínica Patrícia
 
+## Dashboard Proprietário(a) — pacote validado/origem confirmada, 2026-10-08 07:44 -03:00
+
+Sessão pessoal Hostinger disponível: dois sites existentes ligados a
+eduardocampusti/clinica-patricia, codex/resgate-local-2026-09-26, auto-deploy ativo;
+último deploy Concluído/ad493861 em ambos, Vite/Node22/raiz./. Configuração mantida.
+Worktree gerenciado sobre ad493861 com14 caminhos seletivos; histórico dos documentos
+e demais trabalhos locais preservados. No pacote exato: notas/tipos/build exit0 e12/12
+testes dirigidos desktop/mobile, banco/destinos externos bloqueados, cache separado.
+35 cenários prévios+7 navegações reaproveitados. Servidor sintético encerrado; prévia
+normal intacta. Nenhum staging/commit/push/deploy nesta fotografia; sem variável
+Hostinger alterada ou segredo incluído. Próximo: revisão do index14 caminhos,
+commit e push normal à branch configurada, provas individuais de deploy/bundle/sessão.
+[Relatório14](../modulos/sistema/14-DASHBOARD-PROPRIETARIO-ACESSOS.md).
+
+## Dashboard Proprietário(a) — publicação autorizada em preparação, 2026-10-08 07:34 -03:00
+
+Autorização específica do titular: commit/push/deploy somente desta correção nas duas
+aplicações existentes; sem aprovação do acabamento visual ou inclusão de outras tarefas.
+GitHub/origin confirmados eduardocampusti/clinica-patricia. Dois ramos remotos relevantes
+e HEAD principal em ad49386105b3ea19b10b11a4e40c31983ae38d69; bundles dos dois domínios
+reconfirmados0.1.0/ad493861, sem novos atalhos. Cinco hashes do manifesto correspondem.
+Worktree gerenciado dashboard-proprietario-publicacao anexado sobre ad493861 para
+pacote seletivo14 caminhos, preservando a árvore original e as10 mudanças após fc045e0.
+35 cenários prévios+7 navegações reaproveitados; build/tipos/testes do pacote exato a
+conferir. Hostinger solicitou login: aba aberta para entrada pessoal, sem senha;
+origem configurada ainda pendente de leitura conectada antes do push/deploy.
+Nenhum commit/push/deploy/banco/backend/Auth/Storage/permissão/migration nesta etapa.
+Próximo: origem Hostinger, validação seletiva, commit/push normal, confirmação individual
+de deploy/versão e conferência autenticada publicada quando disponível.
+[Relatório14](../modulos/sistema/14-DASHBOARD-PROPRIETARIO-ACESSOS.md).
+
+## Dashboard Proprietário(a) — conferência autenticada concluída, 2026-10-08 07:09 -03:00
+
+Codex, branch `codex/equipe-fase2-2026-10-07`, HEAD `ad49386105b3ea19b10b11a4e40c31983ae38d69`.
+Aplicação normal `http://localhost:5173`, Proprietário(a), Brotas e Ipupiara:
+Administração visível; cadastros, acesso da ficha, especialidades, profissionais,
+horários e serviços consultados; Financeiro carregou sem aviso de erro. Rotas
+mantiveram clínica; retorno/troca/F5 e 1440×1000/360×844 conferidos. Ipupiara Serviços
+vazio explícito; nenhuma falha observada foi tratada como ausência. Capturas seguras
+da seção/destinos, viewport restaurado e dashboard local Ipupiara aberta.
+35 cenários válidos anteriores reaproveitados; 7 testes existentes de navegação
+por perfil adicionais aprovados. Recepção/Médico: simulação e código, sem nova
+sessão real ou revalidação de RLS. Sem comparação histórica de registros/valores,
+aparelho físico ou auditoria da origem do deploy. Nota textual ajustada para não
+afirmar preservação histórica de valores; Dashboard/App sem nova mudança.
+Leitura pública reconfirmou 0.1.0/ad493861 nas duas clínicas; atalhos ainda ausentes
+dos bundles. Dez commits posteriores a fc045e0 conferidos; não usar fotografia antiga
+como estado vivo ou base para rollback. Documentos anteriores abaixo são histórico.
+Pronta tecnicamente para futura publicação autorizada, não publicada; 14 caminhos
+relacionados com seleção de trechos nos 8 documentos compartilhados. Sem escrita
+real, backend/migration/Docker, commit/push/merge/deploy. Trabalhos alheios preservados.
+Próxima ação: futura autorização de publicação e nova conferência de HEAD/diff.
+Fechamento07:14-03: notas exit0; diff dos caminhos relacionados exit0 com CRLF Windows
+reconhecido; patch5 arquivos conferido por reverse --check sem aplicar; manifesto14
+caminhos/hashes/12 capturas em scratch ignorado. HEAD inalterado e index vazio.
+[Relatório14, resultados por clínica, limites, capturas e manifesto](../modulos/sistema/14-DASHBOARD-PROPRIETARIO-ACESSOS.md).
+
+Os registros de06:42/06:31 e de07/10 abaixo descrevem etapas anteriores; a pendência
+de sessão local e a identificação pública fc045e0 foram superadas pela leitura acima.
+
+## Dashboard Proprietário(a) — correção local concluída, 2026-10-08 06:42 -03:00
+
+Codex, branch `codex/equipe-fase2-2026-10-07`, HEAD `ad49386105b3ea19b10b11a4e40c31983ae38d69`.
+Administração da clínica acrescentada ao painel do proprietário: acessos diretos aos
+Cadastros existentes em Equipe e ao Financeiro, com clínica da rota/guardas preservados.
+33 cenários distintos sintéticos+2 regressões financeiras aprovados; build/tipos/lint
+aprovados (16 avisos existentes); capturas fictícias antes/depois. Leitura real nas
+duas unidades confirmou painel básico/destinos; dados parcialmente observados, sem
+comparação histórica integral. **Produção atualmente identifica ad493861/0.1.0 nas
+duas clínicas**, compilado07/10,21:44-03; supera fc045e0 histórico, origem não apurada.
+Esta correção não commitada/publicada; sem push, escrita de banco, Auth/Storage ou
+permissão. Trabalho visual e mudanças anteriores preservados. Prévia real existente
+`http://localhost:5173` abre login; sessão local autenticada não disponível ao agente.
+Próxima ação: revisão pessoal da correção e autorização própria antes de publicação.
+[Relatório completo/arquivos/capturas/limites](../modulos/sistema/14-DASHBOARD-PROPRIETARIO-ACESSOS.md).
+
+## Dashboard Proprietário(a) — diagnóstico em andamento, 2026-10-08 06:31 -03:00
+
+Codex, branch `codex/equipe-fase2-2026-10-07`, HEAD `ad49386105b3ea19b10b11a4e40c31983ae38d69`.
+Leitura dos bundles públicos confirmou **ad493861/0.1.0 nos dois domínios**, compilados
+em 07/10 às 21:44 -03:00; isso supera a fotografia histórica fc045e0 abaixo. Sem
+publicação nesta execução; origem da implantação ainda não investigada. Sessão real
+Proprietário(a) nas duas dashboards: painel básico confirmado; acesso a Cadastros via
+Equipe e abas existentes conferidos por leitura. Histórico: Configurações era placeholder
+e foi retirado de Sidebar em f39faab; indicadores fictícios removidos intencionalmente
+em 60d22e2. Não há prova de perda de valores salvos. Preparando correção pequena de
+descoberta/acesso no Dashboard e regressões sintéticas; testes/capturas ainda em andamento.
+Nenhuma escrita de banco, conta, permissão, commit ou push. Trabalho visual e alterações
+documentais de outras sessões preservados. Próximo: atalhos aos módulos existentes,
+verificação local e relatório Sistema14 com limites separados de produção.
+
 ## Etapas35–36 — publicação autorizada em preparação, 2026-10-06 16:06:15 -03:00
 
 O usuário autorizou commit, envio à branch codex/resgate-local-2026-09-26 e

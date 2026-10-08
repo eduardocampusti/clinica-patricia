@@ -23,6 +23,23 @@ Resultado e limites: [relatório ReUI](../../ia/AVALIACAO-RECEPCAO-PACIENTES-REU
 
 ## Comportamento solicitado
 
+### Acesso administrativo no Dashboard — pedido de correção de08/10/2026
+
+Autorização específica posterior08/10,07:34-03: publicar a correção administrativa
+com commit/push/deploy nas duas clínicas existentes, sem aprovação do acabamento
+visual nem autorização para incluir outras alterações. Publicação ainda em preparação.
+
+O Dashboard de Proprietário(a) oferece orientação e atalhos aos Cadastros existentes
+na rota Equipe e ao Financeiro, sempre da clínica atual. Somente após confirmar o
+papel/clínica; falha do próximo paciente não esconde esses acessos. Outros perfis e
+guardas do servidor permanecem iguais. Não recriar a tela provisória Configurações,
+inventar opções ou reintroduzir indicadores financeiros fictícios. Implementação
+local solicitada, sem aprovação pessoal de revisão ou publicação presumida.
+Conferência08/10,07:09-03: sessão autorizada local Proprietário(a), Brotas/Ipupiara,
+recursos existentes/atalhos e navegação computador/celular verificados por leitura.
+Isso confirma a implementação solicitada, não a aprovação pessoal do titular.
+[Resultado e limites](14-DASHBOARD-PROPRIETARIO-ACESSOS.md).
+
 ### Integração inicial do Painel da Recepção — 03/10/2026, autorização posterior
 
 Pedido posterior de 03/10, publicação seletiva autorizada: commit, push e implantação

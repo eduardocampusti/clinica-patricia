@@ -1,5 +1,26 @@
 # Sistema — índice
 
+## Dashboard do Proprietário(a) — conferência autenticada local, 08/10/2026 07:09 -03:00
+
+Publicação específica autorizada08/10,07:34-03: somente esta correção; pacote seletivo
+validado, sem aprovação visual nem deploy confirmado. Origem Hostinger conferida nas
+duas aplicações: repositório autorizado/branchresgate-local/auto-deploy existentes.
+Notas/tipos/build e12 testes dirigidos aprovados; estado atual no relatório14.
+
+Atalhos administrativos para Cadastros/Financeiro na clínica da rota, preservando
+visual, consultas e permissões. Antigo Configurações era placeholder; cadastros
+reais continuam em Equipe.33 regressões sintéticas+2 proteções financeiras, build/
+tipos/lint aprovados. Produção foi conferida por leitura e já serve ad493861 em
+ambos domínios, superando o registro histórico fc045e0; origem do deploy não apurada.
+Correção desta sessão **não publicada nem commitada**, sem escrita real.
+Sessão real de Proprietário(a) em localhost5173 conferida nas duas clínicas, somente
+leitura: Administração, Cadastros/recursos e Financeiro, retorno/troca/F5, computador
+e celular emulado. 35 cenários anteriores reaproveitados e 7 navegações por perfil
+adicionais aprovadas; outros perfis sem nova sessão real. Capturas seguras e manifesto
+seletivo14 caminhos; pronta tecnicamente para futura publicação autorizada, sem
+inventário histórico nem aprovação pessoal presumida.
+[Causa, arquivos, capturas e limites](14-DASHBOARD-PROPRIETARIO-ACESSOS.md).
+
 ## Publicação ReUI autorizada — 03/10/2026, 21:24 -03:00
 
 Commit seletivo, push e deploy nos dois domínios autorizados pelo pedido posterior.

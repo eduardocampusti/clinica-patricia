@@ -1,5 +1,19 @@
 # Memória compartilhada — mapa de leitura
 
+Dashboard Proprietário(a),08/10/2026: [investigação e acessos administrativos locais](../modulos/sistema/14-DASHBOARD-PROPRIETARIO-ACESSOS.md).
+Publicação específica autorizada07:34-03; pacote seletivo validado07:44-03, origem
+Hostinger confirmada na branchresgate-local existente/auto-deploy, notas/tipos/build
+e12 testes dirigidos aprovados. Sem aprovação visual ou deploy presumido.
+Configurações antigo era placeholder; Cadastros existente em Equipe.33+2 regressões,
+build/tipos/lint aprovados; correção não publicada. Bundles atuais dos dois domínios
+identificam ad493861; registro fc045e0 anterior é histórico. Limites de dados reais,
+prévia localhost5173 e origem da implantação separados no relatório. Conferência
+final08/10,07:09-03: Proprietário(a) autenticado local em Brotas/Ipupiara, somente
+leitura, recursos/retorno/troca/F5/computador/celular emulado conferidos; 35 cenários
+reaproveitados + 7 navegações adicionais, capturas seguras e manifesto seletivo14
+caminhos. Pronta tecnicamente para futura publicação autorizada, não publicada;
+outros perfis sem nova sessão real e sem comparação histórica dos valores.
+
 ## Etapas35–36 — publicação autorizada em preparação, 2026-10-06 16:06:15 -03:00
 
 O usuário autorizou commit, envio à branch codex/resgate-local-2026-09-26 e
