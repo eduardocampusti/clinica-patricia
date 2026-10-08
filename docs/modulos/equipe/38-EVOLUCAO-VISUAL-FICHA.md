@@ -162,3 +162,43 @@ rodados de novo: a 2B não alterou ModalBase nem arquivos fora da Equipe.
   teste aceita tela cheia nessa faixa e confere página sem rolagem lateral e “Fechar”.
 - Recarga da lista: falha genérica simulada com 500 (“Consulta da equipe não concluída”);
   novo teste para 403/42501 (“Sem permissão para consultar a equipe”, sem tabela).
+
+## Fase 2C — Formação, Atuação, Recebimento, Documentos e Histórico, 2026-10-07 -03:00
+
+**Estado: commit local, sem push** (push no ramo de implantação dispara deploy automático
+na Hostinger; aguarda decisão do usuário). Somente apresentação; mesmos dados, permissões
+e chamadas.
+
+- Formação e registros: contadores com singular/plural; cada inscrição com conselho/UF ·
+  número, selo de informação (opções do campo “Situação informada”) e selo de conferência
+  (aguardando, conferido, necessita correção — estados já existentes); “Conferir inscrição
+  profissional salva” como recolhível. A versão consultada pelo Histórico usa o mesmo resumo.
+- Atuação e atendimentos: cartões Agenda e valores (duração, preço, participação, com
+  “Editar duração da Agenda” e “Editar preço nesta clínica”), Serviços (estado, botão
+  indisponível com o motivo existente, catálogo recolhível) e Disponibilidade (horários,
+  exceções recolhíveis, configuração de horários). Mesmos textos verificados pelos testes.
+- Recebimento: cartão único em grade; chave PIX exibida exatamente como vem do serviço
+  (mascarada); aviso de titularidade em uma linha no fim; mesma permissão.
+- Documentos: tabela (cartões abaixo de 900px) com Documento (categoria, versão,
+  tamanho e data — sem nome de arquivo), Vale para (pílulas), Armazenamento e Conferência
+  (selos dos estados existentes: `armazenamento = 'disponivel'`; `conferencia` com o
+  `check` da migration 20261005210000) e ações em ícone (visualizar, baixar, “Mais ações”).
+  “Mais ações” e “Limpar candidatas expiradas autorizadas” usam o DropdownMenu, montado
+  dentro da ficha pelo novo `container` opcional (padrão inalterado). Versões anteriores
+  em recolhível.
+- Histórico: linha do tempo por dia; eventos idênticos e consecutivos (mesmo tipo,
+  registro e versão) agrupados com “N vezes” e todos os horários no recolhível; nenhum
+  evento fica inacessível.
+
+### Testes e verificação final (teste local, configs oficiais)
+
+- Novo teste: menu “Mais ações” do documento abre dentro da ficha e a opção escolhida
+  (Conferir) funciona, nos três tamanhos.
+- Adaptações: Recebimento/foto navegam até a seção e abrem a foto pelo avatar; ações de
+  documento pelo menu; rótulos de selo com inicial maiúscula (“Conferência: Conferido”,
+  “Armazenamento: Disponível”, “conferência: Conferido” na Formação).
+- Equipe completa nos três tamanhos: linha de base 51/50/53 → **0/0/0**, 0 novas,
+  51/50/53 corrigidas (5 testes novos por tamanho).
+- Financeiro 84/84 (uma execução intermitente de abas no celular passou 3/3 sozinha);
+  Agenda/operacional: 2 falhas antigas de Pacientes (iguais no código original) e uma
+  intermitente de agenda-edicao que passou 3/3 sozinha. tsc, lint (16 avisos antigos) e build ok.

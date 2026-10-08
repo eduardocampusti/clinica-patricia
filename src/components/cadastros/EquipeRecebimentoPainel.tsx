@@ -6,6 +6,10 @@ import { buscarRecebimentoEquipe, CAMPOS_PROTEGIDOS, erroRecursosSeguro, salvarR
 import type { ClinicaEquipe } from '../../lib/equipe'
 import type { EstadoRecursoFicha } from './EquipeFotoPainel'
 import { supabase } from '../../lib/supabase'
+import { Esqueleto, NotaInfo } from './EquipeFichaUI'
+
+const TIPO_PIX: Record<string, string> = { cpf: 'CPF', cnpj: 'CNPJ', email: 'E-mail', telefone: 'Telefone', aleatoria: 'Aleatória' }
+const TIPO_CONTA: Record<string, string> = { corrente: 'corrente', poupanca: 'poupança', pagamento: 'de pagamento' }
 
 function vazio():DadosRecebimento{return {preferencia:'pix',pix:{tipo:'email',chave:''},conta:null,favorecido:{tipo:'pf',nome:'',documento:'',diferente:false}}}
 function novaConta():NonNullable<DadosRecebimento['conta']>{return {instituicao:'',codigo:'',agencia:'',digitoAgencia:'',numero:'',digitoConta:'',tipo:'corrente'}}
@@ -56,16 +60,16 @@ function EditorRecebimento({membroId,clinicaId,clinicaNome,onEstado,onModo,onSit
     return <div><label htmlFor={`${id}-${caminho}`}>{label}{opcional?' (opcional)':''}</label><input id={`${id}-${caminho}`} data-recebimento-campo={caminho} aria-invalid={campo===caminho} value={v[nome]} onChange={e=>atualizar(grupo,nome,e.target.value)} autoComplete="off" spellCheck={false} maxLength={grupo==='pix'?254:nome==='nome'?160:120} placeholder={preservar.includes(caminho)?`Mantido: ${masked?.[nome]??'protegido'}`:undefined}/>{preservar.includes(caminho)&&<p className="equipe-recurso-ajuda">Deixe vazio para manter o dado protegido. Ao preencher, você o substituirá.</p>}</div>
   }
   return <div data-testid="equipe-recebimento-editor">
-    {carregando?<p role="status">Consultando configuração autorizada…</p>:!atual?<><FeedbackAlert variant="warning" title="Recebimento indisponível" description={erro??'A configuração não pôde ser consultada.'}/><button type="button" className="equipe-recurso-consulta" onClick={()=>void consultar()}>Reconsultar recebimento</button></>:<>
+    {carregando?<Esqueleto rotulo="Consultando configuração autorizada…" linhas={2}/>:!atual?<><FeedbackAlert variant="warning" title="Recebimento indisponível" description={erro??'A configuração não pôde ser consultada.'}/><button type="button" className="equipe-recurso-consulta" onClick={()=>void consultar()}>Reconsultar recebimento</button></>:<>
       {erro&&<FeedbackAlert variant="destructive" title="Confira os dados de recebimento" description={erro} urgent/>}
       {sucesso&&<FeedbackAlert variant="success" title={sucesso}/>}
-      {!editando?<div className="equipe-recebimento-resumo">{!atual.dados?<p>Não há dados de recebimento cadastrados nesta clínica. O cadastro do profissional continua disponível.</p>:<dl>
+      {!editando?<div className="equipe-recebimento-resumo">{!atual.dados?<p className="equipe-texto-discreto">Não há dados de recebimento cadastrados nesta clínica. O cadastro do profissional continua disponível.</p>:<dl className="equipe-grade-campos equipe-grade-2">
         <div><dt>Preferência</dt><dd>{atual.dados.preferencia==='pix'?'PIX':'Transferência'}</dd></div>
-        {atual.dados.pix&&<div><dt>Chave PIX · {atual.dados.pix.tipo}</dt><dd>{atual.dados.pix.chave}</dd></div>}
-        {atual.dados.conta&&<><div><dt>Instituição · conta {atual.dados.conta.tipo}</dt><dd>{atual.dados.conta.instituicao}{atual.dados.conta.codigo&&` · ${atual.dados.conta.codigo}`}</dd></div><div><dt>Agência / conta</dt><dd>{atual.dados.conta.agencia||'Sem agência'}{atual.dados.conta.digitoAgencia&&`-${atual.dados.conta.digitoAgencia}`} / {atual.dados.conta.numero}{atual.dados.conta.digitoConta&&`-${atual.dados.conta.digitoConta}`}</dd></div></>}
+        {atual.dados.pix&&<div><dt>Chave PIX · {TIPO_PIX[atual.dados.pix.tipo]??atual.dados.pix.tipo}</dt><dd>{atual.dados.pix.chave}</dd></div>}
+        {atual.dados.conta&&<><div><dt>Instituição · conta {TIPO_CONTA[atual.dados.conta.tipo]??atual.dados.conta.tipo}</dt><dd>{atual.dados.conta.instituicao}{atual.dados.conta.codigo&&` · ${atual.dados.conta.codigo}`}</dd></div><div><dt>Agência / conta</dt><dd>{atual.dados.conta.agencia||'Sem agência'}{atual.dados.conta.digitoAgencia&&`-${atual.dados.conta.digitoAgencia}`} / {atual.dados.conta.numero}{atual.dados.conta.digitoConta&&`-${atual.dados.conta.digitoConta}`}</dd></div></>}
         <div><dt>Favorecido · {atual.dados.favorecido.tipo==='pf'?'Pessoa física':'Pessoa jurídica'}</dt><dd>{atual.dados.favorecido.nome}{atual.dados.favorecido.documento&&` · ${atual.dados.favorecido.documento}`}</dd></div>
         <div><dt>Favorecido diferente do profissional</dt><dd>{atual.dados.favorecido.diferente?'Sim, informado no cadastro':'Não, informado no cadastro'}</dd></div>
-      </dl>}<button type="button" className="equipe-recurso-consulta" onClick={editar}>{atual.dados?'Editar recebimento':'Cadastrar dados de recebimento'}</button></div>:<form ref={form} onSubmit={salvar} aria-label={`Dados para recebimento em ${clinicaNome}`}>
+      </dl>}<button type="button" className="equipe-acao-cartao equipe-recurso-consulta" onClick={editar}>{atual.dados?'Editar recebimento':'Cadastrar dados de recebimento'}</button></div>:<form ref={form} onSubmit={salvar} aria-label={`Dados para recebimento em ${clinicaNome}`}>
         <fieldset disabled={ocupado||bloqueado} className="equipe-recebimento-campos">
           <div className="equipe-recebimento-grid"><div><label htmlFor={`${id}-preferencia`}>Meio preferencial</label><select id={`${id}-preferencia`} data-recebimento-campo="preferencia" aria-invalid={campo==='preferencia'} value={dados.preferencia} onChange={e=>setDados(d=>({...d,preferencia:e.target.value as DadosRecebimento['preferencia']}))}><option value="pix">PIX</option><option value="transferencia">Transferência</option></select></div></div>
           <div className="equipe-recebimento-grupo"><label className="equipe-recurso-checkbox"><input type="checkbox" checked={Boolean(dados.pix)} onChange={e=>{setDados(d=>({...d,pix:e.target.checked?{tipo:'email',chave:''}:null}));setPreservar(p=>p.filter(c=>!c.startsWith('pix.')))}}/>Cadastrar PIX</label>
@@ -86,9 +90,9 @@ function EditorRecebimento({membroId,clinicaId,clinicaNome,onEstado,onModo,onSit
 export function EquipeRecebimentoPainel({membroId,clinicaId,clinicas,onEstado,onSituacao,onResumo}:{membroId:string;clinicaId:string;clinicas:ClinicaEquipe[];onEstado:(s:EstadoRecursoFicha)=>void;onSituacao?:(s:'configurado'|'ausente'|'indisponivel')=>void;onResumo?:(r:ResumoRecebimento|null)=>void}) {
   const [selecionada,setSelecionada]=useState(clinicaId);const [emEdicao,setEmEdicao]=useState(false)
   const opcoes=clinicas.filter(c=>c.id===clinicaId||c.nome.toLowerCase().includes('brotas')||c.nome.toLowerCase().includes('ipupiara'))
-  return <section className="equipe-recurso" aria-labelledby="equipe-recebimento-titulo" data-testid="equipe-recebimento-painel"><div className="equipe-recurso-cabecalho"><div><h3 id="equipe-recebimento-titulo">Dados para recebimento</h3><p>Configuração opcional do profissional nesta clínica. Não executa PIX, pagamentos ou alterações em repasses.</p></div></div>
+  return <section className="equipe-recurso equipe-cartao equipe-recebimento" aria-labelledby="equipe-recebimento-titulo" data-testid="equipe-recebimento-painel"><div className="equipe-cartao-topo"><h4 id="equipe-recebimento-titulo">Dados para recebimento</h4></div><p className="equipe-texto-discreto">Configuração opcional do profissional nesta clínica. Não executa PIX, pagamentos ou alterações em repasses.</p>
     <div className="equipe-recebimento-clinica"><label htmlFor="equipe-recebimento-clinica">Clínica dos dados de recebimento</label><select id="equipe-recebimento-clinica" value={selecionada} disabled={emEdicao} onChange={e=>setSelecionada(e.target.value)}>{opcoes.map(c=><option key={c.id} value={c.id}>{c.nome}</option>)}</select>{emEdicao&&<p className="equipe-recurso-ajuda">Conclua ou cancele a edição antes de consultar outra clínica.</p>}</div>
     <EditorRecebimento key={`${membroId}:${selecionada}`} membroId={membroId} clinicaId={selecionada} clinicaNome={opcoes.find(c=>c.id===selecionada)?.nome??'clínica selecionada'} onEstado={onEstado} onModo={setEmEdicao} onSituacao={selecionada===clinicaId?onSituacao:undefined} onResumo={selecionada===clinicaId?onResumo:undefined}/>
-    <p className="equipe-recurso-ajuda">A titularidade da chave e da conta não foi verificada. O favorecido é informado pela administração. Somente Proprietário(a)/Administradora autorizada consulta e altera esta configuração.</p>
+    <NotaInfo>A titularidade da chave e da conta não foi verificada; o favorecido é informado pela administração. Somente Proprietário(a)/Administradora autorizada consulta e altera esta configuração.</NotaInfo>
   </section>
 }

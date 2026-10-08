@@ -5,8 +5,15 @@ import { operarFicha, baixarDocumento, validarMetaDocumento, erroFicha, CATEGORI
 import type { ClinicaEquipe } from '../../lib/equipe';
 import type { EstadoRecursoFicha } from './EquipeFotoPainel';
 import { UnidadesFicha } from './EquipeFichaCampos';
+import { Download, Ellipsis, Eye, FileText } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
+import { Selo } from './EquipeSelos';
+import { NotaInfo, Recolhivel } from './EquipeFichaUI';
+import { formatarData, nomeCurtoClinica } from '../../lib/equipeApresentacao';
 const rotulos: Record<string, string> = { identificacao: 'Identificação', endereco: 'Endereço', contrato: 'Contrato', aditivo: 'Aditivo', admissao: 'Admissão', formacao: 'Formação', dependentes: 'Dependentes', termo_interno: 'Termo interno', equipamentos: 'Equipamentos', aso: 'ASO', capacitacao: 'Capacitação' };
 const rotulo = (s: string) => rotulos[s] ?? s.replaceAll('_', ' ');
+// Rótulos dos três estados de conferência que o dado já admite (aguardando, conferido, necessita_correcao).
+const CONFERENCIA_DOCUMENTO: Record<string, string> = { aguardando: 'Aguardando', conferido: 'Conferido', necessita_correcao: 'Necessita correção' };
 export function EquipeDocumentosPainel({ membroId, clinicaId, clinicas, ficha, onConfirmado, onEstado }: {
     membroId: string;
     clinicaId: string;
@@ -21,6 +28,8 @@ export function EquipeDocumentosPainel({ membroId, clinicaId, clinicas, ficha, o
         nome: string;
     } | null>(null);
     const campoId = useId();
+    // Menus montados dentro da ficha (<dialog> modal), para continuarem clicáveis.
+    const [raiz, setRaizDocumentos] = useState<HTMLDivElement | null>(null);
     const gen = useRef(0), trava = useRef(false), urlRef = useRef<string | null>(null), input = useRef<HTMLInputElement>(null);
     const alterado = Boolean(arquivo || fonte || tentativa || meta.categoria || meta.contrato_id || meta.emissao || meta.validade || meta.substitui_id || meta.unidades.length !== 1 || meta.unidades[0] !== clinicaId);
     useEffect(() => { onEstado('documentos', { ocupado, alterado }); return () => onEstado('documentos', { ocupado: false, alterado: false }); }, [ocupado, alterado, onEstado]);
@@ -208,13 +217,46 @@ export function EquipeDocumentosPainel({ membroId, clinicaId, clinicas, ficha, o
         urlRef.current = null;
         setVisualizacao(null);
     }
-    const listar = (documentos: DocumentoFicha[]) => <>{documentos.map(d => <article key={d.id} className="equipe-ficha-item equipe-documento-linha"><h4>{rotulo(d.categoria)} · versão {d.versao}{d.arquivado ? ' · arquivado / substituído' : ''}</h4><p>Armazenamento: disponível · Conferência: {rotulo(d.conferencia)}</p><p>{d.mime === 'application/pdf' ? 'PDF' : 'Imagem'} · {Math.ceil(d.tamanho / 1024)} KB · envio {new Date(d.enviado_em).toLocaleDateString('pt-BR')} · autor registrado</p><p>Escopo: {d.unidades.map(id => clinicas.find(c => c.id === id)?.nome ?? 'Unidade autorizada').join(' · ')}{d.validade ? ` · validade ${d.validade}` : ''}</p>{d.conferido_em && <p>Conferência {new Date(d.conferido_em).toLocaleDateString('pt-BR')} · responsável registrado · fonte: {d.fonte}</p>}
-   <div className="equipe-ficha-acoes"><button type="button" disabled={ocupado} onClick={() => void ler(d, false)}>Visualizar versão {d.versao}</button><button type="button" disabled={ocupado} onClick={() => void ler(d, true)}>Baixar versão {d.versao}</button>{!d.arquivado && <details className="equipe-documento-menu"><summary>Mais ações<span className="sr-only"> para {rotulo(d.categoria)} versão {d.versao}</span></summary><button type="button" disabled={ocupado || Boolean(arquivo)} onClick={() => substituir(d)}>Substituir versão {d.versao}</button><button type="button" disabled={ocupado} onClick={() => { setConferindo(d); setFonte(''); setResultado('conferido'); }}>Conferir versão {d.versao}</button><button type="button" disabled={ocupado} onClick={() => setConfirmar(d)}>Arquivar versão {d.versao}</button></details>}</div>
+    async function limparTemporarios() {
+        if (trava.current)
+            return;
+        trava.current = true;
+        setOcupado(true);
+        const g = gen.current;
+        try {
+            const resultado = await operarFicha(membroId, clinicaId, 'documento_limpar', { id: crypto.randomUUID() });
+            if (g === gen.current)
+                setErro(resultado && typeof resultado === 'object' && 'limpeza_pendente' in resultado && resultado.limpeza_pendente ? 'A limpeza não foi confirmada. Consulte novamente; documentos confirmados foram preservados.' : null);
+        }
+        catch (e) {
+            if (g === gen.current)
+                setErro(erroFicha(e, true).message);
+        }
+        finally {
+            if (g === gen.current) {
+                setOcupado(false);
+                trava.current = false;
+            }
+        }
+    }
+    const tomConferencia = (c: string) => c === 'conferido' ? 'ativo' as const : c === 'necessita_correcao' ? 'erro' as const : 'alerta' as const;
+    const nomeClinica = (id: string) => clinicas.find(c => c.id === id)?.nome ?? 'Unidade autorizada';
+    // Uma linha por documento: tabela no computador, cartão no celular. Mesmas ações e permissões de antes.
+    const listar = (documentos: DocumentoFicha[]) => <>{documentos.map(d => <article key={d.id} className="equipe-ficha-item equipe-documento-linha">
+   <div className="equipe-documento-celula equipe-documento-principal"><FileText aria-hidden="true" className="equipe-documento-icone"/><div className="min-w-0"><h4>{rotulo(d.categoria)} · versão {d.versao}{d.arquivado ? ' · arquivado / substituído' : ''}</h4><p>{d.mime === 'application/pdf' ? 'PDF' : 'Imagem'} · {Math.ceil(d.tamanho / 1024)} KB · envio {new Date(d.enviado_em).toLocaleDateString('pt-BR')}{d.validade ? ` · validade ${formatarData(d.validade)}` : ''} · autor registrado</p>{d.conferido_em && <p>Conferência {new Date(d.conferido_em).toLocaleDateString('pt-BR')} · responsável registrado · fonte: {d.fonte}</p>}</div></div>
+   <div className="equipe-documento-celula" data-rotulo="Vale para"><span className="sr-only">Vale para: </span><span className="equipe-documento-pilulas">{d.unidades.map(id => <span key={id} className="equipe-pilula" title={nomeClinica(id)}>{nomeCurtoClinica(nomeClinica(id))}</span>)}</span></div>
+   <div className="equipe-documento-celula" data-rotulo="Armazenamento"><Selo tom="ativo"><span className="sr-only">Armazenamento: </span>Disponível</Selo></div>
+   <div className="equipe-documento-celula" data-rotulo="Conferência"><Selo tom={tomConferencia(d.conferencia)}><span className="sr-only">Conferência: </span>{CONFERENCIA_DOCUMENTO[d.conferencia] ?? rotulo(d.conferencia)}</Selo></div>
+   <div className="equipe-documento-celula equipe-documento-acoes"><button type="button" className="equipe-icone-acao" aria-label={`Visualizar versão ${d.versao}`} title={`Visualizar versão ${d.versao}`} disabled={ocupado} onClick={() => void ler(d, false)}><Eye size={18} aria-hidden="true"/></button><button type="button" className="equipe-icone-acao" aria-label={`Baixar versão ${d.versao}`} title={`Baixar versão ${d.versao}`} disabled={ocupado} onClick={() => void ler(d, true)}><Download size={18} aria-hidden="true"/></button>{!d.arquivado && <DropdownMenu><DropdownMenuTrigger className="equipe-icone-acao" aria-label={`Mais ações para ${rotulo(d.categoria)} versão ${d.versao}`} title="Mais ações"><Ellipsis size={18} aria-hidden="true"/></DropdownMenuTrigger><DropdownMenuContent align="end" container={raiz}><DropdownMenuItem disabled={ocupado || Boolean(arquivo)} onClick={() => substituir(d)}>Substituir versão {d.versao}</DropdownMenuItem><DropdownMenuItem disabled={ocupado} onClick={() => { setConferindo(d); setFonte(''); setResultado('conferido'); }}>Conferir versão {d.versao}</DropdownMenuItem><DropdownMenuItem disabled={ocupado} onClick={() => setConfirmar(d)}>Arquivar versão {d.versao}</DropdownMenuItem></DropdownMenuContent></DropdownMenu>}</div>
   </article>)}</>;
-    return <div className="equipe-documentos">
-  <p>Arquivos privados; escopo escolhido explicitamente. Armazenamento e conferência são etapas separadas. Não inclua diagnósticos, prontuário ocupacional, credenciais ou histórico completo de empregos.</p>
-  <button type="button" hidden={envioAberto} onClick={()=>setEnvioAberto(true)}>Adicionar documento</button>
-  <form hidden={!envioAberto} onSubmit={salvar} aria-label="Adicionar documento privado" className="equipe-ficha-grupo">
+    const cabecalhoTabela = <div className="equipe-documentos-cabecalho" aria-hidden="true"><span>Documento</span><span>Vale para</span><span>Armazenamento</span><span>Conferência</span><span>Ações</span></div>;
+    const anteriores = ficha.documentos.filter(d => d.arquivado);
+    return <div className="equipe-documentos" ref={setRaizDocumentos}>
+  <div className="equipe-documentos-barra">
+   <button type="button" className="equipe-botao-secundario" hidden={envioAberto} onClick={() => setEnvioAberto(true)}>Adicionar documento</button>
+   <DropdownMenu><DropdownMenuTrigger className="equipe-icone-acao" aria-label="Mais ações de documentos" title="Mais ações de documentos" disabled={ocupado || Boolean(tentativa)}><Ellipsis size={18} aria-hidden="true"/></DropdownMenuTrigger><DropdownMenuContent align="end" container={raiz}><DropdownMenuItem disabled={ocupado || Boolean(tentativa)} onClick={() => void limparTemporarios()}>Limpar candidatas expiradas autorizadas</DropdownMenuItem></DropdownMenuContent></DropdownMenu>
+  </div>
+  <form hidden={!envioAberto} onSubmit={salvar} aria-label="Adicionar documento privado" className="equipe-ficha-grupo equipe-cartao">
    <h4>{meta.substitui_id ? 'Substituir documento — versão anterior será preservada' : 'Adicionar documento privado'}</h4>
    <UnidadesFicha clinicas={clinicas} unidades={meta.unidades} disabled={ocupado || Boolean(tentativa) || Boolean(meta.substitui_id)} onChange={unidades => setMeta({ ...meta, unidades })}/>
    <div className="equipe-ficha-campos"><label htmlFor={campoId + 'categoria'}>Categoria<select aria-label="Categoria" id={campoId + 'categoria'} value={meta.categoria} disabled={ocupado || Boolean(tentativa) || Boolean(meta.substitui_id)} onChange={e => setMeta({ ...meta, categoria: e.target.value })}><option value="">Selecione</option>{CATEGORIAS_DOCUMENTO.filter(c => ficha.pode_ocupacional || !['aso', 'capacitacao'].includes(c)).map(c => <option key={c} value={c}>{rotulo(c)}</option>)}</select></label><label htmlFor={campoId + 'contrato'}>Contrato associado (se necessário)<select id={campoId + 'contrato'} value={meta.contrato_id ?? ''} disabled={ocupado || Boolean(tentativa) || Boolean(meta.substitui_id)} onChange={e => setMeta({ ...meta, contrato_id: e.target.value || null })}><option value="">Ligado à pessoa, no escopo escolhido</option>{ficha.registros.filter(r => r.tipo === 'contrato').map(r => <option key={r.id} value={r.id}>{String(r.dados.cargo)} · início {String(r.dados.admissao)}</option>)}</select></label><label>Emissão (se informada)<input type="date" value={meta.emissao} disabled={ocupado || Boolean(tentativa)} onChange={e => setMeta({ ...meta, emissao: e.target.value })}/></label><label>Validade (somente quando existir)<input type="date" value={meta.validade} disabled={ocupado || Boolean(tentativa)} onChange={e => setMeta({ ...meta, validade: e.target.value })}/></label><label className="equipe-campo-amplo">Arquivo PDF, JPEG ou PNG<input ref={input} type="file" accept="application/pdf,image/jpeg,image/png" disabled={ocupado || Boolean(tentativa && arquivo)} onChange={e => {
@@ -232,38 +274,19 @@ export function EquipeDocumentosPainel({ membroId, clinicaId, clinicas, ficha, o
                 setTentativa(null);
         }}/></label></div>
    {arquivo && <p className="equipe-documento-arquivo">Arquivo selecionado: <strong>{arquivo.name}</strong></p>}
-   <p role="status">{estado === 'selecionado' ? 'Arquivo selecionado — ainda não salvo.' : estado === 'enviando' ? 'Enviando e confirmando arquivo e registro…' : estado === 'disponivel' ? 'Documento salvo: arquivo e registro confirmados. Conferência permanece separada.' : estado === 'falha' ? 'Documento não confirmado nesta tentativa.' : 'Nenhum arquivo selecionado.'}</p><p>A validação de formato não certifica ausência de malware. PDF com conteúdo ativo é recusado; confira a procedência do documento.</p>
+   <p role="status">{estado === 'selecionado' ? 'Arquivo selecionado — ainda não salvo.' : estado === 'enviando' ? 'Enviando e confirmando arquivo e registro…' : estado === 'disponivel' ? 'Documento salvo: arquivo e registro confirmados. Conferência permanece separada.' : estado === 'falha' ? 'Documento não confirmado nesta tentativa.' : 'Nenhum arquivo selecionado.'}</p><NotaInfo>A validação de formato não certifica ausência de malware. PDF com conteúdo ativo é recusado; confira a procedência do documento.</NotaInfo>
    <div className="equipe-ficha-acoes"><button type="submit" disabled={!arquivo || ocupado || incerto || !meta.categoria}>{ocupado ? 'Processando…' : tentativa ? 'Tentar novamente a mesma tentativa' : 'Salvar documento'}</button>{tentativa && <button type="button" disabled={ocupado} onClick={() => void recuperar()}>Consultar resultado da tentativa</button>}<button type="button" disabled={ocupado} onClick={() => alterado ? setDescartar(true) : limpar()}>Cancelar documento</button></div>
    {tentativa && <p>Os metadados desta tentativa estão fixos. Falha parcial não apaga a versão anterior; a recuperação usa o mesmo identificador. Candidatas privadas expiradas podem ser limpas, sem remover documentos confirmados.</p>}
   </form>
   {operacaoBloqueada && <p>Reconsulte as informações adicionais antes de outra conferência ou arquivamento. O preenchimento foi preservado.</p>}{erro && <FeedbackAlert variant="destructive" title="Documento não confirmado ou indisponível" description={erro}/>}
-  {ficha.tentativas?.filter(t => !ficha.documentos.some(d => d.id === t.id)).map(t => <div key={t.id} className="equipe-ficha-item"><p>Tentativa pendente de confirmação · {rotulo(t.meta.categoria)} · {new Date(t.criado_em).toLocaleDateString('pt-BR')}. Não é documento salvo.</p><button type="button" disabled={ocupado || Boolean(arquivo)} onClick={() => { setEnvioAberto(true); setTentativa(t.id); setMeta(t.meta); setIncerto(true); setEstado('falha'); setErro('Tentativa retomada. Consulte o resultado antes de reenviar o arquivo.'); }}>Retomar tentativa pendente</button></div>)}
-  {visualizacao && <div className="equipe-documento-previa"><h4>{visualizacao.nome}</h4><p>Leitura autorizada desta versão.</p>{visualizacao.mime === 'image/jpeg' ? <img src={visualizacao.url} alt="Documento autorizado"/> : <iframe title="Documento PDF autorizado" sandbox="allow-same-origin" src={visualizacao.url}/>}<button type="button" onClick={fecharPrevia}>Fechar visualização</button></div>}
-  <div className="equipe-documentos-lista">{!ficha.documentos.some(d=>!d.arquivado) && <p>Nenhum documento atual confirmado no escopo desta consulta.</p>}{listar(ficha.documentos.filter(d=>!d.arquivado))}</div>
-  <details className="equipe-documentos-anteriores"><summary>Versões anteriores e documentos arquivados ({ficha.documentos.filter(d=>d.arquivado).length})</summary><p>Documentos distintos permanecem separados. A substituição identifica a versão anterior do mesmo documento.</p>{listar(ficha.documentos.filter(d=>d.arquivado))}</details>
-  {conferindo && <form aria-label="Conferir documento salvo" onSubmit={e => { e.preventDefault(); void operar(conferindo, 'documento_conferir'); }} className="equipe-ficha-grupo"><h4>Conferir {rotulo(conferindo.categoria)} · versão exata {conferindo.versao}</h4><label>Fonte / critério da conferência<input value={fonte} disabled={ocupado} maxLength={250} onChange={e => setFonte(e.target.value)}/></label><label>Resultado da conferência<select value={resultado} disabled={ocupado} onChange={e => setResultado(e.target.value)}><option value="conferido">Conferido</option><option value="necessita_correcao">Necessita correção</option></select></label><p>Conferente e data serão registrados pelo servidor. Substituição exige nova conferência.</p><div className="equipe-ficha-acoes"><button type="submit" disabled={ocupado || operacaoBloqueada || !fonte.trim()}>Salvar conferência do documento</button><button type="button" disabled={ocupado} onClick={() => { setConferindo(null); setFonte(''); }}>Cancelar conferência documental</button></div></form>}
-  <details><summary>Recuperação de temporários</summary><p>Remove somente candidatas expiradas desta pessoa e tentativa autorizada, após prova de não referência. Não exclui arquivos confirmados ou versões antigas.</p><button type="button" disabled={ocupado || Boolean(tentativa)} onClick={async () => {
-            if (trava.current)
-                return;
-            trava.current = true;
-            setOcupado(true);
-            const g = gen.current;
-            try {
-                const resultado = await operarFicha(membroId, clinicaId, 'documento_limpar', { id: crypto.randomUUID() });
-                if (g === gen.current)
-                    setErro(resultado && typeof resultado === 'object' && 'limpeza_pendente' in resultado && resultado.limpeza_pendente ? 'A limpeza não foi confirmada. Consulte novamente; documentos confirmados foram preservados.' : null);
-            }
-            catch (e) {
-                if (g === gen.current)
-                    setErro(erroFicha(e, true).message);
-            }
-            finally {
-                if (g === gen.current) {
-                    setOcupado(false);
-                    trava.current = false;
-                }
-            }
-        }}>Limpar candidatas expiradas autorizadas</button></details>
+  {ficha.tentativas?.filter(t => !ficha.documentos.some(d => d.id === t.id)).map(t => <div key={t.id} className="equipe-ficha-item equipe-cartao"><p>Tentativa pendente de confirmação · {rotulo(t.meta.categoria)} · {new Date(t.criado_em).toLocaleDateString('pt-BR')}. Não é documento salvo.</p><button type="button" disabled={ocupado || Boolean(arquivo)} onClick={() => { setEnvioAberto(true); setTentativa(t.id); setMeta(t.meta); setIncerto(true); setEstado('falha'); setErro('Tentativa retomada. Consulte o resultado antes de reenviar o arquivo.'); }}>Retomar tentativa pendente</button></div>)}
+  {visualizacao && <div className="equipe-documento-previa equipe-cartao"><h4>{visualizacao.nome}</h4><p>Leitura autorizada desta versão.</p>{visualizacao.mime === 'image/jpeg' ? <img src={visualizacao.url} alt="Documento autorizado"/> : <iframe title="Documento PDF autorizado" sandbox="allow-same-origin" src={visualizacao.url}/>}<button type="button" onClick={fecharPrevia}>Fechar visualização</button></div>}
+  <div className="equipe-cartao equipe-documentos-tabela">
+   <div className="equipe-documentos-lista">{cabecalhoTabela}{!ficha.documentos.some(d => !d.arquivado) && <p className="equipe-texto-discreto">Nenhum documento atual confirmado no escopo desta consulta.</p>}{listar(ficha.documentos.filter(d => !d.arquivado))}</div>
+   <Recolhivel titulo={`Versões anteriores e documentos arquivados (${anteriores.length})`} className="equipe-documentos-anteriores"><NotaInfo>Documentos distintos permanecem separados. A substituição identifica a versão anterior do mesmo documento.</NotaInfo>{listar(anteriores)}</Recolhivel>
+  </div>
+  {conferindo && <form aria-label="Conferir documento salvo" onSubmit={e => { e.preventDefault(); void operar(conferindo, 'documento_conferir'); }} className="equipe-ficha-grupo equipe-cartao"><h4>Conferir {rotulo(conferindo.categoria)} · versão exata {conferindo.versao}</h4><label>Fonte / critério da conferência<input value={fonte} disabled={ocupado} maxLength={250} onChange={e => setFonte(e.target.value)}/></label><label>Resultado da conferência<select value={resultado} disabled={ocupado} onChange={e => setResultado(e.target.value)}><option value="conferido">Conferido</option><option value="necessita_correcao">Necessita correção</option></select></label><p>Conferente e data serão registrados pelo servidor. Substituição exige nova conferência.</p><div className="equipe-ficha-acoes"><button type="submit" disabled={ocupado || operacaoBloqueada || !fonte.trim()}>Salvar conferência do documento</button><button type="button" disabled={ocupado} onClick={() => { setConferindo(null); setFonte(''); }}>Cancelar conferência documental</button></div></form>}
+  <NotaInfo>Arquivos privados, com escopo escolhido explicitamente; armazenamento e conferência são etapas separadas. Não inclua diagnósticos, prontuário ocupacional, credenciais ou histórico completo de empregos. “Limpar candidatas expiradas” remove só candidatas expiradas desta pessoa, sem excluir arquivos confirmados ou versões antigas.</NotaInfo>
   <ConfirmacaoDialog open={Boolean(confirmar)} onOpenChange={open => {
             if (!open)
                 setConfirmar(null);

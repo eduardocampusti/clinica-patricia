@@ -1,5 +1,15 @@
 # Equipe — checkpoint da primeira entrega
 
+## Equipe38 — ficha do membro, Fase 2C (seções restantes), 2026-10-07 -03:00
+
+Claude Code. Commit local, **sem push** (o ramo tem deploy automático na Hostinger).
+Só apresentação. Formação com contadores e selos por inscrição; Atuação em cartões;
+Recebimento em cartão único com a chave PIX mascarada como antes; Documentos em tabela
+(cartões no celular) com “Mais ações” montado dentro da ficha; Histórico como linha do
+tempo por dia, sem esconder eventos. Teste local com configs oficiais: equipe
+51/50/53 → 0/0/0, 0 novas; Financeiro 84/84; Agenda/operacional só com as 2 falhas
+antigas de Pacientes. Detalhes: [38-EVOLUCAO-VISUAL-FICHA.md](38-EVOLUCAO-VISUAL-FICHA.md).
+
 ## Equipe38 — ficha do membro, Fase 2B (Contratos e Acesso), 2026-10-07 -03:00
 
 Claude Code. Aprovada pelo usuário; commit local, **sem push/publicação**. Só apresentação.

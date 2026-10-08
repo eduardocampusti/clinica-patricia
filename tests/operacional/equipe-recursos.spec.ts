@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { abrirSecaoFicha } from './equipe-ficha-helpers'
 import { readFileSync } from 'node:fs'
 import { mascararRecebimento, comporRecebimento, type DadosRecebimento } from '../../supabase/functions/_shared/equipeRecebimento'
 test.setTimeout(90_000)
@@ -61,7 +62,9 @@ async function preparar(page:Page,opcoes:{papel?:string;erroConsulta?:boolean}={
 }
 const foto=(p:Page)=>p.getByTestId('equipe-foto-painel')
 const rece=(p:Page)=>p.getByTestId('equipe-recebimento-painel')
-const ver=async(p:Page)=>{await p.getByRole('button',{name:'Ver cadastro de Médica Sintética',exact:true}).click();await expect(rece(p).getByRole('button',{name:'Cadastrar dados de recebimento'})).toBeVisible()}
+// Recebimento fica na própria seção e a foto abre pelo avatar do cabeçalho (Fase 2).
+async function irParaRecursos(p:Page){await abrirSecaoFicha(p,'Recebimento');const avatar=p.getByRole('button',{name:'Gerenciar foto',exact:true});if(await avatar.getAttribute('aria-expanded')==='false')await avatar.click()}
+const ver=async(p:Page)=>{await p.getByRole('button',{name:'Ver cadastro de Médica Sintética',exact:true}).click();await irParaRecursos(p);await expect(rece(p).getByRole('button',{name:'Cadastrar dados de recebimento'})).toBeVisible()}
 async function preencherPix(p:Page){await rece(p).getByRole('button',{name:'Cadastrar dados de recebimento'}).click();await p.getByLabel('Chave PIX',{exact:true}).fill('favorecido@example.invalid');await p.getByLabel('Nome completo do favorecido',{exact:true}).fill('Favorecido Sintético')}
 async function conta(p:Page){await p.getByLabel('Cadastrar conta para transferência',{exact:true}).check();await p.getByLabel('Banco ou instituição',{exact:true}).fill('Instituição Sintética');await p.getByLabel('Número da conta',{exact:true}).fill('00001234');await p.getByLabel('CPF do favorecido',{exact:true}).fill('52998224725');await p.getByLabel('Agência (opcional)',{exact:true}).fill('0001')}
 
@@ -94,7 +97,7 @@ test('recebimento: validação, PIX, reabertura mascarada, conta+PIX e contexto 
   await rece(page).screenshot({path:'scratch/equipe-fotos-recebimento/recebimento-confirmado-mascarado.png'})
   await page.getByRole('button',{name:'Fechar',exact:true}).click();await expect(page.locator('.equipe-listagem')).not.toContainText('Instituição Sintética');expect(e.accessWrites).toBe(0)
 })
-async function verExistente(p:Page){await p.getByRole('button',{name:'Ver cadastro de Médica Sintética',exact:true}).click();await expect(rece(p).getByRole('button',{name:'Editar recebimento'})).toBeVisible()}
+async function verExistente(p:Page){await p.getByRole('button',{name:'Ver cadastro de Médica Sintética',exact:true}).click();await irParaRecursos(p);await expect(rece(p).getByRole('button',{name:'Editar recebimento'})).toBeVisible()}
 test('recebimento: falha/conflito/incerteza preservam edição, reconsulta e descarte são explícitos',async({page})=>{
   const e=await preparar(page);await ver(page);await preencherPix(page);e.fail='CONFLITO';await rece(page).getByRole('button',{name:'Salvar recebimento'}).click();await expect(rece(page).getByText(/Os dados mudaram em outra sessão/)).toBeVisible();await expect(page.getByLabel('Chave PIX',{exact:true})).toHaveValue('favorecido@example.invalid');await expect(rece(page).getByRole('button',{name:'Salvar recebimento'})).toBeDisabled();await expect(page.getByLabel('Clínica dos dados de recebimento')).toBeDisabled()
   await rece(page).getByRole('button',{name:'Reconsultar configuração'}).click();await page.getByRole('alertdialog').getByRole('button',{name:'Descartar edição e reconsultar'}).click();await expect(rece(page).getByRole('button',{name:'Cadastrar dados de recebimento'})).toBeVisible()
@@ -103,7 +106,7 @@ test('recebimento: falha/conflito/incerteza preservam edição, reconsulta e des
   await rece(page).getByRole('button',{name:'Editar recebimento'}).click();await page.getByLabel('Chave PIX',{exact:true}).fill('outro@example.invalid');await page.getByRole('button',{name:'Fechar',exact:true}).click();await expect(page.getByRole('alertdialog')).toBeVisible();await page.getByRole('alertdialog').getByRole('button',{name:'Cancelar',exact:true}).click();await expect(page.getByLabel('Chave PIX',{exact:true})).toHaveValue('outro@example.invalid');await page.getByRole('button',{name:'Fechar',exact:true}).click();await page.getByRole('button',{name:'Descartar e fechar'}).click();expect(e.writes).toBe(n)
 })
 test('serviço ausente não vira cadastro vazio; administrativos não consultam recebimento',async({page})=>{
-  const e=await preparar(page,{erroConsulta:true});await page.getByRole('button',{name:'Ver cadastro de Médica Sintética',exact:true}).click();await expect(rece(page).getByText('Recebimento indisponível')).toBeVisible();await expect(rece(page).getByRole('button',{name:'Cadastrar dados de recebimento'})).toHaveCount(0);await page.getByRole('button',{name:'Fechar',exact:true}).click();const reads=e.receReads
+  const e=await preparar(page,{erroConsulta:true});await page.getByRole('button',{name:'Ver cadastro de Médica Sintética',exact:true}).click();await irParaRecursos(page);await expect(rece(page).getByText('Recebimento indisponível')).toBeVisible();await expect(rece(page).getByRole('button',{name:'Cadastrar dados de recebimento'})).toHaveCount(0);await page.getByRole('button',{name:'Fechar',exact:true}).click();const reads=e.receReads
   await page.getByRole('searchbox').fill('Pessoa Sintética 3');await page.getByRole('button',{name:'Ver cadastro de Pessoa Sintética 3',exact:true}).click();await expect(rece(page)).toHaveCount(0);expect(e.receReads).toBe(reads);expect(e.writes).toBe(0)
 })
 test('logout elimina edição sensível e prévia; seleção de outra clínica não leva dados anteriores',async({page})=>{
