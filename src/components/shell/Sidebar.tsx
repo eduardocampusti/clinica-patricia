@@ -7,7 +7,10 @@ import { useCaminhoAtual } from '../../lib/appRoute'
 import { CLINIC_BRANDS, clinicaCorrespondeAoBrand } from '../../config/clinicBrands'
 import type { Tela } from './types'
 import { itemAtivo, itensParaPapel } from './navigation'
-import { IconeChevron, IconeCheck, IconeFechar, IconeMais } from './icons'
+import { IconeChevron, IconeCheck, IconeFechar, IconeMais, IconeGrid } from './icons'
+import type { IdentidadeConta } from '../../hooks/useIdentidadeConta'
+import { AvatarConta } from './AvatarConta'
+import { detalheIdentidade, rotuloIdentidade } from '../../lib/identidadeApresentacao'
 import { Sidebar as SidebarBase, SidebarHeader, SidebarContent, SidebarFooter, SidebarMenu, SidebarMenuItem, SidebarMenuButton, useSidebar } from '../ui/sidebar'
 
 interface SidebarProps {
@@ -16,10 +19,11 @@ interface SidebarProps {
   clinicasDoUsuario: ClinicaAtiva[]
   onSelecionarClinica: (id: string) => void
   papel: Papel | null
-  emailUsuario: string
+  identidade: IdentidadeConta
+  onMeuPerfil: () => void
   onSair: () => void
 }
-export default function Sidebar({ onNavegar, clinicaAtiva, clinicasDoUsuario, onSelecionarClinica, papel, emailUsuario, onSair }: SidebarProps) {
+export default function Sidebar({ onNavegar, clinicaAtiva, clinicasDoUsuario, onSelecionarClinica, papel, identidade, onMeuPerfil, onSair }: SidebarProps) {
   const { open, isMobile, setOpenMobile } = useSidebar()
   const caminho = useCaminhoAtual()
   const [seletorAberto, setSeletorAberto] = useState(false)
@@ -30,9 +34,9 @@ export default function Sidebar({ onNavegar, clinicaAtiva, clinicasDoUsuario, on
   const texto = recolhido ? 'sr-only' : 'min-w-0 truncate'
   return <SidebarBase>
     <SidebarHeader>
-      <div className="flex min-h-10 items-center gap-3 px-1 pr-8 lg:pr-0" title="Clínica Patrícia · Gestão clínica">
-        <span aria-hidden="true" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--menu-avatar-bg)] font-bold">P</span>
-        <div className={texto}><p className="text-sm font-semibold">Clínica Patrícia</p><p className="text-xs text-[var(--menu-texto-secundario)]">Gestão clínica</p></div>
+      <div className="flex min-h-10 items-center gap-3 px-1 pr-8 lg:pr-0" title="Sistema Multiclínicas · Gestão Clínica">
+        <span aria-hidden="true" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--menu-avatar-bg)]"><IconeGrid /></span>
+        <div className={recolhido ? 'sr-only' : 'min-w-0'}><p className="text-sm font-semibold leading-snug">Sistema Multiclínicas</p><p className="mt-0.5 text-xs text-[var(--menu-texto-secundario)]">Gestão Clínica</p></div>
       </div>
       <p className={`px-2 text-xs text-[var(--menu-texto-secundario)] ${texto}`}>{rotuloVisao(papel)}</p>
       <Popover.Root open={seletorAberto} onOpenChange={setSeletorAberto}>
@@ -62,11 +66,10 @@ export default function Sidebar({ onNavegar, clinicaAtiva, clinicasDoUsuario, on
       </SidebarMenuItem>)}</SidebarMenu>
     </nav></SidebarContent>
     <SidebarFooter>
-      <div title={`${emailUsuario} · ${rotuloPapel(papel)}`} className="mb-2 flex items-center gap-3 px-1 py-2">
-        <span aria-hidden="true" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--menu-avatar-bg)] text-xs font-bold">{emailUsuario.slice(0, 2).toUpperCase()}</span>
-        <div className={texto}><p className="truncate text-xs font-semibold">{emailUsuario.split('@')[0]}</p><p className="text-xs text-[var(--menu-texto-secundario)]">{rotuloPapel(papel)}</p></div>
-        {recolhido && <span className="sr-only">{emailUsuario} · {rotuloPapel(papel)}</span>}
-      </div>
+      <button type="button" aria-label="Meu perfil pela identificação" title={detalheIdentidade(identidade) ?? 'Meu perfil'} onClick={() => { setOpenMobile(false); onMeuPerfil() }} className="mb-2 flex min-h-11 w-full items-center gap-3 rounded-lg px-1 py-2 text-left hover:bg-[var(--menu-hover-bg)] focus-visible:outline-2 focus-visible:outline-[var(--menu-texto)]">
+        <AvatarConta identidade={identidade} papel={rotuloPapel(papel)} menu />
+        <div className={recolhido ? 'sr-only' : 'min-w-0 flex-1'}><p className="break-words text-xs font-semibold leading-snug [overflow-wrap:anywhere]">{rotuloIdentidade(identidade)}</p><p className="mt-0.5 text-xs text-[var(--menu-texto-secundario)]">{rotuloPapel(papel)}</p>{identidade.erroFoto && <p className="mt-0.5 text-xs text-[var(--menu-texto-secundario)]">Foto indisponível</p>}</div>
+      </button>
       <SidebarMenuButton type="button" aria-label="Sair" title={recolhido ? 'Sair' : undefined} onClick={onSair}><IconeFechar /><span className={texto}>Sair</span></SidebarMenuButton>
     </SidebarFooter>
   </SidebarBase>

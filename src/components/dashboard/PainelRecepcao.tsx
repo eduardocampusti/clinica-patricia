@@ -10,13 +10,14 @@ import { apenasDigitos, cpfValido, formatarCpf } from '../../lib/cpf'
 import { iniciais } from '../../lib/texto'
 import { FeedbackAlert } from '../feedback/FeedbackAlert'
 import './painelRecepcao.css'
+import CabecalhoDashboard from './CabecalhoDashboard'
 
 export interface AcoesPainelRecepcao {
   onNovoPaciente: () => void; onNovoAgendamento: () => void
   onAbrirPaciente: (id: string) => void; onAgenda: () => void
   onPacientes: () => void; onFinanceiro: () => void
 }
-interface Props extends AcoesPainelRecepcao { clinicaId: string; clinicaNome: string }
+interface Props extends AcoesPainelRecepcao { clinicaId: string; clinicaNome: string; nomeUsuario?: string | null }
 type Leitura<T> = { chave: string; dado?: T; em?: string; erro?: 'permissao' | 'leitura'; carregando: boolean }
 const nomes = ['Aguardando', 'Previstos', 'Em atendimento', 'Concluídos']
 const rotuloStatus = { agendado: 'Agendado', confirmado: 'Agendamento confirmado', aguardando: 'Aguardando', em_atendimento: 'Em atendimento', concluido: 'Concluído' }
@@ -107,7 +108,7 @@ export default function PainelRecepcao(p: Props) {
   const falhaMovimento = m.erro === 'permissao' ? 'Sem permissão para consultar o movimento desta clínica.' : 'Não foi possível confirmar o movimento completo. Atualize para tentar novamente.'
   const operacional = c.dado?.tipo === 'operacional' ? c.dado.caixa : null
   return <div className="rp rp-integrado">
-    <header className="rp-heading"><div><h1>Recepção</h1><p>{agora.toLocaleDateString('pt-BR', { timeZone: FUSO_PACIENTES, weekday: 'long', day: '2-digit', month: 'long' })} · {p.clinicaNome}</p></div><div className="rp-quick"><button className="rp-button" onClick={p.onNovoPaciente}>+ Novo paciente</button><button className="rp-button rp-primary" onClick={p.onNovoAgendamento}>+ Novo agendamento</button></div></header>
+    <header className="rp-heading"><CabecalhoDashboard nome={p.nomeUsuario ?? null} clinicaNome={p.clinicaNome} agora={agora} /><div className="rp-quick"><button className="rp-button" onClick={p.onNovoPaciente}>+ Novo paciente</button><button className="rp-button rp-primary" onClick={p.onNovoAgendamento}>+ Novo agendamento</button></div></header>
     <section className="rp-metrics" aria-label="Indicadores do dia" aria-busy={m.carregando}>{kpis.map(([nome, valor, detalhe, icone, cor]) => <div className="rp-metric" key={nome} style={{ '--rp-acento': `var(--kpi-${cor}-texto)`, '--rp-icone-fundo': `var(--kpi-${cor}-icone-fundo)` } as CSSProperties}><span className="rp-metric-icon" aria-hidden="true"><Icone tipo={icone}/></span><div><p>{nome}</p><strong>{valor ?? '—'}</strong><small>{detalhe}</small></div></div>)}</section>
     {m.dado && <p className="rp-criteria">{registros.length} agendamentos / {new Set(registros.map(r => r.paciente_id)).size} pacientes distintos · {data} · America/Bahia</p>}
     {!!passados && <div className="rp-warning"><Icone tipo="relogio"/><span><strong>{passados} {passados === 1 ? 'agendamento com horário passado ainda previsto' : 'agendamentos com horário passado ainda previstos'}</strong><span>Conferir a situação na Agenda.</span></span><button className="rp-link" onClick={() => { setAba(1); setBusca(''); setModo('nome'); setProfissional('todos') }}>Conferir <Icone tipo="seta"/></button></div>}

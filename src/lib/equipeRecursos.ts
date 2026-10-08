@@ -20,6 +20,27 @@ function metaFoto(v:unknown,clinica:string):FotoEquipeMeta {
   return d as unknown as FotoEquipeMeta
 }
 export function liberarFotosEquipe(fotos:Record<string,FotoEquipeDisponivel>):void {for(const f of Object.values(fotos))if(f.url.startsWith('blob:'))URL.revokeObjectURL(f.url)}
+async function lerFotoPrivada(meta:FotoEquipeMeta,signal?:AbortSignal,usuarioId?:string,autorizacao?:{token:string;chave:string}):Promise<FotoEquipeDisponivel|null> {
+  if(!meta.caminho)return null
+  const sessao=autorizacao?null:(await supabase.auth.getSession()).data.session
+  if(!autorizacao && (!sessao || (usuarioId && sessao.user.id!==usuarioId)))throw erroRecursosSeguro({code:'42501'})
+  const chave=autorizacao?.chave||import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY||import.meta.env.VITE_SUPABASE_ANON_KEY
+  if(!chave)throw erroRecursosSeguro(null)
+  const caminho=meta.caminho.split('/').map(encodeURIComponent).join('/')
+  const r=await fetch(`${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/equipe-fotos/${caminho}`,{headers:{Authorization:`Bearer ${autorizacao?.token ?? sessao!.access_token}`,apikey:chave,'x-clinica-id':meta.clinica_id},cache:'no-store',credentials:'omit',signal})
+  if(!r.ok)throw erroRecursosSeguro(null)
+  const imagem=await r.blob()
+  if(imagem.size>5*1024*1024||imagem.type!=='image/jpeg')throw erroRecursosSeguro(null)
+  signal?.throwIfAborted()
+  return {membroId:meta.membro_id,clinicaId:meta.clinica_id,url:URL.createObjectURL(imagem)}
+}
+export async function buscarFotoEquipeDoMembro(membroId:string,clinicaId:string,usuarioId:string,signal:AbortSignal):Promise<FotoEquipeDisponivel|null> {
+  const {data,error}=await supabase.rpc('equipe_foto_autorizar',{p_membro_id:membroId,p_clinica_id:clinicaId,p_escrita:false}).abortSignal(signal)
+  if(error)throw erroRecursosSeguro(error)
+  const meta=metaFoto(data,clinicaId)
+  if(meta.membro_id!==membroId)throw erroRecursosSeguro(null)
+  return lerFotoPrivada(meta,signal,usuarioId)
+}
 export async function buscarFotosEquipe(clinicaId:string):Promise<FotosEquipe> {
   const {data,error}=await supabase.rpc('equipe_fotos_listar',{p_clinica_id:clinicaId})
   if(error)throw erroRecursosSeguro(error)
@@ -33,11 +54,8 @@ export async function buscarFotosEquipe(clinicaId:string):Promise<FotosEquipe> {
   const fotos:Record<string,FotoEquipeDisponivel>={};let falhaImagem=false
   await Promise.all(Object.values(metas).filter(m=>m.caminho).map(async m=>{
     try {
-      const caminho=m.caminho!.split('/').map(encodeURIComponent).join('/')
-      const r=await fetch(`${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/equipe-fotos/${caminho}`,{headers:{Authorization:`Bearer ${session.session.access_token}`,apikey:chave,'x-clinica-id':clinicaId},cache:'no-store',credentials:'omit'})
-      if(!r.ok){falhaImagem=true;return}
-      const imagem=await r.blob();if(imagem.size>5*1024*1024||imagem.type!=='image/jpeg'){falhaImagem=true;return}
-      fotos[m.membro_id]={membroId:m.membro_id,clinicaId,url:URL.createObjectURL(imagem)}
+      const foto=await lerFotoPrivada(m,undefined,undefined,{token:session.session!.access_token,chave})
+      if(foto)fotos[m.membro_id]=foto
     }catch {falhaImagem=true}
   }))
   return {metas,fotos,falhaImagem}

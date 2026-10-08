@@ -1,5 +1,59 @@
 # Sistema — índice
 
+## Meu perfil — provas reais aprovadas; duas técnicas encerradas,08/10/2026,16:44-03
+
+CLI/API oficiais no alvo xftnkusbyqzyvzrovroj: segunda rodada autorizada28/28
+aprovada, persistência nome/foto/substituição/remoção/nova sessão e isolamento
+bilateral comprovados com Auth normal fictício. Recarga/contexto por API; interface
+sintética anterior distinguida. Ambas contas banidas/inativas, sessões e refresh
+revogados e três vínculos inativos; novo login/renovação/perfil/foto recusados.
+Frontend habilitado e versão0.2.0 preparada; pacote seletivo51 arquivos sobre
+59acccb atual, preservando trabalhos locais alheios. Ainda sem commit/push/deploy
+novo. Navegador indisponível; conferência visual autenticada publicada pendente.
+Próximo: validar pacote exato, publicar e identificar ambos os bundles.
+[Provas, exceção de canal e limites](17-MEU-PERFIL-BACKEND-PUBLICACAO.md).
+
+## Meu perfil — backend aplicado; confirmação de vínculos pendente,08/10/2026,12:44-03
+
+SQL mínimo/Edge aplicados somente no projeto oficial pelo IAB autorizado nesta
+execução; catálogo/ACL/bucket/integridade conferidos. Duas novas fictícias sem
+e-mail/fichas, sessões reais confirmadas: sem vínculo403, anônimo401. Nenhum vínculo
+concedido; confirmação exigida pela ferramenta para os três vínculos médico, pois
+as políticas atuais também permitem leitura de cadastros clínicos. Gravações/fotos/
+isolamento completo e encerramento de técnicos pendentes. Normal ainda false;
+nenhum commit/push/deploy Hostinger. Pacote seletivo atualizado47 caminhos, demais
+trabalhos preservados. Domínios12:31-03 ambos0.1.0/59acccb7; GitHub SHA completo
+confirmado. [Provas, proposta concreta e limites](17-MEU-PERFIL-BACKEND-PUBLICACAO.md).
+As seções seguintes conservam o histórico de cada etapa.
+
+## Meu perfil — revisão backend/publicação,08/10/2026,11:28-03
+
+Preparação seletiva43 caminhos conferida11:41-03 (build/tipos/notas,18 internos,
+3 dirigidos sintéticos; ressalva de carregamento frio no relatório17).
+
+Backend/publicação seletiva autorizados após provar persistência/isolações reais.
+Proposta revisada e falha incerta corrigida, testes dirigidos passaram. Falta canal
+Chrome/Claude Code exigido pela regra04 e conta fictícia ativa autorizada; não
+pronta para publicar. Sem aplicação/escrita real/commit/push/deploy. Ambos domínios
+seguem59acccb7. [Evidências e próximo passo](17-MEU-PERFIL-BACKEND-PUBLICACAO.md).
+
+## Meu perfil — parte local concluída, backend proposto em08/10/2026
+
+Avatar/rodapé abrem formulário próprio de nome e foto com prévia e cancelamento;
+conta/clínica/papel só consultáveis. Nome mantém `usuarios.nome_completo`. Salvar
+desabilitado até serviço pessoal seguro ser aplicado/homologado.35 cenários de
+navegador+16 testes determinísticos passaram; Proprietário(a) real nas duas clínicas
+conferido por leitura, computador/360px. Nenhuma escrita real/backend/publicação.
+[Fontes, capturas, arquivos e limites](16-MEU-PERFIL.md).
+
+## Entrada e identidade — melhoria local em08/10/2026
+
+Pedido posterior substitui o cartão administrativo por saudação e identidade,
+mantendo módulos no menu. Novo login abre dashboard; restauração mantém rota.
+Marca Sistema Multiclínicas, nome próprio e foto privada somente por vínculo
+confirmado. Sem autorização para publicação nesta etapa. Estado e evidências em
+[15-ENTRADA-IDENTIDADE-DASHBOARD.md](15-ENTRADA-IDENTIDADE-DASHBOARD.md).
+
 ## Dashboard do Proprietário(a) — conferência autenticada local, 08/10/2026 07:09 -03:00
 
 Publicação específica autorizada08/10,07:34-03: somente esta correção; pacote seletivo

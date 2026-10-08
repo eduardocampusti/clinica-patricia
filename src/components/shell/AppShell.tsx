@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import type { ClinicaAtiva } from '../../hooks/useClinicaAtiva'
 import type { Papel } from '../../hooks/usePapelNaClinica'
 import { ThemeToggle } from '../../theme/ThemeToggle'
@@ -6,6 +6,10 @@ import { rotuloPapel } from '../../lib/papelApresentacao'
 import Sidebar from './Sidebar'
 import { TITULOS_TELA, type Tela } from './types'
 import { SidebarProvider, SidebarInset, SidebarTrigger } from '../ui/sidebar'
+import type { IdentidadeConta } from '../../hooks/useIdentidadeConta'
+import { AvatarConta } from './AvatarConta'
+import { detalheIdentidade, rotuloIdentidade } from '../../lib/identidadeApresentacao'
+import { MeuPerfil } from '../perfil/MeuPerfil'
 
 interface AppShellProps {
   tela: Tela
@@ -13,7 +17,8 @@ interface AppShellProps {
   clinicaAtiva: ClinicaAtiva | null
   clinicasDoUsuario: ClinicaAtiva[]
   onSelecionarClinica: (id: string) => void
-  emailUsuario: string
+  identidade: IdentidadeConta
+  conta: string
   papel: Papel | null
   onSair: () => void
   children: ReactNode
@@ -25,11 +30,14 @@ function AppShell({
   clinicaAtiva,
   clinicasDoUsuario,
   onSelecionarClinica,
-  emailUsuario,
+  identidade,
+  conta,
   papel,
   onSair,
   children,
 }: AppShellProps) {
+  const [perfilAberto, setPerfilAberto] = useState(false)
+  const abrirPerfil = () => { identidade.reconsultar?.(); setPerfilAberto(true) }
   return (
     <SidebarProvider className={tela === 'financeiro' ? 'app-shell-finance' : ''}>
       <Sidebar
@@ -38,7 +46,8 @@ function AppShell({
         clinicasDoUsuario={clinicasDoUsuario}
         onSelecionarClinica={onSelecionarClinica}
         papel={papel}
-        emailUsuario={emailUsuario}
+        identidade={identidade}
+        onMeuPerfil={abrirPerfil}
         onSair={onSair}
       />
 
@@ -60,15 +69,14 @@ function AppShell({
               </select>
             ) : clinicaAtiva && <span className="max-w-[110px] truncate text-xs font-medium text-[var(--texto-secundario)] sm:max-w-none sm:text-sm">{clinicaAtiva.nome}</span>}
             <ThemeToggle />
-            <div aria-label={`Usuário ${emailUsuario}`} title={emailUsuario} className="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-[var(--cor-primaria-suave)] text-xs font-bold text-[var(--cor-primaria)]">
-              {emailUsuario.slice(0, 2).toUpperCase()}
-            </div>
-            <div className="hidden max-w-40 lg:block"><p className="truncate text-xs font-semibold text-[var(--texto-principal)]" title={emailUsuario}>{emailUsuario.split('@')[0]}</p><p className="text-xs text-[var(--texto-secundario)]">{rotuloPapel(papel)}</p></div>
+            <button type="button" aria-label="Meu perfil pelo avatar" title="Meu perfil" onClick={abrirPerfil} className="flex min-h-11 min-w-11 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-[var(--cor-primaria)]"><AvatarConta identidade={identidade} papel={rotuloPapel(papel)} /></button>
+            <div className="hidden max-w-40 lg:block" title={detalheIdentidade(identidade)}><p className="truncate text-xs font-semibold text-[var(--texto-principal)]" title={identidade.nome ?? undefined}>{rotuloIdentidade(identidade)}</p><p className="text-xs text-[var(--texto-secundario)]">{rotuloPapel(papel)}</p></div>
           </div>
         </header>
 
         <main className="min-w-0 flex-1 px-4 py-5 sm:px-6 lg:px-8 lg:py-7">{children}</main>
       </SidebarInset>
+      {perfilAberto && <MeuPerfil key={identidade.chave.split(':')[0]} identidade={identidade} conta={conta} papel={rotuloPapel(papel)} clinica={clinicaAtiva?.nome ?? 'Clínica selecionada'} onFechar={() => setPerfilAberto(false)} />}
     </SidebarProvider>
   )
 }

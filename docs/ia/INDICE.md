@@ -1,5 +1,71 @@
 # Memória compartilhada — mapa de leitura
 
+## Meu perfil — provas reais aprovadas; duas técnicas encerradas,08/10/2026,16:44-03
+
+CLI/API oficiais no alvo xftnkusbyqzyvzrovroj: segunda rodada autorizada28/28
+aprovada, persistência nome/foto/substituição/remoção/nova sessão e isolamento
+bilateral comprovados com Auth normal fictício. Recarga/contexto por API; interface
+sintética anterior distinguida. Ambas contas banidas/inativas, sessões e refresh
+revogados e três vínculos inativos; novo login/renovação/perfil/foto recusados.
+Frontend habilitado e versão0.2.0 preparada; pacote seletivo51 arquivos sobre
+59acccb atual, preservando trabalhos locais alheios. Ainda sem commit/push/deploy
+novo. Navegador indisponível; conferência visual autenticada publicada pendente.
+Próximo: validar pacote exato, publicar e identificar ambos os bundles.
+[Provas, exceção de canal e limites](../modulos/sistema/17-MEU-PERFIL-BACKEND-PUBLICACAO.md).
+
+Meu perfil,08/10/2026,16:32-03: [rodada real parcial; DUAS técnicas encerradas](../modulos/sistema/17-MEU-PERFIL-BACKEND-PUBLICACAO.md).
+Nome/envio foto próprios comprovados, substituição/isolamento/remoção pendentes.
+Ban/inativo/zero sessões/renovações/vínculos e login recusado conferidos; limite do
+teste conjunto de JWT anterior declarado. Edgev2/JWTtrue/cache0 preparado/publicado,
+download local sem cache e18 internos/build passam. Reabertura específica proposta
+aguarda resposta; sites continuam59acccb7, sem commit/push/deploy novo do frontend.
+
+Meu perfil,08/10/2026,16:17-03: [CLI oficial autenticado; execução conectada disponível](../modulos/sistema/17-MEU-PERFIL-BACKEND-PUBLICACAO.md).
+Exceção específica CLI/MCP/API autorizada; alvo único confirmado. DUAS contas
+corretas ativas, três vínculos ausentes, backend já presente por consulta real.
+Executar escopo autorizado, encerrar técnicos inclusive em falha, publicar após
+persistência/isolações comprovadas. Sem novo commit/push/deploy nesta anotação.
+
+Meu perfil,08/10/2026,15:58-03: [mesma falha IAB confirmada uma vez, sem novos resets](../modulos/sistema/17-MEU-PERFIL-BACKEND-PUBLICACAO.md).
+URL informada correta, sem leitura viva do projeto/contas/vínculos. IDs locais
+conferidos, nenhum novo ato de backend/validação/publicação. Encerramento das DUAS
+técnicas também permanece pendente/prioritário. Alternativas: operação manual
+do titular ou recuperação do controle; nenhum outro canal administrativo conectado
+verificado. Autorizações mantidas; sem IA nova.
+
+Meu perfil,08/10/2026,15:25-03: [três vínculos autorizados; navegador não inicializa](../modulos/sistema/17-MEU-PERFIL-BACKEND-PUBLICACAO.md).
+IDs das duas novas contas conferidos no SQL/relatório, sem execução dos vínculos.
+IAB falha por erro técnico sandbox Windows mesmo após reset; não é autorização
+pendente nem falha de login comprovada. Encerramento/bloqueio/revogação das novas
+técnicas e testes positivos/publicação continuam pendentes; retomar pelo mesmo
+canal autorizado quando recuperar, sem solicitar novamente aprovação. Não alterar
+contas reais/antigas, nem ampliar escopo. Preparação47 ainda não liberada.
+
+Meu perfil,08/10/2026,11:28-03: [backend/publicação autorizados; preparação com impedimentos](../modulos/sistema/17-MEU-PERFIL-BACKEND-PUBLICACAO.md).
+Preparação43 caminhos conferida11:41-03; build/tipos/notas,18 internos e3 dirigidos
+sintéticos aprovados, com ressalva de carregamento frio. Nenhuma prova de backend
+real ou publicação nova. Manifesto em scratch/meu-perfil/publicacao/manifesto.json.
+Proposta/erro incerto revisados,18 internos+3 navegador sintéticos aprovados;35
+anteriores reaproveitados. Falta canal Chrome/Claude Code exigido pela regra04 e
+conta fictícia ativa autorizada. Sem aplicação real/commit/push/deploy; não pronta
+para publicar. Ambos domínios/GitHub/Hostinger seguem0.1.0/59acccb7.
+
+Meu perfil,08/10/2026,10:50-03: [parte local concluída; backend pendente](../modulos/sistema/16-MEU-PERFIL.md).
+Avatar/rodapé, nome/foto em prévia e cancelamento; Salvar desabilitado na aplicação
+normal. Nome mantém usuarios.nome_completo; proposta de foto pessoal privada/
+serviço próprio não aplicada.35 cenários de navegador+16 testes determinísticos;
+sessão real Proprietário(a) Brotas/Ipupiara por leitura, computador/360px, contexto,
+troca/F5 e pendência conferidos. Gravação/relogin/conta nova simulados. Sem backend/
+escrita real/commit/push/deploy; SQL/RLS/Deno e retenção pendentes. Próxima ação:
+revisão/autorizar proposta e homologação fictícia antes de habilitar para o titular.
+
+Entrada e identidade,08/10/2026,09:54-03: [concluída apenas localmente](../modulos/sistema/15-ENTRADA-IDENTIDADE-DASHBOARD.md).
+Marca Sistema Multiclínicas, perfil próprio/saudação Bahia, menu preservado e cartões
+explicativos retirados.62 cenários de navegador+9 determinísticos; sessão real
+Proprietário(a) nas duas clínicas, computador/360/390/430px, somente leitura.
+Foto real não exibida; iniciais. Login/logout/segunda conta/foto vinculada simulados.
+Sem nova publicação:59acccb permanece nos domínios; árvore original ad493861 preservada.
+
 Dashboard Proprietário(a),08/10/2026: [investigação e acessos administrativos locais](../modulos/sistema/14-DASHBOARD-PROPRIETARIO-ACESSOS.md).
 Publicação específica autorizada07:34-03; pacote seletivo validado07:44-03, origem
 Hostinger confirmada na branchresgate-local existente/auto-deploy, notas/tipos/build

@@ -1,5 +1,15 @@
 # Versionamento e releases — processo em preparação
 
+## Meu perfil — identificação da publicação de08/10/2026
+
+O novo recurso pessoal usa0.2.0 conforme incremento MINOR da série0.x. Pacote,
+lockfile, notas e initial-version foram alinhados sem alterar dependências ou
+ativar workflows. Permanece versão em desenvolvimento: esta publicação não cria
+tag/GitHub Release nem declara concluídos outros módulos. Manifesto inicial0.0.0
+preservado; primeira proposta formal de release será revisada no próprio fluxo.
+Commit/deploy efetivos são registrados no relatório17 do Sistema. O marco0.1.0
+e evidências anteriores abaixo permanecem históricos.
+
 ## Marco inicial e evidências
 
 - `0.1.0` é a primeira versão **identificada no código local desta fase de desenvolvimento**. Não comprova módulos concluídos, publicação ou release no GitHub.

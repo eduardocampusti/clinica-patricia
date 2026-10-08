@@ -51,10 +51,10 @@ export interface EscopoAcessoEquipe {
   papel: PapelAcessoEquipe
 }
 
-async function invocar<T>(body: Record<string, unknown>): Promise<{ data: T | null; error: ErroAcessoEquipe | null }> {
+async function invocar<T>(body: Record<string, unknown>, signal?: AbortSignal): Promise<{ data: T | null; error: ErroAcessoEquipe | null }> {
   const escrita = body.acao !== 'listar'
   try {
-    const { data, error } = await supabase.functions.invoke<T>('equipe-acessos', { body })
+    const { data, error } = await supabase.functions.invoke<T>('equipe-acessos', { body, signal })
     if (error) return { data: null, error: await interpretarErroAcessoEquipe(error, escrita) }
     if (!data || typeof data !== 'object' || Array.isArray(data) || Object.keys(data).length === 0) return { data: null, error: erroEquipeSeguro(null, escrita) }
     if ('erro' in data || 'codigo' in data) return { data: null, error: erroEquipeSeguro(data, escrita) }
@@ -65,8 +65,8 @@ async function invocar<T>(body: Record<string, unknown>): Promise<{ data: T | nu
   }
 }
 
-export async function buscarAcessoEquipe(membroId: string, clinicaContextoId: string): Promise<{ data: AcessoEquipe | null; error: ErroAcessoEquipe | null }> {
-  return invocar<AcessoEquipe>({ acao: 'listar', membroId, clinicaContextoId })
+export async function buscarAcessoEquipe(membroId: string, clinicaContextoId: string, signal?: AbortSignal): Promise<{ data: AcessoEquipe | null; error: ErroAcessoEquipe | null }> {
+  return invocar<AcessoEquipe>({ acao: 'listar', membroId, clinicaContextoId }, signal)
 }
 
 export async function iniciarAcessoEquipe(input: {

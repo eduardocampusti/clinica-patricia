@@ -1,5 +1,170 @@
 # CHECKPOINT MESTRE — CLÍNICA PATRÍCIA
 
+## Pacote exato aprovado para commit/push —08/10/2026,16:49-03
+
+Checkout isolado dentro do projeto, base publicada59acccb72728cdc8d7df838205ac9e41cf97a6ba;
+51 caminhos selecionados pelo manifesto. Tipos/build0.2.0 e notas coerentes,18
+testes internos e3 cenários dirigidos de falha aprovados nesse checkout;35
+cenários válidos anteriores reaproveitados. Avisos de chunk/importação dinâmica
+preexistentes, sem erro de compilação. Testes reais28/28 e encerramento final
+aprovados separadamente. Não foram incluídos .env, chaves, sessões, bancada real,
+evidências ou melhorias alheias. Próximo: commit/push normal para a branch existente
+e confirmação independente nos dois domínios. Isso ainda não é deploy confirmado.
+
+## Meu perfil — provas reais aprovadas; duas técnicas encerradas,08/10/2026,16:44-03
+
+CLI/API oficiais no alvo xftnkusbyqzyvzrovroj: segunda rodada autorizada28/28
+aprovada, persistência nome/foto/substituição/remoção/nova sessão e isolamento
+bilateral comprovados com Auth normal fictício. Recarga/contexto por API; interface
+sintética anterior distinguida. Ambas contas banidas/inativas, sessões e refresh
+revogados e três vínculos inativos; novo login/renovação/perfil/foto recusados.
+Frontend habilitado e versão0.2.0 preparada; pacote seletivo51 arquivos sobre
+59acccb atual, preservando trabalhos locais alheios. Ainda sem commit/push/deploy
+novo. Navegador indisponível; conferência visual autenticada publicada pendente.
+Próximo: validar pacote exato, publicar e identificar ambos os bundles.
+[Provas, exceção de canal e limites](docs/modulos/sistema/17-MEU-PERFIL-BACKEND-PUBLICACAO.md).
+
+## Meu perfil — gravação parcial comprovada; técnicos encerrados,08/10/2026,16:32-03
+
+Três vínculos exatos aplicados uma vez; Auth real fictício/nome/nome longo/envio foto
+privada comprovados. Asserção conjunta da substituição falhou; demais positivos
+pendentes. Ambas técnicas bloqueadas/inativas, zero sessões/renovações/vínculos
+ativos e novos logins recusados. Teste conjunto com JWT antigo não comprovou todas
+as recusas; sem ocultar limite. Cache3600 observado, causa apenas hipótese. Ajuste
+restrito de cache local e Edgev2/JWTtrue publicado sem Docker;18 internos/build/tipos
+passam. Reabertura das duas/mesmos vínculos exige nova autorização conforme pedido;
+proposta não executada e pergunta pendente. Frontendfalse, sem commit/push/deploy
+Hostinger; ambos domínios16:23 continuam0.1.0/59acccb7. Relatório17 guarda evidências.
+
+## Meu perfil — alternativa oficial funcional,08/10/2026,16:17-03
+
+CLI2.110.0 autenticado no projeto autorizado xftnkusbyqzyvzrovroj/Clinica Patrícia,
+ACTIVE_HEALTHY. Exceção explícita CLI/MCP/API só nesta execução; isolamento mantido.
+DUAS contas/perfis corretos ativos, três vínculos ausentes por leitura real;
+backend existente preservado. Chaves somente em memória, nenhuma extração de
+navegador. MCP não instalado; CLI/Management API disponível. Aplicar vínculos
+autorizados, provar persistência/isolações via Auth real, encerrar técnicos mesmo
+em falha e publicar após gates. Sem novo commit/push/deploy. Relatório17 atualizado.
+
+## Meu perfil — mesma falha confirmada uma vez,08/10/2026,15:58-03
+
+Retomada autorizada; IAB getState falhou antes de ler a interface:
+"node_repl kernel exited unexpectedly" / "windows sandbox failed:
+helper_unknown_error: setup refresh had errors". Sem insistir em resets/canal
+alternativo. IDs das duas técnicas conferidos localmente, mas ausência de vínculos
+no backend atual NÃO comprovada. Não executados INSERTs, backend, testes reais,
+bloqueio/revogação ou publicação. Encerramento das DUAS novas contas continua
+prioritário mesmo em interrupção. Terminal autorizado permite só progresso local;
+operação manual pelo titular ou recuperação do controle são alternativas, sem
+outro acesso administrativo conectado verificado. Branch equipe-fase2/HEAD
+ad49386105b3ea19b10b11a4e40c31983ae38d69 e index vazio confirmados.
+Relatório17 registra resultado, alternativas e limites; autorizações preservadas.
+
+## Meu perfil — vínculos autorizados; falha de inicialização IAB,08/10/2026,15:25-03
+
+Autorização explícita recebida para os três vínculos médico propostos e encerramento
+obrigatório das duas novas técnicas mesmo em interrupção. IDs relatório/SQL conferidos;
+nenhum vínculo aplicado nesta retomada. Navegador interno falha antes do acesso:
+"node_repl kernel exited unexpectedly" / "windows sandbox failed:
+helper_unknown_error: setup refresh had errors". Reset suportado não resolveu.
+Terminal local autorizado require_escalated permitiu leitura/estes registros,
+sem canal alternativo Supabase. Testes positivos, bloqueios/revogações e publicação
+continuam pendentes; última evidência das novas contas: ativas sem vínculos.
+Branch codex/equipe-fase2-2026-10-07/HEADad49386105b3ea19b10b11a4e40c31983ae38d69
+e index vazio conferidos, sem commit/push/deploy. Não pedir novamente aprovação
+desse escopo. Recuperar IAB, validar e encerrar técnicos antes de publicar.
+Relatório17 registra operação, mensagens exatas, limites e obrigação de encerramento.
+
+## Meu perfil — seleção47 e confirmação pendente,08/10/2026,12:44-03
+
+47 hashes do pacote preparatório válidos,769 fontes anteriores fora da seleção
+idênticas; index vazio/árvore principal preservada. Backend SQL/Edge aplicado,
+sessões reais fictícias403 sem vínculo/anônimo401. Proposta de três vínculos médico
+não executada e confirmação por acesso sensível ainda pendente. Duas novas técnicas
+sem vínculos; encerramento completo pendente ao fim dos testes ou negativa.
+Domínios12:31-03 ambos0.1.0/59acccb7/200; SHA remoto completo confirmado. Nenhum
+novo commit/push/deploy Hostinger; frontendfalse. Próxima operação/provas/limites
+e capturas no relatório17, preservando todo histórico abaixo.
+
+## Meu perfil — aplicação mínima e sessões reais,08/10/2026,12:20-03
+
+IAB excepcional autorizado/ref xftnkusbyqzyvzrovroj Production. SQL aplicado uma
+vez, catálogo e nove checks oficiais de integridade conferidos. Edge meu-perfil
+publicado, JWT plataforma ON. Duas novas fictícias sem e-mail, perfis canônicos
+inicializados e sessões Auth reais confirmadas; sem vínculos: perfil403, anônimo401.
+Confirmação de três vínculos temporários médico pendente por política da ferramenta:
+todos os papéis existentes também concedem leitura de cadastros clínicos. Sem
+vínculos ou testes de gravação ainda. Ao terminar bloquear/revogar só novas técnicas.
+Frontend false, nenhum commit/push/deploy Hostinger, demais alterações locais
+preservadas. Fontes ativas backend acrescentam três caminhos pertinentes aos43.
+Relatório17 guarda limites, evidências e próxima ação; histórico abaixo preservado.
+
+## Meu perfil — canal excepcional e contas de teste autorizados,08/10/2026,11:49-03
+
+IAB Codex autorizado só nesta execução/xftnkusbyqzyvzrovroj; preservada regra04
+nos demais casos. UI confirma Clinica Patrícia/main Production/ref e sessão ativa.
+Até duas novas fictícias autorizadas sem mensagens/fichas/reativação, acesso
+mínimo e encerramento ao terminar. Nenhuma aplicação/criação nesta anotação;
+preflight/revisão e testes reais precedem publicação. Detalhes no relatório17.
+
+## Meu perfil — revisão backend/publicação,08/10/2026,11:28-03
+
+Preparação seletiva conferida11:41-03:43 caminhos, hashes no manifesto ignorado;
+722 fora da seleção iguais à base e794 principais iguais ao snapshot. Build/tipos/
+notas,18 internos e3 dirigidos da cópia aprovados; um teste de carregamento frio
+exigiu prazo90s (passou33,2s). Não é pacote liberado/commit. Gates de canal/fictícios
+e backend real seguem pendentes. Detalhes no relatório17.
+
+Backend mínimo/publicação agora autorizados, condicionados a persistência/isolamento
+reais com fictícios. Canal Chrome/Claude Code exigido pela regra04 indisponível;
+conta fictícia ativa autorizada não identificada. Pergunta enviada, sem resposta
+registrada. Proposta revisada e erros incertos corrigidos;18 testes internos+3
+casos de navegador passaram (sintéticos);35 anteriores reaproveitados. Tipos/notas/
+build local e lint dirigido aprovados. Sessão real local Ipupiara só leitura,
+perfil ainda bloqueado sem serviço comprovado. Ambos domínios0.1.0/59acccb7;
+GitHub SHA completo confirmado, Hostinger origem/branch/SHA/auto-deploy preservados.
+Sem backend aplicado/contas reais alteradas/commit/push/deploy/Docker. Não pronta
+para publicar; próxima ação exige canal+fictícios e provas reais antes de liberar.
+[Relatório17](docs/modulos/sistema/17-MEU-PERFIL-BACKEND-PUBLICACAO.md).
+
+## Meu perfil — parte local concluída, backend pendente, 08/10/2026, 10:50 -03:00
+
+Avatar/identificação abrem Meu perfil próprio com nome/foto/prévia e cancelamento;
+conta/clínica/papel só consulta. Nome mantém usuarios.nome_completo. Persistência
+pessoal completa não encontrada na árvore; Salvar explicitamente desabilitado na
+aplicação normal. Proposta isolada database/proposals/meu-perfil (não aplicada):
+nome existente, foto privada própria, ator JWT, whitelist, revisão/transação/auditoria,
+sem escrever foto profissional da Equipe. Retenção/limpeza pendente; SQL/RLS/Deno
+e gravação real ainda não homologados.13 novos+22 anteriores=35 cenários navegador;
+14 proposta+2 existentes=16 testes determinísticos, tipos/notas/build aprovados.
+Lint16 avisos anteriores, nenhum novo. Proprietário(a) real local Brotas/Ipupiara:
+abertura/contexto/pendência/Salvar bloqueado, troca/F5/computador/360px só leitura;
+escritas/relogin/segunda conta/fotos simulados.7 capturas seguras; viewport removido.
+195 fontes rastreadas restantes iguais ao snapshot. Não alterou conta real/backend/
+ambiente/vínculos; sem Docker/commit/push/deploy. Branch codex/equipe-fase2-2026-10-07,
+HEAD ad49386105b3ea19b10b11a4e40c31983ae38d69, index vazio/alterações locais.
+Documentação sincronizada no [relatório16](docs/modulos/sistema/16-MEU-PERFIL.md).
+Próxima ação: revisar/autorizar backend, preflight/homologação própria com fictícios,
+depois habilitar serviço e titular preencher. Não representa aprovação pessoal.
+
+## Entrada e identidade da dashboard — concluída localmente, 08/10/2026, 09:54 -03:00
+
+Pedido posterior: dashboard sem cartões explicativos, marca Sistema Multiclínicas,
+nome do perfil próprio, iniciais ou foto privada por vínculo confirmado, saudação
+e data Bahia. Novo login comum abre dashboard autorizada; F5 conserva página/unidade.
+Tipos/notas/build e lint sem erros/avisos novos;62 cenários distintos de navegador
+(33 adaptados+29 adicionais/recuperação/convite) e9 determinísticos aprovados.
+Proprietário(a) real local nas duas clínicas: dashboard/menu/destinos, troca/retorno,
+F5 Agenda/Equipe/Financeiro, computador e360/390/430px por leitura, sem overflow.
+Nome cadastrado Proprietária e iniciais; foto real não exibida. Novo login/logout/
+segunda conta e foto vinculada apenas simulados; não homologação real de outros perfis.
+8 capturas seguras em scratch/dashboard-identidade/evidencias.191 fontes rastreadas
+fora do escopo iguais ao snapshot. Branch codex/equipe-fase2-2026-10-07/HEAD ad493861
+inalterados, index vazio; sem commit/push/publicação/backend/ambiente/migrations/Docker.
+Domínios reconferidos08:45-03 em0.1.0/59acccb7, publicação anterior. Nenhuma aprovação
+pessoal visual ou preservação histórica de valores presumida. Próximo: conferência
+visual local; publicação é etapa separada. [Detalhes e30 arquivos](docs/modulos/sistema/15-ENTRADA-IDENTIDADE-DASHBOARD.md).
+
 ## Dashboard Proprietário(a) — pacote exato validado, 08/10/2026 07:44 -03:00
 
 Hostinger conectada confirmou dois sites/repositório/branchresgate-local/auto-deploy

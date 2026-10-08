@@ -23,6 +23,7 @@ import { carregarAcessosClinicas } from './lib/clinicAccess'
 import { CLINIC_BRANDS, clinicaCorrespondeAoBrand, resolveClinicBrand } from './config/clinicBrands'
 import { caminhoInterno, lerRotaInterna, marcaDaRota, navegarPara, useCaminhoAtual } from './lib/appRoute'
 import { FeedbackAlert } from './components/feedback/FeedbackAlert'
+import { useIdentidadeConta } from './hooks/useIdentidadeConta'
 
 function App() {
   const [session, setSession] = useState<Session | null>(null)
@@ -54,6 +55,7 @@ function App() {
     carregando: carregandoClinica,
   } = useClinicaAtiva(clinicasDoUsuario, carregandoClinicas)
   const { papel, carregando: carregandoPapel, erro: erroPapel } = usePapelNaClinica(session?.user.id ?? '', clinicaAtivaId)
+  const identidade = useIdentidadeConta(acessoValidado && usuarioValidado === session?.user.id && !carregandoPapel ? session.user.id : null, clinicaAtivaId, papel)
   const conviteId = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('convite') : null
   const conviteValido = !!conviteId && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/iu.test(conviteId)
   const sessionUserId = session?.user.id
@@ -151,7 +153,7 @@ function App() {
       setTentativaAcesso(valor => valor + 1)
       return
     }
-    if (marca) navegarPara(solicitada ? caminhoInterno(solicitada.unidade, solicitada.tela) : caminhoInterno(marca.slug, 'dashboard'), true)
+    if (marca) navegarPara(escolhaAcesso.restauracao !== false && solicitada ? caminhoInterno(solicitada.unidade, solicitada.tela) : caminhoInterno(marca.slug, 'dashboard'), true)
     setEscolhaAcesso(null)
     setAcessoValidado(true)
     setUsuarioValidado(session.user.id)
@@ -178,6 +180,7 @@ function App() {
       }
       setSession(newSession)
       if (event === 'SIGNED_OUT') {
+        setUsuarioValidado(null)
         setAcessoValidado(false)
         setEscolhaAcesso(null)
         setEscolhaAplicada(false)
@@ -272,12 +275,13 @@ function App() {
         selecionarClinica(id)
         navegarPara(caminhoInterno(marca.slug, tela), true)
       }}
-      emailUsuario={session.user.email ?? ''}
+      identidade={identidade}
+      conta={session.user.email ?? 'Identificação de login não informada'}
       papel={papel}
       onSair={handleSignOut}
     >
       {tela === 'dashboard' && <Dashboard clinicaAtivaId={clinicaAtivaId} clinicaNome={clinicaAtiva?.nome ?? 'Clínica selecionada'} papel={papel}
-        unidade={lerRotaInterna(caminhoAtual)?.unidade} onCadastros={() => setTela('equipe')}
+        nomeUsuario={identidade.nome}
         onNovoPaciente={() => encaminharPainel('pacientes', { novoPaciente: true })}
         onNovoAgendamento={() => encaminharPainel('agenda', { novoAgendamento: true })}
         onAbrirPaciente={pacienteId => encaminharPainel('pacientes', { pacienteId })}

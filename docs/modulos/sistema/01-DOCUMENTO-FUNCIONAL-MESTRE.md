@@ -23,6 +23,56 @@ Resultado e limites: [relatório ReUI](../../ia/AVALIACAO-RECEPCAO-PACIENTES-REU
 
 ## Comportamento solicitado
 
+### Meu perfil — backend/publicação autorizados no pedido posterior de08/10/2026
+
+Revisar/aplicar backend mínimo somente no alvo oficial e provar persistência/
+isolamento com contas fictícias ativas autorizadas antes de habilitar e publicar
+somente identidade/dashboard e Meu perfil. Preservar contas reais e técnicas
+bloqueadas, vínculos/papéis/credenciais e demais trabalhos. Autorização substitui
+restrições da etapa local anterior. Pedido posterior autoriza excepcionalmente
+navegador interno do Codex nesta execução/somente xftnkusbyqzyvzrovroj, preservando
+regra04 nos demais casos. Até duas novas fictícias sem e-mail/fichas e com acesso
+mínimo, depois bloquear logins/revogar sessões/desativar só vínculos de teste.
+Permissões dos demais módulos não alteradas. Confirmação no momento do ato, exigida
+pela ferramenta quando vínculos existentes também concedem acesso clínico, não foi
+dispensada pela exceção de canal. Pedido posterior autorizou CLI/MCP/API oficiais
+somente nesta execução/ref; CLI autenticado confirmou o alvo. SQL já aplicado não
+reaplicado; Edge própria v2/JWT ativo.28 verificações reais aprovadas com A/B
+e os três vínculos temporários expressamente autorizados; ambas encerradas,
+sessões/refresh revogados e vínculos inativos. Frontend habilitado após as provas;
+publicação0.2.0 em preparação. Interface autenticada publicada ainda não conferida.
+Preparação atual e pendências no [relatório17](17-MEU-PERFIL-BACKEND-PUBLICACAO.md).
+
+### Meu perfil — identificação pessoal, pedido posterior de08/10/2026
+
+O titular configura nome/foto da própria conta pelo avatar ou rodapé, com prévia,
+substituição/remoção, Salvar/Cancelar. Conta e papel da clínica ativa só para leitura;
+sem edição de login, senha, vínculo ou autorização. Nome/foto não influenciam papel.
+Identidade acompanha a conta em qualquer clínica/relogin; papel acompanha vínculo
+autorizado. Nome mantém `usuarios.nome_completo`; não deduzir por e-mail nem fixar
+nome pessoal. Sem nome, fallback honesto; sem foto, iniciais. Foto pessoal privada
+independente da profissional, sem exigir cadastro na Equipe nem editá-lo silenciosamente.
+Sucesso só após confirmação persistente; cancelar/falha conserva dados anteriores.
+Resultado incerto exige reconsulta antes de repetir. Backend necessário preparado
+para revisão na etapa anterior; SQL/Edge aplicados e persistência/isolamento
+comprovados por sessões fictícias reais. Salvar habilitado no pacote local0.2.0;
+publicação depende da confirmação dos dois destinos. Nenhuma edição
+da conta real para testes. [Implementação local/proposta e limites](16-MEU-PERFIL.md).
+
+### Entrada, identidade e dashboard — pedido posterior de08/10/2026
+
+Novo login comum deve abrir a dashboard da unidade autorizada pelo fluxo; F5 em
+página interna mantém rota/clínica. Fluxos especiais mantidos. Retirar cartão
+Administração e aviso financeiro meramente explicativo, mantendo módulos e acessos
+no menu conforme cada papel. Marca do aplicativo Sistema Multiclínicas / Gestão
+Clínica; nomes das clínicas preservados. Nome do perfil próprio autenticado, foto
+privada somente com vínculo explícito autorizado ou iniciais. Sem nome, fallback
+honesto; sem inferência por e-mail. Saudação com primeiro nome cadastrado, data e
+clínica no fuso America/Bahia. Contextos/contas distintos não reutilizam identidade.
+Esta decisão substitui a apresentação da seção anterior na árvore local; não
+autoriza publicação/backend nem representa aprovação pessoal do acabamento.
+[Implementação e verificação](15-ENTRADA-IDENTIDADE-DASHBOARD.md).
+
 ### Acesso administrativo no Dashboard — pedido de correção de08/10/2026
 
 Autorização específica posterior08/10,07:34-03: publicar a correção administrativa

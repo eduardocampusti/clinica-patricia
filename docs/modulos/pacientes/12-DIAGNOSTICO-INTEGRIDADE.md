@@ -1,5 +1,19 @@
 # 12 — Diagnóstico de integridade e lições aprendidas
 
+## Verificação transversal após Meu perfil —08/10/2026,12:20-03:00
+
+Somente xftnkusbyqzyvzrovroj/main Production; navegador interno autorizado
+expressamente nesta execução. Após SQL aditivo de Meu perfil, script oficial
+supabase/tools/verificar-integridade.sql executado; nove consultas agrupadas
+somente para ler todos os resultados. Tabelas de pacientes/responsáveis/auditoria,
+auditoria.motivo, oito campos de endereço e oito assinaturas/RPCs esperadas presentes;
+CPF authenticated permitido/anon negado, bucket pacientes-fotos privado. Sem
+indício textual de uso do nome antigo de responsáveis. Somente contagem agregada
+observada, nenhum dado identificável de pacientes lido. Registro de migration
+não usado como prova de objetos. Não é homologação funcional de Pacientes, nem
+afirma preservação histórica de valores não comparados. Nenhuma correção nesse
+módulo ou reaplicação de migration anterior. [Catálogo/limites](../sistema/17-MEU-PERFIL-BACKEND-PUBLICACAO.md).
+
 ## Registro transversal — Equipe35 aplicada, consolidação 2026-10-06 16:06:15 -03:00
 
 Evidência anterior06/10/2026,12:02–12:12: migration35 aplicada exclusivamente em

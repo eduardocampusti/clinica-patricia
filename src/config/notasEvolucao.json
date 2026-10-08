@@ -1,7 +1,8 @@
 {
-  "versaoEmDesenvolvimento": "0.1.0",
+  "versaoEmDesenvolvimento": "0.2.0",
   "naoLancadas": {
     "novidades": [
+      "Meu perfil: configure seu nome e sua foto pessoal pelo avatar ou pela identificação do menu. Salvar confirma a gravação no servidor; é possível substituir ou remover a foto, com prévia e cancelamento. A identidade acompanha a conta entre clínicas; a foto profissional da Equipe permanece independente.",
       "Equipe: seção Atuação e atendimentos por clínica, com fontes de duração, disponibilidade, preço e participação financeira. Vínculos individuais de serviços aguardam definição.",
       "Equipe: fichas ampliadas com dados pessoais, contratos e jornada, formação, documentos privados e histórico. Foto, recebimento e acessos permanecem em seções próprias.",
       "Equipe: foto na ficha e configuração opcional de recebimento por clínica, com confirmações independentes e dados protegidos.",
@@ -58,7 +59,7 @@
       "Equipe: a gestão de acessos por clínica foi instalada no Supabase autorizado e publicada na Edge Function, com consulta real de acesso em Brotas e estado vazio correto em Ipupiara; convite e aceite aguardam redirect allowlisted e conta de teste autorizada."
     ],
     "correcoes": [
-      "Dashboard do Proprietário(a): acesso direto aos cadastros administrativos e ao Financeiro da clínica selecionada, com orientação sobre as opções existentes no menu Equipe. Os atalhos seguem as permissões existentes.",
+      "Sistema Multiclínicas: novo login comum abre a dashboard da clínica autorizada; recargas preservam a página. Saudação usa o nome cadastrado e o horário da Bahia. Identificação da conta no menu e cabeçalho, com foto privada somente por vínculo confirmado ou iniciais. Equipe e Financeiro continuam no menu; cartões explicativos retirados da dashboard.",
       "Equipe: conflitos de revisão nas novas fichas, fotos e documentos retornam a orientação de reconsulta, sem repetição automática da operação pelo servidor.",
       "Equipe: serviços de fotos, recebimento e fichas usam a distribuição de imagens compatível com o ambiente do Supabase, corrigindo a falha de inicialização das funções.",
       "Cadastros no celular: as abas deslizam dentro da própria faixa, mantendo a página na largura da tela e a seção selecionada ou em foco visível.",
