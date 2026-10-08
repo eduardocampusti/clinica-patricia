@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useId, type FormEvent } from 'react';
+import { createPortal } from 'react-dom';
 import { FeedbackAlert } from '../feedback/FeedbackAlert';
 import { ConfirmacaoDialog } from '../feedback/ConfirmacaoDialog';
 import { operarFicha, baixarDocumento, validarMetaDocumento, erroFicha, CATEGORIAS_DOCUMENTO, conferirDocumento, type FichaCompleta, type DocumentoFicha, type MetaDocumento } from '../../lib/equipeFicha';
@@ -14,13 +15,15 @@ const rotulos: Record<string, string> = { identificacao: 'Identificação', ende
 const rotulo = (s: string) => rotulos[s] ?? s.replaceAll('_', ' ');
 // Rótulos dos três estados de conferência que o dado já admite (aguardando, conferido, necessita_correcao).
 const CONFERENCIA_DOCUMENTO: Record<string, string> = { aguardando: 'Aguardando', conferido: 'Conferido', necessita_correcao: 'Necessita correção' };
-export function EquipeDocumentosPainel({ membroId, clinicaId, clinicas, ficha, onConfirmado, onEstado }: {
+export function EquipeDocumentosPainel({ membroId, clinicaId, clinicas, ficha, onConfirmado, onEstado, slotCabecalho }: {
     membroId: string;
     clinicaId: string;
     clinicas: ClinicaEquipe[];
     ficha: FichaCompleta;
     onConfirmado: (d: unknown) => void;
     onEstado: (id: string, s: EstadoRecursoFicha) => void;
+    /** Linha do título da seção, onde ficam "Adicionar documento" e o menu de três pontos. */
+    slotCabecalho?: HTMLElement | null;
 }) {
     const [meta, setMeta] = useState<MetaDocumento>({ categoria: '', contrato_id: null, emissao: '', validade: '', unidades: [clinicaId], substitui_id: null }), [arquivo, setArquivo] = useState<File | null>(null), [estado, setEstado] = useState<'nenhum' | 'selecionado' | 'enviando' | 'disponivel' | 'falha'>('nenhum'), [erro, setErro] = useState<string | null>(null), [ocupado, setOcupado] = useState(false), [tentativa, setTentativa] = useState<string | null>(null), [incerto, setIncerto] = useState(false), [operacaoBloqueada, setOperacaoBloqueada] = useState(false), [conferindo, setConferindo] = useState<DocumentoFicha | null>(null), [fonte, setFonte] = useState(''), [resultado, setResultado] = useState('conferido'), [confirmar, setConfirmar] = useState<DocumentoFicha | null>(null), [descartar, setDescartar] = useState(false), [envioAberto, setEnvioAberto] = useState(false), [visualizacao, setVisualizacao] = useState<{
         url: string;
@@ -252,10 +255,10 @@ export function EquipeDocumentosPainel({ membroId, clinicaId, clinicas, ficha, o
     const cabecalhoTabela = <div className="equipe-documentos-cabecalho" aria-hidden="true"><span>Documento</span><span>Vale para</span><span>Armazenamento</span><span>Conferência</span><span>Ações</span></div>;
     const anteriores = ficha.documentos.filter(d => d.arquivado);
     return <div className="equipe-documentos" ref={setRaizDocumentos}>
-  <div className="equipe-documentos-barra">
-   <button type="button" className="equipe-botao-secundario" hidden={envioAberto} onClick={() => setEnvioAberto(true)}>Adicionar documento</button>
+  {(() => { const acoes = <div className="equipe-documentos-barra">
+   <button type="button" className="equipe-botao-primario" hidden={envioAberto} onClick={() => setEnvioAberto(true)}>Adicionar documento</button>
    <DropdownMenu><DropdownMenuTrigger className="equipe-icone-acao" aria-label="Mais ações de documentos" title="Mais ações de documentos" disabled={ocupado || Boolean(tentativa)}><Ellipsis size={18} aria-hidden="true"/></DropdownMenuTrigger><DropdownMenuContent align="end" container={raiz}><DropdownMenuItem disabled={ocupado || Boolean(tentativa)} onClick={() => void limparTemporarios()}>Limpar candidatas expiradas autorizadas</DropdownMenuItem></DropdownMenuContent></DropdownMenu>
-  </div>
+  </div>; return slotCabecalho ? createPortal(acoes, slotCabecalho) : acoes; })()}
   <form hidden={!envioAberto} onSubmit={salvar} aria-label="Adicionar documento privado" className="equipe-ficha-grupo equipe-cartao">
    <h4>{meta.substitui_id ? 'Substituir documento — versão anterior será preservada' : 'Adicionar documento privado'}</h4>
    <UnidadesFicha clinicas={clinicas} unidades={meta.unidades} disabled={ocupado || Boolean(tentativa) || Boolean(meta.substitui_id)} onChange={unidades => setMeta({ ...meta, unidades })}/>
@@ -281,10 +284,10 @@ export function EquipeDocumentosPainel({ membroId, clinicaId, clinicas, ficha, o
   {operacaoBloqueada && <p>Reconsulte as informações adicionais antes de outra conferência ou arquivamento. O preenchimento foi preservado.</p>}{erro && <FeedbackAlert variant="destructive" title="Documento não confirmado ou indisponível" description={erro}/>}
   {ficha.tentativas?.filter(t => !ficha.documentos.some(d => d.id === t.id)).map(t => <div key={t.id} className="equipe-ficha-item equipe-cartao"><p>Tentativa pendente de confirmação · {rotulo(t.meta.categoria)} · {new Date(t.criado_em).toLocaleDateString('pt-BR')}. Não é documento salvo.</p><button type="button" disabled={ocupado || Boolean(arquivo)} onClick={() => { setEnvioAberto(true); setTentativa(t.id); setMeta(t.meta); setIncerto(true); setEstado('falha'); setErro('Tentativa retomada. Consulte o resultado antes de reenviar o arquivo.'); }}>Retomar tentativa pendente</button></div>)}
   {visualizacao && <div className="equipe-documento-previa equipe-cartao"><h4>{visualizacao.nome}</h4><p>Leitura autorizada desta versão.</p>{visualizacao.mime === 'image/jpeg' ? <img src={visualizacao.url} alt="Documento autorizado"/> : <iframe title="Documento PDF autorizado" sandbox="allow-same-origin" src={visualizacao.url}/>}<button type="button" onClick={fecharPrevia}>Fechar visualização</button></div>}
-  <div className="equipe-cartao equipe-documentos-tabela">
+  {!ficha.documentos.length ? <div className="equipe-cartao equipe-estado-vazio equipe-documentos-vazio"><p>Nenhum documento nesta ficha.</p></div> : <div className="equipe-cartao equipe-documentos-tabela">
    <div className="equipe-documentos-lista">{cabecalhoTabela}{!ficha.documentos.some(d => !d.arquivado) && <p className="equipe-texto-discreto">Nenhum documento atual confirmado no escopo desta consulta.</p>}{listar(ficha.documentos.filter(d => !d.arquivado))}</div>
    <Recolhivel titulo={`Versões anteriores e documentos arquivados (${anteriores.length})`} className="equipe-documentos-anteriores"><NotaInfo>Documentos distintos permanecem separados. A substituição identifica a versão anterior do mesmo documento.</NotaInfo>{listar(anteriores)}</Recolhivel>
-  </div>
+  </div>}
   {conferindo && <form aria-label="Conferir documento salvo" onSubmit={e => { e.preventDefault(); void operar(conferindo, 'documento_conferir'); }} className="equipe-ficha-grupo equipe-cartao"><h4>Conferir {rotulo(conferindo.categoria)} · versão exata {conferindo.versao}</h4><label>Fonte / critério da conferência<input value={fonte} disabled={ocupado} maxLength={250} onChange={e => setFonte(e.target.value)}/></label><label>Resultado da conferência<select value={resultado} disabled={ocupado} onChange={e => setResultado(e.target.value)}><option value="conferido">Conferido</option><option value="necessita_correcao">Necessita correção</option></select></label><p>Conferente e data serão registrados pelo servidor. Substituição exige nova conferência.</p><div className="equipe-ficha-acoes"><button type="submit" disabled={ocupado || operacaoBloqueada || !fonte.trim()}>Salvar conferência do documento</button><button type="button" disabled={ocupado} onClick={() => { setConferindo(null); setFonte(''); }}>Cancelar conferência documental</button></div></form>}
   <NotaInfo>Arquivos privados, com escopo escolhido explicitamente; armazenamento e conferência são etapas separadas. Não inclua diagnósticos, prontuário ocupacional, credenciais ou histórico completo de empregos. “Limpar candidatas expiradas” remove só candidatas expiradas desta pessoa, sem excluir arquivos confirmados ou versões antigas.</NotaInfo>
   <ConfirmacaoDialog open={Boolean(confirmar)} onOpenChange={open => {

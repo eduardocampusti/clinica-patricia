@@ -202,3 +202,18 @@ e chamadas.
 - Financeiro 84/84 (uma execução intermitente de abas no celular passou 3/3 sozinha);
   Agenda/operacional: 2 falhas antigas de Pacientes (iguais no código original) e uma
   intermitente de agenda-edicao que passou 3/3 sozinha. tsc, lint (16 avisos antigos) e build ok.
+
+### Ajustes visuais após a 2C (2026-10-07)
+
+- Documentos: “Adicionar documento” (primário) e o menu de três pontos na linha do título;
+  o formulário já começava fechado (estado inicial `envioAberto = false`, sem regra que o
+  mantivesse aberto) e continua abrindo só pelo botão; sem documentos, estado vazio
+  “Nenhum documento nesta ficha.”; no formulário, o texto do escopo fica abaixo das caixas
+  (causa: `max-width` herdado mantinha o parágrafo na mesma linha do flex).
+- Formação: contadores só com o número em destaque e o rótulo embaixo (singular/plural);
+  com os três zerados, estado vazio único seguido de “Editar formação e registros”;
+  subtítulo com “profissão/especialidade não informada”.
+- Atuação: textos auxiliares sem o ponto inicial visível (separador mantido só para leitor
+  de tela) e vigência como “20/09/2026 às 07:00”.
+- Specs da ficha nos três tamanhos: 167/168 na execução paralela; a única falha foi no
+  carregamento inicial (`preparar`) e passou 6/6 sozinha.

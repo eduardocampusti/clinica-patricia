@@ -7,15 +7,16 @@ import { Selo } from './EquipeSelos'
 const INFORMACAO: Record<string, [string, Tom]> = { informado: ['Informado', 'neutro'], ativo: ['Ativo informado', 'ativo'], inativo: ['Inativo informado', 'alerta'], nao_confirmado: ['Não confirmado', 'neutro'] }
 const CONFERENCIA: Record<string, [string, Tom]> = { aguardando: ['Aguardando', 'alerta'], conferido: ['Conferido', 'ativo'], necessita_correcao: ['Necessita correção', 'erro'] }
 const lista = (v: unknown) => Array.isArray(v) ? v : []
-const plural = (n: number, um: string, varios: string) => `${n} ${n === 1 ? um : varios}`
+const rotulo = (n: number, um: string, varios: string) => n === 1 ? um : varios
 
 export function ResumoFormacao({ dados }: { dados: Record<string, unknown> }) {
   const cursos = lista(dados.cursos), registros = lista(dados.registros), especialidades = lista(dados.especialidades)
+  if (!cursos.length && !registros.length && !especialidades.length) return <div className="equipe-estado-vazio equipe-formacao-vazia"><p>Nenhuma formação, inscrição ou especialidade registrada nesta ficha.</p></div>
   return <div className="equipe-formacao">
     <dl className="equipe-contadores">
-      <div><dt>Formações</dt><dd>{plural(cursos.length, 'formação', 'formações')}</dd></div>
-      <div><dt>Inscrições</dt><dd>{plural(registros.length, 'inscrição', 'inscrições')}</dd></div>
-      <div><dt>Especialidades</dt><dd>{plural(especialidades.length, 'especialidade ou área', 'especialidades ou áreas')}</dd></div>
+      <div><dt>{rotulo(cursos.length, 'Formação', 'Formações')}</dt><dd>{cursos.length}</dd></div>
+      <div><dt>{rotulo(registros.length, 'Inscrição', 'Inscrições')}</dt><dd>{registros.length}</dd></div>
+      <div><dt>{rotulo(especialidades.length, 'Especialidade ou área', 'Especialidades ou áreas')}</dt><dd>{especialidades.length}</dd></div>
     </dl>
     {registros.length > 0 && <ul className="equipe-inscricoes">
       {registros.map(v => {
