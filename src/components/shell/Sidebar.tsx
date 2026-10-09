@@ -14,6 +14,7 @@ import { detalheIdentidade, rotuloIdentidade } from '../../lib/identidadeApresen
 import { Sidebar as SidebarBase, SidebarHeader, SidebarContent, SidebarFooter, SidebarMenu, SidebarMenuItem, SidebarMenuButton, useSidebar } from '../ui/sidebar'
 
 interface SidebarProps {
+  logoInstitucional?: string
   onNavegar: (tela: Tela) => void
   clinicaAtiva: ClinicaAtiva | null
   clinicasDoUsuario: ClinicaAtiva[]
@@ -23,10 +24,12 @@ interface SidebarProps {
   onMeuPerfil: () => void
   onSair: () => void
 }
-export default function Sidebar({ onNavegar, clinicaAtiva, clinicasDoUsuario, onSelecionarClinica, papel, identidade, onMeuPerfil, onSair }: SidebarProps) {
+export default function Sidebar({ onNavegar, clinicaAtiva, clinicasDoUsuario, onSelecionarClinica, papel, identidade, onMeuPerfil, onSair, logoInstitucional }: SidebarProps) {
   const { open, isMobile, setOpenMobile } = useSidebar()
   const caminho = useCaminhoAtual()
   const [seletorAberto, setSeletorAberto] = useState(false)
+  const [logoFalhou,setLogoFalhou]=useState(false)
+  useEffect(()=>setLogoFalhou(false),[logoInstitucional])
   const recolhido = !isMobile && !open
   const marca = clinicaAtiva ? Object.values(CLINIC_BRANDS).find(b => clinicaCorrespondeAoBrand(clinicaAtiva, b)) : undefined
   const itens = marca ? itensParaPapel(papel, marca.slug) : []
@@ -35,7 +38,7 @@ export default function Sidebar({ onNavegar, clinicaAtiva, clinicasDoUsuario, on
   return <SidebarBase>
     <SidebarHeader>
       <div className="flex min-h-10 items-center gap-3 px-1 pr-8 lg:pr-0" title="Sistema Multiclínicas · Gestão Clínica">
-        <span aria-hidden="true" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--menu-avatar-bg)]"><IconeGrid /></span>
+        <span aria-hidden="true" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--menu-avatar-bg)]">{logoInstitucional&&!logoFalhou?<img src={logoInstitucional} alt="" className="max-h-8 max-w-8 object-contain" onError={()=>setLogoFalhou(true)}/>:<IconeGrid />}</span>
         <div className={recolhido ? 'sr-only' : 'min-w-0'}><p className="text-sm font-semibold leading-snug">Sistema Multiclínicas</p><p className="mt-0.5 text-xs text-[var(--menu-texto-secundario)]">Gestão Clínica</p></div>
       </div>
       <p className={`px-2 text-xs text-[var(--menu-texto-secundario)] ${texto}`}>{rotuloVisao(papel)}</p>

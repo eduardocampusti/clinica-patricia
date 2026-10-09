@@ -172,3 +172,13 @@
 @media (max-width: 600px) { .login-role-options { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 480px) { .login-brand-row { gap: 12px; padding-bottom: 16px; } .login-access-badge { display: none; } .login-content h1 { font-size: 26px; } .login-intro { font-size: 14px; } .login-label-row { flex-wrap: wrap; gap: 2px 12px; } .login-footer { flex-direction: column; gap: 6px; } }
 @media (prefers-reduced-motion: reduce) { .login-page *, .login-page *::before, .login-page *::after { transition: none !important; } }
+
+@media (min-width:1051px) {
+  .login-page[data-composicao-desktop=compacto] {grid-template-columns:1fr;}
+  .login-page[data-composicao-desktop=compacto] .login-access {width:100%;max-width:680px;margin:auto;}
+  .login-page[data-composicao-desktop=compacto] .login-visual {display:none;}
+}
+@media (max-width:1050px) {
+  .login-page[data-composicao-mobile=compacto] .login-visual {height:100px;min-height:100px;}
+  .login-page[data-composicao-mobile=semImagem] .login-visual {display:none;}
+}

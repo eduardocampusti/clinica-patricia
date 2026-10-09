@@ -38,6 +38,7 @@ export interface ConviteAcessoEquipe {
 }
 
 export interface AcessoEquipe {
+  ativacao?: { id: string; estado: 'reservada' | 'pendente' | 'substituindo' | 'ativa' | 'expirada'; fase?: 'reservada' | 'pendente' | 'substituindo' | 'ativa'; revisao: number } | null
   membro_id: string
   usuario_id: string | null
   login_email: string | null

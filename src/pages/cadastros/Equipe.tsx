@@ -4,6 +4,12 @@ import { FeedbackAlert } from '../../components/feedback/FeedbackAlert'
 import { ModalBase } from '../../components/ModalBase'
 import './equipe.css'
 import { EquipeListagem } from './EquipeListagem'
+import { NovoMembroAcesso } from '../../components/cadastros/NovoMembroAcesso'
+import { AcessoTemporarioPainel } from '../../components/cadastros/AcessoTemporarioPainel'
+import { CredencialTemporariaDialog } from '../../components/cadastros/CredencialTemporariaDialog'
+import { ACESSO_DIRETO_HABILITADO } from '../../config/acessoDireto'
+import { DEPENDENCIA_ACESSO_DIRETO, prepararAcessoDireto } from '../../lib/acessoDireto'
+import { coordenarNovoMembro, novoAcessoVazio, validarNovoAcesso, type NovoAcesso, type CredencialTemporaria } from '../../lib/acessoDiretoModelo'
 import { EquipeAvatar } from '../../components/cadastros/EquipeAvatar'
 import { Selo } from '../../components/cadastros/EquipeSelos'
 import { nomeCurtoClinica, seloPessoa, type Tom } from '../../lib/equipeApresentacao'
@@ -375,11 +381,12 @@ function AcessoEquipePainel({ membro, clinicaAtivaId, souProprietaria, onConsult
   const tomConta: Tom = temConta ? 'ativo' : situacaoConta === 'sem_conta' ? 'neutro' : 'alerta'
   const tomClinica = (status: ClinicaAcessoEquipe['status']): Tom => { const cor = statusAcessoCor(status); return cor === 'success' ? 'ativo' : cor === 'warning' ? 'alerta' : cor === 'destructive' ? 'erro' : 'neutro' }
   return <div className="equipe-acesso-painel" data-testid="painel-gestao-acessos">
+    {acesso.ativacao && <AcessoTemporarioPainel key={`${membro.id}:${clinicaAtivaId}:${acesso.ativacao.revisao}`} ativacao={acesso.ativacao} membroId={membro.id} contextoId={clinicaAtivaId!} onAtualizar={() => { onOperacaoAcesso(membro.id, clinicaAtivaId!); setVersao(v => v + 1) }} />}
     {mensagem && <div ref={avisoRef}><FeedbackAlert variant={mensagemTipo} title={mensagemTipo === 'destructive' ? 'Não foi possível concluir' : mensagemTipo === 'warning' ? 'Confira a solicitação' : 'Operação concluída'} description={mensagem} urgent={mensagemTipo !== 'success'} onClose={() => setMensagem(null)} /></div>}
     {resultadoIncerto && <p className="equipe-acesso-incerto">Situação da última consulta. Reabra a ficha para conferir o resultado da operação.</p>}
     <div className="equipe-cartao equipe-acesso-situacao" data-testid="situacao-conta">
       <Selo tom={tomConta}>{temConta ? 'Conta de acesso vinculada' : situacaoConta === 'sem_conta' ? 'Sem conta vinculada' : 'Não foi possível confirmar a conta'}</Selo>
-      {temConta ? <><p className="equipe-acesso-login">E-mail de login: {acesso.login_email || 'Não informado'}</p><p className="equipe-acesso-nota">{acesso.login_email ? acesso.conta_confirmada ? 'E-mail de login confirmado.' : 'E-mail de login ainda não confirmado.' : 'Não foi possível confirmar o e-mail de login.'} O acesso depende da situação de cada clínica abaixo.</p></> : <p className="equipe-acesso-nota">{situacaoConta === 'sem_conta' ? 'O cadastro pode permanecer sem login. Convite pendente não comprova conta vinculada.' : 'Reabra a ficha para conferir a conta antes de iniciar acesso.'}</p>}
+      {temConta ? <><p className="equipe-acesso-login">E-mail de login: {acesso.login_email || 'Não informado'}</p><p className="equipe-acesso-nota">{acesso.ativacao ? 'E-mail registrado pela administração para acesso direto; isso não comprova posse da caixa postal.' : acesso.login_email ? acesso.conta_confirmada ? 'E-mail de login confirmado.' : 'E-mail de login ainda não confirmado.' : 'Não foi possível confirmar o e-mail de login.'} O acesso depende da situação de cada clínica abaixo.</p></> : <p className="equipe-acesso-nota">{situacaoConta === 'sem_conta' ? 'O cadastro pode permanecer sem login. Convite pendente não comprova conta vinculada.' : 'Reabra a ficha para conferir a conta antes de iniciar acesso.'}</p>}
     </div>
 
     <div className="equipe-cartao equipe-acessos-clinicas">
@@ -395,7 +402,7 @@ function AcessoEquipePainel({ membro, clinicaAtivaId, souProprietaria, onConsult
             <div className="min-w-0"><p className="equipe-acesso-clinica-nome">{clinica.nome}</p>{clinica.status === 'convite_pendente' ? <p className="equipe-acesso-nota">{papelAcessoValido(papelSolicitado) ? `Papel da solicitação: ${rotuloPapelAcessoEquipe(papelSolicitado)}` : 'Papel da solicitação não confirmado'}</p> : (clinica.status === 'acesso_ativo' || clinica.status === 'acesso_suspenso') && <p className="equipe-acesso-nota">{papelConfirmado ? `${clinica.status === 'acesso_ativo' ? 'Papel atual' : 'Papel do acesso suspenso'}: ${rotuloPapelAcessoEquipe(papelConfirmado)}` : 'Papel atual não confirmado'}</p>}</div>
             <Selo tom={tomClinica(clinica.status)}>{rotuloStatusAcessoEquipe(clinica.status)}</Selo>
           </div>
-          <div className="equipe-acesso-clinica-acoes">
+          {acesso.ativacao && acesso.ativacao.estado !== 'ativa' ? <p className="equipe-acesso-nota">Acesso reservado para ativação. A senha pessoal deve ser definida antes de administrar o papel ou reativar este vínculo.</p> : <div className="equipe-acesso-clinica-acoes">
             {clinica.status === 'acesso_ativo' && <>
               <label className="equipe-acesso-campo-linha">Alterar papel
                 <select aria-label={`Papel de ${clinica.nome}`} value={papelSelecionado ?? ''} disabled={Boolean(operacao) || !papelConfirmado} onChange={(event) => { const papel = event.target.value; if (papelAcessoValido(papel)) setPapeisEditados((atual) => ({ ...atual, [clinica.id]: papel })) }} className="equipe-acesso-select">{!papelConfirmado && <option value="">Papel não confirmado</option>}<option value="proprietaria">Administradora</option><option value="medico">Médico</option><option value="recepcao">Recepção</option></select>
@@ -411,12 +418,13 @@ function AcessoEquipePainel({ membro, clinicaAtivaId, souProprietaria, onConsult
             </div>}
             {clinica.status === 'convite_pendente' && convite && <button type="button" disabled={Boolean(operacao)} onClick={() => void reenviar(convite)} className="equipe-acao-cartao">Reenviar convite</button>}
           </div>
+          }
           {clinica.status === 'acesso_ativo' && !papelConfirmado && <p className="equipe-acesso-nota">O papel deste acesso não foi confirmado. Reabra a ficha para consultar novamente; a alteração permanece bloqueada.</p>}
         </div>
       })}
     </div>
 
-    {situacaoConta === 'sem_conta' && <form onSubmit={iniciar} className="equipe-cartao equipe-acesso-iniciar" aria-label="Conceder acesso ao membro">
+    {situacaoConta === 'sem_conta' && !acesso.ativacao && <form onSubmit={iniciar} className="equipe-cartao equipe-acesso-iniciar" aria-label="Conceder acesso ao membro">
       <div><h4>Iniciar acesso</h4><p className="equipe-acesso-nota">Convite ou vínculo por confirmação prepara acesso às clínicas e papéis escolhidos, após as verificações e o aceite do titular.</p></div>
       <label className="equipe-acesso-campo" htmlFor="equipe-acesso-email">E-mail de login<input id="equipe-acesso-email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" disabled={Boolean(operacao)} className="equipe-acesso-input" placeholder="pessoa@exemplo.com" /></label>
       <fieldset disabled={Boolean(operacao)}><legend>Como confirmar a conta?</legend><div className="equipe-acesso-opcoes"><label><input type="radio" name="equipe-modo-acesso" checked={modo === 'convite'} onChange={() => setModo('convite')} /> Enviar convite para quem ainda não tem conta</label><label><input type="radio" name="equipe-modo-acesso" checked={modo === 'vinculo'} onChange={() => setModo('vinculo')} /> Vincular conta existente por confirmação</label></div></fieldset>
@@ -523,6 +531,9 @@ function Equipe({ clinicaAtivaId, souProprietaria, acaoCabecalho }: EquipeProps)
   const [tipo, setTipo] = useState<TipoMembroEquipe | ''>('')
   const [clinicaFiltro, setClinicaFiltro] = useState('')
   const [form, setForm] = useState<FormularioEquipe | null>(null)
+  const [novoAcesso, setNovoAcesso] = useState<NovoAcesso>(novoAcessoVazio)
+  const [membroPersistido, setMembroPersistido] = useState<string | null>(null)
+  const [credencial, setCredencial] = useState<CredencialTemporaria | null>(null)
   const [editandoId, setEditandoId] = useState<string | null>(null)
   const [visualizando, setVisualizando] = useState<MembroEquipe | null>(null)
   const [detalheFicha, setDetalheFicha] = useState<DetalheMembroEquipe | null>(null)
@@ -552,6 +563,8 @@ function Equipe({ clinicaAtivaId, souProprietaria, acaoCabecalho }: EquipeProps)
     edicaoSequencia.current += 1
     setConfirmandoDescarte(false)
     setForm(null)
+    setNovoAcesso(novoAcessoVazio())
+    setMembroPersistido(null)
     setEditandoId(null)
     setErroForm(null)
     setCampoErro(null)
@@ -674,6 +687,10 @@ function Equipe({ clinicaAtivaId, souProprietaria, acaoCabecalho }: EquipeProps)
 
   useEffect(() => {
     contextoAcessoAtual.current = { clinicaId: clinicaAtivaId, proprietaria: souProprietaria }
+    setNovoAcesso(novoAcessoVazio())
+    setMembroPersistido(null)
+    setCredencial(null)
+    setSalvando(false)
     setAcessosConsultados({})
     fichaSequencia.current += 1
     edicaoSequencia.current += 1
@@ -785,28 +802,50 @@ function Equipe({ clinicaAtivaId, souProprietaria, acaoCabecalho }: EquipeProps)
       setCampoErro(validacao.campo)
       return
     }
+    const erroNovoAcesso = !editandoId ? validarNovoAcesso(novoAcesso, form.clinicasIds) : null
+    if (erroNovoAcesso) { setErroForm(erroNovoAcesso); return }
+    if (!editandoId && novoAcesso.modo === 'temporaria' && !ACESSO_DIRETO_HABILITADO) { setErroForm(DEPENDENCIA_ACESSO_DIRETO); return }
+    const contexto = clinicaAtivaId, geracao = edicaoSequencia.current
+    const aindaAtual = () => geracao === edicaoSequencia.current && contextoAcessoAtual.current.clinicaId === contexto && contextoAcessoAtual.current.proprietaria
     setSalvando(true)
     setErroForm(null)
     setCampoErro(null)
     const dados = montarDadosEquipe(form)
     try {
-      const { data: membroSalvo, error: salvarErro, status } = await supabase.rpc('equipe_salvar', {
-        p_membro_id: editandoId, p_clinica_contexto_id: clinicaAtivaId, p_revisao_esperada: form.revisao, p_dados: dados,
-        p_chave_idempotencia: form.chaveIdempotencia,
-      })
-      if (salvarErro) {
-        setErroForm(salvarErro.code === '40001' ? mensagemErro(salvarErro) : mensagemVinculoInativoEquipe(salvarErro, status) ?? erroEquipeSeguro(salvarErro, true, status).mensagem)
-        return
-      }
+      const resultado = await coordenarNovoMembro({
+        salvarPessoa: async () => {
+          const { data: id, error: salvarErro, status } = await supabase.rpc('equipe_salvar', {
+            p_membro_id: editandoId, p_clinica_contexto_id: contexto, p_revisao_esperada: form.revisao, p_dados: dados, p_chave_idempotencia: form.chaveIdempotencia,
+          })
+          if (salvarErro) throw new Error(salvarErro.code === '40001' ? mensagemErro(salvarErro) : mensagemVinculoInativoEquipe(salvarErro, status) ?? erroEquipeSeguro(salvarErro, true, status).mensagem)
+          if (typeof id !== 'string' || !id.trim()) throw new Error('O cadastro não foi confirmado. Confira a lista antes de repetir.')
+          return id
+        },
+        prepararAcesso: async id => {
+          if (!aindaAtual()) throw new Error('O contexto mudou; confira a pessoa salva antes de preparar o acesso.')
+          setMembroPersistido(id); setNovoMembroId(id)
+          if (novoAcesso.modo === 'temporaria') return prepararAcessoDireto({ membroId: id, clinicaContextoId: contexto, email: novoAcesso.email.trim(), clinicasPapeis: novoAcesso.escopos, chaveIdempotencia: form.chaveIdempotencia })
+          const r = await iniciarAcessoEquipe({ membroId: id, clinicaContextoId: contexto, email: novoAcesso.email.trim(), modo: 'convite', clinicasPapeis: novoAcesso.escopos, chaveIdempotencia: form.chaveIdempotencia })
+          if (r.error || !r.data) throw new Error(r.error?.mensagem ?? 'O convite não foi confirmado. Confira a ficha antes de repetir.')
+          return null
+        },
+      }, editandoId ? null : membroPersistido, !editandoId && novoAcesso.modo !== 'pessoa')
+      if (!aindaAtual()) return
+      const membroSalvo = resultado.membroId
       setNovoMembroId(!editandoId && typeof membroSalvo === 'string' && /^[0-9a-f-]{36}$/i.test(membroSalvo) ? membroSalvo : null)
-      const mensagemSucesso = editandoId ? 'Cadastro atualizado com sucesso.' : 'Funcionário cadastrado com sucesso.'
+      const mensagemSucesso = editandoId ? 'Cadastro atualizado com sucesso.' : novoAcesso.modo === 'pessoa' ? 'Funcionário cadastrado com sucesso.' : novoAcesso.modo === 'convite' ? 'Pessoa cadastrada e convite processado. O acesso aguarda o aceite do titular.' : resultado.acesso?.estado === 'ativa' ? 'Cadastro confirmado; o titular já definiu a senha pessoal.' : 'Pessoa cadastrada e acesso preparado. O titular deve definir sua senha pessoal.'
+      if (resultado.acesso) setCredencial(resultado.acesso)
       limparFormulario()
       await carregar()
-      setSucesso(mensagemSucesso)
+      if (contextoAcessoAtual.current.clinicaId === contexto) setSucesso(mensagemSucesso)
     } catch (error) {
-      setErroForm(erroEquipeSeguro(error, true).mensagem)
+      if (!aindaAtual()) return
+      if (error instanceof Error && 'membroId' in error) {
+        setMembroPersistido(String(error.membroId)); setNovoMembroId(String(error.membroId))
+        setErroForm(`${error.message} ${error.cause instanceof Error ? error.cause.message : ''}`)
+      } else setErroForm(error instanceof Error ? error.message : erroEquipeSeguro(error, true).mensagem)
     } finally {
-      setSalvando(false)
+      if (contextoAcessoAtual.current.clinicaId === contexto) setSalvando(false)
     }
   }
 
@@ -814,6 +853,7 @@ function Equipe({ clinicaAtivaId, souProprietaria, acaoCabecalho }: EquipeProps)
     if (campo === 'tipo' && form?.edicao) return
     setForm((atual) => atual ? { ...atual, [campo]: valor } : atual)
     setFormAlterado(true)
+    if (campo === 'clinicasIds') setNovoAcesso(a => ({ ...a, escopos: a.escopos.filter(e => (valor as string[]).includes(e.clinica_id)) }))
     const grupoConselho = campo === 'conselhoClasse' || campo === 'registroConselho' || campo === 'conselhoUf'
     if (campoErro === campo || (campoErro === 'conselho' && grupoConselho)) {
       setCampoErro(null)
@@ -827,6 +867,7 @@ function Equipe({ clinicaAtivaId, souProprietaria, acaoCabecalho }: EquipeProps)
   }
 
   function abrirNovo() {
+    setNovoAcesso(novoAcessoVazio()); setMembroPersistido(null); setCredencial(null)
     setEditandoId(null)
     setErroForm(null)
     setCampoErro(null)
@@ -869,9 +910,10 @@ function Equipe({ clinicaAtivaId, souProprietaria, acaoCabecalho }: EquipeProps)
 
     {form && <ModalBase titulo={editandoId ? 'Editar membro da equipe' : 'Novo membro da equipe'} subtitulo={editandoId ? form.nomeCompleto : 'Cadastre a pessoa e os vínculos com as clínicas.'} onFechar={fecharFormulario} ocupado={salvando} largura="xl" className="equipe-modal equipe-cadastro-workspace"><form ref={formRef} aria-label={editandoId ? 'Editar membro da equipe' : 'Novo membro da equipe'} onSubmit={salvar} className="space-y-6">
       {erroForm && <FeedbackAlert variant="destructive" title="Revise o cadastro" description={erroForm} urgent />}
-      <p className="equipe-orientacao text-sm text-[var(--texto-secundario)]">Salvar o cadastro não cria login nem concede acesso ao sistema.</p>
+      <p className="equipe-orientacao text-sm text-[var(--texto-secundario)]">{editandoId ? 'Salvar o cadastro não altera o login nem os acessos existentes.' : 'Escolha abaixo se deseja somente cadastrar a pessoa ou também preparar seu acesso.'}</p>
+      {membroPersistido && <FeedbackAlert variant="warning" title="Pessoa já salva" description="O cadastro está confirmado. Retome apenas a preparação do acesso ou escolha Somente cadastrar a pessoa para concluir. Não cadastre novamente." />}
       {!editandoId&&<p className="equipe-orientacao text-sm text-[var(--texto-secundario)]">Para adicionar uma foto, salve o membro e abra sua ficha. Dados para recebimento ficam na ficha do profissional, separados deste cadastro.</p>}
-      <fieldset disabled={salvando} className="space-y-6">
+      <fieldset disabled={salvando || !!membroPersistido} className="space-y-6">
         <section aria-labelledby="equipe-dados-pessoais"><h3 id="equipe-dados-pessoais" className="mb-4 text-base font-semibold">Dados pessoais e função</h3><div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="sm:col-span-2"><label htmlFor="equipe-nome" className="text-sm font-medium">Nome completo *</label><input id="equipe-nome" name="nomeCompleto" data-equipe-campo="nomeCompleto" aria-required="true" aria-invalid={campoErro === 'nomeCompleto'} aria-describedby={campoErro === 'nomeCompleto' ? 'equipe-erro-nomeCompleto' : undefined} value={form.nomeCompleto} onChange={(e) => atualizar('nomeCompleto', e.target.value)} autoComplete="name" className="mt-1.5 min-h-11 w-full rounded-lg border border-[var(--borda)] bg-transparent px-3" />{mostrarErroCampo('nomeCompleto')}</div>
         {form.edicao ? <div data-testid="tipo-membro-atual"><p className="text-sm font-medium">Tipo de função atual</p><p className="mt-1.5 rounded-lg border border-[var(--borda)] bg-[var(--fundo-pagina)] px-3 py-2 text-sm font-semibold">{rotuloTipoEquipe(form.edicao.tipo)}</p><p className="mt-1 text-xs text-[var(--texto-secundario)]">O tipo é mantido nesta edição. Cargo e demais dados permitidos podem ser alterados.</p></div> : <div><label htmlFor="equipe-tipo-form" className="text-sm font-medium">Tipo de função *</label><select id="equipe-tipo-form" name="tipo" aria-required="true" value={form.tipo} onChange={(e) => atualizar('tipo', e.target.value as TipoMembroEquipe)} className="mt-1.5 min-h-11 w-full rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-3"><option value="">Selecione</option>{TIPOS_EQUIPE.map((t) => <option key={t.valor} value={t.valor}>{t.rotulo}</option>)}</select></div>}
@@ -899,8 +941,10 @@ function Equipe({ clinicaAtivaId, souProprietaria, acaoCabecalho }: EquipeProps)
           {mostrarErroCampo('clinicas')}
         </fieldset>
       </fieldset>
-      <div className="flex flex-col-reverse justify-end gap-3 border-t border-[var(--borda)] pt-4 sm:flex-row"><button type="button" disabled={salvando} onClick={fecharFormulario} className="min-h-11 w-full rounded-lg border border-[var(--borda)] px-4 font-semibold sm:w-auto">Cancelar</button><button type="submit" disabled={salvando || !cargoEfetivo(form)} aria-busy={salvando} className="equipe-acao-primaria min-h-11 w-full rounded-lg bg-[var(--cor-primaria)] px-4 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto">{salvando ? 'Salvando…' : 'Salvar cadastro'}</button></div>
+      {!editandoId && <NovoMembroAcesso value={novoAcesso} clinicas={clinicas.filter(c => form.clinicasIds.includes(c.id))} bloqueado={salvando} onChange={a => { setNovoAcesso(a); setFormAlterado(true) }} />}
+      <div className="flex flex-col-reverse justify-end gap-3 border-t border-[var(--borda)] pt-4 sm:flex-row"><button type="button" disabled={salvando} onClick={fecharFormulario} className="min-h-11 w-full rounded-lg border border-[var(--borda)] px-4 font-semibold sm:w-auto">Cancelar</button><button type="submit" disabled={salvando || !cargoEfetivo(form) || (!editandoId && novoAcesso.modo === 'temporaria' && !ACESSO_DIRETO_HABILITADO)} aria-busy={salvando} className="equipe-acao-primaria min-h-11 w-full rounded-lg bg-[var(--cor-primaria)] px-4 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto">{salvando ? 'Salvando…' : membroPersistido ? 'Retomar acesso e concluir' : !editandoId && novoAcesso.modo !== 'pessoa' ? 'Salvar pessoa e preparar acesso' : 'Salvar cadastro'}</button></div>
     </form><ConfirmacaoDialog open={confirmandoDescarte} onOpenChange={setConfirmandoDescarte} tone="warning" title="Descartar alterações não salvas?" description="Os dados preenchidos nesta ficha serão descartados e não serão enviados ao banco." cancelLabel="Continuar editando" confirmLabel="Descartar alterações" onConfirm={limparFormulario} /></ModalBase>}
+    {credencial && <CredencialTemporariaDialog credencial={credencial} onFechar={() => setCredencial(null)} />}
   </div>
 }
 

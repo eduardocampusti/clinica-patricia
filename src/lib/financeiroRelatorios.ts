@@ -51,6 +51,7 @@ export interface RelatorioFinanceiro {
 }
 
 export interface OpcoesRelatorio {
+  clinicaId?: string
   nomeOrganizacao?: string
   logoDataUrl?: string
 }

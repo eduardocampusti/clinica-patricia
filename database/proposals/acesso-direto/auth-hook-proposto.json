@@ -1,0 +1,11 @@
+{
+  "aplicar": false,
+  "projeto": "xftnkusbyqzyvzrovroj",
+  "condicao": "Somente após leitura oficial confirmar ausência de hook anterior; caso contrário compor e revisar fonte/ACL antes de alterar.",
+  "patch_futuro": {
+    "hook_custom_access_token_enabled": true,
+    "hook_custom_access_token_uri": "pg-functions://postgres/public/acesso_direto_token_hook"
+  },
+  "alcance": "Todas as emissões/renovações; evento intacto para contas sem operação. Indisponibilidade pode bloquear login global.",
+  "recuperacao": "Restaurar configuração anterior mantendo guardas de dados/serviços e quarentena de pendentes. Nunca retirar operação ou marcar pendência ativa."
+}

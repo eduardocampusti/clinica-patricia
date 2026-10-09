@@ -1,4 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js@2.111.0';
+import { exigirAtivacaoServico } from '../_shared/guardaAtivacao.ts';
 // Distribuição Deno/WASM: a variante npm requer addon nativo na inicialização.
 import { Image } from 'https://deno.land/x/imagescript@1.3.0/mod.ts';
 import * as PDF from 'npm:pdf-lib@1.17.1';
@@ -69,6 +70,7 @@ Deno.serve(async (req) => {
         const { data: auth, error: authError } = await client.auth.getUser(authorization.slice(7));
         if (authError || !auth.user)
             throw { code: '42501' };
+        await exigirAtivacaoServico(client);
         const limitado = await limitar(req);
         let b: Record<string, unknown>, file: File | null = null;
         if (req.headers.get('content-type')?.includes('multipart/form-data')) {

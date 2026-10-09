@@ -265,7 +265,7 @@ export default function FinanceiroRelatorios({ clinicaId, papel }: { clinicaId: 
         filtros: filtrosVisiveis, coletados, dashboard,
       })
       setProgresso(`Gerando ${formato.toUpperCase()}…`)
-      const blob = formato === 'pdf' ? await gerarPdfFinanceiroSobDemanda(relatorio)
+      const blob = formato === 'pdf' ? await gerarPdfFinanceiroSobDemanda(relatorio, { clinicaId: todasClinicas ? undefined : clinicaId })
         : await gerarXlsxFinanceiroSobDemanda(relatorio)
       if (abortador.signal.aborted) throw new Error('Exportação cancelada. Nenhum arquivo foi gerado.')
       const { nomeArquivoRelatorio } = await import('../lib/financeiroRelatorios')

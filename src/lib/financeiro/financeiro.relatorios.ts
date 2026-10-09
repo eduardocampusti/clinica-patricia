@@ -130,6 +130,20 @@ export async function gerarPdfFinanceiroSobDemanda(
   ...argumentos: Parameters<typeof import('../financeiroRelatorios')['gerarRelatorioFinanceiroPdf']>
 ): Promise<Blob> {
   const modulo = await import('../financeiroRelatorios')
+  if(argumentos[1]?.clinicaId) {
+    const {consultarTimbradoAplicado}=await import('../../hooks/useMarcaInstitucional')
+    const snapshot=await consultarTimbradoAplicado(argumentos[1].clinicaId,'relatorio_financeiro')
+    if(snapshot){
+      const r=argumentos[0];modulo.validarRelatorioFinanceiro(r)
+      const {gerarPdfTimbrado}=await import('../timbradoPdf')
+      const formatar=(v:import('../financeiroRelatorios').ValorRelatorio,t:import('../financeiroRelatorios').TipoCelulaRelatorio)=>modulo.formatarValorRelatorio(v,t,r.timezone)
+      return gerarPdfTimbrado(snapshot,[{texto:r.titulo,titulo:true},{texto:`Gerado em ${formatar(r.geradoEm,'data_hora')} · Período: ${formatar(r.periodoInicio,'data_hora')} até ${formatar(r.periodoFim,'data_hora')} (fim exclusivo)`},{texto:`Clínicas: ${r.clinicas.join(', ')} · Filtros: ${r.filtros.join(' | ') || 'Nenhum filtro adicional'}`},
+        {texto:'Valores consolidados pelo banco. Documento sem dados clínicos.'},
+        ...r.metricas.map(m=>({texto:`${m.rotulo}: ${formatar(m.valor,m.tipo)}`})),
+        ...r.secoes.flatMap(s=>[{texto:s.titulo,titulo:true},{colunas:s.colunas.map(c=>c.titulo),linhas:s.linhas.map(l=>s.colunas.map(c=>formatar(l[c.chave]??null,c.tipo)))}]),
+        ...(r.observacoes??[]).map(texto=>({texto}))])
+    }
+  }
   return modulo.gerarRelatorioFinanceiroPdf(...argumentos)
 }
 

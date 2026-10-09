@@ -7,6 +7,7 @@ import { clinicaCorrespondeAoBrand, resolveClinicBrand } from '../config/clinicB
 import { FeedbackAlert } from '../components/feedback/FeedbackAlert'
 import './login.css'
 import RecuperarSenha from './RecuperarSenha'
+import { consultarMarcaPublica, type MarcaPublica } from '../lib/configuracoes'
 
 function Icon({ children }: { children: ReactNode }) {
   return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{children}</svg>
@@ -44,11 +45,19 @@ export default function Login({ acessoAutomatico = false, authenticatedUserId, o
   const usuarioCarregado = useRef<string | null>(null)
   const brandResolution = useMemo(() => resolveClinicBrand(), [])
   const brand = brandResolution.brand
+  const [marcaPublica,setMarcaPublica]=useState<MarcaPublica|null>(null)
+  const [logoFalhou,setLogoFalhou]=useState(false)
+  const [imagemFalhou,setImagemFalhou]=useState(false)
+  useEffect(()=>{let vivo=true;if(brand)void consultarMarcaPublica(brand.hostname??'').then(m=>{if(vivo)setMarcaPublica(m)}).catch(()=>{});return()=>{vivo=false}},[brand])
+  const logo=logoFalhou?undefined:marcaPublica?marcaPublica.logo||undefined:brand?.logoSrc
+  const imagem=imagemFalhou?undefined:marcaPublica?marcaPublica.imagem||undefined:brand?.imagemLogin
+  useEffect(()=>{setLogoFalhou(false);setImagemFalhou(false)},[marcaPublica])
+  useEffect(()=>{if(!marcaPublica?.favicon)return;const link=document.createElement('link');link.rel='icon';link.href=marcaPublica.favicon;document.head.append(link);return()=>link.remove()},[marcaPublica])
   const acessoConfirmado = vinculos[0] ?? null
   const nomeMarca = brand?.nome ?? 'Domínio não configurado'
   const estilosMarca = brand ? {
-    '--login-primary': brand.cores.primaria,
-    '--login-primary-hover': brand.cores.primariaHover,
+    '--login-primary': marcaPublica?.cor || brand.cores.primaria,
+    '--login-primary-hover': marcaPublica?.cor || brand.cores.primariaHover,
     '--login-soft': brand.cores.destaqueSuave,
     '--login-visual': brand.cores.visual,
   } as CSSProperties : undefined
@@ -63,7 +72,7 @@ export default function Login({ acessoAutomatico = false, authenticatedUserId, o
       const acessos = await carregarAcessosClinicas(usuarioId)
       if (!acessos.length) throw new Error('Nenhum vínculo disponível')
 
-      const acessoDoDominio = acessos.find(acesso => clinicaCorrespondeAoBrand({ id: acesso.clinicaId, nome: acesso.nome }, brand))
+      const acessoDoDominio = acessos.find(acesso => clinicaCorrespondeAoBrand({ id: acesso.clinicaId, nome: acesso.nome, subdomain: acesso.subdomain }, brand))
       if (!acessoDoDominio) {
         usuarioCarregado.current = null
         await supabase.auth.signOut()
@@ -167,11 +176,11 @@ export default function Login({ acessoAutomatico = false, authenticatedUserId, o
     </main>
   }
 
-  return <main className="login-page" data-clinic-brand={brand.slug} data-brand-source={brandResolution.origem} data-active-profile={perfil} style={estilosMarca}>
+  return <main className="login-page" data-clinic-brand={brand.slug} data-brand-source={brandResolution.origem} data-active-profile={perfil} data-composicao-desktop={marcaPublica?.desktop} data-composicao-mobile={marcaPublica?.mobile} style={estilosMarca}>
     <section className="login-access" aria-labelledby="login-title">
       <header className="login-brand-row">
         <a className="login-brand" href={`/acesso/${brand.slug}`} aria-label={`${nomeMarca} — início`}>
-          {brand.logoSrc ? <img className="login-brand-logo" src={brand.logoSrc} alt="" /> : <span className="login-brand-symbol"><Icon><path d="M12 4v16M5 11h14M6 16c0 5 12 5 12 0" /><circle cx="17" cy="6" r="2" /></Icon></span>}
+          {logo ? <img className="login-brand-logo" src={logo} alt="" onError={()=>setLogoFalhou(true)} /> : <span className="login-brand-symbol"><Icon><path d="M12 4v16M5 11h14M6 16c0 5 12 5 12 0" /><circle cx="17" cy="6" r="2" /></Icon></span>}
           <span><strong>{nomeMarca}</strong><small>{brand.textos.descricaoMarca}</small></span>
         </a>
         <span className="login-brand-description">Prontuário &amp;<br />gestão clínica</span>
@@ -179,7 +188,7 @@ export default function Login({ acessoAutomatico = false, authenticatedUserId, o
       </header>
 
       <div className="login-content">
-        <h1 id="login-title">{brand.titulo}</h1>
+        <h1 id="login-title">{marcaPublica?.mensagem || brand.titulo}</h1>
         <p className="login-intro">{brand.subtitulo}</p>
         <form onSubmit={handleSubmit} className="login-form" aria-busy={loading}>
           {etapa === 'credenciais' && <fieldset className="login-role-fieldset" disabled={loading}>
@@ -223,7 +232,7 @@ export default function Login({ acessoAutomatico = false, authenticatedUserId, o
     </section>
 
     <aside className="login-visual" aria-label="Cuidado e gestão clínica">
-      <img className="login-photo" src={brand.imagemLogin} alt="" fetchPriority="high" />
+      {imagem && <img className="login-photo" src={imagem} alt="" fetchPriority="high" onError={()=>setImagemFalhou(true)} style={marcaPublica?{objectPosition:`${marcaPublica.focoX}% ${marcaPublica.focoY}%`}:undefined} />}
       <div className="login-photo-shade" />
       <div className="login-visual-top"><span><Icon>{shield}</Icon>Ambiente de acesso profissional</span><span>{nomeMarca}</span></div>
       <div className="login-visual-bottom">

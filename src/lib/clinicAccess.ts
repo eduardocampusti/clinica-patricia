@@ -4,6 +4,7 @@ import { supabase } from './supabase'
 export interface AcessoClinica {
   clinicaId: string
   nome: string
+  subdomain?: string
   papel: Papel
 }
 
@@ -22,7 +23,7 @@ export async function carregarAcessosClinicas(usuarioId: string): Promise<Acesso
   const ids = [...new Set(acessos.map(acesso => acesso.clinica_id))]
   const { data: clinicas, error: erroClinicas } = await supabase
     .from('clinicas')
-    .select('id, nome')
+    .select('id, nome, subdomain')
     .in('id', ids)
     .order('nome', { ascending: true })
 
@@ -31,5 +32,5 @@ export async function carregarAcessosClinicas(usuarioId: string): Promise<Acesso
 
   return clinicas.flatMap(clinica => acessos
     .filter(acesso => acesso.clinica_id === clinica.id && PAPEIS_SUPORTADOS.includes(acesso.papel as Papel))
-    .map(acesso => ({ clinicaId: clinica.id, nome: clinica.nome, papel: acesso.papel as Papel })))
+    .map(acesso => ({ clinicaId: clinica.id, nome: clinica.nome, subdomain: clinica.subdomain, papel: acesso.papel as Papel })))
 }

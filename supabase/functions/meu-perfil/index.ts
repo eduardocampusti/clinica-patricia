@@ -1,5 +1,6 @@
 // Perfil pessoal: identidade determinada exclusivamente pela sessão autenticada.
 import { createClient } from 'npm:@supabase/supabase-js@2.111.0'
+import { exigirAtivacaoServico } from '../_shared/guardaAtivacao.ts'
 import { Image } from 'https://deno.land/x/imagescript@1.3.0/mod.ts'
 import { processarFotoEquipe } from '../_shared/equipeFoto.ts'
 import { ErroRecursoEquipe } from '../_shared/equipeRecebimento.ts'
@@ -35,6 +36,7 @@ Deno.serve(async req=>{
     const cliente=createClient(url,anon,{...options,global:{headers:{Authorization:authorization}}})
     const {data,error}=await cliente.auth.getUser(authorization.slice(7))
     if(error||!data.user)throw new ErroPerfil(401,'Entre novamente.')
+    try { await exigirAtivacaoServico(cliente) } catch { throw new ErroPerfil(403,'Ativação ou sessão não autorizada.') }
     // The trusted identity is always the verified JWT. Body never chooses actor.
     const atorId=data.user.id
     const limitado=await limitarCorpo(req)

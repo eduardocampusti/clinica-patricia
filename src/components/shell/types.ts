@@ -15,7 +15,7 @@ export type Tela =
 
 // Mesmos destinos já oferecidos pelo menu, incluindo Sobre para todos os perfis.
 export const TELAS_POR_PAPEL: Record<Papel, readonly Tela[]> = {
-  proprietaria: ['dashboard', 'agenda', 'pacientes', 'prontuario', 'financeiro', 'equipe', 'sobre'],
+  proprietaria: ['dashboard', 'agenda', 'pacientes', 'prontuario', 'financeiro', 'equipe', 'configuracoes', 'sobre'],
   recepcao: ['dashboard', 'agenda', 'pacientes', 'financeiro', 'equipe', 'sobre'],
   medico: ['dashboard', 'agenda', 'prontuario', 'financeiro', 'sobre'],
 }

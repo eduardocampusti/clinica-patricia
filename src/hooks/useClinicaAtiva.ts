@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react'
 export interface ClinicaAtiva {
   id: string
   nome: string
+  subdomain?: string
   cor_primaria: string
   cor_secundaria: string
   cor_menu: string

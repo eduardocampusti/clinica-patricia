@@ -1,0 +1,323 @@
+{
+  "projeto": "xftnkusbyqzyvzrovroj",
+  "preparado_em": "2026-10-09T09:32:35.627Z",
+  "aplicado_remotamente": true,
+  "contas_contextos_remotos_criados": 4,
+  "frontend_habilitado": false,
+  "ordem_sql": [
+    "supabase/migrations/20261008230000_equipe_acesso_direto.sql",
+    "supabase/migrations/20261008230100_equipe_acesso_direto_protecoes.sql",
+    "supabase/migrations/20261008213000_configuracoes_institucionais.sql",
+    "supabase/migrations/20261008230050_configuracoes_homologacao_isolada.sql",
+    "supabase/tools/acesso-direto-proteger-configuracoes.sql"
+  ],
+  "services": [
+    {
+      "nome": "configuracoes",
+      "verify_jwt": true
+    },
+    {
+      "nome": "configuracoes-publicas",
+      "verify_jwt": false
+    }
+  ],
+  "dependencia_manifesto": "database/proposals/acesso-direto/manifesto.json",
+  "frontend_candidato": [
+    "src/pages/Configuracoes.tsx",
+    "src/pages/configuracoes.css",
+    "src/lib/configuracoes.ts",
+    "src/lib/timbradoPdf.ts",
+    "src/lib/timbradoFontes.ts",
+    "src/hooks/useMarcaInstitucional.ts",
+    "src/components/configuracoes/PreviaTimbrado.tsx",
+    "src/assets/pdf/NotoSans-Regular.ttf",
+    "src/assets/pdf/NotoSans-Bold.ttf",
+    "src/assets/pdf/OFL.txt",
+    "src/assets/pdf/README.md",
+    "supabase/functions/_shared/configuracoes.ts",
+    "src/App.tsx",
+    "src/components/shell/AppShell.tsx",
+    "src/components/shell/Sidebar.tsx",
+    "src/components/shell/navigation.ts",
+    "src/components/shell/icons.tsx",
+    "src/components/shell/types.ts",
+    "src/config/clinicBrands.ts",
+    "src/hooks/useClinicaAtiva.ts",
+    "src/hooks/useClinicasDoUsuario.ts",
+    "src/lib/clinicAccess.ts",
+    "src/pages/Login.tsx",
+    "src/pages/login.css",
+    "src/lib/financeiro/financeiro.relatorios.ts",
+    "src/lib/financeiroRelatorios.ts",
+    "src/pages/FinanceiroRelatorios.tsx",
+    "src/config/notasEvolucao.json"
+  ],
+  "frontend_release_pronta": false,
+  "limite": "Extração seletiva dos trechos compartilhados e recompilação somente após gates conectados; árvore contém outros trabalhos. Bancada de testes nunca publicada.",
+  "arquivos": [
+    {
+      "arquivo": "database/proposals/configuracoes/20261008_contextos_homologacao.sql",
+      "sha256": "6d1d48223657c06563eb6efb3f6b762f0d3e205454fac346594069b8ebf71bee"
+    },
+    {
+      "arquivo": "database/proposals/configuracoes/20261008_encerrar_contextos.sql",
+      "sha256": "5d65c6df9185610359e3727d73f4a5f3618dbaadba357787cf973a747ba20266"
+    },
+    {
+      "arquivo": "database/proposals/configuracoes/20261008_vinculos_homologacao.sql",
+      "sha256": "729c14e6f13ddb0105582741924b665cc03f110be1908fe2834d0541ad200db3"
+    },
+    {
+      "arquivo": "scripts/preparar-imagens-configuracoes.ps1",
+      "sha256": "9627feb12405e1d2b9727d8b78886a6f488b971728995e92b6aae7c9a95ce47f"
+    },
+    {
+      "arquivo": "scripts/preparar-vinculos-configuracoes.mjs",
+      "sha256": "905ec3d47c8458b47b0d4e460c4efc78cd15120c9208bfd03cf851df7d7be854"
+    },
+    {
+      "arquivo": "scripts/test-configuracoes-sequencia.mjs",
+      "sha256": "187667f721f3bd8aedb4852b8bf3701e8cbab92a725050ea912e7964c88438b7"
+    },
+    {
+      "arquivo": "scripts/verificar-publicacao-configuracoes.mjs",
+      "sha256": "bd6dbb942a16e743d8cbba9f855508345f5cacaeca313ab2ee375d3d582476cd"
+    },
+    {
+      "arquivo": "src/App.tsx",
+      "sha256": "d8415bcb207aaecc9129789d688ae2ee25c21deb6baa955a48008be1aab04b3f"
+    },
+    {
+      "arquivo": "src/assets/pdf/NotoSans-Bold.ttf",
+      "sha256": "c976e4b1b99edc88775377fcc21692ca4bfa46b6d6ca6522bfda505b28ff9d6a"
+    },
+    {
+      "arquivo": "src/assets/pdf/NotoSans-Regular.ttf",
+      "sha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5"
+    },
+    {
+      "arquivo": "src/assets/pdf/OFL.txt",
+      "sha256": "0dab92d0544f7b233403f14b84a663bdbfa746982eda629e7f4f9ffe1b036feb"
+    },
+    {
+      "arquivo": "src/assets/pdf/README.md",
+      "sha256": "3828ef2bef0a34f47e6c78bf39668970cf78adc8145ed3b0b610b42b67d1ead2"
+    },
+    {
+      "arquivo": "src/components/configuracoes/PreviaTimbrado.tsx",
+      "sha256": "1e3c868cc62f4218a08b0dfdbc7b821b9727440a305866cb1803a10c2cc225a6"
+    },
+    {
+      "arquivo": "src/components/shell/AppShell.tsx",
+      "sha256": "126a525fbbcc8ad8f19ac877e521e6597352f56e3e184a614e450103e912e0d6"
+    },
+    {
+      "arquivo": "src/components/shell/Sidebar.tsx",
+      "sha256": "52ead472de1f34dab69737ff0a736bf98e044feb3c2c696462a0db49734c3f7a"
+    },
+    {
+      "arquivo": "src/components/shell/icons.tsx",
+      "sha256": "395764a613aa4e8b48efaf1a382026d7d6644fe41d2374243d45603e27962ade"
+    },
+    {
+      "arquivo": "src/components/shell/navigation.ts",
+      "sha256": "dd3bce62661b8948f4ae248be3eb75b1bd5d231d79b801bbf729b03c11f7f093"
+    },
+    {
+      "arquivo": "src/components/shell/types.ts",
+      "sha256": "2c72e1fc4fda87c52e337d87061db62a378230c1e2225702b655bc493272217b"
+    },
+    {
+      "arquivo": "src/config/clinicBrands.ts",
+      "sha256": "33f98422c6125d82d60795515698f847947d608d82496095a06bb5733a890279"
+    },
+    {
+      "arquivo": "src/config/notasEvolucao.json",
+      "sha256": "0c73dd2cad06a960779a5aa570e527c17435c27327a1714999045661a8d1fa1d"
+    },
+    {
+      "arquivo": "src/hooks/useClinicaAtiva.ts",
+      "sha256": "5291ffca48460f17d819923542b30971f8911ba3fd8cf98a056ebf5e779b71fe"
+    },
+    {
+      "arquivo": "src/hooks/useClinicasDoUsuario.ts",
+      "sha256": "af66005ee4cea8a29333779e6d4186830127a3a7378e33d67de4cd5f56b91cdc"
+    },
+    {
+      "arquivo": "src/hooks/useMarcaInstitucional.ts",
+      "sha256": "40849460c51a8ad8f8bf56836414b37c87465496a33b7c951e608c61ceea0416"
+    },
+    {
+      "arquivo": "src/lib/clinicAccess.ts",
+      "sha256": "763454b35a0b8c9830d667fb96d0cf0d725ab78b9e27aa54f9f31a9cbcfaae01"
+    },
+    {
+      "arquivo": "src/lib/configuracoes.ts",
+      "sha256": "960f79f002f6d07b0fd25e85c77553f2b64075b26737ac8b1fd98fbb89680bc7"
+    },
+    {
+      "arquivo": "src/lib/financeiro/financeiro.relatorios.ts",
+      "sha256": "4b9eaa6e7ebdb672e0eec28368c40f0fc8e6b836dce00e9f4487834b9764bf69"
+    },
+    {
+      "arquivo": "src/lib/financeiroRelatorios.ts",
+      "sha256": "3942adc7b6d35eab7e1a94b17ff1343166e6e545abe73fed94360a0311e0dcd0"
+    },
+    {
+      "arquivo": "src/lib/timbradoFontes.ts",
+      "sha256": "3f68b41db8770595eec232c9dad49864707962aa39da85a4091cab5338cae8d2"
+    },
+    {
+      "arquivo": "src/lib/timbradoPdf.ts",
+      "sha256": "b9bd5d7683b1cdea1147e70b76216558b66de38f734fa48fae89e6594038ca8d"
+    },
+    {
+      "arquivo": "src/pages/Configuracoes.tsx",
+      "sha256": "37a0ca05968108b3984716131fd8b66e82b0835385be8ccd3f9ea6ca860eaeb5"
+    },
+    {
+      "arquivo": "src/pages/FinanceiroRelatorios.tsx",
+      "sha256": "fd5009fb71159ed06264782e953ad9e0286a2c0e57f6048c17ef114c371758ca"
+    },
+    {
+      "arquivo": "src/pages/Login.tsx",
+      "sha256": "c5b66ca22f67fca0c01f4195f8e2740a537e5aca1f8bca46376a452f6eb03e94"
+    },
+    {
+      "arquivo": "src/pages/configuracoes.css",
+      "sha256": "587fc0346154b0b7928d62a5d835f326cefec752284a32c7d11f4a747fa3e57b"
+    },
+    {
+      "arquivo": "src/pages/login.css",
+      "sha256": "92c6a22c96a675afdc8be72940df01bee30b38a1ecab373e2b90f9689b9e6882"
+    },
+    {
+      "arquivo": "supabase/config.toml",
+      "sha256": "f8624baa7a34e3ff0f55d7a275a3e0b08843a02870d3e1bd9c63d0caae19f308"
+    },
+    {
+      "arquivo": "supabase/functions/_shared/configuracoes.ts",
+      "sha256": "d8e4d028a3d10b1b5cf475b016135a338d141bd066ce4e73b6bf1234141d72e9"
+    },
+    {
+      "arquivo": "supabase/functions/_shared/configuracoesPublicas.ts",
+      "sha256": "2685f89a413abdb0b71c7b9118ed2df9443489dd2682b6ab179a74af87fdb49a"
+    },
+    {
+      "arquivo": "supabase/functions/_shared/equipeFoto.ts",
+      "sha256": "fa335f7247238362aa7d1e19c4a45641561a595a4a0308c6fa87c2e5562667ad"
+    },
+    {
+      "arquivo": "supabase/functions/_shared/equipeRecebimento.ts",
+      "sha256": "ca8f6428a3528d59645181f57647282027d9e975fe6b129365efae5623bf5ec9"
+    },
+    {
+      "arquivo": "supabase/functions/_shared/guardaAtivacao.ts",
+      "sha256": "30b59728dfea7f9c3264e67d335ef3e71d07b73301a0447069a2b9684a4aa5f1"
+    },
+    {
+      "arquivo": "supabase/functions/configuracoes-publicas/index.ts",
+      "sha256": "bf9340245994ff33252edbc2499710301ba440a60dec27723e70a7890ec2a797"
+    },
+    {
+      "arquivo": "supabase/functions/configuracoes/index.ts",
+      "sha256": "a3e181591aa42f882eb1bcc6978ed88662b9f1ccd323a1864179ddc13a106e5d"
+    },
+    {
+      "arquivo": "supabase/functions/equipe-acessos/conviteAuth.ts",
+      "sha256": "809168b03f2f6085a092fb25250b6be1fd79e6e21fa8fb4412f7ce3fb114ba50"
+    },
+    {
+      "arquivo": "supabase/migrations/20261008213000_configuracoes_institucionais.sql",
+      "sha256": "42de41897b6a9ee9a3188ed2d04c4ae52d46c5caf9c4c751571bf151d27b69ab"
+    },
+    {
+      "arquivo": "supabase/migrations/20261008230000_equipe_acesso_direto.sql",
+      "sha256": "d878cc41b5a9795a14023920c2ed742ef98939f2aa52f046821e38e6a21f986a"
+    },
+    {
+      "arquivo": "supabase/migrations/20261008230050_configuracoes_homologacao_isolada.sql",
+      "sha256": "1c93a6852ece2fa6cd8d71ee92f5b56842fcf9848658b877d29af9fadc9371a6"
+    },
+    {
+      "arquivo": "supabase/migrations/20261008230100_equipe_acesso_direto_protecoes.sql",
+      "sha256": "494e712c119753a51c6f4e00487f100ef8112702e5114dda82642e93d210fd63"
+    },
+    {
+      "arquivo": "supabase/tests/configuracoes_fixture.sql",
+      "sha256": "fe767ca1f8021c4b9e6b19040966a1fa1ab417fda0e8c50d8aac9f171744e58d"
+    },
+    {
+      "arquivo": "supabase/tests/configuracoes_isolamento_contratos.sql",
+      "sha256": "03c3a24e65e83ca10463aed2bb56f2eda141da69cf4e5844d75cf1e8d19ae732"
+    },
+    {
+      "arquivo": "supabase/tests/configuracoes_pos_aplicacao.sql",
+      "sha256": "cb85ba87ec61ec7fc6d780f59c1a4b5b106f75f3976ba2862e546eb2a5244279"
+    },
+    {
+      "arquivo": "supabase/tools/acesso-direto-proteger-configuracoes.sql",
+      "sha256": "71109f983371287c1d64c930d8812c0566800a5e41122be1def888e3062bad5a"
+    },
+    {
+      "arquivo": "supabase/tools/verificar-integridade.sql",
+      "sha256": "ee55ae4ad4fce42006afce8eb7a1ae2ef76cced975e3d4e91056ff2d1233489f"
+    },
+    {
+      "arquivo": "tests/configuracoes/conectada.html",
+      "sha256": "c845bd15bfa069986173aed85bd08d009392bc0f6f554c9a4c424b8b9df255de"
+    },
+    {
+      "arquivo": "tests/configuracoes/conectada.tsx",
+      "sha256": "bfe5af11c4de667f16d2f0dde242d161df8d66d5302924d5af43e34eb2ac8db0"
+    },
+    {
+      "arquivo": "tests/configuracoes/conectada.vite.config.ts",
+      "sha256": "6c88842eaec6ea01ca8a579e5eecddc91c59b3d3be8fc28bc94c2cc2faf69aaa"
+    },
+    {
+      "arquivo": "tests/configuracoes/deno.d.ts",
+      "sha256": "0c7b91583e9187bae766432067535cacbf6354b90ca48ab2902763bb5e1a5cf9"
+    },
+    {
+      "arquivo": "tests/configuracoes/hosts-publicos.test.ts",
+      "sha256": "c652b37e6baaec1aee17623c19c52e7f0c873dd13de02514de102e5a84b84da6"
+    },
+    {
+      "arquivo": "tests/configuracoes/tsconfig.backend.json",
+      "sha256": "206c658a298ed9596eb930abfd16c2cfad04cb1a9bcf6a10c33ab99b7c3656eb"
+    },
+    {
+      "arquivo": "tests/configuracoes/tsconfig.conectada.json",
+      "sha256": "15484ed51cc6fc0f53083b59af894494604eb3e710c0b85a8198e7a83ab212b7"
+    }
+  ],
+  "revisao_graphql": "2026-10-09: pre-request autorizado; normalização do fim de corpo real corrigida",
+  "estado_execucao": "sql_servicos_hook_aplicados_homologacao_parcial",
+  "relatorio_execucao": "docs/modulos/configuracoes/18-APLICACAO-GUARDA-E-SEQUENCIA-AUTORIZADA.md",
+  "aplicacao_sql_concluida": true,
+  "homologacao_conectada_completa": false,
+  "execucao_conjunta": {
+    "em": "2026-10-09T10:18:36.211Z",
+    "contas_criadas": 3,
+    "contas_encerradas": 3,
+    "contextos_criados": 2,
+    "contextos_encerrados": 2,
+    "operacoes_diretas": 0,
+    "frontend_habilitado": false,
+    "servico_direto_habilitado": false
+  },
+  "aplicado_significado": "SQL e duas Edges aplicados; homologação privada ainda pendente",
+  "evidencia_execucao": "database/proposals/acesso-direto/EXECUCAO-PARCIAL-20261009.json",
+  "estado_versionamento_20261009": {
+    "backend_supabase_instalado": true,
+    "homologacao": "parcial",
+    "frontend_geral_habilitado": false,
+    "referencia_estado_atual": "docs/modulos/configuracoes/18-APLICACAO-GUARDA-E-SEQUENCIA-AUTORIZADA.md",
+    "escritas_remotas_nesta_etapa": 0,
+    "commit_nao_equivale_a_aplicacao": true,
+    "observacao": "Campos anteriores preservam a fotografia datada de preparação/aplicação; R2 não aplicada.",
+    "integridade_git": "releases/2026-10-09-dashboard-configuracoes-acesso-direto.json",
+    "hashes_anteriores": "Hashes históricos da preparação/aplicação; não são autorização para reaplicar. Manifesto de Git registra os blobs normalizados desta seleção."
+  }
+}

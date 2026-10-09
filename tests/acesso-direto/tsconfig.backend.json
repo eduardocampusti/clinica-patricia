@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "target": "ES2023", "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "module": "ESNext", "moduleResolution": "bundler", "noEmit": true,
+    "allowImportingTsExtensions": true, "skipLibCheck": true, "strict": true,
+    "paths": { "npm:@supabase/supabase-js@2.111.0": ["../../node_modules/@supabase/supabase-js/dist/index.d.mts"] }
+  },
+  "files": ["deno.d.ts", "../../supabase/functions/equipe-acesso-direto/index.ts", "../../supabase/functions/_shared/acessoDireto.ts", "../../supabase/functions/_shared/guardaAtivacao.ts"]
+}

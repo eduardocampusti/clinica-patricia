@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import type { Papel } from './hooks/usePapelNaClinica'
 import { supabase } from './lib/supabase'
@@ -24,6 +24,9 @@ import { CLINIC_BRANDS, clinicaCorrespondeAoBrand, resolveClinicBrand } from './
 import { caminhoInterno, lerRotaInterna, marcaDaRota, navegarPara, useCaminhoAtual } from './lib/appRoute'
 import { FeedbackAlert } from './components/feedback/FeedbackAlert'
 import { useIdentidadeConta } from './hooks/useIdentidadeConta'
+import Configuracoes, { type GuardaConfiguracoes } from './pages/Configuracoes'
+import { ConfirmacaoDialog } from './components/feedback/ConfirmacaoDialog'
+import { GuardaAtivacao } from './components/GuardaAtivacao'
 
 function App() {
   const [session, setSession] = useState<Session | null>(null)
@@ -59,8 +62,19 @@ function App() {
   const conviteId = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('convite') : null
   const conviteValido = !!conviteId && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/iu.test(conviteId)
   const sessionUserId = session?.user.id
+  const guardaConfiguracoes = useRef<GuardaConfiguracoes | null>(null)
+  const [transicaoPendente, setTransicaoPendente] = useState<(() => void) | null>(null)
+  const [salvandoTransicao, setSalvandoTransicao] = useState(false)
+  const registrarGuarda = useCallback((g: GuardaConfiguracoes | null) => { guardaConfiguracoes.current = g }, [])
+  function solicitarMudanca(acao: () => void) {
+    if (guardaConfiguracoes.current?.sujo || guardaConfiguracoes.current?.ocupado) { setTransicaoPendente(() => acao); return }
+    acao()
+  }
 
   function setTela(destino: Tela, entrada?: { clinicaId: string; novoPaciente?: boolean; novoAgendamento?: boolean; pacienteId?: string; receberPagamento?: boolean }) {
+    solicitarMudanca(() => setTelaDireta(destino, entrada))
+  }
+  function setTelaDireta(destino: Tela, entrada?: { clinicaId: string; novoPaciente?: boolean; novoAgendamento?: boolean; pacienteId?: string; receberPagamento?: boolean }) {
     if (!papel || !TELAS_POR_PAPEL[papel].includes(destino)) return
     const marca = Object.values(CLINIC_BRANDS).find(item => clinicaAtiva && clinicaCorrespondeAoBrand(clinicaAtiva, item))
     if (!marca) return
@@ -86,7 +100,7 @@ function App() {
     if (!marca) { setRestaurandoAcesso(false); return }
     void carregarAcessosClinicas(sessionUserId).then(acessos => {
       if (cancelado) return
-      const acesso = acessos.find(item => clinicaCorrespondeAoBrand({ id: item.clinicaId, nome: item.nome }, marca))
+      const acesso = acessos.find(item => clinicaCorrespondeAoBrand({ id: item.clinicaId, nome: item.nome, subdomain: item.subdomain }, marca))
       if (!acesso) {
         setErroAcesso(`Sua conta não possui vínculo ativo com ${marca.nome}. Acesso suspenso ou sem autorização. Procure a administração ou entre com outra conta.`)
         setRestaurandoAcesso(false)
@@ -106,8 +120,19 @@ function App() {
 
   useEffect(() => {
     function voltarNaRota() {
-      setEntradaPainel(null)
       const rota = lerRotaInterna()
+      if (guardaConfiguracoes.current?.sujo || guardaConfiguracoes.current?.ocupado) {
+        const destino = window.location.pathname
+        const marcaAtual = Object.values(CLINIC_BRANDS).find(b => clinicaAtiva && clinicaCorrespondeAoBrand(clinicaAtiva, b))
+        if (marcaAtual) navegarPara(caminhoInterno(marcaAtual.slug, 'configuracoes'), true)
+        solicitarMudanca(() => {
+          const alvo = rota && clinicasDoUsuario.find(c => clinicaCorrespondeAoBrand(c, CLINIC_BRANDS[rota.unidade]))
+          if (alvo) selecionarClinica(alvo.id, false, true)
+          navegarPara(destino, true)
+        })
+        return
+      }
+      setEntradaPainel(null)
       if (!rota) { window.location.replace(window.location.href); return }
       const clinica = clinicasDoUsuario.find(item => clinicaCorrespondeAoBrand(item, CLINIC_BRANDS[rota.unidade]))
       if (!clinica) { window.location.replace(window.location.href); return }
@@ -115,7 +140,7 @@ function App() {
     }
     window.addEventListener('popstate', voltarNaRota)
     return () => window.removeEventListener('popstate', voltarNaRota)
-  }, [clinicasDoUsuario, selecionarClinica])
+  }, [clinicasDoUsuario, selecionarClinica, clinicaAtiva])
 
   useEffect(() => {
     if (!escolhaAcesso || !session || carregandoClinicas) return
@@ -267,18 +292,18 @@ function App() {
       onNavegar={setTela}
       clinicaAtiva={clinicaAtiva}
       clinicasDoUsuario={clinicasDoUsuario}
-      onSelecionarClinica={id => {
+      onSelecionarClinica={id => { if (id === clinicaAtivaId) return; solicitarMudanca(() => {
         setEntradaPainel(null)
         const clinica = clinicasDoUsuario.find(item => item.id === id)
         const marca = Object.values(CLINIC_BRANDS).find(item => clinica && clinicaCorrespondeAoBrand(clinica, item))
         if (!marca) return
         selecionarClinica(id)
         navegarPara(caminhoInterno(marca.slug, tela), true)
-      }}
+      }) }}
       identidade={identidade}
       conta={session.user.email ?? 'Identificação de login não informada'}
       papel={papel}
-      onSair={handleSignOut}
+      onSair={() => solicitarMudanca(() => void handleSignOut())}
     >
       {tela === 'dashboard' && <Dashboard clinicaAtivaId={clinicaAtivaId} clinicaNome={clinicaAtiva?.nome ?? 'Clínica selecionada'} papel={papel}
         nomeUsuario={identidade.nome}
@@ -357,15 +382,20 @@ function App() {
           onReceberPagamento={() => { if (clinicaAtivaId) setTela('agenda', { clinicaId: clinicaAtivaId, receberPagamento: true }) }} />
       )}
       {tela === 'sobre' && <SobreSistema clinicaAtiva={clinicaAtiva} />}
+      {tela === 'configuracoes' && clinicaAtivaId && <Configuracoes key={`${session.user.id}:${clinicaAtivaId}`} clinicaId={clinicaAtivaId} clinicaNome={clinicaAtiva?.nome ?? 'Clínica selecionada'} papel={papel} onGuarda={registrarGuarda} onEquipe={() => setTela('equipe')} />}
+      <ConfirmacaoDialog open={!!transicaoPendente} onOpenChange={o => { if (!o && !salvandoTransicao) setTransicaoPendente(null) }} tone="warning" title="Alterações de Configurações não salvas" description="Salve o rascunho, descarte as alterações ou continue editando antes de sair ou trocar a clínica." confirmLabel="Descartar e continuar" cancelLabel="Continuar editando" disabled={salvandoTransicao || !!guardaConfiguracoes.current?.ocupado} onConfirm={() => { const acao = transicaoPendente; guardaConfiguracoes.current = null; setTransicaoPendente(null); acao?.() }}>
+        <button className="cfg-botao" disabled={salvandoTransicao || !!guardaConfiguracoes.current?.ocupado} onClick={() => { setSalvandoTransicao(true); void guardaConfiguracoes.current?.salvar().then(ok => { if (ok) { const acao = transicaoPendente; guardaConfiguracoes.current = null; setTransicaoPendente(null); acao?.() } }).finally(() => setSalvandoTransicao(false)) }}>Salvar rascunho e continuar</button>
+      </ConfirmacaoDialog>
       {tela !== 'dashboard' &&
         tela !== 'agenda' &&
         tela !== 'pacientes' &&
         tela !== 'equipe' &&
         tela !== 'prontuario' &&
         tela !== 'financeiro' &&
+        tela !== 'configuracoes' &&
         tela !== 'sobre' && <PlaceholderScreen titulo={TITULOS_TELA[tela]} />}
     </AppShell>
   )
 }
 
-export default App
+export default function AppProtegido() { return <GuardaAtivacao><App /></GuardaAtivacao> }

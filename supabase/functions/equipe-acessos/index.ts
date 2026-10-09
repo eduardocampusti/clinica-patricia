@@ -2,6 +2,7 @@ import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2.1
 import { ErroContaConvite, garantirContaDoConvite, ORIGENS_LOCAIS_PERMITIDAS, ORIGENS_PUBLICAS_PERMITIDAS, type ContaConvite } from './conviteAuth.ts'
 import { identidadeEmailConvite } from './emailContext.ts'
 import { redirectUnidade } from './redirectUnidade.ts'
+import { exigirAtivacaoServico } from '../_shared/guardaAtivacao.ts'
 
 const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
 const anonKey = Deno.env.get('SUPABASE_ANON_KEY') ?? ''
@@ -72,6 +73,7 @@ async function autenticar(request: Request): Promise<Ator | Response> {
   })
   const { data, error } = await client.auth.getUser(authorization.slice('Bearer '.length))
   if (error || !data.user) return response(request, { erro: 'Token de autenticação inválido ou expirado.' }, 401)
+  try { await exigirAtivacaoServico(client) } catch { return response(request, { codigo: 'NAO_AUTORIZADO', erro: 'Ativação ou sessão não autorizada.' }, 403) }
   return { id: data.user.id, email: data.user.email ?? null, confirmado: Boolean(data.user.email_confirmed_at) }
 }
 
@@ -135,7 +137,8 @@ async function listar(admin: SupabaseClient, actorId: string, body: Record<strin
     p_clinica_contexto_id: body.clinicaContextoId,
   })
   const auth = await emailAuth(admin, typeof dados.usuario_id === 'string' ? dados.usuario_id : null)
-  return { ...dados, login_email: auth.email, conta_confirmada: auth.confirmado }
+  const ativacao = await rpc<Record<string, unknown> | null>(admin, 'acesso_direto_consultar_operacao', { p_ator: actorId, p_membro: body.membroId, p_contexto: body.clinicaContextoId })
+  return { ...dados, login_email: auth.email, conta_confirmada: auth.confirmado, ativacao }
 }
 
 async function localizarConta(admin: SupabaseClient, email: string): Promise<{ id: string; email: string; confirmado: boolean } | null> {
@@ -300,6 +303,10 @@ Deno.serve(async (request) => {
   try { admin = clienteServico() } catch { return response(request, { codigo: 'SERVICO_NAO_CONFIGURADO', erro: 'A função segura de acessos ainda não foi configurada.' }, 503) }
   try {
     const action = body.acao
+    if (action === 'alterar' || action === 'preparar') {
+      const pendente = await rpc<Record<string, unknown> | null>(admin, 'acesso_direto_consultar_operacao', { p_ator: actor.id, p_membro: body.membroId, p_contexto: body.clinicaContextoId })
+      if (pendente && pendente.estado !== 'ativa') return response(request, { codigo: 'CONFLITO', erro: 'Conclua a ativação ou retome a preparação do acesso direto antes desta operação.' }, 409)
+    }
     if (action === 'listar') return response(request, await listar(admin, actor.id, body))
     if (action === 'preparar') return response(request, await preparar(admin, actor.id, body, request))
     if (action === 'reenviar') return response(request, await reenviar(admin, actor.id, body, request))

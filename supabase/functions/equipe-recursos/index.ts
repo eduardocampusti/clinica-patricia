@@ -1,4 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js@2.111.0'
+import { exigirAtivacaoServico } from '../_shared/guardaAtivacao.ts'
 // Distribuição Deno/WASM: a variante npm requer addon nativo na inicialização.
 import { Image } from 'https://deno.land/x/imagescript@1.3.0/mod.ts'
 import { ORIGENS_LOCAIS_PERMITIDAS, ORIGENS_PUBLICAS_PERMITIDAS } from '../equipe-acessos/conviteAuth.ts'
@@ -37,6 +38,7 @@ Deno.serve(async req=>{
     const usuario=createClient(url,anon,{...options,global:{headers:{Authorization:authorization}}})
     const {data,error}=await usuario.auth.getUser(authorization.slice(7))
     if(error||!data.user) throw new ErroRecursoEquipe('NAO_AUTORIZADO','Entre novamente no sistema.')
+    await exigirAtivacaoServico(usuario)
     const limitado=await corpoLimitado(req)
     let body:Record<string,unknown>;let file:File|null=null
     if(req.headers.get('content-type')?.includes('multipart/form-data')) {

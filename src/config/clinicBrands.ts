@@ -139,10 +139,11 @@ export function normalizarNomeClinica(nome: string) {
 }
 
 export function clinicaCorrespondeAoBrand(
-  clinica: { id: string; nome: string },
+  clinica: { id: string; nome: string; subdomain?: string },
   brand: ClinicBrandConfig,
 ) {
   if (brand.clinicId) return clinica.id === brand.clinicId
+  if (clinica.subdomain) return clinica.subdomain === brand.slug
   const nome = normalizarNomeClinica(clinica.nome)
   return brand.aliasesClinica.some(alias => normalizarNomeClinica(alias) === nome)
 }

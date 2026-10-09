@@ -1,0 +1,384 @@
+{
+  "projeto": "xftnkusbyqzyvzrovroj",
+  "em": "2026-10-09T10:18:36.211Z",
+  "estado": {
+    "ativos_teste": 0,
+    "autorizacao_geral_cfg": 0,
+    "contas": [
+      {
+        "ban": true,
+        "id": "bc45dfd9-46a7-4b0f-892a-1179da6ee75d",
+        "perfil_ativo": null,
+        "refresh_ativos": 0,
+        "sessao": 0,
+        "vinculos_ativos": 0
+      },
+      {
+        "ban": true,
+        "id": "6a31c4c2-d4e4-4c83-b562-2deefdf67c3d",
+        "perfil_ativo": null,
+        "refresh_ativos": 0,
+        "sessao": 0,
+        "vinculos_ativos": 0
+      },
+      {
+        "ban": true,
+        "id": "6eea2be7-24e7-4b1f-9ae9-e6b624a7ac06",
+        "perfil_ativo": false,
+        "refresh_ativos": 0,
+        "sessao": 0,
+        "vinculos_ativos": 0
+      }
+    ],
+    "contextos": [
+      {
+        "clinica_ativa": false,
+        "contexto_ativo": false,
+        "id": "7fc7ca34-e9a4-4af8-8bcb-0d7e3c922701",
+        "projecao_publica": false
+      },
+      {
+        "clinica_ativa": false,
+        "contexto_ativo": false,
+        "id": "7fc7ca34-e9a4-4af8-8bcb-0d7e3c922702",
+        "projecao_publica": false
+      }
+    ],
+    "controle": {
+      "habilitado": false,
+      "homologacao_habilitada": false,
+      "id": true,
+      "protecoes_instaladas": true
+    },
+    "extensao": 0,
+    "graph": {
+      "hash": "dfa83944e7a73368d44e3ee4d2a1167c",
+      "owner": "supabase_admin"
+    },
+    "hook_acl": {
+      "anon": false,
+      "auth_admin": true,
+      "authenticated": false,
+      "service": false
+    },
+    "lista": 0,
+    "operacoes": 0,
+    "politicas": 57,
+    "rolconfig": [
+      "session_preload_libraries=supautils, safeupdate",
+      "statement_timeout=8s",
+      "lock_timeout=8s",
+      "pgrst.db_pre_request=public.acesso_direto_pre_request"
+    ],
+    "wrappers": 70
+  },
+  "servicos": [
+    {
+      "nome": "equipe-acessos",
+      "version": 10,
+      "status": "ACTIVE",
+      "verify_jwt": true
+    },
+    {
+      "nome": "equipe-recursos",
+      "version": 5,
+      "status": "ACTIVE",
+      "verify_jwt": false
+    },
+    {
+      "nome": "equipe-fichas",
+      "version": 5,
+      "status": "ACTIVE",
+      "verify_jwt": false
+    },
+    {
+      "nome": "meu-perfil",
+      "version": 4,
+      "status": "ACTIVE",
+      "verify_jwt": true
+    },
+    {
+      "nome": "equipe-acesso-direto",
+      "version": 1,
+      "status": "ACTIVE",
+      "verify_jwt": true
+    },
+    {
+      "nome": "configuracoes",
+      "version": 1,
+      "status": "ACTIVE",
+      "verify_jwt": true
+    },
+    {
+      "nome": "configuracoes-publicas",
+      "version": 1,
+      "status": "ACTIVE",
+      "verify_jwt": false
+    }
+  ],
+  "auth_hook": {
+    "projeto": "xftnkusbyqzyvzrovroj",
+    "em": "2026-10-09T10:18:27.256Z",
+    "versao": "2.120.0",
+    "scope": {
+      "present": [
+        "api",
+        "auth",
+        "database",
+        "pooler",
+        "realtime",
+        "storage"
+      ],
+      "missing": []
+    },
+    "hook": [],
+    "outros_fingerprint": "34c68685d935bff0891e37b6f3bfebf933d22526deead100507bfc3a09b21e6e",
+    "campos_outros_nao_declarados": true
+  },
+  "manifestos": [
+    {
+      "arquivo": "database/proposals/acesso-direto/manifesto.json",
+      "arquivos": 56,
+      "hashes_conferidos": true
+    },
+    {
+      "arquivo": "database/proposals/configuracoes/manifesto.json",
+      "arquivos": 59,
+      "hashes_conferidos": true
+    }
+  ],
+  "graphql": {
+    "status": 200,
+    "errors": [
+      {
+        "message": "pg_graphql extension is not enabled."
+      }
+    ],
+    "protecao_comprovada": false,
+    "versoes_disponiveis": [
+      {
+        "default_version": "1.6.1",
+        "installed_version": null,
+        "name": "pg_graphql"
+      }
+    ]
+  },
+  "segredo_gate_existe": true,
+  "servico_direto_desabilitado_http": {
+    "status": 503,
+    "codigo": "SERVICO_INDISPONIVEL"
+  },
+  "frontend_geral_habilitado": false,
+  "homologacao_completa": false,
+  "sql_aplicado": [
+    {
+      "arquivo": "supabase/migrations/20261008230100_equipe_acesso_direto_protecoes.sql",
+      "sha256": "494e712c119753a51c6f4e00487f100ef8112702e5114dda82642e93d210fd63"
+    },
+    {
+      "arquivo": "supabase/migrations/20261008213000_configuracoes_institucionais.sql",
+      "sha256": "42de41897b6a9ee9a3188ed2d04c4ae52d46c5caf9c4c751571bf151d27b69ab"
+    },
+    {
+      "arquivo": "supabase/migrations/20261008230050_configuracoes_homologacao_isolada.sql",
+      "sha256": "1c93a6852ece2fa6cd8d71ee92f5b56842fcf9848658b877d29af9fadc9371a6"
+    },
+    {
+      "arquivo": "supabase/tools/acesso-direto-proteger-configuracoes.sql",
+      "sha256": "71109f983371287c1d64c930d8812c0566800a5e41122be1def888e3062bad5a"
+    }
+  ],
+  "nao_reaplicado": "supabase/migrations/20261008230000_equipe_acesso_direto.sql",
+  "provas_conectadas": {
+    "controle_auth": [
+      {
+        "teste": "Preflight exclusivo, nenhuma reativação",
+        "aprovado": true
+      },
+      {
+        "teste": "Leitura oficial: somente dois campos de hook; anterior desligado/URI nula",
+        "aprovado": true
+      },
+      {
+        "teste": "Login real H6 antes do hook, sem e-mail",
+        "aprovado": true
+      },
+      {
+        "teste": "Meu perfil real H6 antes do hook",
+        "aprovado": true,
+        "status": 200
+      },
+      {
+        "teste": "Hook aplicado isoladamente, sem mudança de outros serviços",
+        "aprovado": true
+      },
+      {
+        "teste": "Leitura oficial pós-hook; demais campos preservados",
+        "aprovado": true
+      },
+      {
+        "teste": "Login real H6 após hook, conta sem operação preservada",
+        "aprovado": true
+      },
+      {
+        "teste": "Meu perfil real H6 após hook",
+        "aprovado": true,
+        "status": 200
+      },
+      {
+        "teste": "Refresh real H6 após hook",
+        "aprovado": true
+      },
+      {
+        "teste": "Guarda REST real H6 sem operação",
+        "aprovado": true
+      },
+      {
+        "teste": "H6 preserva exatamente Brotas/Proprietária",
+        "aprovado": true
+      }
+    ],
+    "contextos_publicos": [
+      {
+        "teste": "Criação real dos dois contextos pelo transporte --file corrigido",
+        "aprovado": true
+      },
+      {
+        "teste": "Contexto sem versão aplicada não expõe rascunho: configuracoes-homologacao-a.invalid",
+        "aprovado": true,
+        "status": 200
+      },
+      {
+        "teste": "Contexto sem versão aplicada não expõe rascunho: configuracoes-homologacao-b.invalid",
+        "aprovado": true,
+        "status": 200
+      },
+      {
+        "teste": "Seletor público indevido recusado",
+        "aprovado": true,
+        "status": 404
+      },
+      {
+        "teste": "Seletor público indevido recusado",
+        "aprovado": true,
+        "status": 404
+      },
+      {
+        "teste": "Seletor público indevido recusado",
+        "aprovado": true,
+        "status": 404
+      },
+      {
+        "teste": "Seletor público indevido recusado",
+        "aprovado": true,
+        "status": 404
+      },
+      {
+        "teste": "Serviço privado sem sessão real recusado",
+        "aprovado": true,
+        "status": 401
+      },
+      {
+        "teste": "Encerramento real dos dois contextos confirmado",
+        "aprovado": true,
+        "estados": [
+          {
+            "clinica_ativa": false,
+            "contexto_ativo": false,
+            "id": "7fc7ca34-e9a4-4af8-8bcb-0d7e3c922701",
+            "publico_encerrado": true,
+            "vinculos_ativos": 0
+          },
+          {
+            "clinica_ativa": false,
+            "contexto_ativo": false,
+            "id": "7fc7ca34-e9a4-4af8-8bcb-0d7e3c922702",
+            "publico_encerrado": true,
+            "vinculos_ativos": 0
+          }
+        ]
+      },
+      {
+        "teste": "Leitura HTTP de alias encerrado sem marca: configuracoes-homologacao-a.invalid",
+        "aprovado": true,
+        "status": 200
+      },
+      {
+        "teste": "Leitura HTTP de alias encerrado sem marca: configuracoes-homologacao-b.invalid",
+        "aprovado": true,
+        "status": 200
+      }
+    ],
+    "encerramento_complementar": {
+      "projeto": "xftnkusbyqzyvzrovroj",
+      "em": "2026-10-09T10:03:50.704Z",
+      "id": "6eea2be7-24e7-4b1f-9ae9-e6b624a7ac06",
+      "antes": {
+        "ban": true,
+        "email_ok": true,
+        "metadata_ok": true,
+        "operacoes": 0,
+        "outros_sessions": 61,
+        "perfil_inativo": true,
+        "recente": true,
+        "sessions": 2,
+        "vinculos": 0
+      },
+      "depois": {
+        "ban": true,
+        "outros_sessions": 61,
+        "perfil_inativo": true,
+        "refresh_ativos": 0,
+        "sessions": 0,
+        "vinculos": 0
+      },
+      "login_recusado": true,
+      "reativada": false,
+      "metodo": "Auth Admin updateUserById(password), ban preservado; SQL somente leitura comprova sessões/refresh",
+      "aprovado": true
+    },
+    "nao_regressao": {
+      "projeto": "xftnkusbyqzyvzrovroj",
+      "em": "2026-10-09T10:12:08.862Z",
+      "fase": "final",
+      "contas_ativas_sem_operacao": 10,
+      "leitura_vinculos_proprios": true,
+      "origem_contas_existentes": "Banco real, transação READ ONLY com claims/role emulados; não login/JWT real de conta existente",
+      "protocolos_http_reais_anonimos": [
+        {
+          "nome": "disponibilidade",
+          "status": 401,
+          "resposta_preservada": true
+        },
+        {
+          "nome": "sessao_anonima",
+          "status": 200,
+          "resposta_preservada": true
+        },
+        {
+          "nome": "clinicas_publicas",
+          "status": 200,
+          "resposta_preservada": true
+        },
+        {
+          "nome": "graphql",
+          "status": 200,
+          "resposta_preservada": true
+        }
+      ],
+      "config": [
+        "session_preload_libraries=supautils, safeupdate",
+        "statement_timeout=8s",
+        "lock_timeout=8s",
+        "pgrst.db_pre_request=public.acesso_direto_pre_request"
+      ]
+    }
+  },
+  "limites": [
+    "Sem prova real de contas pendentes/primeira troca/sessão temporária antiga",
+    "Sem homologação privada/upload/persistência Configurações",
+    "Sem GraphQL funcional/ativação de extensão",
+    "Sem frontend habilitado/commit/push/deploy"
+  ],
+  "recuperacao_pre_request": "database/proposals/acesso-direto/RECUPERACAO-ESTADO-ANTERIOR-20261009.sql"
+}

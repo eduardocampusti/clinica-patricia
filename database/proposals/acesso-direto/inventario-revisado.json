@@ -1,0 +1,1042 @@
+{
+  "projeto": "xftnkusbyqzyvzrovroj",
+  "data": "2026-10-08",
+  "somente_leitura": true,
+  "hash_tabelas": "dc6f0d326c589446b7e94e0935ab6c77",
+  "hash_funcoes": "4f83ca78e5f8499a576c3859d4b11b8a",
+  "tabelas": [
+    {
+      "anon_select": true,
+      "auth_select": true,
+      "nome": "agenda_excecoes",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": true,
+      "auth_select": true,
+      "nome": "agendamentos",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": false,
+      "auth_select": true,
+      "nome": "ajustes_repasse",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": false,
+      "auth_select": true,
+      "nome": "aplicacoes_ajuste_repasse",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": false,
+      "auth_select": false,
+      "nome": "atendimentos",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": false,
+      "auth_select": false,
+      "nome": "atendimentos_adendos",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": true,
+      "auth_select": true,
+      "nome": "auditoria",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": false,
+      "auth_select": true,
+      "nome": "auditoria_leitura_clinica",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": true,
+      "auth_select": true,
+      "nome": "clinicas",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": false,
+      "auth_select": true,
+      "nome": "configuracoes_alertas_financeiros",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": false,
+      "auth_select": true,
+      "nome": "configuracoes_financeiras_clinica",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": true,
+      "auth_select": true,
+      "nome": "disponibilidade_padrao",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": false,
+      "auth_select": false,
+      "nome": "documentos_clinicos",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": false,
+      "auth_select": true,
+      "nome": "documentos_fiscais",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": true,
+      "auth_select": true,
+      "nome": "entradas_caixa",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": false,
+      "auth_select": false,
+      "nome": "equipe_acesso_convites",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": false,
+      "auth_select": false,
+      "nome": "equipe_documento_tentativas",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": false,
+      "auth_select": false,
+      "nome": "equipe_documentos",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": false,
+      "auth_select": false,
+      "nome": "equipe_ficha_eventos",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": false,
+      "auth_select": false,
+      "nome": "equipe_fotos",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": false,
+      "auth_select": false,
+      "nome": "equipe_idempotencia",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": false,
+      "auth_select": false,
+      "nome": "equipe_membros",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": false,
+      "auth_select": false,
+      "nome": "equipe_membros_clinicas",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": false,
+      "auth_select": false,
+      "nome": "equipe_ocupacional_autorizacoes",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": false,
+      "auth_select": false,
+      "nome": "equipe_registro_versoes",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": false,
+      "auth_select": false,
+      "nome": "equipe_registros",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": true,
+      "auth_select": true,
+      "nome": "especialidades",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": false,
+      "auth_select": true,
+      "nome": "estornos",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": false,
+      "auth_select": true,
+      "nome": "estornos_pagamentos",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": false,
+      "auth_select": true,
+      "nome": "eventos_auditoria_financeira",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": false,
+      "auth_select": true,
+      "nome": "fechamentos_caixa",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": true,
+      "auth_select": true,
+      "nome": "lista_espera",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": false,
+      "auth_select": true,
+      "nome": "movimentos_caixa",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": true,
+      "auth_select": true,
+      "nome": "pacientes",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": false,
+      "auth_select": false,
+      "nome": "pacientes_responsaveis_legais",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": true,
+      "auth_select": true,
+      "nome": "profissionais",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": true,
+      "auth_select": true,
+      "nome": "profissionais_clinicas",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": false,
+      "auth_select": false,
+      "nome": "profissionais_recebimento",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": false,
+      "auth_select": true,
+      "nome": "recebimentos",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": false,
+      "auth_select": true,
+      "nome": "recebimentos_pagamentos",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": false,
+      "auth_select": true,
+      "nome": "repasses",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": false,
+      "auth_select": true,
+      "nome": "repasses_itens",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": false,
+      "auth_select": true,
+      "nome": "revisoes_fechamento_caixa",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": false,
+      "auth_select": true,
+      "nome": "sangrias_caixa",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": true,
+      "auth_select": true,
+      "nome": "servicos",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": false,
+      "auth_select": true,
+      "nome": "sessoes_caixa",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": false,
+      "auth_select": true,
+      "nome": "tentativas_documento_fiscal",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": true,
+      "auth_select": true,
+      "nome": "usuarios",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": true,
+      "auth_select": true,
+      "nome": "usuarios_clinicas",
+      "opcoes": null,
+      "rls": true,
+      "schema": "public",
+      "tipo": "r"
+    },
+    {
+      "anon_select": true,
+      "auth_select": true,
+      "nome": "buckets",
+      "opcoes": null,
+      "rls": true,
+      "schema": "storage",
+      "tipo": "r"
+    },
+    {
+      "anon_select": true,
+      "auth_select": true,
+      "nome": "objects",
+      "opcoes": null,
+      "rls": true,
+      "schema": "storage",
+      "tipo": "r"
+    }
+  ],
+  "rpcs": [
+    {
+      "assinatura": "abrir_prontuario(uuid)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "1a9173aae53ef3b371c4faf412aafd76",
+      "linguagem": "plpgsql",
+      "volatilidade": "v"
+    },
+    {
+      "assinatura": "adicionar_adendo_prontuario(uuid,text)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "4dd9a1cc2f82bb1f501ad86bb48bd5a5",
+      "linguagem": "plpgsql",
+      "volatilidade": "v"
+    },
+    {
+      "assinatura": "cadastrar_profissional(text,text,text,text,uuid,uuid,numeric,numeric,integer)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "387de8d7a0b44e4c8ca4f7bef6f69603",
+      "linguagem": "plpgsql",
+      "volatilidade": "v"
+    },
+    {
+      "assinatura": "clinicas_do_usuario()",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "486387ebd37a0b32da96c6f7786c45fc",
+      "linguagem": "sql",
+      "volatilidade": "s"
+    },
+    {
+      "assinatura": "cpf_decrypt(bytea)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "9f368f643b3f2d003208fb19da08026f",
+      "linguagem": "sql",
+      "volatilidade": "s"
+    },
+    {
+      "assinatura": "cpf_encrypt(text)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "52bbc860a0625d8f44b70213c9d7d85e",
+      "linguagem": "plpgsql",
+      "volatilidade": "v"
+    },
+    {
+      "assinatura": "cpf_hash(text)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "85a83bdfea4f42334962fcb6a8551efb",
+      "linguagem": "plpgsql",
+      "volatilidade": "s"
+    },
+    {
+      "assinatura": "criar_documento_prontuario(uuid,tipo_documento_clinico,text)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "7a5a5db865b3b013d98f632a18e6fb60",
+      "linguagem": "plpgsql",
+      "volatilidade": "v"
+    },
+    {
+      "assinatura": "eh_proprietaria_alguma()",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "8a8e6a9f38f51ec3c6c890ce001d3414",
+      "linguagem": "sql",
+      "volatilidade": "s"
+    },
+    {
+      "assinatura": "eh_proprietaria_de_profissional(uuid)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "762f8fbeb7302b79776eaa856596a23f",
+      "linguagem": "sql",
+      "volatilidade": "s"
+    },
+    {
+      "assinatura": "eh_proprietaria_ou_recepcao(uuid)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "d8bd6444ab8b445422c7cc338a75ca83",
+      "linguagem": "sql",
+      "volatilidade": "s"
+    },
+    {
+      "assinatura": "eh_proprietaria(uuid)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "eb8991783b32e88d8cd4377104004f1c",
+      "linguagem": "sql",
+      "volatilidade": "s"
+    },
+    {
+      "assinatura": "equipe_atuacao_horarios_salvar(uuid,uuid,jsonb,jsonb)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "d4de0033d910f03b1472439946e72e76",
+      "linguagem": "plpgsql",
+      "volatilidade": "v"
+    },
+    {
+      "assinatura": "equipe_atuacao_obter(uuid,uuid)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "b3968e9c99dda6aa52b4e25d68af6863",
+      "linguagem": "plpgsql",
+      "volatilidade": "s"
+    },
+    {
+      "assinatura": "equipe_atuacao_salvar(uuid,uuid,text,numeric,timestamp with time zone)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "f7d71e8a865f27032b2105a81a57db2b",
+      "linguagem": "plpgsql",
+      "volatilidade": "v"
+    },
+    {
+      "assinatura": "equipe_detalhar(uuid,uuid)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "af58707a621330d5ce0be5b1e43f9a04",
+      "linguagem": "plpgsql",
+      "volatilidade": "s"
+    },
+    {
+      "assinatura": "equipe_foto_autorizar(uuid,uuid,boolean)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "ec98827181d14809e81c611f90bed3b7",
+      "linguagem": "plpgsql",
+      "volatilidade": "s"
+    },
+    {
+      "assinatura": "equipe_foto_objeto_autorizado(text)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "9cb0e745cd8fd19ec02242cac7382435",
+      "linguagem": "plpgsql",
+      "volatilidade": "s"
+    },
+    {
+      "assinatura": "equipe_fotos_listar(uuid)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "1a17fd3d70f3005205633e51d36ec1bf",
+      "linguagem": "plpgsql",
+      "volatilidade": "s"
+    },
+    {
+      "assinatura": "equipe_listar(uuid)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "7332baa82b3f2bb2e019243f8c89e4c4",
+      "linguagem": "plpgsql",
+      "volatilidade": "s"
+    },
+    {
+      "assinatura": "equipe_pode_editar_profissional_global(uuid)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "466ff56d14a4e76c392200d8081bd953",
+      "linguagem": "sql",
+      "volatilidade": "s"
+    },
+    {
+      "assinatura": "equipe_recebimento_obter(uuid,uuid)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "51706d71920c761982299801d2caefa8",
+      "linguagem": "plpgsql",
+      "volatilidade": "s"
+    },
+    {
+      "assinatura": "equipe_salvar(uuid,uuid,integer,jsonb,uuid)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "065768c63b494642424a61e12c46e350",
+      "linguagem": "plpgsql",
+      "volatilidade": "v"
+    },
+    {
+      "assinatura": "finalizar_atendimento_seguro(uuid,text,text,text,text,text,text,text)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "6045b79ec20d49a559fda67b9a1132a6",
+      "linguagem": "plpgsql",
+      "volatilidade": "v"
+    },
+    {
+      "assinatura": "financeiro_abrir_caixa(uuid,numeric,text)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "f42efd0a166d8ab6269b7b52572bab99",
+      "linguagem": "plpgsql",
+      "volatilidade": "v"
+    },
+    {
+      "assinatura": "financeiro_configurar_alertas(uuid,jsonb)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "62435ce0550ae1f7b87a403197d8e281",
+      "linguagem": "plpgsql",
+      "volatilidade": "v"
+    },
+    {
+      "assinatura": "financeiro_confirmar_repasse(uuid,text,text,text,text)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "461e892522705359983e83ef9ff73c23",
+      "linguagem": "plpgsql",
+      "volatilidade": "v"
+    },
+    {
+      "assinatura": "financeiro_dashboard_profissional(timestamp with time zone,timestamp with time zone,uuid,text)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "10dc9efb5fd516d947714b3f551b05f1",
+      "linguagem": "plpgsql",
+      "volatilidade": "s"
+    },
+    {
+      "assinatura": "financeiro_dashboard_proprietaria(timestamp with time zone,timestamp with time zone,uuid,uuid,uuid,text,text,text,text,text)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "361be8fa7baceeb9e1b010421f6b216a",
+      "linguagem": "plpgsql",
+      "volatilidade": "s"
+    },
+    {
+      "assinatura": "financeiro_efetivar_sangria(uuid)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "fb4d1430817780154d5ac482551c9098",
+      "linguagem": "plpgsql",
+      "volatilidade": "v"
+    },
+    {
+      "assinatura": "financeiro_enviar_fechamento(uuid,numeric,text,text)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "8142237900851e47e6a05c01aef70cec",
+      "linguagem": "plpgsql",
+      "volatilidade": "v"
+    },
+    {
+      "assinatura": "financeiro_iniciar_fechamento(uuid)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "7276b0e3cb8204704669379c37feb4dd",
+      "linguagem": "plpgsql",
+      "volatilidade": "v"
+    },
+    {
+      "assinatura": "financeiro_registrar_recebimento(uuid,jsonb,text)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "43c6e185df78f46adf3c04e75b432d8b",
+      "linguagem": "plpgsql",
+      "volatilidade": "v"
+    },
+    {
+      "assinatura": "financeiro_registrar_solicitacao_exportacao(text,text,text,timestamp with time zone,timestamp with time zone,uuid,jsonb)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "1ed5a840b920e6316163e6d991fc9c2c",
+      "linguagem": "plpgsql",
+      "volatilidade": "v"
+    },
+    {
+      "assinatura": "financeiro_registrar_suprimento(uuid,numeric,text,text)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "e4a3e6263da6a2ed4f543601276a64f1",
+      "linguagem": "plpgsql",
+      "volatilidade": "v"
+    },
+    {
+      "assinatura": "financeiro_relatorio_fiscal_proprietaria(timestamp with time zone,timestamp with time zone,uuid,uuid,uuid,text,text,text,text,integer,timestamp with time zone,uuid,text)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "a2ee07525b3277410530fdc3c567ebbe",
+      "linguagem": "plpgsql",
+      "volatilidade": "s"
+    },
+    {
+      "assinatura": "financeiro_relatorio_recebimentos_profissional(timestamp with time zone,timestamp with time zone,uuid,text,text,text,integer,timestamp with time zone,uuid,text)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "c2843652cbf7525322eb1db2b16b24fa",
+      "linguagem": "plpgsql",
+      "volatilidade": "s"
+    },
+    {
+      "assinatura": "financeiro_relatorio_recebimentos_proprietaria(timestamp with time zone,timestamp with time zone,uuid,uuid,uuid,text,text,text,text,integer,timestamp with time zone,uuid,text)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "2dbb8e54c73512b65a7cc05e9116a816",
+      "linguagem": "plpgsql",
+      "volatilidade": "s"
+    },
+    {
+      "assinatura": "financeiro_relatorio_repasses_profissional(timestamp with time zone,timestamp with time zone,uuid,text,text,text,integer,timestamp with time zone,uuid,text)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "2cc39236e63ef5550c8afe2ddb7d6d13",
+      "linguagem": "plpgsql",
+      "volatilidade": "s"
+    },
+    {
+      "assinatura": "financeiro_relatorio_repasses_proprietaria(timestamp with time zone,timestamp with time zone,uuid,uuid,text,text,text,integer,timestamp with time zone,uuid,text)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "a91d5de6758608d15eac3a7f83e92776",
+      "linguagem": "plpgsql",
+      "volatilidade": "s"
+    },
+    {
+      "assinatura": "financeiro_resumo_caixa(uuid)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "83b5ba2e08679433ce76cd45cfc110e5",
+      "linguagem": "plpgsql",
+      "volatilidade": "s"
+    },
+    {
+      "assinatura": "financeiro_revisar_estorno(uuid,text,text)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "f3cecbadf7f0a129e4524c7227a74013",
+      "linguagem": "plpgsql",
+      "volatilidade": "v"
+    },
+    {
+      "assinatura": "financeiro_revisar_fechamento(uuid,text,text)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "e8cadc7d5715ce1030b7a017ef298a5c",
+      "linguagem": "plpgsql",
+      "volatilidade": "v"
+    },
+    {
+      "assinatura": "financeiro_revisar_sangria(uuid,text,text)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "8c06fa4a5cd6a63923738deac1c0badd",
+      "linguagem": "plpgsql",
+      "volatilidade": "v"
+    },
+    {
+      "assinatura": "financeiro_solicitar_cancelamento_fiscal(uuid,text,text)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "c95ccb063682c3861afd926ac8c9dc0d",
+      "linguagem": "plpgsql",
+      "volatilidade": "v"
+    },
+    {
+      "assinatura": "financeiro_solicitar_emissao_fiscal(uuid,text)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "ecbe5743ad3ced8606bc37d514d71bcc",
+      "linguagem": "plpgsql",
+      "volatilidade": "v"
+    },
+    {
+      "assinatura": "financeiro_solicitar_estorno(uuid,jsonb,text,text)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "44e750bd4ca115365056a72e65718b29",
+      "linguagem": "plpgsql",
+      "volatilidade": "v"
+    },
+    {
+      "assinatura": "financeiro_solicitar_sangria(uuid,numeric,text,text)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "7e381e8f577ffd347602bc4e5c28e46d",
+      "linguagem": "plpgsql",
+      "volatilidade": "v"
+    },
+    {
+      "assinatura": "graphql_public.graphql(text,text,jsonb,jsonb)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "dfa83944e7a73368d44e3ee4d2a1167c",
+      "linguagem": "plpgsql",
+      "volatilidade": "v"
+    },
+    {
+      "assinatura": "iniciar_atendimento_agendado(uuid,uuid)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "77b00aa66a590a87a2c076483965843b",
+      "linguagem": "plpgsql",
+      "volatilidade": "v"
+    },
+    {
+      "assinatura": "iniciar_atendimento_avulso(uuid,uuid)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "89d0e8205535c8068b222525f2dc2f8f",
+      "linguagem": "plpgsql",
+      "volatilidade": "v"
+    },
+    {
+      "assinatura": "listar_atendimentos_prontuario(uuid)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "4511803f3b1ce9854ab63de971315250",
+      "linguagem": "plpgsql",
+      "volatilidade": "s"
+    },
+    {
+      "assinatura": "meu_perfil_consultar()",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "392daa68184a578faa23449b93b85d0e",
+      "linguagem": "plpgsql",
+      "volatilidade": "v"
+    },
+    {
+      "assinatura": "paciente_buscar_por_cpf(uuid,text)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "c3396f7029e58759c5b96f5fde0c262e",
+      "linguagem": "plpgsql",
+      "volatilidade": "s"
+    },
+    {
+      "assinatura": "paciente_corrigir_cpf(uuid,uuid,timestamp with time zone,text,text)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "61c83131677fefa653b709bb06ed180d",
+      "linguagem": "plpgsql",
+      "volatilidade": "v"
+    },
+    {
+      "assinatura": "paciente_cpf_pendente(uuid,uuid)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "a4897ce3d887f4e0ce9e4c247f715963",
+      "linguagem": "plpgsql",
+      "volatilidade": "s"
+    },
+    {
+      "assinatura": "paciente_definir_cpf(uuid,uuid,text)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "34767b5f0892c030af1cc9546e4863ee",
+      "linguagem": "plpgsql",
+      "volatilidade": "v"
+    },
+    {
+      "assinatura": "paciente_definir_foto(uuid,uuid,text)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "9434bd971c074c3b17abd2871f8a491a",
+      "linguagem": "plpgsql",
+      "volatilidade": "v"
+    },
+    {
+      "assinatura": "paciente_editar_administrativo(uuid,uuid,timestamp with time zone,jsonb,jsonb)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "48d137ce474245bc0eb0eaa191a8955b",
+      "linguagem": "plpgsql",
+      "volatilidade": "v"
+    },
+    {
+      "assinatura": "paciente_foto_objeto_autorizado(text)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "1568b3520d5594a9435e9e03002f9927",
+      "linguagem": "plpgsql",
+      "volatilidade": "s"
+    },
+    {
+      "assinatura": "paciente_ler_cpf(uuid,uuid)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "0f3af45b08c4f3c2cc8db449a1b259ce",
+      "linguagem": "plpgsql",
+      "volatilidade": "s"
+    },
+    {
+      "assinatura": "paciente_menor_criar_com_responsavel(uuid,text,date,text,text,text,text,text,text,text,text,text,text,text,jsonb)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "2a06ba2a67675fececd8e0a12f28a3ed",
+      "linguagem": "plpgsql",
+      "volatilidade": "v"
+    },
+    {
+      "assinatura": "paciente_menor_criar_com_responsavel(uuid,text,date,text,text,text,text,text,text,text,text,text,text,text)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "973290cea4eac4d8d3d0b39492e1e8f1",
+      "linguagem": "plpgsql",
+      "volatilidade": "v"
+    },
+    {
+      "assinatura": "paciente_obter_foto(uuid,uuid)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "47ab91f848ce0b676dcb10c5eac592d5",
+      "linguagem": "plpgsql",
+      "volatilidade": "s"
+    },
+    {
+      "assinatura": "paciente_remover_foto(uuid,uuid)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "8692d0035aa6ab6d7071c74d938a6ae7",
+      "linguagem": "plpgsql",
+      "volatilidade": "v"
+    },
+    {
+      "assinatura": "paciente_responsavel_legal_resumo(uuid,uuid)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "7b76b14f434da19b69ff09e0abb21b9f",
+      "linguagem": "plpgsql",
+      "volatilidade": "s"
+    },
+    {
+      "assinatura": "pode_ler_auditoria_atendimento(uuid)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "e82a24d9388297fb0e6c4ef2c0ac1e10",
+      "linguagem": "sql",
+      "volatilidade": "s"
+    },
+    {
+      "assinatura": "salvar_rascunho_atendimento(uuid,text,text,text,text,text,text,text)",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "746d740578ea6d988654b3fada8130d4",
+      "linguagem": "plpgsql",
+      "volatilidade": "v"
+    },
+    {
+      "assinatura": "usuario_tem_vinculo_ativo()",
+      "compativel": true,
+      "corpo_reconhecido": true,
+      "hash_anterior": "7f8785235f19b1a6b15fa4a35c1c7063",
+      "linguagem": "sql",
+      "volatilidade": "s"
+    }
+  ],
+  "buckets": [
+    {
+      "id": "contas-fotos",
+      "publico": false
+    },
+    {
+      "id": "equipe-documentos",
+      "publico": false
+    },
+    {
+      "id": "equipe-fotos",
+      "publico": false
+    },
+    {
+      "id": "pacientes-fotos",
+      "publico": false
+    }
+  ],
+  "schemas_api_nao_confirmados": true,
+  "hook_atual_nao_lido": true
+}

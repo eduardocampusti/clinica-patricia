@@ -1,0 +1,144 @@
+# Configurações — índice
+
+## Retomada após dashboard manual —09/10/2026,11:27 -03
+
+Titular conciliou dashboard B/I manualmente. MCP oficial reconferiu encerramento
+e ausência R2 por leitura real; Computer Use falhou antes da sessão do criador.
+Nenhuma aplicação/migration/Edge/conta/contexto consumida nesta retomada, sem
+commit/push/deploy. [Estado, provas e ação mínima](18-APLICACAO-GUARDA-E-SEQUENCIA-AUTORIZADA.md).
+
+## Retomada18: leitura real e R2 aprovada, sem consumo — 09/10/2026,08:09 -03 (America/Bahia)
+
+Alvo exclusivo xftnkusbyqzyvzrovroj.20 conferências conectadas de catálogo/HTTP anônimo passaram; encerramento reconferido08:08:53:3 contas banidas,0 sessões/refresh/vínculos ativos;2 contextos fechados;0 contas/contextos R2. Não prova fluxo autenticado completo. Kernel do navegador falhou antes das abas; reset/teste mínimo também falhou, inclusive após liberar artefato próprio. Nenhuma sessão legítima do criador/Brotas/Ipupiara obtida. Titular autorizou uma única ampliação2 contas/2 contextos (máximo acumulado10/4), migration restrita e somente Edge pública, condicionada a comprovar primeiro o criador; não repetir autorização. Pacote R2 local preparado,10 contratos SQL sintéticos/6 hosts/build passaram; banco descartável removido/cluster existente preservado. Artefato compilado próprio removido por falta de espaço; fontes originais preservadas. R2 não aplicada/criada. GraphQL segue ausente, não prova autorização; sem dependência encontrada nos fluxos atuais, não é isoladamente motivo para instalar. Ambos recursos bloqueados por provas autenticadas/interface pendentes. Próxima ação: após finalizar outros chats, titular fecha/reabre Codex e mantém/abre aplicação com sessão autorizada pela interface, sem enviar credenciais; conferir kernel/criador antes de consumir recursos. Nada remoto reaplicado, sem e-mails/contas reais/Geovana/habilitação geral/commit/push/frontend deploy. Branch codex/equipe-fase2-2026-10-07/HEAD ad493861, alterações não commitadas.
+[Requisitos/testes/evidências, fixtures, aprovação e impedimento concreto](18-APLICACAO-GUARDA-E-SEQUENCIA-AUTORIZADA.md).
+
+
+## Aplicação real concluída; homologação parcial e fixtures encerradas — 09/10/2026, 07:16 -03 (America/Bahia)
+
+Estado atual: SQL, sete serviços e hook aplicados; homologação parcial. Três contas e dois contextos encerrados, criação geral/frontend desligados. GraphQL funcional, fluxo direto e homologação privada permanecem pendentes. As fotografias anteriores abaixo são históricas, não autorização pendente do pre-request.
+[Execução, falhas corrigidas, provas e operações pendentes](18-APLICACAO-GUARDA-E-SEQUENCIA-AUTORIZADA.md).
+
+
+## Correção GraphQL preparada; aplicação recusada — 09/10/2026,06:15 -03
+
+MCP exclusivo confirmado no alvo xftnkusbyqzyvzrovroj; CLI/fingerprints confirmam230000 instalada e230100 sem efeitos. SQL230100 corrigida localmente: GraphQL gerenciada intacta,68 wrappers/51 RLS e pre-request global suportado. Nove grupos SQL e sequência/isolamento Configurações locais passaram; não homologação Auth real. Ferramenta recusou antes de executar por alcance global novo do db_pre_request/authenticator; aprovação específica apresentada ao titular, autorização conjunta anterior preservada. Não contornada por MCP/CLI alternativo. HTTP real GraphQL:4 respostas200 com errors de extensão já ausente, sem dados; testes funcionais pendentes. Flags false, serviços8/3/3/2, zero novas contas/contextos/operações/lista; nada fictício a encerrar. Sem backend remoto novo, Auth, contas reais/dados clínicos, e-mails, frontend, commit/push/deploy. Branch codex/equipe-fase2-2026-10-07/HEAD ad493861, não commitado. Próximo: aprovação específica da configuração global e retomar230100; nunca230000.
+[Causa, SQL exato, recuperação, provas e bloqueio atual](17-CORRECAO-GRAPHQL-E-GATE-DE-APLICACAO.md).
+
+
+## Complemento manual e execução conferida — 08/10/2026,23:15 -03
+
+Password changed/CAPTCHA desligados informados pelo titular às22h58/22h59, sem salvar; provedor não exibido. Reuse/MFA não conferidos. CLI desta sessão confirma230000 instalada,230100 sem efeitos, bloqueio42501 por objeto GraphQL de supabase_admin não alterável pelo operador postgres. Execução compartilhada preservada, sem reaplicar/mudar SQL. Zero fixtures/operações/lista, flags false, serviços anteriores8/3/3/2 idênticos. Nenhuma escrita remota nesta sessão ou nova prova funcional; autorização vigente.
+[Resultado conjunto e retomada concreta](16-APLICACAO-E-HOMOLOGACAO-CONJUNTA.md).
+
+
+## Aplicação e interrupção efetivas — 08/10/2026,23:10 -03
+
+[Configurações16](16-APLICACAO-E-HOMOLOGACAO-CONJUNTA.md):230000 aplicada, controle
+false;230100 falhou42501 ao substituir GraphQL de owner supabase_admin. Rollback
+confirmado, nenhuma cobertura parcial; não antecipar Configurações nem reaplicar230000.
+Nenhum serviço/hook/conta/contexto novo, nada a encerrar; frontend não liberado.
+Auth manual recebido inclusive Password changed/CAPTCHA desligados; não falta novo
+campo manual para este bloqueio. Complemento de autoridade e diagnóstico preparados.
+
+## Leitura manual recebida — 08/10/2026,23:01 -03
+
+Dados do painel fornecidos pelo titular, conferência22:35–22:53 de08/10 no alvo permitido, registrados integralmente como evidência manual. Hooks vazios/schemas compatíveis nessa fotografia; quatro campos não conferidos preservados. Só Password changed e CAPTCHA/possível provedor indispensáveis à execução sem envios/login preparados, solicitados pela interface. Reuse/MFA não pedidos agora nem presumidos. Autorização vigente, nenhuma escrita remota nesta sessão, frontend/geral false.
+[Valores, distinção de evidência e próximo retorno mínimo](15-LEITURA-MANUAL-AUTH-DATA-API.md).
+
+
+Atualização22:36: supabase-clinica-patricia criado separado, restrito ao projeto
+permitido e OAuth concluído. Geovana preservada/definição idêntica. Ferramentas não
+carregadas na conversa; GET Auth Management não disponível. Coleta manual atual
+mínima solicitada, aguardando valores; nenhum backend/conta/contexto aplicado.
+[Conexão efetiva e instruções para destravar](15-LEITURA-MANUAL-AUTH-DATA-API.md).
+
+## Canal de leitura e orientação manual — 08/10/2026,22:32 -03
+
+Autorização conjunta vigente, sem nova confirmação. Nenhum instrumento Supabase do projeto permitido nesta conversa; catálogo installed=false/MCP local de outro projeto preservado. Navegador não repetido. Documentação oficial consultada e rota GET Data API corrigida para /postgrest. Guia concreto de telas/campos preparado; configurações privadas não lidas, homologação não iniciada. Zero escrita/contas/contextos/Auth/serviços; frontend/geral false.
+[Campos e retorno manual](15-LEITURA-MANUAL-AUTH-DATA-API.md).
+
+
+Retomada22:21-03: instalação/conexão informadas, mas ferramentas Supabase ainda
+não expostas nesta conversa. CLI reconfirma projeto permitido; MCP local reconhecido
+é de outro projeto e foi preservado. GET Auth/hooks ainda indisponível; nenhum
+backend aplicado. [Resultado e distinção entre instalação e capacidade](14-EXECUCAO-CONJUNTA-HOMOLOGACAO.md).
+
+## Execução conjunta autorizada — 08/10/2026,22:15 -03
+
+[Resultado conectado e impedimento da leitura de Auth](14-EXECUCAO-CONJUNTA-HOMOLOGACAO.md).
+Autorização adicional do plano13 concedida pelo titular; não solicitá-la novamente.
+Catálogo51/69 compatível, manifestos54/59 íntegros e quatro fontes publicadas anteriores
+preservadas. API serve public/graphql_public. Hook/config privada Auth ainda não
+obtidos: navegador falhou ao iniciar e CLI não oferece leitura dessa configuração.
+Conector oficial Supabase localizado, não conectado. Interrupção na etapa0 antes
+de qualquer escrita; zero migrações/serviços/contas/contextos aplicados/criados.
+Oito contas/dois contextos não existem nesta homologação; nada novo a encerrar.
+Provas funcionais conectadas/recuperação Auth pendentes; frontend não liberado.
+Histórico abaixo preservado; próximas operações mantêm a autorização vigente.
+
+## Preparação conjunta concluída — 08/10/2026, 21:02 -03:00
+
+[Plano único atual: ordem, isolamento, contas, gates e autorização adicional](13-SEQUENCIA-CONJUNTA-E-ISOLAMENTO.md).
+Proteção única preservada na migração completa de acesso direto, controle geral
+false. Ordem seletiva:230000 →230100 →213000 →230050 →adendo6/2; nenhuma aplicada.
+Dois contextos fixos/aliases .invalid/prazo24h preparados, sem criação remota,
+sem substituir fonte/identidade real ou ativar Ibitiara. Publicação/leitura usam
+os mesmos serviços; padrão e ativos gerais reais não são herdados nas fixtures.
+SQL completo e operações concretas passaram em PostgreSQL local sintético,
+três testes de hosts, tipos/backend/bancada e build dirigido aprovados.
+Bancada Login/Configurações real sem mocks compilada, ainda sem prova conectada.
+Revisão coordenada Equipe40 preservada; total proposto8 contas novas sem e-mails.
+Auth/hook/schemas externos ainda precisam de leitura oficial antes da escrita.
+Flags frontend false, sem conta/contexto remoto/commit/push/deploy.
+O preflight abaixo é histórico; dependências ausentes foram preparadas localmente.
+
+## Conferência conectada atual — 08/10/2026, 20:17 -03:00
+
+Aplicação/homologação autorizadas somente em xftnkusbyqzyvzrovroj, incluindo mínimo
+de novas contas fictícias sem e-mail e vínculos temporários Brotas/Ipupiara.
+CLI oficial autenticada funcionou. Catálogos confirmaram ausência dos cinco
+objetos institucionais, 14 colunas, bucket/serviços e RPC obrigatória de primeiro
+acesso; aplicação interrompida antes de escrever. Dependência separada preservada,
+sem aplicar acesso direto ou retirar guarda. Contexto de aplicação/leitura pública
+fictícia isolado também não existe; não substituir identidade/dados reais.
+Zero contas/vínculos/sessões criados, nenhuma mudança remota, flags false.
+PDF revisado aprovado externamente pelo titular nas três páginas; sem nova estética.
+[Resultado conectado, recuperação, operações e limites](12-HOMOLOGACAO-CONECTADA-PREFLIGHT.md).
+Próximo: resolver a dependência na etapa própria e preparar isolamento dos testes;
+retomar a autorização de Configurações já registrada. Frontend não liberado.
+
+Integração local 08/10/2026: serviço autenticado recebeu guarda proposta do acesso
+direto da Equipe. Requer RPC de proteção antes de implantação; não aplicado.
+Projeção pública, regras institucionais e revisão simultânea do PDF preservadas.
+[Dependência e testes Equipe39](../equipe/39-ACESSO-DIRETO-SENHA-TEMPORARIA.md).
+
+
+Estado: IMPLEMENTAÇÃO LOCAL VERIFICADA em 08/10/2026; backend preparado, não aplicado.
+Revisão de continuação: fontes incorporadas, medidas corrigidas, prévia automática
+controlada, avisos curtos e conflitos de fonte oficial preparados. Sem ativação remota.
+
+- [Documento funcional aprovado pelo pedido](01-DOCUMENTO-FUNCIONAL-MESTRE.md).
+- [Implementação, dependências e homologação](06-ARQUITETURA-TECNICA.md).
+- [Checkpoint e evidências](08-CHECKPOINT.md).
+- [Relatório de entrega, arquivos e limitações](09-RELATORIO-IMPLEMENTACAO.md).
+- [Revisão atual do PDF, experiência e backend](10-REVISAO-PDF-EXPERIENCIA-BACKEND.md).
+- [Homologação conectada, contas necessárias e operações/impactos](11-ROTEIRO-HOMOLOGACAO-CONFIGURACOES.md).
+
+Abrir no sistema local: menu Configurações, abaixo de Equipe, com Proprietário(a)
+da unidade autorizada. Rota `/sistema/brotas/configuracoes` ou
+`/sistema/ipupiara/configuracoes`. Requer sessão existente; nenhuma conta de teste
+deve ser reativada. Backend ainda desligado em `src/lib/configuracoes.ts`:
+consulta o recorte oficial já existente de `clinicas`, permite editar/prévia,
+informa campos novos não consultáveis e mantém operações persistentes indisponíveis.
+Prévia A4 acompanha a apresentação após pausa de 500 ms e usa dados fictícios;
+Gerar PDF de demonstração/Baixar são ações explícitas. PDF revisado em
+`output/pdf/demonstracao-configuracoes-revisada.pdf`, três páginas com Noto Sans
+normal/negrito incorporadas. Relato do leitor externo não reproduzido em Poppler/PDFium.
+Ativação depende também da guarda de primeiro acesso da etapa separada de acesso direto.
+
+Demonstração separada: `node scripts/preview-configuracoes.mjs`, depois abrir
+`http://127.0.0.1:4193/tests/configuracoes/preview.html`. Dados fictícios, operações
+em memória, sem sessão/servidor reais; F5 apaga o estado. Não comprova persistência.
+
+Escopo atual não ativa laboratório, Ibitiara, emissores clínicos, assinatura digital,
+serviços financeiros ou operações de conta. Não houve commit, push ou publicação.

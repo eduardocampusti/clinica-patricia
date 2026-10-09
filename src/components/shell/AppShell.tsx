@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import type { ClinicaAtiva } from '../../hooks/useClinicaAtiva'
 import type { Papel } from '../../hooks/usePapelNaClinica'
 import { ThemeToggle } from '../../theme/ThemeToggle'
@@ -10,6 +10,8 @@ import type { IdentidadeConta } from '../../hooks/useIdentidadeConta'
 import { AvatarConta } from './AvatarConta'
 import { detalheIdentidade, rotuloIdentidade } from '../../lib/identidadeApresentacao'
 import { MeuPerfil } from '../perfil/MeuPerfil'
+import { useMarcaInstitucional } from '../../hooks/useMarcaInstitucional'
+import { useTheme } from '../../theme/ThemeProvider'
 
 interface AppShellProps {
   tela: Tela
@@ -38,6 +40,16 @@ function AppShell({
 }: AppShellProps) {
   const [perfilAberto, setPerfilAberto] = useState(false)
   const abrirPerfil = () => { identidade.reconsultar?.(); setPerfilAberto(true) }
+  const marcaInstitucional = useMarcaInstitucional(clinicaAtiva?.id ?? null)
+  const { aplicarCoresClinica } = useTheme()
+  useEffect(()=>{
+    if(!clinicaAtiva||!marcaInstitucional.snapshot)return
+    aplicarCoresClinica({...clinicaAtiva,cor_primaria:marcaInstitucional.apresentacao.cor})
+    const favicon=marcaInstitucional.snapshot.ativos[marcaInstitucional.apresentacao.favicon]
+    if(!favicon)return
+    const link=document.createElement('link');link.rel='icon';link.href=favicon;document.head.append(link)
+    return()=>link.remove()
+  },[clinicaAtiva,marcaInstitucional.snapshot,marcaInstitucional.apresentacao.cor,marcaInstitucional.apresentacao.favicon,aplicarCoresClinica])
   return (
     <SidebarProvider className={tela === 'financeiro' ? 'app-shell-finance' : ''}>
       <Sidebar
@@ -49,6 +61,7 @@ function AppShell({
         identidade={identidade}
         onMeuPerfil={abrirPerfil}
         onSair={onSair}
+        logoInstitucional={marcaInstitucional.logo}
       />
 
       <SidebarInset>

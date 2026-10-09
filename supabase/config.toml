@@ -383,6 +383,26 @@ inspector_port = 8083
 # The Deno major version to use.
 deno_version = 2
 
+[functions.configuracoes]
+verify_jwt = true
+
+[functions.equipe-acesso-direto]
+verify_jwt = true
+
+# Preservar as opções de gateway observadas por leitura em 08/10/2026.
+# As funções false verificam getUser e a guarda antes de operações privadas.
+[functions.equipe-acessos]
+verify_jwt = true
+[functions.equipe-recursos]
+verify_jwt = false
+[functions.equipe-fichas]
+verify_jwt = false
+[functions.meu-perfil]
+verify_jwt = true
+
+[functions.configuracoes-publicas]
+verify_jwt = false
+
 # [edge_runtime.secrets]
 # secret_key = "env(SECRET_VALUE)"
 
