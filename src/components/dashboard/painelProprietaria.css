@@ -1,0 +1,46 @@
+.proprietaria-dashboard { display:flex; flex-direction:column; gap:24px; color:var(--texto-principal); }
+.proprietaria-toolbar,.proprietaria-section-header { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+.proprietaria-card { min-width:0; border:1px solid var(--borda); border-radius:18px; padding:22px; background:var(--fundo-card); box-shadow:var(--sombra-neutra); }
+.proprietaria-section-header { margin-bottom:16px; }
+.proprietaria-section-header h2 { display:flex; align-items:center; gap:8px; font-size:15px; font-weight:650; margin:0; }
+.proprietaria-action { display:inline-flex; align-items:center; justify-content:center; gap:6px; min-height:44px; padding:8px 10px; border-radius:8px; font-size:13px; font-weight:600; color:var(--agenda-link-texto); cursor:pointer; }
+.proprietaria-action:hover { background:var(--cor-primaria-suave); }
+.proprietaria-action:focus-visible { outline:2px solid var(--cor-primaria); outline-offset:3px; }
+.proprietaria-caption,.proprietaria-card small { color:var(--texto-secundario); font-size:12px; line-height:1.6; }
+.proprietaria-counts { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:18px; margin:0 0 16px; }
+.proprietaria-counts dt { font-size:13px; color:var(--texto-secundario); }
+.proprietaria-counts dd { font-size:32px; font-weight:650; font-variant-numeric:tabular-nums; line-height:1.5; }
+.proprietaria-columns { display:grid; grid-template-columns:minmax(0,1.4fr) minmax(0,1fr); gap:24px; align-items:start; }
+.proprietaria-next { display:flex; flex-direction:column; gap:5px; padding:14px; border-radius:10px; background:var(--cor-primaria-suave); margin-bottom:14px; }
+.proprietaria-next span { font-size:12px; color:var(--texto-secundario); }
+.proprietaria-next strong { font-size:14px; overflow-wrap:anywhere; }
+.proprietaria-agenda-list { list-style:none; margin:0 0 14px; padding:0; }
+.proprietaria-agenda-list li { display:grid; grid-template-columns:48px minmax(0,1fr) auto; align-items:center; gap:12px; padding:14px 0; border-bottom:1px solid var(--borda); }
+.proprietaria-agenda-list time { font-variant-numeric:tabular-nums; font-size:13px; font-weight:600; }
+.proprietaria-profissional { font-size:13px; font-weight:550; overflow-wrap:anywhere; }
+.proprietaria-profissional small { display:block; font-weight:400; }
+.proprietaria-situacao { padding:4px 8px; border-radius:7px; background:var(--cor-primaria-suave); color:var(--agenda-link-texto); font-size:11px; font-weight:600; }
+.proprietaria-situacao[data-situacao="concluido"] { color:var(--texto-secundario); background:var(--fundo-pagina); }
+.proprietaria-finance-values { margin:16px 0; }
+.proprietaria-finance-values > div { padding:16px 0; border-bottom:1px solid var(--borda); }
+.proprietaria-finance-values > div:first-child { padding-top:0; }
+.proprietaria-finance-values dt { font-size:13px; font-weight:550; }
+.proprietaria-finance-values dd { font-size:25px; font-weight:650; font-variant-numeric:tabular-nums; margin:5px 0; overflow-wrap:anywhere; }
+.proprietaria-finance-values small { display:block; }
+.proprietaria-empty { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; padding:32px 10px; text-align:center; color:var(--texto-secundario); }
+.proprietaria-empty h3 { color:var(--texto-principal); font-size:15px; font-weight:600; }
+.proprietaria-empty p { font-size:13px; }
+.proprietaria-pending-list { list-style:none; padding:0; margin:0 0 14px; }
+.proprietaria-pending-list li { display:flex; justify-content:space-between; align-items:center; gap:14px; padding:12px 0; border-bottom:1px solid var(--borda); }
+.proprietaria-pending-list strong { display:block; font-size:13px; font-weight:600; }
+.proprietaria-pending-list small { display:block; }
+@media(max-width:1100px) { .proprietaria-columns { grid-template-columns:minmax(0,1fr); } }
+@media(max-width:600px) {
+  .proprietaria-dashboard { gap:16px; }
+  .proprietaria-card { padding:16px; }
+  .proprietaria-counts { grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px 12px; }
+  .proprietaria-agenda-list li { grid-template-columns:42px minmax(0,1fr); gap:8px; }
+  .proprietaria-situacao { grid-column:2; justify-self:start; }
+  .proprietaria-pending-list li { align-items:flex-start; flex-direction:column; gap:4px; }
+  .proprietaria-action { padding-left:0; }
+}

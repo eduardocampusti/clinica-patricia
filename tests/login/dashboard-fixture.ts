@@ -2,8 +2,8 @@ import { expect, type Page } from '@playwright/test'
 import type { Papel } from '../../src/hooks/usePapelNaClinica'
 
 export const clinicas = [
-  { id: '22222222-2222-4222-8222-222222222222', nome: 'Clínica Brotas' },
-  { id: '33333333-3333-4333-8333-333333333333', nome: 'Clínica Ipupiara' },
+  { id: '22222222-2222-4222-8222-222222222222', nome: 'Clínica Brotas', subdomain: 'brotas', cor_primaria: '#2563eb', cor_secundaria: '#3b82f6', cor_menu: '#1e3a8a' },
+  { id: '33333333-3333-4333-8333-333333333333', nome: 'Clínica Ipupiara', subdomain: 'ipupiara', cor_primaria: '#16a34a', cor_secundaria: '#22c55e', cor_menu: '#14532d' },
 ]
 export interface PerfilSintetico {
   nome: string | null
@@ -13,6 +13,7 @@ export interface PerfilSintetico {
   demoraNome?: number
   papeis?: Papel[]
   segundaConta?: boolean
+  aguardarAcesso?: () => Promise<void>
 }
 export async function abrirMenu(page: Page) {
   await expect(page.locator('.app-shell-header')).toBeVisible()
@@ -79,12 +80,15 @@ export async function preparar(page: Page, papel: Papel = 'proprietaria', modo: 
     if (recurso === 'financeiro_dashboard_proprietaria') return json({ message: 'Consulta financeira indisponível no cenário sintético' }, 503)
     if (recurso === 'usuarios_clinicas') {
       if (modo === 'erro-acesso') return json({ message: 'Falha sintética' }, 500)
-      if (modo === 'lento') await new Promise(resolve => setTimeout(resolve, 500))
+      if (modo === 'lento') {
+        if (perfil.aguardarAcesso) await perfil.aguardarAcesso()
+        else await new Promise(resolve => setTimeout(resolve, 500))
+      }
       const vinculos = clinicas.filter(c => !url.searchParams.has('clinica_id') || url.searchParams.get('clinica_id') === `eq.${c.id}`).map(c => ({ clinica_id: c.id, papel: perfil.papeis?.[clinicas.indexOf(c)] ?? papel }))
       return json(request.headers().accept?.includes('object') ? vinculos[0] : vinculos)
     }
     if (recurso === 'clinicas') return json(clinicas)
-    if (recurso === 'agendamentos') return modo === 'erro-agenda' ? json({ message: 'Falha sintética' }, 500) : json([])
+    if (recurso === 'agendamentos') return modo === 'erro-agenda' ? json({ message: 'Falha sintética' }, 500) : route.fulfill({ status: 200, headers: { ...headers, 'content-range': '*/0', 'access-control-expose-headers': 'content-range' }, contentType: 'application/json', body: '[]' })
     if (recurso === 'especialidades') return json([{ id: 'especialidade-sintetica', nome: 'Especialidade Sintética' }])
     if (recurso === 'servicos') {
       const clinica = clinicas.find(c => url.searchParams.get('clinica_id') === `eq.${c.id}`)

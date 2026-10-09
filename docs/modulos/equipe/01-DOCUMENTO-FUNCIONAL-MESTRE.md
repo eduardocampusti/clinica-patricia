@@ -1,5 +1,38 @@
 # Equipe — documento funcional mestre
 
+## Estado técnico da revisão final — 08/10/2026, 20:51 -03:00
+
+Regras aprovadas preservadas; prova de senha/revogação e gates server-side
+fortalecidos localmente, criação geral/frontend desligados. Homologação limitada
+por ator/pessoa/email preparada desligada. Conta sem operação segue normal.
+[Pacote seletivo e limites](../equipe/40-REVISAO-BACKEND-PACOTE-APLICACAO.md).
+
+
+## Pedido posterior aprovado — acesso direto, 08/10/2026
+
+Novo membro permite somente cadastro, criação de acesso com senha temporária
+individual ou convite. Contato e login são separados; clínicas de acesso e papéis
+exigem escolha explícita dentro dos vínculos cadastrais e da autorização da
+administradora. Profissão/cargo não concedem papel. Conta existente segue vínculo
+com confirmação do titular, sem duplicação ou redefinição por coincidência de e-mail.
+
+Credencial temporária aleatória, validade de 24 horas, entrega direta sem e-mail,
+exibição/cópia só após confirmação e sem persistência recuperável. Primeiro acesso
+exige senha pessoal diferente, com confirmação e requisitos de força. Até concluir,
+dados/módulos/API/RPC/Storage privados devem permanecer bloqueados pelo servidor.
+Sessões anteriores à ativação/substituição continuam sem acesso. Substituição é
+explícita, autorizada e auditada sem segredo. Falhas parciais permitem retomar a
+pessoa salva sem duplicá-la ou anunciar sucesso não confirmado.
+
+Autorização desta etapa: implementar frontend e preparar backend localmente.
+Não autoriza aplicar SQL, criar contas, reativar técnicas, commit/push/publicação.
+Substitui proibições históricas de implementação apenas dentro deste escopo;
+convites, vínculos e demais módulos preservam seus requisitos. Estado técnico:
+frontend false, migrações/serviços preparados, não aplicados; garantias conectadas
+pendentes. [Fonte de execução e limites](39-ACESSO-DIRETO-SENHA-TEMPORARIA.md).
+
+
+
 
 Estado técnico posterior06/10/2026,15:17 -03:00: conferência de leitura35–36 concluída
 na aplicação normal5173 com sessão Proprietário(a), Brotas/Ipupiara. Funcionário e

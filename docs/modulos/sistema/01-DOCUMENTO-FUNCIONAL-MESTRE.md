@@ -1,5 +1,56 @@
 # Sistema — documento funcional mestre
 
+## Dashboard administrativa — pedido posterior de09/10/2026
+
+Retirar cartões explicativos não retira as informações úteis. Proprietário(a)
+confirmado deve consultar resumo/Agenda do dia e agregados oficiais do Financeiro
+da clínica selecionada, com períodos/significados explícitos e ações existentes.
+Agendados inclui confirmados; cancelados excluídos. Não inventar valores, regras,
+metas ou dados para preencher o painel. Sem movimento não oculta os outros blocos;
+erro/recusa/carregamento diferem de zero/vazio e troca descarta respostas anteriores.
+Preservar identidade, entrada direta, menu, demais perfis e proteções do backend.
+Executar somente localmente, sem dados/contas reais ou habilitação/publicação geral.
+Conferência final aprovada pelo pedido de09/10: preservar a estrutura visual.
+Agendados é o grupo de estados agendado/confirmado, não o total do dia. Sem horário
+futuro nesse grupo, distinguir aguardando/em atendimento e horários passados ainda
+nesses estados. Atualizar painel refaz Agenda e Financeiro, invalidando os resultados
+anteriores imediatamente. Cada bloco informa leitura, erro ou recusa; horários
+distinguem conclusão da leitura da Agenda de consulta financeira no servidor,
+sempre com data/fuso e sem trocar o horário de origem pelo instante do clique.
+Comparação real exige mesma clínica/data e critérios oficiais; permanece pendente
+até evidência pertinente, separada de testes sintéticos e apresentação manual.
+[Implementação e estado verificado](18-DASHBOARD-ADMINISTRATIVA-PROPRIETARIO.md).
+
+
+## Pedido posterior — bloqueio antes da ativação, 08/10/2026
+
+A guarda de primeiro acesso direto da Equipe deve anteceder os módulos, inclusive
+restauração/F5. Cliente não substitui autorização de dados: sessão pendente/antiga
+deve ser negada também no backend. Navegação/rotas, Configurações e identidade de
+contas já existentes preservam suas regras. Implementação local autorizada;
+serviço/migrações/hook apenas preparados, frontend desligado e sem publicação.
+[Requisitos e evidências Equipe39](../equipe/39-ACESSO-DIRETO-SENHA-TEMPORARIA.md).
+
+
+
+## Pedido posterior — Configurações, 08/10/2026
+
+Configurações abaixo de Equipe e antes de Sobre, rota por unidade e interface
+restrita a Proprietário(a); edição pendente protegida em navegação/troca/saída.
+Nome/foto pessoal, saudação, dashboard e Meu perfil preservados. Backend institucional
+desligado; demonstração isolada sem conta. Apresentação usa ID/subdomain fixo,
+independente do nome editável.
+
+Escopo aprovado: implementação local e preparo de backend para revisão. Sem
+aplicação remota nesta etapa. Regras institucionais aprovadas em
+[Configurações](../configuracoes/01-DOCUMENTO-FUNCIONAL-MESTRE.md);
+estado técnico em [entrega](../configuracoes/09-RELATORIO-IMPLEMENTACAO.md).
+
+
+**Estado:** RASCUNHO — comportamento solicitado em 25/09/2026; implementação local, não publicada.
+
+
+
 ### Decisão específica posterior — acabamento móvel,03/10/2026
 
 Aviso mantém a contagem atual e usa “1 agendamento com horário passado ainda previsto” ou

@@ -1,5 +1,45 @@
 # Equipe — checkpoint da primeira entrega
 
+## Commits locais preparados —09/10/2026,11:54 -03
+
+Primeiro commit 2bcd8a4f47a2dc78fcc8c1715e3242d114fbe651:149 arquivos de Configurações/Acesso Direto.
+Dashboard e este registro compõem o commit seguinte na mesma branch de resgate.
+Tipos frontend/servidor/serviços, notas e build aprovados;18 testes dirigidos de
+dashboard passaram juntos em58,3s com fontes sintéticas. Varredura do índice
+sem credenciais e diff-check aprovado. Manifesto Git registra hashes dos blobs
+normalizados; hashes de aplicação histórica preservados. Nenhum push/deploy: o
+auto-deploy Hostinger da branch segue no último estado comprovado, ligado.
+[Entrega seletiva](../sistema/19-VERSIONAMENTO-DASHBOARD-CONFIGURACOES-ACESSO-DIRETO.md).
+
+
+## Versionamento seletivo autorizado —09/10/2026
+
+Dashboard ajustada/testada localmente e indicadores/quantidades conciliados
+MANUALMENTE pelo titular em Brotas/Ipupiara, mesmas datas/filtros. Configurações
+e Acesso Direto: SQL/Edges/hook instalados, homologação parcial; flags gerais
+false, H1–H5 e R2 não consumidos. Leituras oficiais11:22–11:23 reconfirmaram
+3 contas antigas banidas,0 sessões/refresh/perfis/vínculos ativos e2 contextos
+encerrados. GraphQL ausente, sem autorização funcional comprovada. Kernel de
+navegador/Computer Use falhou antes da sessão legítima do criador; leitura
+administrativa e comparação manual não substituem criação/ativação/Storage
+privado. Nenhuma conta/migration/Auth/escrita remota nesta etapa de Git.
+
+Base remota26909341beaa46b68bacc8e77684f6f6ba67f903, repositório
+eduardocampusti/clinica-patricia. Branch codex/resgate-local-2026-09-26 atualizada
+apenas por fast-forward em worktree isolada; principal equipe-fase2/ad493861
+com demais alterações preservada. Preparação/commit não comprovam homologação.
+Push suspenso: último estado comprovado mantém auto-deploy Hostinger em Brotas/
+Ipupiara nessa branch; GitHub hooks retornou lista vazia, o que não comprova
+desligamento da integração Git/App. Sem canal Hostinger disponível para leitura
+atual. Não alterar integração nem enviar push que possa publicar sem decisão.
+
+Próximo: revisar commits preparados; antes do envio, comprovar publicação
+automática desativada ou obter autorização específica para seu efeito.
+Homologação depende separadamente da recuperação do kernel/sessão do criador.
+
+[Interface39](39-ACESSO-DIRETO-SENHA-TEMPORARIA.md); [revisão40](40-REVISAO-BACKEND-PACOTE-APLICACAO.md); [estado real conjunto](../configuracoes/18-APLICACAO-GUARDA-E-SEQUENCIA-AUTORIZADA.md).
+
+
 ## Observação de versão pública — 08/10/2026 07:09 -03:00
 
 Branch local codex/equipe-fase2-2026-10-07/HEADad493861. Leitura pública atual nos

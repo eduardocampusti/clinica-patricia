@@ -7,6 +7,7 @@ import PainelRecepcao, { type AcoesPainelRecepcao } from '../components/dashboar
 import CabecalhoDashboard from '../components/dashboard/CabecalhoDashboard'
 import { hojeNaBahia } from '../lib/pacienteLista'
 import { horaNaBahia } from '../lib/dashboardRecepcao'
+import PainelProprietaria from '../components/dashboard/PainelProprietaria'
 
 interface ProximoPaciente {
   nome: string
@@ -97,5 +98,7 @@ export default function Dashboard(props: DashboardProps & AcoesPainelRecepcao & 
 }) {
   return props.papel === 'recepcao' && props.clinicaAtivaId
     ? <PainelRecepcao key={props.clinicaAtivaId} clinicaId={props.clinicaAtivaId} {...props}/>
+    : props.papel === 'proprietaria' && props.clinicaAtivaId
+      ? <PainelProprietaria key={props.clinicaAtivaId} clinicaId={props.clinicaAtivaId} {...props}/>
     : <DashboardBasico key={props.clinicaAtivaId} {...props}/>
 }

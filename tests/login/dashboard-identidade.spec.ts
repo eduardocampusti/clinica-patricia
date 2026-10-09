@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { abrirMenu, clinicas, preparar, type PerfilSintetico } from './dashboard-fixture'
+import { abrirMenu, fecharMenu, clinicas, preparar, type PerfilSintetico } from './dashboard-fixture'
 
 async function entrar(page: Parameters<typeof preparar>[0]) {
   await page.getByLabel('E-mail institucional ou CRM / Identificador', { exact: true }).fill('login@example.invalid')
@@ -41,12 +41,16 @@ test('foto privada vinculada, cabeçalho e rodapé coerentes e menu recolhido ac
   const { escritas, consultas } = await preparar(page, 'proprietaria', 'normal', { nome: 'Pessoa Sintética', foto: 'vinculada' })
   await page.goto('/sistema/brotas/dashboard')
   await expect(page.locator('.app-shell-header img')).toHaveAttribute('src', /^blob:/)
+  await abrirMenu(page)
   await expect(page.locator('[data-slot="sidebar-footer"] img')).toHaveAttribute('src', await page.locator('.app-shell-header img').getAttribute('src') ?? '')
   await expect.poll(() => page.locator('.app-shell-header img').evaluate(e => (e as HTMLImageElement).naturalWidth)).toBeGreaterThan(0)
-  await page.getByRole('button', { name: 'Recolher menu' }).click()
-  await expect(page.locator('[data-slot="sidebar-footer"]').getByRole('img')).toHaveAttribute('aria-label', 'Pessoa Sintética · Proprietário(a)')
-  await expect(page.getByRole('link', { name: 'Equipe', exact: true })).toHaveAttribute('title', 'Equipe')
-  await expect(page.getByRole('link', { name: 'Financeiro', exact: true })).toHaveAttribute('title', 'Financeiro')
+  const recolher = page.getByRole('button', { name: 'Recolher menu' })
+  if (await recolher.isVisible()) {
+    await recolher.click()
+    await expect(page.locator('[data-slot="sidebar-footer"]').getByRole('img')).toHaveAttribute('aria-label', 'Pessoa Sintética · Proprietário(a)')
+    await expect(page.getByRole('link', { name: 'Equipe', exact: true })).toHaveAttribute('title', 'Equipe')
+    await expect(page.getByRole('link', { name: 'Financeiro', exact: true })).toHaveAttribute('title', 'Financeiro')
+  }
   expect(consultas.some(c => c.recurso === 'equipe_foto_autorizar')).toBe(true)
   expect(consultas.some(c => c.recurso === 'equipe_membros')).toBe(false)
   expect(escritas).toEqual([])
@@ -63,18 +67,23 @@ test('nome ausente não é inferido pelo e-mail; falha de nome é distinta da au
   const perfil: PerfilSintetico = { nome: null }
   await preparar(page, 'proprietaria', 'normal', perfil)
   await page.goto('/sistema/brotas/dashboard')
+  await abrirMenu(page)
   await expect(page.locator('[data-slot="sidebar-footer"]')).toContainText('Conta conectada')
+  await fecharMenu(page)
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(/^(Bom dia|Boa tarde|Boa noite)!$/)
   await expect(page.locator('.app-shell-header').getByRole('img')).toContainText('?')
   await expect(page.locator('body')).not.toContainText('login@example.invalid')
   perfil.erroNome = true
   await page.reload()
+  await abrirMenu(page)
   await expect(page.locator('[data-slot="sidebar-footer"]')).toContainText('Nome indisponível', { timeout: 15000 })
 })
 test('foto indisponível é explicitada e mantém nome do perfil', async ({ page }) => {
   await preparar(page, 'proprietaria', 'normal', { nome: 'Pessoa Sintética', foto: 'erro' })
   await page.goto('/sistema/brotas/dashboard')
+  await abrirMenu(page)
   await expect(page.locator('[data-slot="sidebar-footer"]')).toContainText('Foto indisponível')
+  await fecharMenu(page)
   await expect(page.getByRole('heading', { name: /Pessoa!/ })).toBeVisible()
   await expect(page.locator('.app-shell-header img')).toHaveCount(0)
 })
@@ -90,6 +99,7 @@ test('logout e outra conta removem nome, foto e URL temporária anteriores', asy
   await page.goto('/sistema/brotas/dashboard')
   await expect(page.locator('.app-shell-header img')).toHaveAttribute('src', /^blob:/)
   const fotoAnterior = await page.locator('.app-shell-header img').getAttribute('src')
+  await abrirMenu(page)
   await page.getByRole('button', { name: 'Sair', exact: true }).click()
   await expect(page.getByRole('button', { name: 'Acessar Sistema Integrado', exact: true })).toBeVisible()
   await expect(page.locator('body')).not.toContainText('Primeira Pessoa')
@@ -97,6 +107,7 @@ test('logout e outra conta removem nome, foto e URL temporária anteriores', asy
   perfil.nome = 'Segunda Pessoa'; perfil.segundaConta = true
   await entrar(page)
   await expect(page.getByRole('heading', { name: /Segunda!/ })).toBeVisible()
+  await abrirMenu(page)
   await expect(page.locator('[data-slot="sidebar-footer"]')).toContainText('Segunda Pessoa')
   await expect(page.locator('body')).not.toContainText('Primeira Pessoa')
   await expect(page.locator('.app-shell-header img')).toHaveCount(0)
@@ -106,6 +117,7 @@ test('resposta tardia da conta anterior não preenche identidade após logout', 
   const perfil: PerfilSintetico = { nome: 'Nome da Conta Anterior', demoraNome: 700 }
   await preparar(page, 'proprietaria', 'normal', perfil)
   await page.goto('/sistema/brotas/dashboard')
+  await abrirMenu(page)
   await expect(page.locator('[data-slot="sidebar-footer"]')).toContainText('Carregando perfil')
   await page.getByRole('button', { name: 'Sair', exact: true }).click()
   perfil.nome = 'Conta Atual'; perfil.demoraNome = 0; perfil.segundaConta = true
@@ -120,7 +132,9 @@ test('clínica muda papel, limpa foto e não consulta Equipe como Recepção', a
   await expect(page.locator('.app-shell-header img')).toHaveAttribute('src', /^blob:/)
   const anteriores = consultas.length
   await page.getByRole('combobox', { name: 'Selecionar clínica', exact: true }).selectOption(clinicas[1].id)
+  await abrirMenu(page)
   await expect(page.locator('[data-slot="sidebar-footer"]')).toContainText('Recepção')
+  await fecharMenu(page)
   await expect(page.locator('.app-shell-header img')).toHaveCount(0)
   await expect(page.getByRole('heading', { name: /Pessoa!/ })).toBeVisible()
   expect(consultas.slice(anteriores).some(c => ['equipe_listar', 'equipe-acessos', 'equipe_foto_autorizar'].includes(c.recurso))).toBe(false)

@@ -5,21 +5,21 @@ for (const unidade of ['brotas', 'ipupiara'] as const) {
   test(`dashboard sem cartões explicativos — ${unidade}`, async ({ page }, info) => {
     await preparar(page)
     await page.goto(`/sistema/${unidade}/dashboard`)
-    await expect(page.getByText('Nenhum agendamento restante hoje.')).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Nenhum agendamento hoje' })).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Indicadores financeiros' })).toHaveCount(0)
-    await page.screenshot({ path: `scratch/dashboard-proprietaria/${process.env.DASHBOARD_CAPTURA_ANTES === '1' ? 'antes' : 'depois'}-${unidade}-${info.project.name}.png`, fullPage: true })
+    await page.screenshot({ path: info.outputPath(`dashboard-${unidade}.png`), fullPage: true })
   })
 
   test(`menu, cadastros e recarga — ${unidade}`, async ({ page }) => {
     const { escritas } = await preparar(page)
     await page.goto(`/sistema/${unidade}/dashboard`)
     await expect(page.getByRole('region', { name: 'Administração da clínica' })).toHaveCount(0)
+    await expect(page.getByRole('heading', { name: 'Resumo financeiro', exact: true })).toBeVisible()
     await abrirMenu(page)
     const administracao = page.getByRole('navigation', { name: 'Navegação principal' })
     await expect(administracao).toBeVisible()
     await expect(administracao.getByRole('link', { name: 'Equipe', exact: true })).toHaveAttribute('href', `/sistema/${unidade}/equipe`)
     await expect(administracao.getByRole('link', { name: 'Financeiro', exact: true })).toHaveAttribute('href', `/sistema/${unidade}/financeiro`)
-    await expect(page.locator('main')).not.toContainText('R$')
     await administracao.getByRole('link', { name: 'Equipe', exact: true }).click()
     await expect(page).toHaveURL(new RegExp(`/sistema/${unidade}/equipe$`))
     await expect(page.getByRole('heading', { name: 'Cadastros', exact: true })).toBeVisible()
@@ -79,20 +79,24 @@ for (const papel of ['recepcao', 'medico'] as const) test(`menu e restrição de
   await expect(page.getByRole('alert')).toContainText('Página não autorizada')
 })
 
-test('erro no próximo paciente mantém menu e aviso distinto do vazio', async ({ page }) => {
+test('erro na agenda mantém menu e aviso distinto do vazio', async ({ page }) => {
   await preparar(page, 'proprietaria', 'erro-agenda')
   await page.goto('/sistema/ipupiara/dashboard')
-  await expect(page.getByRole('status')).toContainText('Próximo paciente indisponível')
+  await expect(page.getByText('Movimento do dia indisponível', { exact: true })).toBeVisible()
   await abrirMenu(page)
   await expect(page.getByRole('link', { name: 'Equipe', exact: true })).toBeVisible()
   await expect(page.getByText('Nenhum agendamento restante hoje.')).toHaveCount(0)
 })
 
 test('carregamento de acesso não mostra acessos pelo menu antes de confirmar o papel', async ({ page }) => {
-  await preparar(page, 'proprietaria', 'lento')
-  await page.goto('/sistema/brotas/dashboard')
-  await expect(page.getByRole('status')).toContainText('Verificando acesso')
-  await expect(page.getByRole('link', { name: 'Equipe', exact: true })).toHaveCount(0)
+  let liberar: () => void = () => {}
+  const resposta = new Promise<void>(resolve => { liberar = resolve })
+  await preparar(page, 'proprietaria', 'lento', { nome: 'Pessoa Sintética', aguardarAcesso: () => resposta })
+  try {
+    await page.goto('/sistema/brotas/dashboard')
+    await expect(page.getByRole('status')).toContainText('Verificando acesso')
+    await expect(page.getByRole('link', { name: 'Equipe', exact: true })).toHaveCount(0)
+  } finally { liberar() }
   await abrirMenu(page)
   await expect(page.getByRole('link', { name: 'Equipe', exact: true })).toBeVisible()
 })
