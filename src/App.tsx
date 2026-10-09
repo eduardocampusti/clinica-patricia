@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import type { Papel } from './hooks/usePapelNaClinica'
 import { supabase } from './lib/supabase'
@@ -27,13 +27,15 @@ import { useIdentidadeConta } from './hooks/useIdentidadeConta'
 import Configuracoes, { type GuardaConfiguracoes } from './pages/Configuracoes'
 import { ConfirmacaoDialog } from './components/feedback/ConfirmacaoDialog'
 import { GuardaAtivacao } from './components/GuardaAtivacao'
+import { ContextoAtivacao } from './lib/contextoAtivacao'
 import { CONFIGURACOES_INTERFACE_DISPONIVEL } from './config/configuracoesDisponibilidade'
 
 function App() {
+  const ativacao = useContext(ContextoAtivacao)
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
   const [recuperacao, setRecuperacao] = useState(() => new URLSearchParams(window.location.search).get('recuperar') === '1' || new URLSearchParams(window.location.hash.slice(1)).get('type') === 'recovery')
-  const [recuperacaoAutorizada, setRecuperacaoAutorizada] = useState(false)
+  const [recuperacaoAutorizada, setRecuperacaoAutorizada] = useState(ativacao.recuperacaoAutorizada)
   const [escolhaAcesso, setEscolhaAcesso] = useState<{ clinicaId: string; papel: Papel; lembrar: boolean; restauracao?: boolean } | null>(null)
   const [escolhaAplicada, setEscolhaAplicada] = useState(false)
   const [acessoValidado, setAcessoValidado] = useState(false)

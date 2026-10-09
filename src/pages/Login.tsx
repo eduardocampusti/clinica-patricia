@@ -7,6 +7,7 @@ import { clinicaCorrespondeAoBrand, resolveClinicBrand } from '../config/clinicB
 import { FeedbackAlert } from '../components/feedback/FeedbackAlert'
 import './login.css'
 import RecuperarSenha from './RecuperarSenha'
+import { caminhoInterno, navegarPara } from '../lib/appRoute'
 import { consultarMarcaPublica, type MarcaPublica } from '../lib/configuracoes'
 
 function Icon({ children }: { children: ReactNode }) {
@@ -141,6 +142,9 @@ export default function Login({ acessoAutomatico = false, authenticatedUserId, o
       if (authError) {
         setError(authError.status === 429 ? 'Muitas tentativas. Aguarde um momento antes de tentar novamente.' : authError.status === 400 || authError.status === 401 || authError.status === 422 ? 'E-mail ou senha inválidos. Confira seus dados e tente novamente.' : 'Não foi possível acessar o sistema. Verifique sua conexão e tente novamente.')
       } else if (data.user) {
+        // A guarda pode desmontar Login durante SIGNED_IN. Fixar o destino do
+        // novo login aqui não concede acesso: ativação e vínculos seguem obrigatórios.
+        if (acessoAutomatico && brand) navegarPara(caminhoInterno(brand.slug, 'dashboard'), true)
         if (!acessoAutomatico) await prepararAcessos(data.user.id)
       } else {
         setError('Não foi possível confirmar a autenticação. Tente novamente.')

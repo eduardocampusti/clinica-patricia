@@ -18,6 +18,7 @@ for (const unidade of ['brotas', 'ipupiara']) {
     await page.route('**/auth/v1/user', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(user) }))
     await page.route('**/rest/v1/**', route => {
       const path = new URL(route.request().url()).pathname
+      if (path.endsWith('/rpc/acesso_direto_estado')) return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ estado: 'normal' }) })
       if (path.endsWith('/usuarios_clinicas')) {
         leiturasVinculos++
         const singular = route.request().headers().accept?.includes('object')
@@ -55,7 +56,7 @@ test('falhas sintéticas do aceite liberam carregamento, preservam campos e não
     if (route.request().method() !== 'GET') senhaChamadas += 1
     return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(user) })
   })
-  await page.route('**/rest/v1/**', route => route.fulfill({ status: 200, contentType: 'application/json', body: '[]' }))
+  await page.route('**/rest/v1/**', route => route.fulfill({ status: 200, contentType: 'application/json', body: route.request().url().endsWith('/rpc/acesso_direto_estado') ? JSON.stringify({ estado: 'normal' }) : '[]' }))
   await page.route('**/functions/v1/equipe-acessos', route => {
     chamadas += 1
     return falha.rede ? route.abort('internetdisconnected') : route.fulfill({ status: falha.status, contentType: 'application/json', body: JSON.stringify({ codigo: falha.codigo, erro: 'SQL token-sintetico email-terceiro@synthetic.invalid' }) })

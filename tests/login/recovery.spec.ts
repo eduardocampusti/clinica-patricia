@@ -1,6 +1,8 @@
 import { expect, test } from '@playwright/test'
 test.beforeEach(async ({ page }) => {
+  // Sessões fictícias já ativadas; nenhum endpoint real é acessado.
   await page.route('**/*', route => new URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort())
+  await page.route('**/rest/v1/rpc/acesso_direto_estado', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ estado: 'normal' }) }))
 })
 for (const unidade of ['brotas', 'ipupiara']) {
   test(`solicitação neutra e retorno restrito — ${unidade}`, async ({ page }) => {

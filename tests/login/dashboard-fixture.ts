@@ -45,9 +45,12 @@ export async function preparar(page: Page, papel: Papel = 'proprietaria', modo: 
     // Resposta explicitamente SINTÉTICA para a guarda agora habilitada na release.
     // Sem esta fixture, POST era recusado e a tela bloqueava corretamente.
     if (url.pathname === '/rest/v1/rpc/acesso_direto_estado' && request.method() === 'POST') return json({ estado: 'normal' })
-    const leituraPost = (url.pathname.startsWith('/rest/v1/rpc/') && ['equipe_listar', 'equipe_foto_autorizar', 'financeiro_dashboard_proprietaria'].includes(recurso)) || (['equipe-acessos', 'meu-perfil'].includes(recurso) && ['listar', 'consultar'].includes(request.postDataJSON().acao))
+    // Projeção pública de marca é consulta, embora o transporte use POST.
+    if (recurso === 'configuracoes-publicas' && request.method() === 'POST') return json({})
+    const leituraPost = (url.pathname.startsWith('/rest/v1/rpc/') && ['equipe_listar', 'equipe_foto_autorizar', 'financeiro_dashboard_proprietaria', 'configuracoes_timbrado_consultar'].includes(recurso)) || (['equipe-acessos', 'meu-perfil'].includes(recurso) && ['listar', 'consultar'].includes(request.postDataJSON().acao))
     if (request.method() !== 'GET' && !leituraPost) { escritas.push(url.pathname); return json({ message: 'Mutação sintética bloqueada' }, 403) }
     consultas.push({ recurso, usuario: url.searchParams.get('usuario_id') ?? url.searchParams.get('id'), clinica: url.searchParams.get('clinica_id') ?? request.headers()['x-clinica-id'] ?? null })
+    if (recurso === 'configuracoes_timbrado_consultar') return json({ instituicao: {}, campos: {}, geral: {}, variacoes: {}, versao: 0 })
     if (recurso === 'meu-perfil') return json({ message: 'Function not found' }, 404)
     if (recurso === 'usuarios') {
       const nome = perfil.nome
