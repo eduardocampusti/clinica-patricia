@@ -1,5 +1,10 @@
 # Configurações — documento funcional mestre
 
+## Configurações R5 homologada;0.5.0 preparada — 2026-10-09T23:01:31.694Z
+
+Provas reais completas após correções:75requisitos finais aprovados (82registros/80pass/2falhas históricas retestadas). PNG/JPEG, persistência/F5, histórico, concorrência409, login público, permissões/isolamento bilateral aprovados.18contas/10contextos encerrados; novas2banidas,0sessões/refresh/vínculos,10ctxinativos,públiconull,0versões reais. CFGtrue/versão0.5.0 preparadas após encerramento. Dashboard/AD0.4.0 preservados no checkoutisolado, primário mantém trabalhos paralelos. Migração corretivaPT409 aplicada ledger20261009225111/privada8; R5ledger20261009224204/pública10. GraphQL ausente/não homologado, sem dependência deREST/RPC/Storage/Edges emescopo. Relatório26/provasR5. Ainda semnovo commit/push/deploy; próximo publicação autorizada e leitura autenticada nos dois domínios.
+
+
 ## Estado atual R3 / release0.4.0 preparada — 09/10/2026, 17:36:42 -03
 
 Acesso Direto homologado conectado, inclusive RPC bilateral I1/I2; preparado para publicação autorizada. Configurações permanece desligada: upload503 identificado/corrigido (encode oficial), teste PNG local aprovado, rehomologação conectada ainda necessária. Todos14contas/6contextos encerrados; limite não renova após encerramento. Dashboard0.3.0/manual preservada. GraphQL ausente e não homologado funcionalmente. Detalhes atuais: relatório24-HOMOLOGACAO-R3-E-PUBLICACAO-FINAL.md; report23 conserva falha histórica. Tipos/notas/build/lint dirigido e4/4 separação sintética juntos aprovados. Sem afirmar publicação nesta preparação.

@@ -1,4 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js@2.111.0'
+import { conferirRpcConfiguracoes as conferirRpc } from '../_shared/configuracoesRpc.ts'
 import { exigirAtivacaoServico } from '../_shared/guardaAtivacao.ts'
 import { Image } from 'https://deno.land/x/imagescript@1.3.0/mod.ts'
 import { verificarCabecalhoFoto } from '../_shared/equipeFoto.ts'
@@ -10,7 +11,6 @@ const opcoes={auth:{persistSession:false,autoRefreshToken:false,detectSessionInU
 const admin=createClient(url,key,opcoes)
 function headers(req:Request){const h=new Headers({'Content-Type':'application/json','Cache-Control':'no-store','Access-Control-Allow-Headers':'authorization,apikey,x-client-info,content-type','Access-Control-Allow-Methods':'POST,OPTIONS',Vary:'Origin'});const o=req.headers.get('origin')??'';if(ORIGENS_LOCAIS_PERMITIDAS.has(o)||ORIGENS_PUBLICAS_PERMITIDAS.has(o))h.set('Access-Control-Allow-Origin',o);return h}
 const resposta=(req:Request,data:unknown,status=200)=>new Response(JSON.stringify(data),{status,headers:headers(req)})
-function conferirRpc(error:{code?:string}|null){if(error)throw new ErroConfiguracao(error.code==='42501'?403:error.code==='40001'?409:error.code==='22023'?422:503,error.code==='40001'?'Outra edição alterou a configuração ou seus dados oficiais. Reconsulte.':error.code==='42501'?'Operação não autorizada neste alcance.':'Operação não confirmada. Reconsulte antes de repetir.',!['42501','40001','22023'].includes(error.code??''))}
 async function corpoLimitado(req:Request){const reader=req.body?.getReader(),chunks:Uint8Array[]=[];let size=0;if(reader)try{for(;;){const r=await reader.read();if(r.done)break;size+=r.value.length;if(size>5*1024*1024+32768)throw new ErroConfiguracao(413,'Arquivo excede o limite permitido.');chunks.push(r.value)}}finally{await reader.cancel().catch(()=>{})}const b=new Uint8Array(size);let pos=0;for(const c of chunks){b.set(c,pos);pos+=c.length}return new Request(req.url,{method:'POST',headers:req.headers,body:b})}
 async function estado(escopo:string,ator:string){const r=await admin.rpc('configuracoes_estado_interno',{p_escopo:escopo,p_ator:ator});conferirRpc(r.error);return r.data}
 async function assinar(c:Record<string,unknown>){

@@ -3,7 +3,7 @@ import { instituicaoVazia, PADRAO, validarDocumento, ErroConfiguracao, type Docu
 import { verificarCabecalhoFoto } from '../../supabase/functions/_shared/equipeFoto'
 export * from '../../supabase/functions/_shared/configuracoes'
 // Habilitar somente após aplicação e homologação do backend proposto.
-export const BACKEND_CONFIGURACOES_HABILITADO = false
+export const BACKEND_CONFIGURACOES_HABILITADO = true
 export interface VersaoConfiguracao { revisao: number; acao: string; autor: string; instante: string; documento: DocumentoConfiguracao }
 export interface ConsultaConfiguracao {
   escopo: string; disponivel: boolean; podeGeral: boolean; revisao: number; geralRevisao: number

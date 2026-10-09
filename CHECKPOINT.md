@@ -1,5 +1,15 @@
 # CHECKPOINT MESTRE — CLÍNICA PATRÍCIA
 
+## Configurações R5 homologada;0.5.0 preparada — 2026-10-09T23:01:31.694Z
+
+Provas reais completas após correções:75requisitos finais aprovados (82registros/80pass/2falhas históricas retestadas). PNG/JPEG, persistência/F5, histórico, concorrência409, login público, permissões/isolamento bilateral aprovados.18contas/10contextos encerrados; novas2banidas,0sessões/refresh/vínculos,10ctxinativos,públiconull,0versões reais. CFGtrue/versão0.5.0 preparadas após encerramento. Dashboard/AD0.4.0 preservados no checkoutisolado, primário mantém trabalhos paralelos. Migração corretivaPT409 aplicada ledger20261009225111/privada8; R5ledger20261009224204/pública10. GraphQL ausente/não homologado, sem dependência deREST/RPC/Storage/Edges emescopo. Relatório26/provasR5. Ainda semnovo commit/push/deploy; próximo publicação autorizada e leitura autenticada nos dois domínios.
+
+
+## Acesso Direto0.4.0 publicado; Configurações pendente — 09/10/2026, 17:44:08 -03
+
+GitHubresgate-local:f92e9a4+b56848ce, pushsemforce confirmado. Ambosdomínios servem0.4.0/b56848ce/árvorelimpa; HTTP/bundles/rotas200, não prova autenticada. ADhabilitadoSQL/serviço/frontend após testes reais83+2anteriores e30assertivasR3/RPCbilateral, proteçõesmantidas. CFGfrontendfalse: upload503 por encodePNG inexistente corrigido; PNG/transparênciaLOCAL passou, Edgeprivada6exata; provasconectadasrestantes não aprovadas. Todas14contas/6contextos encerradas; MCP+finallyconfirmam0sessões/refresh/vínculos nasnovas,contextosativos0,allowlist0; não criar substitutas nemreativar. Dashboard/manualpreservada; GraphQLausente nãohomologado. IABpúblico semsessão; sólogininterativo solicitado para conferir0.4.0, não credenciais. Servidores3000/5189disponíveis. Relatório24/evidênciapublicacao-sanitizada.json; recuperação porrevertb56848ce+gatesfalse mantendoRLS/hook. Registrosfinais locaisnão commitados apósdeploy. Próximo: conferirproduçãoautenticada quandonova sessãoexistir; Configurações requer decisão limitada de novosrecursos para repetirapósfix.
+
+
 ## Acesso Direto aprovado; Configurações impedida — 09/10/2026, 17:32:31 -03
 
 AD aprovado em provas reais H1–H5 anteriores+RPCbilateralI1/I2(30assertivas), encerrados. Configurações C-A3salvou/leu/F5; uploadfalhou503 por encodePNG inexistente. Corrigido encode, teste localPNG/transparênciapassou; Edgeprivada5→6exata, ainda sem rehomologação conectada. Finally/MCP confirmaram novasfixtures encerradas; máximo14contas/6contextos consumidos, todosencerrados. CFGnormalfalse, ADfrontendtrue preparado0.4.0; gatesbackendgeral aindafalseatéativaçãoverificada. Próximo: verificações direcionadas, commit/push/deployADnasduasclínicas; CFG requer nova decisão de recursos para repetiçãoapósfix. Não pedir novamente publicação jáautorizada. Relatório24/evidênciasR3; GraphQLausente nãohomologado.
@@ -1550,3 +1560,21 @@ Próximo: commit exato na cópia, envio sem force, confirmação dos dois builds
 publicada nas sessões autorizadas. Resultado posterior pode permanecer só local.
 
 [Registro consolidado](<docs/modulos/equipe/34-CONSOLIDACAO-HOMOLOGACAO-REAL.md>).
+
+## Conferência autenticada da publicação — 09/10/2026, 18:00 -03
+
+Após o usuário informar “logado nas duas”, o agente observou as sessões legítimas nas abas do navegador Codex dos dois domínios. Login foi realizado interativamente pelo usuário; nenhuma senha/token/cookie foi extraído. Conferência AUTOMÁTICA POR LEITURA: quatro blocos da dashboard, Agenda, Financeiro, Meu perfil aberto sem edição, Equipe → Novo membro com “Criar acesso com senha temporária” habilitado, troca de clínica nos dois sentidos e recarga mantendo sessão. Sem alertas observados; formulários fechados sem salvar e dashboards devolvidas às clínicas originais. Não é novo teste de criação em produção nem nova comparação dos valores financeiros; estas continuam respaldadas pela homologação fictícia e conferência manual anterior, respectivamente.
+
+Resultado: Acesso Direto 0.4.0/b56848ce publicado e disponível em ambos os domínios; dashboard preservada. Configurações continua desligada e NÃO está homologada após a correção do upload. Nenhuma conta adicional criada nesta conferência.
+
+Investigação complementar LOCAL: tests/configuracoes/deno.d.ts declarava indevidamente encodePNG, mascarando a ausência no pacote oficial ImageScript1.3.0. Declaração corrigida para encode(compression?), e scripts/test-configuracoes-imagem.mjs compara a API declarada com a biblioteca REAL e verifica PNG/transparência. Teste aprovado localmente; não é prova de upload conectado. Esses dois arquivos e os registros posteriores ao deploy permanecem locais, não incluídos nos commits publicados.
+
+Único impedimento restante de Configurações: repetir a homologação conectada após a correção exige recursos novos; o limite autorizado de 14 contas/6 contextos foi consumido e todos estão encerrados. Proposta concreta NÃO AUTORIZADA em database/proposals/configuracoes/homologacao-r4/README.md: somente 2 novas contas/2 contextos, total máximo16/8, uma migration aditiva restrita e atualização somente do resolver configuracoes-publicas. Não executada; não reativar anteriores. Preparação/revisão final do executor deve anteceder qualquer criação. Autorizações de habilitação após aprovação, commit/push/deploy continuam válidas; não substituem o limite numérico de fixtures.
+
+GraphQL permanece ausente e não homologado funcionalmente; nenhum consumidor desses recursos depende de GraphQL no pacote revisado. Nenhuma extensão instalada, proteção removida ou dado real salvo. TypeSafe avaliada: controles e cálculos determinísticos, sem integração de IA.
+## Configurações R4: provas parciais e recursos encerrados — 09/10/2026, 18:20 -03
+
+R4 aplicada (ledger20261009210549), catálogo/ACL/integridade8pass; pública9 exata, privada7/encode já corrigida preservada.16provas reais parciais no A passaram: salvamento/F5/PNG/leitura/timbrado/cabeçalho/rodapé/PDF/login. Falha do executor após logoutglobal: SDKauxiliar antigo401, erro secundário revisao; causa identificada e corrigida LOCALMENTE.5testes dirigidosSDKreal/transporteSINTÉTICO passaram; tipos e build bancadas passaram. B/concorrência/histórico/substituição/JPEG/reconciliação/isolamento ainda não homologados. Finally+MCP:16contasbanidas/8contextosinativos,novas sessões/refresh/vínculos0,públiconull/logo404,0versões reais nasduasclínicas. CFGfalse; nenhum novo commit/push/deploy. Domínios mantêm0.4.0/b56848ce; dashboard/AD/trabalhosparalelos preservados. Relatório25 e provasR4. R5proposta2contas/2contextos (máximo18/10),NÃO AUTORIZADA/NÃO EXECUTADA,executorcorrigido e bancada preparada; não reativar anteriores. Próximo: decisão limitada sobre recursos; depois testes restantes/encerramento e publicação somente se aprovados.
+
+
+Detalhes: 25-CONFIGURACOES-R4-HOMOLOGACAO-PUBLICACAO.md.

@@ -1,5 +1,10 @@
 # Equipe — checkpoint da primeira entrega
 
+## Acesso Direto0.4.0 publicado; Configurações pendente — 09/10/2026, 17:44:08 -03
+
+GitHubresgate-local:f92e9a4+b56848ce, pushsemforce confirmado. Ambosdomínios servem0.4.0/b56848ce/árvorelimpa; HTTP/bundles/rotas200, não prova autenticada. ADhabilitadoSQL/serviço/frontend após testes reais83+2anteriores e30assertivasR3/RPCbilateral, proteçõesmantidas. CFGfrontendfalse: upload503 por encodePNG inexistente corrigido; PNG/transparênciaLOCAL passou, Edgeprivada6exata; provasconectadasrestantes não aprovadas. Todas14contas/6contextos encerradas; MCP+finallyconfirmam0sessões/refresh/vínculos nasnovas,contextosativos0,allowlist0; não criar substitutas nemreativar. Dashboard/manualpreservada; GraphQLausente nãohomologado. IABpúblico semsessão; sólogininterativo solicitado para conferir0.4.0, não credenciais. Servidores3000/5189disponíveis. Relatório24/evidênciapublicacao-sanitizada.json; recuperação porrevertb56848ce+gatesfalse mantendoRLS/hook. Registrosfinais locaisnão commitados apósdeploy. Próximo: conferirproduçãoautenticada quandonova sessãoexistir; Configurações requer decisão limitada de novosrecursos para repetirapósfix.
+
+
 ## Acesso Direto aprovado; Configurações impedida — 09/10/2026, 17:32:31 -03
 
 AD aprovado em provas reais H1–H5 anteriores+RPCbilateralI1/I2(30assertivas), encerrados. Configurações C-A3salvou/leu/F5; uploadfalhou503 por encodePNG inexistente. Corrigido encode, teste localPNG/transparênciapassou; Edgeprivada5→6exata, ainda sem rehomologação conectada. Finally/MCP confirmaram novasfixtures encerradas; máximo14contas/6contextos consumidos, todosencerrados. CFGnormalfalse, ADfrontendtrue preparado0.4.0; gatesbackendgeral aindafalseatéativaçãoverificada. Próximo: verificações direcionadas, commit/push/deployADnasduasclínicas; CFG requer nova decisão de recursos para repetiçãoapósfix. Não pedir novamente publicação jáautorizada. Relatório24/evidênciasR3; GraphQLausente nãohomologado.

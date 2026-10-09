@@ -1,9 +1,9 @@
 {
-  "versaoEmDesenvolvimento": "0.4.0",
+  "versaoEmDesenvolvimento": "0.5.0",
   "naoLancadas": {
     "novidades": [
       "Equipe: Novo membro permite criar acesso com senha temporária individual válida por 24 horas e papéis explícitos por clínica. A troca por senha pessoal é obrigatória antes de acessar os módulos; a senha e as sessões temporárias anteriores são recusadas após a ativação.",
-      "Configurações continua em preparação e indisponível nos sites publicados. A prévia local permanece disponível; salvamento de apresentação, imagens e login aguarda conclusão das verificações conectadas.",
+      "Configurações: Proprietário(a) pode salvar rascunhos e aplicar dados da clínica, identidade visual, logos, timbrados, cabeçalho, rodapé e personalização do login. O histórico conserva versões e a edição permanece restrita à unidade autorizada.",
       "Meu perfil: configure seu nome e sua foto pessoal pelo avatar ou pela identificação do menu. Salvar confirma a gravação no servidor; é possível substituir ou remover a foto, com prévia e cancelamento. A identidade acompanha a conta entre clínicas; a foto profissional da Equipe permanece independente.",
       "Equipe: seção Atuação e atendimentos por clínica, com fontes de duração, disponibilidade, preço e participação financeira. Vínculos individuais de serviços aguardam definição.",
       "Equipe: fichas ampliadas com dados pessoais, contratos e jornada, formação, documentos privados e histórico. Foto, recebimento e acessos permanecem em seções próprias.",
@@ -20,7 +20,7 @@
     ],
     "melhorias": [
       "Dashboard do Proprietário(a): movimento e Agenda do dia, resumo oficial do Financeiro e pendências da clínica selecionada. Agendados conta os estados agendado/confirmado; atendimentos aguardando ou iniciados continuam visíveis quando não há horários futuros. Atualizar painel consulta todos os blocos e diferencia atualização de origem, ausência de dados e falha.",
-      "Configurações: prévia fictícia A4 acompanha a apresentação em edição após uma breve pausa; gerar e baixar o PDF continuam ações explícitas. PDF usa fontes livres incorporadas e medidas corrigidas. Avisos técnicos ficam em ajuda recolhível, com clínica, alcance e limitações visíveis. Conflito com dados oficiais oferece atualização confirmada do rascunho, preservando apresentação e imagens, após ativação do backend. Alterações locais ainda não publicadas.",
+      "Configurações: prévia A4 acompanha a edição; gerar e baixar PDF de demonstração continuam ações explícitas. Conflitos de edição exigem reconsulta; atualizar os dados oficiais no rascunho preserva apresentação e imagens. Emissores clínicos futuros continuam fora desta entrega.",
       "Equipe: na ficha, Formação mostra contadores e cada inscrição com selos de informação e conferência; Atuação aparece em cartões de agenda e valores, serviços e disponibilidade; Recebimento ganhou um cartão único com a chave PIX mascarada como antes; Documentos viraram uma tabela (cartões no celular) com visualizar, baixar e “Mais ações”; o Histórico é uma linha do tempo por dia.",
       "Equipe: na ficha, cada contrato aparece em um cartão com situação, vínculo, versão, unidades e jornada; o contrato vigente fica aberto e os demais recolhidos. A remuneração restrita só aparece depois de “Mostrar valor”. Acesso ao sistema ganhou cartões para a situação da conta, o acesso por clínica e o convite, com as mesmas regras e validações.",
       "Equipe: ficha do membro com cabeçalho de identidade (foto, nome, função, selos de tipo, clínicas, acesso e pendências), menu agrupado em Pessoa, Trabalho e Sistema e botão único para atualizar as informações. Visão geral mostra o que falta no cadastro e resumos de contrato, atendimento, acesso e recebimento; Dados pessoais aparecem em cartões com campos vazios como “Não informado”. No celular o cabeçalho rola com o conteúdo e o menu fica fixo no topo.",
@@ -63,6 +63,7 @@
       "Equipe: a gestão de acessos por clínica foi instalada no Supabase autorizado e publicada na Edge Function, com consulta real de acesso em Brotas e estado vazio correto em Ipupiara; convite e aceite aguardam redirect allowlisted e conta de teste autorizada."
     ],
     "correcoes": [
+      "Configurações: envio de PNG/JPEG reencoda a imagem no servidor; conflitos de versão retornam recusa imediata, preservando os dados e evitando repetição automática da requisição.",
       "Configurações: enquanto a homologação está pendente, a edição fica indisponível no ambiente publicado. A prévia local foi preservada.",
       "Sistema Multiclínicas: novo login comum abre a dashboard da clínica autorizada; recargas preservam a página. Saudação usa o nome cadastrado e o horário da Bahia. Identificação da conta no menu e cabeçalho, com foto privada somente por vínculo confirmado ou iniciais. Equipe e Financeiro continuam no menu; cartões explicativos retirados da dashboard.",
       "Equipe: conflitos de revisão nas novas fichas, fotos e documentos retornam a orientação de reconsulta, sem repetição automática da operação pelo servidor.",

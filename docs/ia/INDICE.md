@@ -1,5 +1,10 @@
 # Memória compartilhada — mapa de leitura
 
+## Acesso Direto0.4.0 publicado; Configurações pendente — 09/10/2026, 17:44:08 -03
+
+GitHubresgate-local:f92e9a4+b56848ce, pushsemforce confirmado. Ambosdomínios servem0.4.0/b56848ce/árvorelimpa; HTTP/bundles/rotas200, não prova autenticada. ADhabilitadoSQL/serviço/frontend após testes reais83+2anteriores e30assertivasR3/RPCbilateral, proteçõesmantidas. CFGfrontendfalse: upload503 por encodePNG inexistente corrigido; PNG/transparênciaLOCAL passou, Edgeprivada6exata; provasconectadasrestantes não aprovadas. Todas14contas/6contextos encerradas; MCP+finallyconfirmam0sessões/refresh/vínculos nasnovas,contextosativos0,allowlist0; não criar substitutas nemreativar. Dashboard/manualpreservada; GraphQLausente nãohomologado. IABpúblico semsessão; sólogininterativo solicitado para conferir0.4.0, não credenciais. Servidores3000/5189disponíveis. Relatório24/evidênciapublicacao-sanitizada.json; recuperação porrevertb56848ce+gatesfalse mantendoRLS/hook. Registrosfinais locaisnão commitados apósdeploy. Próximo: conferirproduçãoautenticada quandonova sessãoexistir; Configurações requer decisão limitada de novosrecursos para repetirapósfix.
+
+
 ## Estado atual R3 / release0.4.0 preparada — 09/10/2026, 17:36:42 -03
 
 Acesso Direto homologado conectado, inclusive RPC bilateral I1/I2; preparado para publicação autorizada. Configurações permanece desligada: upload503 identificado/corrigido (encode oficial), teste PNG local aprovado, rehomologação conectada ainda necessária. Todos14contas/6contextos encerrados; limite não renova após encerramento. Dashboard0.3.0/manual preservada. GraphQL ausente e não homologado funcionalmente. Detalhes atuais: relatório24-HOMOLOGACAO-R3-E-PUBLICACAO-FINAL.md; report23 conserva falha histórica. Tipos/notas/build/lint dirigido e4/4 separação sintética juntos aprovados. Sem afirmar publicação nesta preparação.
@@ -273,3 +278,12 @@ Próximo: commit exato na cópia, envio sem force, confirmação dos dois builds
 publicada nas sessões autorizadas. Resultado posterior pode permanecer só local.
 
 [Registro consolidado](<../modulos/equipe/34-CONSOLIDACAO-HOMOLOGACAO-REAL.md>).
+
+## Configurações R4: provas parciais e recursos encerrados — 09/10/2026, 18:20 -03
+
+R4 aplicada (ledger20261009210549), catálogo/ACL/integridade8pass; pública9 exata, privada7/encode já corrigida preservada.16provas reais parciais no A passaram: salvamento/F5/PNG/leitura/timbrado/cabeçalho/rodapé/PDF/login. Falha do executor após logoutglobal: SDKauxiliar antigo401, erro secundário revisao; causa identificada e corrigida LOCALMENTE.5testes dirigidosSDKreal/transporteSINTÉTICO passaram; tipos e build bancadas passaram. B/concorrência/histórico/substituição/JPEG/reconciliação/isolamento ainda não homologados. Finally+MCP:16contasbanidas/8contextosinativos,novas sessões/refresh/vínculos0,públiconull/logo404,0versões reais nasduasclínicas. CFGfalse; nenhum novo commit/push/deploy. Domínios mantêm0.4.0/b56848ce; dashboard/AD/trabalhosparalelos preservados. Relatório25 e provasR4. R5proposta2contas/2contextos (máximo18/10),NÃO AUTORIZADA/NÃO EXECUTADA,executorcorrigido e bancada preparada; não reativar anteriores. Próximo: decisão limitada sobre recursos; depois testes restantes/encerramento e publicação somente se aprovados.
+
+
+Detalhes: 25-CONFIGURACOES-R4-HOMOLOGACAO-PUBLICACAO.md.
+
+- Sistema26: `docs/modulos/sistema/26-CONFIGURACOES-R5-HOMOLOGACAO-PUBLICACAO.md` — R5 real aprovada, recursos encerrados,0.5.0 preparada; comprovação publicada registrada na própria entrega.

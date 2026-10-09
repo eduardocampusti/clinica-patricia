@@ -370,3 +370,13 @@ Somente xftnkusbyqzyvzrovroj: migration adicional R2 de Configurações registra
 ## R3 Configurações — 09/10/2026, 17:27:01 -03
 
 Migration restrita dos dois contextos adicionais aprovada; função/CHECK/ACL conferidos pelo catálogo, oito SELECTs de verificar-integridade.sql sem contagem de pacientes:0ausências. Nenhuma alteração em tabelas/dados de pacientes. Evidência sanitizada: database/proofs/configuracoes/2026-10-09-r3/integridade-r3.json.
+
+
+## Integridade após ConfiguraçõesR4 — 09/10/2026, 18:20 -03
+
+Alvoxftnkusbyqzyvzrovroj. Após única migrationconfiguracoes_homologacao_r4,8SELECTs de supabase/tools/verificar-integridade.sql (seções1–5) aprovados,sem consulta de dados identificáveis de pacientes. CatálogoSECDEF/search_path/ACL/CHECKs confirmounovoescopo restrito; móduloPacientes e dados reais preservados. R4encerrada após errodeexecutor,16/8consumidos. Evidência database/proofs/configuracoes/2026-10-09-r4/integridade.json e relatório25. Não considerar ledger como prova única.
+
+
+### 2026-10-09T23:01:31.694Z — Integridade Configurações R5 e conflitoPT409
+
+Alvoxftnkusbyqzyvzrovroj, sem alteração em pacientes. Após cada migração: catálogo/ACL e8leituras oficiais de integridade aprovados; provas em database/proofs/configuracoes/2026-10-09-r5. Mudança de erro funcional preserva service_role/SECDEF/search_path e guards.18/10 recursos fictícios encerrados,0versõesConfig nasclínicas reais.

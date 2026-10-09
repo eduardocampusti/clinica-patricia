@@ -1,0 +1,39 @@
+{
+  "ambiente": "PostgreSQL LOCAL55449; sintético, sem Supabase/Auth real",
+  "data": "2026-10-09T21:23:33.403Z",
+  "resultados": [
+    {
+      "requisito": "Fonte local reproduz fingerprint oficial R4",
+      "aprovado": true
+    },
+    {
+      "requisito": "Migration R5 compila e preserva ACL restrita",
+      "aprovado": true
+    },
+    {
+      "requisito": "Fonte geral canônica permanece inalterada",
+      "aprovado": true
+    },
+    {
+      "requisito": "Contexto histórico/novo conserva padrão sintético ed002c24-5c6c-4e8c-b90c-aa4751280001",
+      "aprovado": true
+    },
+    {
+      "requisito": "Contexto histórico/novo conserva padrão sintético dcf5302b-1a4e-4eb7-b2cc-a88a77150001",
+      "aprovado": true
+    },
+    {
+      "requisito": "Contexto histórico/novo conserva padrão sintético dcf5302b-1a4e-4eb7-b2cc-a88a77150002",
+      "aprovado": true
+    },
+    {
+      "requisito": "Reaplicação não passa após consumo/alteração de fingerprint",
+      "aprovado": true
+    },
+    {
+      "requisito": "Histórico fictício preservado após recusa",
+      "aprovado": true
+    }
+  ],
+  "bancoDescartavelEncerrado": true
+}

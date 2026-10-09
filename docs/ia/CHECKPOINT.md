@@ -1,5 +1,30 @@
 # Checkpoint operacional — Clínica Patrícia
 
+## Configurações R5 homologada;0.5.0 preparada — 2026-10-09T23:01:31.694Z
+
+Provas reais completas após correções:75requisitos finais aprovados (82registros/80pass/2falhas históricas retestadas). PNG/JPEG, persistência/F5, histórico, concorrência409, login público, permissões/isolamento bilateral aprovados.18contas/10contextos encerrados; novas2banidas,0sessões/refresh/vínculos,10ctxinativos,públiconull,0versões reais. CFGtrue/versão0.5.0 preparadas após encerramento. Dashboard/AD0.4.0 preservados no checkoutisolado, primário mantém trabalhos paralelos. Migração corretivaPT409 aplicada ledger20261009225111/privada8; R5ledger20261009224204/pública10. GraphQL ausente/não homologado, sem dependência deREST/RPC/Storage/Edges emescopo. Relatório26/provasR5. Ainda semnovo commit/push/deploy; próximo publicação autorizada e leitura autenticada nos dois domínios.
+
+
+## Configurações R5 autorizada e aplicada; recursos ainda não criados — 2026-10-09T22:46:29.131Z
+
+Máximo18/10, duas contas/dois contextos uso único. Migração ledger20261009224204 e pública10 aplicadas; privada7 intacta, catálogo/ACL/integridade8/8. Executor corrigido e6 testes de sessão locais/8 SQL locais aprovados; provas conectadas restantes ainda pendentes. CFGfalse, AD/dashboard0.4.0 preservados; nenhum commit/push novo. Relatório26. Próximo: execução real limitada e encerramento, depois publicação se integralmente aprovada.
+
+
+## Configurações R4: provas parciais e recursos encerrados — 09/10/2026, 18:20 -03
+
+R4 aplicada (ledger20261009210549), catálogo/ACL/integridade8pass; pública9 exata, privada7/encode já corrigida preservada.16provas reais parciais no A passaram: salvamento/F5/PNG/leitura/timbrado/cabeçalho/rodapé/PDF/login. Falha do executor após logoutglobal: SDKauxiliar antigo401, erro secundário revisao; causa identificada e corrigida LOCALMENTE.5testes dirigidosSDKreal/transporteSINTÉTICO passaram; tipos e build bancadas passaram. B/concorrência/histórico/substituição/JPEG/reconciliação/isolamento ainda não homologados. Finally+MCP:16contasbanidas/8contextosinativos,novas sessões/refresh/vínculos0,públiconull/logo404,0versões reais nasduasclínicas. CFGfalse; nenhum novo commit/push/deploy. Domínios mantêm0.4.0/b56848ce; dashboard/AD/trabalhosparalelos preservados. Relatório25 e provasR4. R5proposta2contas/2contextos (máximo18/10),NÃO AUTORIZADA/NÃO EXECUTADA,executorcorrigido e bancada preparada; não reativar anteriores. Próximo: decisão limitada sobre recursos; depois testes restantes/encerramento e publicação somente se aprovados.
+
+
+## Produção autenticada conferida — 09/10/2026, 18:00 -03
+
+Acesso Direto0.4.0/b56848ce disponível nos dois domínios. Após login interativo informado pelo usuário, agente confirmou automaticamente por leitura dashboard/quatro blocos, Agenda, Financeiro, Meu perfil, Novo membro/opção senha temporária, troca bilateral e F5; sem salvar dados/criar contas. Dashboard e comparação manual anterior preservadas. Configurações ainda false: upload503 corrigido na Edge6, teste biblioteca real e declaração de tipos corrigida aprovados LOCALMENTE; falta repetir prova conectada. Limite14/6 consumido/TODOS encerrados. Proposta R4 concreta2contas/2contextos (máximo16/8), NÃO AUTORIZADA/NÃO EXECUTADA; não reativar anteriores. GraphQL ausente/não homologado. Relatório24 atualizado. Novos registros/teste de imagem/proposta locais fora dos commits já publicados. Próximo: decisão específica de recursos R4; depois revisão final executor, homologação/encerramento e publicação CFG se aprovada, sem nova autorização de deploy.
+
+
+## Acesso Direto0.4.0 publicado; Configurações pendente — 09/10/2026, 17:44:08 -03
+
+GitHubresgate-local:f92e9a4+b56848ce, pushsemforce confirmado. Ambosdomínios servem0.4.0/b56848ce/árvorelimpa; HTTP/bundles/rotas200, não prova autenticada. ADhabilitadoSQL/serviço/frontend após testes reais83+2anteriores e30assertivasR3/RPCbilateral, proteçõesmantidas. CFGfrontendfalse: upload503 por encodePNG inexistente corrigido; PNG/transparênciaLOCAL passou, Edgeprivada6exata; provasconectadasrestantes não aprovadas. Todas14contas/6contextos encerradas; MCP+finallyconfirmam0sessões/refresh/vínculos nasnovas,contextosativos0,allowlist0; não criar substitutas nemreativar. Dashboard/manualpreservada; GraphQLausente nãohomologado. IABpúblico semsessão; sólogininterativo solicitado para conferir0.4.0, não credenciais. Servidores3000/5189disponíveis. Relatório24/evidênciapublicacao-sanitizada.json; recuperação porrevertb56848ce+gatesfalse mantendoRLS/hook. Registrosfinais locaisnão commitados apósdeploy. Próximo: conferirproduçãoautenticada quandonova sessãoexistir; Configurações requer decisão limitada de novosrecursos para repetirapósfix.
+
+
 ## Acesso Direto aprovado; Configurações impedida — 09/10/2026, 17:32:31 -03
 
 AD aprovado em provas reais H1–H5 anteriores+RPCbilateralI1/I2(30assertivas), encerrados. Configurações C-A3salvou/leu/F5; uploadfalhou503 por encodePNG inexistente. Corrigido encode, teste localPNG/transparênciapassou; Edgeprivada5→6exata, ainda sem rehomologação conectada. Finally/MCP confirmaram novasfixtures encerradas; máximo14contas/6contextos consumidos, todosencerrados. CFGnormalfalse, ADfrontendtrue preparado0.4.0; gatesbackendgeral aindafalseatéativaçãoverificada. Próximo: verificações direcionadas, commit/push/deployADnasduasclínicas; CFG requer nova decisão de recursos para repetiçãoapósfix. Não pedir novamente publicação jáautorizada. Relatório24/evidênciasR3; GraphQLausente nãohomologado.
@@ -1103,3 +1128,6 @@ Próximo: commit exato na cópia, envio sem force, confirmação dos dois builds
 publicada nas sessões autorizadas. Resultado posterior pode permanecer só local.
 
 [Registro consolidado](<../modulos/equipe/34-CONSOLIDACAO-HOMOLOGACAO-REAL.md>).
+
+
+Preparação complementar LOCAL posterior:6/6 testes de sessões/SDK/gate de encerramento passaram; proposta R5 passou8/8 testes PostgreSQLLOCAL, semSupabase, banco descartável removido e servidor auxiliar desligado. BancadaR5 compilada, tipos backend aprovados. Não substituem homologação conectada. Executor corrigido também evita abandonar a tentativa de bloqueio Auth por erro de inventário e impede aprovação quando o encerramento estiver incompleto. R5continuaNÃO AUTORIZADA/NÃO EXECUTADA.

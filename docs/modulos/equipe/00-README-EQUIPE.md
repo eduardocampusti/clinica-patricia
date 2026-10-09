@@ -1,5 +1,10 @@
 # Equipe — índice do módulo
 
+## Acesso Direto0.4.0 publicado; Configurações pendente — 09/10/2026, 17:44:08 -03
+
+GitHubresgate-local:f92e9a4+b56848ce, pushsemforce confirmado. Ambosdomínios servem0.4.0/b56848ce/árvorelimpa; HTTP/bundles/rotas200, não prova autenticada. ADhabilitadoSQL/serviço/frontend após testes reais83+2anteriores e30assertivasR3/RPCbilateral, proteçõesmantidas. CFGfrontendfalse: upload503 por encodePNG inexistente corrigido; PNG/transparênciaLOCAL passou, Edgeprivada6exata; provasconectadasrestantes não aprovadas. Todas14contas/6contextos encerradas; MCP+finallyconfirmam0sessões/refresh/vínculos nasnovas,contextosativos0,allowlist0; não criar substitutas nemreativar. Dashboard/manualpreservada; GraphQLausente nãohomologado. IABpúblico semsessão; sólogininterativo solicitado para conferir0.4.0, não credenciais. Servidores3000/5189disponíveis. Relatório24/evidênciapublicacao-sanitizada.json; recuperação porrevertb56848ce+gatesfalse mantendoRLS/hook. Registrosfinais locaisnão commitados apósdeploy. Próximo: conferirproduçãoautenticada quandonova sessãoexistir; Configurações requer decisão limitada de novosrecursos para repetirapósfix.
+
+
 ## Estado atual R3 / release0.4.0 preparada — 09/10/2026, 17:36:42 -03
 
 Acesso Direto homologado conectado, inclusive RPC bilateral I1/I2; preparado para publicação autorizada. Configurações permanece desligada: upload503 identificado/corrigido (encode oficial), teste PNG local aprovado, rehomologação conectada ainda necessária. Todos14contas/6contextos encerrados; limite não renova após encerramento. Dashboard0.3.0/manual preservada. GraphQL ausente e não homologado funcionalmente. Detalhes atuais: relatório24-HOMOLOGACAO-R3-E-PUBLICACAO-FINAL.md; report23 conserva falha histórica. Tipos/notas/build/lint dirigido e4/4 separação sintética juntos aprovados. Sem afirmar publicação nesta preparação.
