@@ -1,5 +1,16 @@
 # Versionamento seletivo de Dashboard, Configurações e Acesso Direto
 
+## Publicação confirmada —09/10/2026,13:25:17 -03
+
+Push explícito sem force/tags/merge de resgate-local confirmou HEADde15bd1432fc3cab0ea8c852e463970ae9e2381d no remoto. Contém 2bcd8a4f47a2dc78fcc8c1715e3242d114fbe651 e df74106eee4999a53a88a2bca72ab25cc1ab0c63. Auto-deploy autorizado efetivado: ambos domínios servem0.3.0/de15bd14/alteracoesLocais=false. Brotas compilada16:24:54.224Z, bundleindex-BEWapG86.js; Ipupiara16:24:51.026Z, index-8K6wtdfQ.js. HTML/bundle200 e rotas dashboard/equipe/financeiro/configuracoes200 com SPA correspondente. Não é prova autenticada nem leitura de status do job Hostinger.
+
+Dashboard publicada; Configurações e Acesso Direto continuam bloqueados para liberação. Confirmação manual de indicadores e sessão LOCAL B/I preservada. Conferência autenticada da produção solicitada, ainda sem resposta nesta gravação. Bench real5189 preparado para leitura normal do criador, sem tokens no chat; nenhuma fixture nova consumida. Antigas3 contas/2 contextos seguem encerradas, GraphQL ausente. Não alterados banco/Auth/Edges/controles ou dados clínicos nesta publicação. Tipos/lint/notas/build/diff-check aprovados;4/4 provas de separação são simuladas. Recuperação exata por revert dos três commits preparada e não executada.
+
+As linhas anteriores que dizem preparação/push pendente são HISTÓRICAS. O resultado acima é a evidência atual. Registros finais locais após o commit; não gerar deploy documental em ciclo.
+
+[Resultado e pendências](20-PUBLICACAO-PARCIAL-E-HOMOLOGACAO-PENDENTE.md).
+
+
 Data:09/10/2026,11:54 -03 (America/Bahia). Preparação e commits locais autorizados.
 **Push pendente; não houve publicação nem nova escrita no Supabase.**
 

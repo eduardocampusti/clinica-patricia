@@ -1,0 +1,159 @@
+{
+  "projeto": "xftnkusbyqzyvzrovroj",
+  "inicio": "2026-10-09T20:16:30.281Z",
+  "origemCriacao": "Novo membro na aba IAB legítima; requisição original SDK, sem mocks; whitelist restrita pela bancada",
+  "origemAtivacao": "Sessões Auth reais e aplicação normal em navegador isolado de fixtures",
+  "testes": [
+    {
+      "requisito": "Preflight: duas contas inéditas, limites e criador nas duas unidades",
+      "aprovado": true
+    },
+    {
+      "requisito": "Flag anterior desligada ou ausente identificada sem expor segredo",
+      "aprovado": true
+    },
+    {
+      "requisito": "Operação única, validade e senha individual I1",
+      "aprovado": true
+    },
+    {
+      "requisito": "Dois logins temporários reais I1",
+      "aprovado": true
+    },
+    {
+      "requisito": "Obrigação confirmada pelo servidor I1",
+      "aprovado": true
+    },
+    {
+      "requisito": "Tabelas, RPC e serviço bloqueados antes da troca I1",
+      "aprovado": true
+    },
+    {
+      "requisito": "Usuário não elimina pendência alterando metadata I1",
+      "aprovado": true
+    },
+    {
+      "requisito": "Tela normal exige troca antes de módulos I1",
+      "aprovado": true
+    },
+    {
+      "requisito": "Novo login real com senha pessoal I1",
+      "aprovado": true
+    },
+    {
+      "requisito": "Sessão nova liberada após conclusão verificada I1",
+      "aprovado": true
+    },
+    {
+      "requisito": "Senha temporária anterior rejeitada I1",
+      "aprovado": true
+    },
+    {
+      "requisito": "Sessão temporária antiga, dados e refresh recusados I1",
+      "aprovado": true
+    },
+    {
+      "requisito": "Papéis e vínculos exatos I1",
+      "aprovado": true
+    },
+    {
+      "requisito": "Dashboard e F5 reais após ativação I1",
+      "aprovado": true
+    },
+    {
+      "requisito": "Operação única, validade e senha individual I2",
+      "aprovado": true
+    },
+    {
+      "requisito": "Dois logins temporários reais I2",
+      "aprovado": true
+    },
+    {
+      "requisito": "Obrigação confirmada pelo servidor I2",
+      "aprovado": true
+    },
+    {
+      "requisito": "Tabelas, RPC e serviço bloqueados antes da troca I2",
+      "aprovado": true
+    },
+    {
+      "requisito": "Usuário não elimina pendência alterando metadata I2",
+      "aprovado": true
+    },
+    {
+      "requisito": "Tela normal exige troca antes de módulos I2",
+      "aprovado": true
+    },
+    {
+      "requisito": "Novo login real com senha pessoal I2",
+      "aprovado": true
+    },
+    {
+      "requisito": "Sessão nova liberada após conclusão verificada I2",
+      "aprovado": true
+    },
+    {
+      "requisito": "Senha temporária anterior rejeitada I2",
+      "aprovado": true
+    },
+    {
+      "requisito": "Sessão temporária antiga, dados e refresh recusados I2",
+      "aprovado": true
+    },
+    {
+      "requisito": "Papéis e vínculos exatos I2",
+      "aprovado": true
+    },
+    {
+      "requisito": "Dashboard e F5 reais após ativação I2",
+      "aprovado": true
+    },
+    {
+      "requisito": "RPC real permite pessoa própria I1",
+      "aprovado": true
+    },
+    {
+      "requisito": "RPC real recusa outra clínica I1",
+      "aprovado": true
+    },
+    {
+      "requisito": "RPC real permite pessoa própria I2",
+      "aprovado": true
+    },
+    {
+      "requisito": "RPC real recusa outra clínica I2",
+      "aprovado": true
+    }
+  ],
+  "recursos": [
+    {
+      "membro": "35fe1bbe-8dc8-4c29-b3fd-8f7699f16949"
+    },
+    {
+      "membro": "ded5e132-31f4-4580-ac31-f92ee4b23ecb"
+    }
+  ],
+  "encerramento": [
+    {
+      "id": "31e55cfd-bc1c-47bf-96c7-1e7a58569840",
+      "ban": true,
+      "perfil_ativo": false,
+      "refresh_ativos": 0,
+      "sessoes": 0,
+      "vinculos_ativos": 0,
+      "aprovado": true
+    },
+    {
+      "id": "74036597-75d4-49f1-bdf2-165bfd626631",
+      "ban": true,
+      "perfil_ativo": false,
+      "refresh_ativos": 0,
+      "sessoes": 0,
+      "vinculos_ativos": 0,
+      "aprovado": true
+    }
+  ],
+  "aprovado": true,
+  "motivoEncerramento": "conclusao",
+  "fim": "2026-10-09T20:21:54.351Z"
+}

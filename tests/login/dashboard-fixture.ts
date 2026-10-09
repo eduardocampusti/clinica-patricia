@@ -42,6 +42,9 @@ export async function preparar(page: Page, papel: Papel = 'proprietaria', modo: 
     if (url.pathname.endsWith('/auth/v1/token')) return json({ access_token: token(user.id), refresh_token: 'synthetic', expires_in: 3600, token_type: 'bearer', user })
     if (url.pathname.endsWith('/auth/v1/logout')) return route.fulfill({ status: 204, headers })
     const recurso = url.pathname.split('/').pop() ?? ''
+    // Resposta explicitamente SINTÉTICA para a guarda agora habilitada na release.
+    // Sem esta fixture, POST era recusado e a tela bloqueava corretamente.
+    if (url.pathname === '/rest/v1/rpc/acesso_direto_estado' && request.method() === 'POST') return json({ estado: 'normal' })
     const leituraPost = (url.pathname.startsWith('/rest/v1/rpc/') && ['equipe_listar', 'equipe_foto_autorizar', 'financeiro_dashboard_proprietaria'].includes(recurso)) || (['equipe-acessos', 'meu-perfil'].includes(recurso) && ['listar', 'consultar'].includes(request.postDataJSON().acao))
     if (request.method() !== 'GET' && !leituraPost) { escritas.push(url.pathname); return json({ message: 'Mutação sintética bloqueada' }, 403) }
     consultas.push({ recurso, usuario: url.searchParams.get('usuario_id') ?? url.searchParams.get('id'), clinica: url.searchParams.get('clinica_id') ?? request.headers()['x-clinica-id'] ?? null })

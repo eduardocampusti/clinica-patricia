@@ -1,0 +1,38 @@
+# Destravamento da bancada conectada —09/10/2026,14:13 -03
+
+## R2 aplicada; execução interrompida e recursos encerrados —09/10/2026,15:10 -03
+
+Aplicada somente migration R2 (ledger20261009174524) e Edge configuracoes-publicas1→2; catálogo/ACL/conteúdo e8 consultas de integridade aprovados. Duas contas/dois contextos criados; vínculo não foi enviado: CLI interpretou comentário SQL inicial como opção. Causa confirmada com SELECTs; transporte corrigido por --file. Finally comprovou contas banidas,0 sessões/refresh/vínculos/perfis existentes, contextos/clínicas inativos e público null, reconfirmado pelo MCP.0 testes privados de Configurações aprovados; R2 uso único consumida. H1–H5 não criadas;0 operações/lista, gates false/proteções true. Chrome controlado ainda exige login interativo; sessão SDK real de outra bancada foi comprovada, não transferida. Dashboard0.3.0/de15bd14 preservada nos dois domínios; prova MANUAL anterior mantida. Sem habilitação geral/novo commit/push/deploy frontend. GraphQL ausente não homologado. Próximo: login normal no Chrome preparado para executar AD; Configurações exige decisão concreta sobre recursos adicionais, sem reativação/renovação implícita do limite10 contas/4 contextos.
+
+[Execução real, causa, evidências, encerramento e impedimentos](22-EXECUCAO-R2-E-IMPEDIMENTOS.md).
+
+
+## Sessão legítima confirmada automaticamente —09/10/2026,14:15 -03
+
+Bancadas3000 e5189 receberam diagnóstico conectado pelo SDK normal: estado confirmada, guarda true, pendência normal true e Proprietário(a) nas duas unidades true. Evidências recebidas17:15:02.100Z e17:14:11.646Z, sem mocks ou emulação SQL e sem extração de credenciais. A condição anterior de sessão ausente foi superada; não pedir nova conferência. MCP de navegador voltou a falhar antes do inventário (processo confiável Node encerrou), tentativa única, sem reinicializações. Chrome separado permanece sem a sessão da bancada; isso limita a operação visual por esse canal, não invalida a prova SDK. Preparada origem distinta localhost:3000 para a bancada fictícia R2, preservando127.0.0.1:3000 do titular. Nenhuma conta/contexto/migration/Edge nova consumida nesta preparação. Próximo: executor restrito com encerramento obrigatório, aplicação seletiva R2 e homologação conectada de Configurações; Acesso Direto exige controle do fluxo normal do criador, sem copiar sua sessão. Dashboard0.3.0 e seus testes manuais preservados.
+
+
+Retomada do relatório20, autorizações existentes preservadas. Dashboard0.3.0/de15bd14 já publicada e conferida MANUALMENTE com novo login/navegação/F5 nas duas clínicas. Nesta etapa não houve nova publicação, habilitação geral, reaplicação de migrations/serviços/hook ou criação de recursos.
+
+## Resultados concretos
+
+1. HTTP5189 respondeu200 no HTML e no módulo do botão. A resposta “sim” não foi convertida em aprovação das guardas. A bancada foi instrumentada para obter e registrar os resultados pelo SDK normal da aplicação: getUser, exigir_sessao, estado e vínculos próprios. Não usa mocks, claims SQL, sessões administrativas de usuário real, cookies/storageState ou extração de credenciais. Registro local restrito a estados e referência interna; a referência não é incluída na prova sanitizada.
+2. Diagnóstico efetivamente recebido: estado **aguardando_browser**, mensagem “undefined”, recebidoEmundefined. Não houve usuário autenticado identificado, portanto as provas de guardas/papéis ficam pendentes, não reprovadas. Esta é consulta conectada normal da bancada, não leitura administrativa nem confirmação manual. A sessão já comprovada dos sites publicados não estava disponível nesta origem local.
+3. Origem5189 não consta na allowlist dos serviços;3000 e5173 constam. Porta3000 estava livre. Preparada a bancada em127.0.0.1:3000, preservando o servidor5173 e os serviços remotos. Não ampliar CORS nem substituir guardas para permitir os testes.
+4. Na bancada R2 os quatro nomes de variáveis de clínica/hostname divergiam dos usados por clinicBrands. Corrigidos para VITE_CLINICA_BROTAS_ID/VITE_CLINICA_IPUPIARA_ID e respectivos HOSTNAME; ambiente público carregado em memória sem copiar .env; cache/build transferidos para temporário no discoC. Build conectado R2 aprovou2333 módulos em2,51s; não comprova Auth, persistência ou upload. Lint dos dois arquivos da bancada de sessão passou. Flags normais permanecem false.
+5. Novo canal de automação preparado pelo Playwright instalado, em perfil novo e janela própria. Primeira tentativa encontrou ausência do Chromium padrão1243; diagnóstico identificou que os testes válidos usam channel=chrome, instalado em Program Files. Essa correção abriu o Chrome e a aplicação3000. Nenhuma reinstalação, reinício repetido do IAB, leitura de perfil/cookies/tokens ou conta adicional. Automação está operante; aguarda autenticação interativa legítima.
+6. MCP oficial confirmou URL xftnkusbyqzyvzrovroj. Preflight READ ONLY: padrãoMD5 4d05a17853b7fc3212a7f77c2da611a2 e ambos CHECKs iguais ao pacote R2, sete emails novos inexistentes, lista/operações0, controles gerais/homologação false e proteções true. R2 continua não aplicado/não consumido. CLI oficial2.120.0 confirmou0 divergências do hook. Campos booleanos de notificação de senha não vieram nessa resposta: não interpretar lista vazia como desligado; conservar a leitura MANUAL anterior fornecida pelo titular de Password changed DESLIGADO, sem nova configuração Auth.
+
+## Operação impedida e única ação exclusiva do usuário
+
+O provisionamento normal de Novo membro exige uma sessão real do criador. O navegador de teste está aberto em **http://127.0.0.1:3000/acesso/brotas**, com diagnóstico ausente. Não é possível obter essa sessão por CLI/MCP administrativo sem credenciais ou simulação, ambos excluídos. A única ação solicitada é **fazer login normalmente nessa nova janela do Chrome com a conta autorizada de Proprietário(a)**. Nenhuma senha/token/cookie deve sair da interface. A bancada e o executor lerão automaticamente o resultado; não copiar mensagens nem responder questionários. Ainda não cadastrar pessoas.
+
+O executor de navegador aguarda a mensagem real de sessão/guardas/papéis e, depois, a revisão completa da sequência e do encerramento antes de consumir fixtures. Não possui autorização para tratar arquivo booleano como prova de sessão. A implementação do executor completo ainda será concluída antes de qualquer criação. Autenticação interativa não concede novas autorizações nem transforma leitura em aprovação de escrita.
+
+## Limites e continuidade
+
+Máximo acumulado10 contas/4 contextos. Antigas H6/C-A/C-B e dois contextos permanecem encerrados conforme leituras anteriores; não reativar. Restantes H1–H5 e C-A2/C-B2, dois contextos R2, uma única vez. Nesta etapa0 novas contas/contextos/membros consumidos. Não há novos recursos a encerrar. Criar somente após preflight/revisão e executar finally obrigatório com comprovação.
+
+Após autenticação: fluxo real de Novo membro, senha temporária/troca/login pessoal/rejeição de sessões antigas/papéis/isolamento; R2 seletivo e testes reais de dados/logos/timbrados/cabeçalho/rodapé/login/upload/persistência/recarga. Recursos aprovados poderão ser habilitados/versionados/publicados pela autorização vigente, preservando a dashboard; não pedir a mesma autorização novamente. GraphQL ausente continua limitação separada, sem aprovação funcional nem instalação autorizada.
+
+TypeSafe consultada: determinístico, sem IA no produto. Triagem anterior reaproveitada por ser continuação do mesmo objetivo; nenhuma nova chamada Jev ou envio de dados privados. Arquivos alterados somente das bancadas e registros; scripts auxiliares fora do Git, sem credenciais.

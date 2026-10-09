@@ -1,0 +1,412 @@
+{
+  "projeto": "xftnkusbyqzyvzrovroj",
+  "inicio": "2026-10-09T19:33:43.272Z",
+  "origemCriacao": "Novo membro na aba IAB legítima; requisição original SDK, sem mocks; whitelist restrita pela bancada",
+  "origemAtivacao": "Sessões Auth reais e aplicação normal em navegador isolado de fixtures",
+  "testes": [
+    {
+      "requisito": "Preflight: cinco contas inéditas, limites e criador nas duas unidades",
+      "aprovado": true
+    },
+    {
+      "requisito": "Flag anterior desligada ou ausente identificada sem expor segredo",
+      "aprovado": true
+    },
+    {
+      "requisito": "Operação única, validade e senha individual H1",
+      "aprovado": true
+    },
+    {
+      "requisito": "Dois logins temporários reais H1",
+      "aprovado": true
+    },
+    {
+      "requisito": "Obrigação confirmada pelo servidor H1",
+      "aprovado": true
+    },
+    {
+      "requisito": "Tabelas, RPC e serviço bloqueados antes da troca H1",
+      "aprovado": true
+    },
+    {
+      "requisito": "Objeto Storage existente bloqueado antes da troca H1",
+      "aprovado": true
+    },
+    {
+      "requisito": "Usuário não elimina pendência alterando metadata H1",
+      "aprovado": true
+    },
+    {
+      "requisito": "Tela normal exige troca antes de módulos H1",
+      "aprovado": true
+    },
+    {
+      "requisito": "Novo login real com senha pessoal H1",
+      "aprovado": true
+    },
+    {
+      "requisito": "Sessão nova liberada após conclusão verificada H1",
+      "aprovado": true
+    },
+    {
+      "requisito": "Senha temporária anterior rejeitada H1",
+      "aprovado": true
+    },
+    {
+      "requisito": "Sessão temporária antiga, dados e refresh recusados H1",
+      "aprovado": true
+    },
+    {
+      "requisito": "Mesmo objeto Storage liberado só para sessão nova H1",
+      "aprovado": true
+    },
+    {
+      "requisito": "JWT antigo não altera senha ou email H1",
+      "aprovado": true
+    },
+    {
+      "requisito": "Papéis e vínculos exatos H1",
+      "aprovado": true
+    },
+    {
+      "requisito": "Dashboard e F5 reais após ativação H1",
+      "aprovado": true
+    },
+    {
+      "requisito": "Operação única, validade e senha individual H2",
+      "aprovado": true
+    },
+    {
+      "requisito": "Dois logins temporários reais H2",
+      "aprovado": true
+    },
+    {
+      "requisito": "Obrigação confirmada pelo servidor H2",
+      "aprovado": true
+    },
+    {
+      "requisito": "Tabelas, RPC e serviço bloqueados antes da troca H2",
+      "aprovado": true
+    },
+    {
+      "requisito": "Usuário não elimina pendência alterando metadata H2",
+      "aprovado": true
+    },
+    {
+      "requisito": "Tela normal exige troca antes de módulos H2",
+      "aprovado": true
+    },
+    {
+      "requisito": "Novo login real com senha pessoal H2",
+      "aprovado": true
+    },
+    {
+      "requisito": "Sessão nova liberada após conclusão verificada H2",
+      "aprovado": true
+    },
+    {
+      "requisito": "Senha temporária anterior rejeitada H2",
+      "aprovado": true
+    },
+    {
+      "requisito": "Sessão temporária antiga, dados e refresh recusados H2",
+      "aprovado": true
+    },
+    {
+      "requisito": "Papéis e vínculos exatos H2",
+      "aprovado": true
+    },
+    {
+      "requisito": "Dashboard e F5 reais após ativação H2",
+      "aprovado": true
+    },
+    {
+      "requisito": "Dois logins temporários reais H3",
+      "aprovado": true
+    },
+    {
+      "requisito": "Obrigação confirmada pelo servidor H3",
+      "aprovado": true
+    },
+    {
+      "requisito": "Tabelas, RPC e serviço bloqueados antes da troca H3",
+      "aprovado": true
+    },
+    {
+      "requisito": "Usuário não elimina pendência alterando metadata H3",
+      "aprovado": true
+    },
+    {
+      "requisito": "Expiração mantém bloqueio H3",
+      "aprovado": true
+    },
+    {
+      "requisito": "Reemissão individual recusa senha anterior H3",
+      "aprovado": true
+    },
+    {
+      "requisito": "Operação única, validade e senha individual H3",
+      "aprovado": true
+    },
+    {
+      "requisito": "Dois logins temporários reais H3",
+      "aprovado": true
+    },
+    {
+      "requisito": "Obrigação confirmada pelo servidor H3",
+      "aprovado": true
+    },
+    {
+      "requisito": "Tabelas, RPC e serviço bloqueados antes da troca H3",
+      "aprovado": true
+    },
+    {
+      "requisito": "Usuário não elimina pendência alterando metadata H3",
+      "aprovado": true
+    },
+    {
+      "requisito": "Tela normal exige troca antes de módulos H3",
+      "aprovado": true
+    },
+    {
+      "requisito": "Novo login real com senha pessoal H3",
+      "aprovado": true
+    },
+    {
+      "requisito": "Sessão nova liberada após conclusão verificada H3",
+      "aprovado": true
+    },
+    {
+      "requisito": "Senha temporária anterior rejeitada H3",
+      "aprovado": true
+    },
+    {
+      "requisito": "Sessão temporária antiga, dados e refresh recusados H3",
+      "aprovado": true
+    },
+    {
+      "requisito": "Papéis e vínculos exatos H3",
+      "aprovado": true
+    },
+    {
+      "requisito": "Papel não proprietário impedido em Configurações H3",
+      "aprovado": true
+    },
+    {
+      "requisito": "Dashboard e F5 reais após ativação H3",
+      "aprovado": true
+    },
+    {
+      "requisito": "Resposta real perdida após criação H4; nenhuma senha recuperada",
+      "aprovado": true
+    },
+    {
+      "requisito": "Retomada H4 mantém mesma pessoa/conta/operação sem revelar senha",
+      "aprovado": true
+    },
+    {
+      "requisito": "Operação única, validade e senha individual H4",
+      "aprovado": true
+    },
+    {
+      "requisito": "Dois logins temporários reais H4",
+      "aprovado": true
+    },
+    {
+      "requisito": "Obrigação confirmada pelo servidor H4",
+      "aprovado": true
+    },
+    {
+      "requisito": "Tabelas, RPC e serviço bloqueados antes da troca H4",
+      "aprovado": true
+    },
+    {
+      "requisito": "Usuário não elimina pendência alterando metadata H4",
+      "aprovado": true
+    },
+    {
+      "requisito": "Reserva real para falha parcial H4",
+      "aprovado": true
+    },
+    {
+      "requisito": "Auth atualizado enquanto pendência permanece H4",
+      "aprovado": true
+    },
+    {
+      "requisito": "Prova privada preparada H4",
+      "aprovado": true
+    },
+    {
+      "requisito": "Login real após atualização parcial H4",
+      "aprovado": true
+    },
+    {
+      "requisito": "Prova de atualização registrada H4",
+      "aprovado": true
+    },
+    {
+      "requisito": "Conclusão sem revogação recusada; bloqueio permanece H4",
+      "aprovado": true
+    },
+    {
+      "requisito": "Email existente H6 não foi redefinido, reativado ou vinculado H5",
+      "aprovado": true
+    },
+    {
+      "requisito": "Operação única, validade e senha individual H5",
+      "aprovado": true
+    },
+    {
+      "requisito": "Dois logins temporários reais H5",
+      "aprovado": true
+    },
+    {
+      "requisito": "Obrigação confirmada pelo servidor H5",
+      "aprovado": true
+    },
+    {
+      "requisito": "Tabelas, RPC e serviço bloqueados antes da troca H5",
+      "aprovado": true
+    },
+    {
+      "requisito": "Usuário não elimina pendência alterando metadata H5",
+      "aprovado": true
+    },
+    {
+      "requisito": "Tela normal exige troca antes de módulos H5",
+      "aprovado": true
+    },
+    {
+      "requisito": "Novo login real com senha pessoal H5",
+      "aprovado": true
+    },
+    {
+      "requisito": "Sessão nova liberada após conclusão verificada H5",
+      "aprovado": true
+    },
+    {
+      "requisito": "Senha temporária anterior rejeitada H5",
+      "aprovado": true
+    },
+    {
+      "requisito": "Sessão temporária antiga, dados e refresh recusados H5",
+      "aprovado": true
+    },
+    {
+      "requisito": "Papéis e vínculos exatos H5",
+      "aprovado": true
+    },
+    {
+      "requisito": "Papel não proprietário impedido em Configurações H5",
+      "aprovado": true
+    },
+    {
+      "requisito": "Dashboard e F5 reais após ativação H5",
+      "aprovado": true
+    },
+    {
+      "requisito": "Tela normal exige troca antes de módulos H4",
+      "aprovado": true
+    },
+    {
+      "requisito": "Novo login real com senha pessoal H4",
+      "aprovado": true
+    },
+    {
+      "requisito": "Sessão nova liberada após conclusão verificada H4",
+      "aprovado": true
+    },
+    {
+      "requisito": "Senha temporária anterior rejeitada H4",
+      "aprovado": true
+    },
+    {
+      "requisito": "Sessão temporária antiga, dados e refresh recusados H4",
+      "aprovado": true
+    },
+    {
+      "requisito": "Papéis e vínculos exatos H4",
+      "aprovado": true
+    },
+    {
+      "requisito": "Papel não proprietário impedido em Configurações H4",
+      "aprovado": true
+    },
+    {
+      "requisito": "Dashboard e F5 reais após ativação H4",
+      "aprovado": true
+    },
+    {
+      "requisito": "Isolamento real: pessoa de outra clínica não visível H1",
+      "aprovado": false
+    }
+  ],
+  "recursos": [
+    {
+      "membro": "ca55cfac-1659-45be-bd94-ab4f6d59adb1"
+    },
+    {
+      "membro": "557323b0-eee0-4ab9-9687-eb7064227e24"
+    },
+    {
+      "membro": "58c4b00b-a1c5-4718-b8c6-0f573bce5652"
+    },
+    {
+      "membro": "3bb32925-ea62-4c7b-ab15-7b29551c3fef"
+    },
+    {
+      "membro": "88bbb4bf-43c0-45a8-aa6e-8ee8c0644f8e"
+    }
+  ],
+  "encerramento": [
+    {
+      "id": "4b572c7f-fac9-48bf-933e-d5288c077cc0",
+      "ban": true,
+      "perfil_ativo": false,
+      "refresh_ativos": 0,
+      "sessoes": 0,
+      "vinculos_ativos": 0,
+      "aprovado": true
+    },
+    {
+      "id": "69166893-2054-4d05-8c85-734cc38f70a7",
+      "ban": true,
+      "perfil_ativo": false,
+      "refresh_ativos": 0,
+      "sessoes": 0,
+      "vinculos_ativos": 0,
+      "aprovado": true
+    },
+    {
+      "id": "a3406fd8-b987-4384-b82c-5b799c2ea730",
+      "ban": true,
+      "perfil_ativo": false,
+      "refresh_ativos": 0,
+      "sessoes": 0,
+      "vinculos_ativos": 0,
+      "aprovado": true
+    },
+    {
+      "id": "bf426d58-1273-4a2e-97b9-ef6c3f2b6f54",
+      "ban": true,
+      "perfil_ativo": false,
+      "refresh_ativos": 0,
+      "sessoes": 0,
+      "vinculos_ativos": 0,
+      "aprovado": true
+    },
+    {
+      "id": "fba285cf-fa5b-4e1a-947c-e2fc4b31385c",
+      "ban": true,
+      "perfil_ativo": false,
+      "refresh_ativos": 0,
+      "sessoes": 0,
+      "vinculos_ativos": 0,
+      "aprovado": true
+    }
+  ],
+  "aprovado": false,
+  "impedimento": "Isolamento real: pessoa de outra clínica não visível H1",
+  "motivoEncerramento": "erro de controle",
+  "fim": "2026-10-09T19:46:59.311Z"
+}

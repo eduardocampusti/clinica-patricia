@@ -1,9 +1,9 @@
 {
-  "versaoEmDesenvolvimento": "0.3.0",
+  "versaoEmDesenvolvimento": "0.4.0",
   "naoLancadas": {
     "novidades": [
-      "Equipe: Novo membro reúne cadastro da pessoa e preparação opcional de acesso, com e-mail de login separado e papéis explícitos por clínica. A opção de senha temporária individual e a troca obrigatória no primeiro acesso estão preparadas localmente e aguardam ativação e validação do backend seguro; a aplicação informa essa dependência. Ainda não publicado.",
-      "Configurações: área local do Proprietário(a) para dados institucionais, logos, timbrados A4 e aparência do login, com herança por unidade e aviso de edição pendente. Permite prévias fictícias; persistência, aplicação e histórico real aguardam homologação do novo backend. Ainda não publicado.",
+      "Equipe: Novo membro permite criar acesso com senha temporária individual válida por 24 horas e papéis explícitos por clínica. A troca por senha pessoal é obrigatória antes de acessar os módulos; a senha e as sessões temporárias anteriores são recusadas após a ativação.",
+      "Configurações continua em preparação e indisponível nos sites publicados. A prévia local permanece disponível; salvamento de apresentação, imagens e login aguarda conclusão das verificações conectadas.",
       "Meu perfil: configure seu nome e sua foto pessoal pelo avatar ou pela identificação do menu. Salvar confirma a gravação no servidor; é possível substituir ou remover a foto, com prévia e cancelamento. A identidade acompanha a conta entre clínicas; a foto profissional da Equipe permanece independente.",
       "Equipe: seção Atuação e atendimentos por clínica, com fontes de duração, disponibilidade, preço e participação financeira. Vínculos individuais de serviços aguardam definição.",
       "Equipe: fichas ampliadas com dados pessoais, contratos e jornada, formação, documentos privados e histórico. Foto, recebimento e acessos permanecem em seções próprias.",
@@ -20,7 +20,6 @@
     ],
     "melhorias": [
       "Dashboard do Proprietário(a): movimento e Agenda do dia, resumo oficial do Financeiro e pendências da clínica selecionada. Agendados conta os estados agendado/confirmado; atendimentos aguardando ou iniciados continuam visíveis quando não há horários futuros. Atualizar painel consulta todos os blocos e diferencia atualização de origem, ausência de dados e falha.",
-      "Equipe: revisão local do acesso temporário confirma a senha pessoal no servidor e a revogação antes de ativar; bloqueios também cobrem concessões anteriores e a API financeira. Recurso continua desligado até homologação real.",
       "Configurações: prévia fictícia A4 acompanha a apresentação em edição após uma breve pausa; gerar e baixar o PDF continuam ações explícitas. PDF usa fontes livres incorporadas e medidas corrigidas. Avisos técnicos ficam em ajuda recolhível, com clínica, alcance e limitações visíveis. Conflito com dados oficiais oferece atualização confirmada do rascunho, preservando apresentação e imagens, após ativação do backend. Alterações locais ainda não publicadas.",
       "Equipe: na ficha, Formação mostra contadores e cada inscrição com selos de informação e conferência; Atuação aparece em cartões de agenda e valores, serviços e disponibilidade; Recebimento ganhou um cartão único com a chave PIX mascarada como antes; Documentos viraram uma tabela (cartões no celular) com visualizar, baixar e “Mais ações”; o Histórico é uma linha do tempo por dia.",
       "Equipe: na ficha, cada contrato aparece em um cartão com situação, vínculo, versão, unidades e jornada; o contrato vigente fica aberto e os demais recolhidos. A remuneração restrita só aparece depois de “Mostrar valor”. Acesso ao sistema ganhou cartões para a situação da conta, o acesso por clínica e o convite, com as mesmas regras e validações.",

@@ -1,5 +1,69 @@
 # Checkpoint operacional — Clínica Patrícia
 
+## Acesso Direto aprovado; Configurações impedida — 09/10/2026, 17:32:31 -03
+
+AD aprovado em provas reais H1–H5 anteriores+RPCbilateralI1/I2(30assertivas), encerrados. Configurações C-A3salvou/leu/F5; uploadfalhou503 por encodePNG inexistente. Corrigido encode, teste localPNG/transparênciapassou; Edgeprivada5→6exata, ainda sem rehomologação conectada. Finally/MCP confirmaram novasfixtures encerradas; máximo14contas/6contextos consumidos, todosencerrados. CFGnormalfalse, ADfrontendtrue preparado0.4.0; gatesbackendgeral aindafalseatéativaçãoverificada. Próximo: verificações direcionadas, commit/push/deployADnasduasclínicas; CFG requer nova decisão de recursos para repetiçãoapósfix. Não pedir novamente publicação jáautorizada. Relatório24/evidênciasR3; GraphQLausente nãohomologado.
+
+
+## Isolamento real aprovado; R3 aplicada — 09/10/2026, 17:27:01 -03
+
+I1/I2: 30 asserções reais aprovadas, incluindo RPC equipe_listar bilateral correta; ambas encerradas/0sessões/refresh/vínculos, lista0/gatesfalse, worker encerrado. Acesso Direto superou sua prova conectada pendente. R3 Configurações aplicada seletivamente (ledger20261009202252); pg_proc/information_schema/ACL/CHECK e8 consultas de integridade aprovadas. Somente Edge pública atualizada5→7, conteúdo/bundle confirmado; Auth e demais backend preservados. C-A3/C-B3 em execução, ainda sem aprovação privada. Dashboard0.3.0/manual preservada; frontendAD/CFGfalse, sem novo commit/push/deploy. GraphQL ausente/não homologado. Detalhes e evidências: relatório24-HOMOLOGACAO-R3-E-PUBLICACAO-FINAL.md. Próximo: terminar Configurações/encerrar e publicar recursos aprovados, limite14/6.
+
+
+## R3 autorizada; preparação antes de consumo — 09/10/2026, 17:15:51 -03
+
+Usuário autorizou ampliação ÚNICA de quatro contas/dois contextos, máximo acumulado14/6, restrita a I1/I2 e C-A3/C-B3 do pacote homologacao-final-r3. Dez contas/quatro contextos anteriores permanecem encerrados; nenhuma reativação. Encontrado e corrigido no template de vínculos R3 o uso indevido de emails/metadata R2. Hashes recalculados; nenhuma nova migration, Edge, conta ou contexto aplicado nesta preparação. Executor I1/I2 usa RPC equipe_listar(uuid), sem exigir ausência de operações históricas. Sessão legítima deve ser reconfirmada automaticamente antes da execução. TypeSafe avaliada: regras determinísticas, sem IA adicional. Dashboard0.3.0 e provas manuais preservadas; GraphQL ausente sem aprovação funcional. Próximo: preparação integral, execução conectada limitada, encerramento e publicação dos recursos aprovados.
+
+
+## Homologação real AD executada; prova final pendente —09/10/2026,17:05 -03
+
+Sessão3000 confirmada automaticamente e aba IAB controlável; cinco contas H1–H5 criadas por Novo membro com SDK/sessão real e allowlist restrita.83 verificações reais registradas passaram, mais duas provas de RPC financeira pendente42501. Troca na tela normal, novo login pessoal, senha/JWT/refresh temporários antigos recusados, Storage com mesmo objeto, expiração/reemissão H3, metadata, atualização parcial H4 e email existente H6 preservado H5 comprovados. Última asserção de isolamento falhou: executor consultou tabela equipe_membros sem SELECT e exigiu vazio. Catálogo confirma sem SELECT inclusive na coluna id; aplicação usa equipe_listar(uuid). Corrigido localmente para RPC própria positiva/outra clínica42501;4 testes sintéticos passaram, repetição conectada AINDA PENDENTE. Não registrar falha como aprovação nem vazamento comprovado. Finally e MCP confirmaram cinco contas novas banidas,0 sessões/refresh/vínculos/perfis/pessoas ativos; allowlist0, gates gerais/homologação false, serviço false, proteções true. Total acumulado10 contas banidas/4 contextos inativos, limites esgotados. Bancadas3000/5189 HTTP200 mantidas; executor encerrado e criação local desarmada. Configurações privada ainda sem homologação; GraphQL ausente não homologado. Domínios seguem0.3.0/de15bd14, HTTP/bundle/rotas conferidos19:48Z; prova manual autenticada anterior preservada, sem novo deploy. Proposta R3 concreta NÃO AUTORIZADA/NÃO APLICADA: exatamente4 contas/2 contextos adicionais, máximo14/6, migration restrita e somente Edge configuracoes-publicas2→3; nova decisão solicitada exclusivamente pelo limite explícito de recursos. Dashboard e demais trabalhos preservados; sem novo commit/push.
+
+
+## Recuperação dos servidores da bancada —09/10/2026,15:29 -03
+
+Usuário informou “logado” e a interface ambiente indicou5189/dashboard; isso é informação do usuário, não nova prova SDK. Leitura HTTP constatou conexão recusada nas portas3000/5189; antigo executor não consta mais no gerenciador de processos da ferramenta. Recuperados apenas servidores Vite em processos Windows ocultos independentes (5189/PID16604,3000/PID37736), sem reiniciar navegador, transferir sessão ou consumir fixtures. Ambas respondem HTTP200, diagnóstico aguardando_browser; nenhum resultado novo de guarda/papel confirmado. Canal alternativo Computer Use inicializou e enumerou janelas, mas a captura foi interrompida pelo controle da ferramenta por não determinar o URL atual do navegador com confiança suficiente; cessadas ações gráficas, sem contorno. Não afirmar que a janela Chrome anterior continua controlada. Próxima ação exclusiva da interface: F5 na bancada5189 já aberta para o SDK normal registrar automaticamente a sessão; não solicitar credenciais nem questionário. Esta recuperação não habilita recursos, altera backend, publica frontend ou renova recursos consumidos. Dashboard0.3.0 e provas manuais preservadas; Configurações continua impedida pelo limite4 contextos consumidos/encerrados, AD H1–H5 não executado nesta etapa. GraphQL continua ausente e sem homologação funcional. TypeSafe consultada, sem IA para controles determinísticos; Jev não repetido por continuidade.
+
+
+## R2 aplicada; execução interrompida e recursos encerrados —09/10/2026,15:10 -03
+
+Aplicada somente migration R2 (ledger20261009174524) e Edge configuracoes-publicas1→2; catálogo/ACL/conteúdo e8 consultas de integridade aprovados. Duas contas/dois contextos criados; vínculo não foi enviado: CLI interpretou comentário SQL inicial como opção. Causa confirmada com SELECTs; transporte corrigido por --file. Finally comprovou contas banidas,0 sessões/refresh/vínculos/perfis existentes, contextos/clínicas inativos e público null, reconfirmado pelo MCP.0 testes privados de Configurações aprovados; R2 uso único consumida. H1–H5 não criadas;0 operações/lista, gates false/proteções true. Chrome controlado ainda exige login interativo; sessão SDK real de outra bancada foi comprovada, não transferida. Dashboard0.3.0/de15bd14 preservada nos dois domínios; prova MANUAL anterior mantida. Sem habilitação geral/novo commit/push/deploy frontend. GraphQL ausente não homologado. Testes direcionados finais3/3 aliases, lint/sintaxe/diff-check aprovados; não são homologação privada. Marcador de execução automática removido, Chrome aberto sem consumir fixtures; retomada requer conferir a autenticação nessa janela e a cobertura do executor. Próximo: login normal no Chrome preparado para executar AD; Configurações exige decisão concreta sobre recursos adicionais, sem reativação/renovação implícita do limite10 contas/4 contextos.
+
+[Execução real, causa, evidências, encerramento e impedimentos](../modulos/sistema/22-EXECUCAO-R2-E-IMPEDIMENTOS.md).
+
+
+## Sessão legítima confirmada automaticamente —09/10/2026,14:15 -03
+
+Bancadas3000 e5189 receberam diagnóstico conectado pelo SDK normal: estado confirmada, guarda true, pendência normal true e Proprietário(a) nas duas unidades true. Evidências recebidas17:15:02.100Z e17:14:11.646Z, sem mocks ou emulação SQL e sem extração de credenciais. A condição anterior de sessão ausente foi superada; não pedir nova conferência. MCP de navegador voltou a falhar antes do inventário (processo confiável Node encerrou), tentativa única, sem reinicializações. Chrome separado permanece sem a sessão da bancada; isso limita a operação visual por esse canal, não invalida a prova SDK. Preparada origem distinta localhost:3000 para a bancada fictícia R2, preservando127.0.0.1:3000 do titular. Nenhuma conta/contexto/migration/Edge nova consumida nesta preparação. Próximo: executor restrito com encerramento obrigatório, aplicação seletiva R2 e homologação conectada de Configurações; Acesso Direto exige controle do fluxo normal do criador, sem copiar sua sessão. Dashboard0.3.0 e seus testes manuais preservados.
+
+
+## Bancada de homologação destravada —09/10/2026,14:13 -03
+
+Diagnóstico SDK automático demonstrou sessão ausente na origem local; não presumir aprovação a partir de “sim”. Corrigidas origem de criação (3000 já permitida) e variáveis de clínica da bancada R2; build R2 aprovado. Automação alternativa Playwright/channel chrome operante em janela nova, sem copiar sessão/cookies/tokens, aguarda exclusivamente login interativo do titular em127.0.0.1:3000/acesso/brotas. Preflight oficial read-only confirma pacote R2 compatível,7 emails novos inexistentes,lista/operações0,gates false/proteções true.0 recursos consumidos ou backend reaplicado;dashboard0.3.0 publicada/manual preservada,GraphQL ausente. Próximo: autenticar na janela preparada; coletar automaticamente resultado real e concluir executor/encerramento antes de criar fixtures. Não solicitar questionários ou novas autorizações já válidas.
+
+[Diagnóstico concreto e continuidade](../modulos/sistema/21-DESTRAVAMENTO-BANCADA-HOMOLOGACAO.md).
+
+
+## Conferência manual autenticada da produção —09/10/2026,13:31 -03
+
+Após o pedido específico de Ctrl+F5 nos dois sites publicados, quatro blocos da dashboard, Agenda, Financeiro, Meu perfil, troca de clínica e F5, o titular respondeu inicialmente “entrou”. Essa primeira resposta foi registrada apenas como entrada, sem presumir os demais testes. Esclarecimento explícito recebido em seguida: **“Tudo funcionou nas duas; fiz novo login”**. Resultado: conferência MANUAL aprovada de novo login e desses caminhos nas duas clínicas publicadas; não atribuir a automação do Codex nem a emulação SQL. Sem edição de conta ou dado clínico.
+
+Consulta administrativa oficial posterior ao push, somente READ ONLY no projeto xftnkusbyqzyvzrovroj, reconfirmou:3 contas fictícias antigas banidas,0 sessões/refresh válidos/perfis/vínculos ativos;2 contextos antigos inativos;0 contas/contextos R2;0 operações de Acesso Direto; controles gerais/homologação false, proteções true; GraphQL ausente. Não há novo recurso criado para encerrar.
+
+Dashboard está publicada e conferida manualmente nas duas clínicas. Configurações e Acesso Direto continuam sem liberação: faltam operação normal de criação pelo criador, ativação/login pessoal/negação das credenciais e sessões antigas e os testes privados de persistência/upload/isolamento dos contextos R2. A resposta sobre navegação de produção não comprova esses fluxos de escrita. Bancada local conectada5189 está disponível; a mensagem da conferência SDK/guarda ainda não foi retornada pelo titular. Não consumir novas fixtures enquanto essa etapa/execução completa permanecer pendente.
+
+
+## Publicação confirmada —09/10/2026,13:25:17 -03
+
+Push explícito sem force/tags/merge de resgate-local confirmou HEADde15bd1432fc3cab0ea8c852e463970ae9e2381d no remoto. Contém 2bcd8a4f47a2dc78fcc8c1715e3242d114fbe651 e df74106eee4999a53a88a2bca72ab25cc1ab0c63. Auto-deploy autorizado efetivado: ambos domínios servem0.3.0/de15bd14/alteracoesLocais=false. Brotas compilada16:24:54.224Z, bundleindex-BEWapG86.js; Ipupiara16:24:51.026Z, index-8K6wtdfQ.js. HTML/bundle200 e rotas dashboard/equipe/financeiro/configuracoes200 com SPA correspondente. Não é prova autenticada nem leitura de status do job Hostinger.
+
+Dashboard publicada; Configurações e Acesso Direto continuam bloqueados para liberação. Confirmação manual de indicadores e sessão LOCAL B/I preservada. Conferência autenticada da produção solicitada, ainda sem resposta nesta gravação. Bench real5189 preparado para leitura normal do criador, sem tokens no chat; nenhuma fixture nova consumida. Antigas3 contas/2 contextos seguem encerradas, GraphQL ausente. Não alterados banco/Auth/Edges/controles ou dados clínicos nesta publicação. Tipos/lint/notas/build/diff-check aprovados;4/4 provas de separação são simuladas. Recuperação exata por revert dos três commits preparada e não executada.
+
+As linhas anteriores que dizem preparação/push pendente são HISTÓRICAS. O resultado acima é a evidência atual. Registros finais locais após o commit; não gerar deploy documental em ciclo.
+
+[Resultado e pendências](../modulos/sistema/20-PUBLICACAO-PARCIAL-E-HOMOLOGACAO-PENDENTE.md).
+
+
 ## Publicação parcial autorizada —09/10/2026,13:21 -03
 
 Dashboard manualmente conciliada B/I e sessão atual do criador confirmada pelo titular: Proprietário(a), F5, Meu perfil e Novo membro sem salvar. Não equivale a novo login/criação/ativação. Preparação da versão0.3.0 em resgate-local; publicação automática agora expressamente autorizada. Configurações/Acesso Direto permanecem false; editor de Configurações indisponível em produção, prévia local preservada.4/4 testes simulados juntos desktop/celular aprovados; tipos/notas/build e lint dirigido válidos. Leituras oficiais13:07 reconfirmam57 RLS/pre-request,0 operações e3 contas antigas/2 contextos encerrados; nenhuma escrita remota nova. GraphQL ausente, sem homologação funcional. Browser falhou uma vez; bancada conectada local de leitura preparada para conferência manual, sem consumir H1–H5/R2. Ainda faltam criação/ativação/sessões/Storage privado. Push/deploy ainda não executados no instante deste registro; resultados devem ser conferidos nos dois domínios.
