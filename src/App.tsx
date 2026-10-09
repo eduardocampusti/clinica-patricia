@@ -27,6 +27,7 @@ import { useIdentidadeConta } from './hooks/useIdentidadeConta'
 import Configuracoes, { type GuardaConfiguracoes } from './pages/Configuracoes'
 import { ConfirmacaoDialog } from './components/feedback/ConfirmacaoDialog'
 import { GuardaAtivacao } from './components/GuardaAtivacao'
+import { CONFIGURACOES_INTERFACE_DISPONIVEL } from './config/configuracoesDisponibilidade'
 
 function App() {
   const [session, setSession] = useState<Session | null>(null)
@@ -382,7 +383,7 @@ function App() {
           onReceberPagamento={() => { if (clinicaAtivaId) setTela('agenda', { clinicaId: clinicaAtivaId, receberPagamento: true }) }} />
       )}
       {tela === 'sobre' && <SobreSistema clinicaAtiva={clinicaAtiva} />}
-      {tela === 'configuracoes' && clinicaAtivaId && <Configuracoes key={`${session.user.id}:${clinicaAtivaId}`} clinicaId={clinicaAtivaId} clinicaNome={clinicaAtiva?.nome ?? 'Clínica selecionada'} papel={papel} onGuarda={registrarGuarda} onEquipe={() => setTela('equipe')} />}
+      {tela === 'configuracoes' && clinicaAtivaId && (CONFIGURACOES_INTERFACE_DISPONIVEL ? <Configuracoes key={`${session.user.id}:${clinicaAtivaId}`} clinicaId={clinicaAtivaId} clinicaNome={clinicaAtiva?.nome ?? 'Clínica selecionada'} papel={papel} onGuarda={registrarGuarda} onEquipe={() => setTela('equipe')} /> : <FeedbackAlert variant="warning" title="Configurações em preparação" description="Este recurso aguarda validação. A edição não está disponível nesta versão." />)}
       <ConfirmacaoDialog open={!!transicaoPendente} onOpenChange={o => { if (!o && !salvandoTransicao) setTransicaoPendente(null) }} tone="warning" title="Alterações de Configurações não salvas" description="Salve o rascunho, descarte as alterações ou continue editando antes de sair ou trocar a clínica." confirmLabel="Descartar e continuar" cancelLabel="Continuar editando" disabled={salvandoTransicao || !!guardaConfiguracoes.current?.ocupado} onConfirm={() => { const acao = transicaoPendente; guardaConfiguracoes.current = null; setTransicaoPendente(null); acao?.() }}>
         <button className="cfg-botao" disabled={salvandoTransicao || !!guardaConfiguracoes.current?.ocupado} onClick={() => { setSalvandoTransicao(true); void guardaConfiguracoes.current?.salvar().then(ok => { if (ok) { const acao = transicaoPendente; guardaConfiguracoes.current = null; setTransicaoPendente(null); acao?.() } }).finally(() => setSalvandoTransicao(false)) }}>Salvar rascunho e continuar</button>
       </ConfirmacaoDialog>

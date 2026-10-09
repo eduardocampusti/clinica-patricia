@@ -1,5 +1,12 @@
 # Memória compartilhada — mapa de leitura
 
+## Publicação parcial autorizada —09/10/2026,13:21 -03
+
+Dashboard manualmente conciliada B/I e sessão atual do criador confirmada pelo titular: Proprietário(a), F5, Meu perfil e Novo membro sem salvar. Não equivale a novo login/criação/ativação. Preparação da versão0.3.0 em resgate-local; publicação automática agora expressamente autorizada. Configurações/Acesso Direto permanecem false; editor de Configurações indisponível em produção, prévia local preservada.4/4 testes simulados juntos desktop/celular aprovados; tipos/notas/build e lint dirigido válidos. Leituras oficiais13:07 reconfirmam57 RLS/pre-request,0 operações e3 contas antigas/2 contextos encerrados; nenhuma escrita remota nova. GraphQL ausente, sem homologação funcional. Browser falhou uma vez; bancada conectada local de leitura preparada para conferência manual, sem consumir H1–H5/R2. Ainda faltam criação/ativação/sessões/Storage privado. Push/deploy ainda não executados no instante deste registro; resultados devem ser conferidos nos dois domínios.
+
+[Relatório de preparação e limites](../modulos/sistema/20-PUBLICACAO-PARCIAL-E-HOMOLOGACAO-PENDENTE.md).
+
+
 ## Commits locais preparados —09/10/2026,11:54 -03
 
 Primeiro commit 2bcd8a4f47a2dc78fcc8c1715e3242d114fbe651:149 arquivos de Configurações/Acesso Direto.

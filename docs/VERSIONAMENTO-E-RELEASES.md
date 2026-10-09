@@ -1,5 +1,10 @@
 # Versionamento e releases — processo em preparação
 
+## Dashboard — preparação de publicação em09/10/2026
+
+Versão0.3.0 alinhada em pacote/lockfile/notas/initial-version, sem dependências novas, tag ou release formal. Dashboard é o único novo recurso pronto para publicação; Configurações e Acesso Direto mantêm gates false. Resultado servido e limites serão registrados no relatório20 do Sistema após o push. Referências0.2.0 abaixo são históricas.
+
+
 ## Meu perfil — identificação da publicação de08/10/2026
 
 O novo recurso pessoal usa0.2.0 conforme incremento MINOR da série0.x. Pacote,

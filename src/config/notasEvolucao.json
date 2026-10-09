@@ -1,5 +1,5 @@
 {
-  "versaoEmDesenvolvimento": "0.2.0",
+  "versaoEmDesenvolvimento": "0.3.0",
   "naoLancadas": {
     "novidades": [
       "Equipe: Novo membro reúne cadastro da pessoa e preparação opcional de acesso, com e-mail de login separado e papéis explícitos por clínica. A opção de senha temporária individual e a troca obrigatória no primeiro acesso estão preparadas localmente e aguardam ativação e validação do backend seguro; a aplicação informa essa dependência. Ainda não publicado.",
@@ -19,7 +19,7 @@
       "Página “Sobre o sistema” com versão em execução, créditos de desenvolvimento e contexto da clínica."
     ],
     "melhorias": [
-      "Dashboard do Proprietário(a): implementação local com movimento e Agenda do dia, resumo oficial do Financeiro e pendências da clínica selecionada. Agendados conta os estados agendado/confirmado; ausência de horários futuros mantém visíveis os atendimentos aguardando ou iniciados. Atualizar painel consulta todos os blocos, com horários de origem e falhas explícitas, sem reapresentar valores antigos como novos. Alteração ainda não publicada.",
+      "Dashboard do Proprietário(a): movimento e Agenda do dia, resumo oficial do Financeiro e pendências da clínica selecionada. Agendados conta os estados agendado/confirmado; atendimentos aguardando ou iniciados continuam visíveis quando não há horários futuros. Atualizar painel consulta todos os blocos e diferencia atualização de origem, ausência de dados e falha.",
       "Equipe: revisão local do acesso temporário confirma a senha pessoal no servidor e a revogação antes de ativar; bloqueios também cobrem concessões anteriores e a API financeira. Recurso continua desligado até homologação real.",
       "Configurações: prévia fictícia A4 acompanha a apresentação em edição após uma breve pausa; gerar e baixar o PDF continuam ações explícitas. PDF usa fontes livres incorporadas e medidas corrigidas. Avisos técnicos ficam em ajuda recolhível, com clínica, alcance e limitações visíveis. Conflito com dados oficiais oferece atualização confirmada do rascunho, preservando apresentação e imagens, após ativação do backend. Alterações locais ainda não publicadas.",
       "Equipe: na ficha, Formação mostra contadores e cada inscrição com selos de informação e conferência; Atuação aparece em cartões de agenda e valores, serviços e disponibilidade; Recebimento ganhou um cartão único com a chave PIX mascarada como antes; Documentos viraram uma tabela (cartões no celular) com visualizar, baixar e “Mais ações”; o Histórico é uma linha do tempo por dia.",
@@ -64,6 +64,7 @@
       "Equipe: a gestão de acessos por clínica foi instalada no Supabase autorizado e publicada na Edge Function, com consulta real de acesso em Brotas e estado vazio correto em Ipupiara; convite e aceite aguardam redirect allowlisted e conta de teste autorizada."
     ],
     "correcoes": [
+      "Configurações: enquanto a homologação está pendente, a edição fica indisponível no ambiente publicado. A prévia local foi preservada.",
       "Sistema Multiclínicas: novo login comum abre a dashboard da clínica autorizada; recargas preservam a página. Saudação usa o nome cadastrado e o horário da Bahia. Identificação da conta no menu e cabeçalho, com foto privada somente por vínculo confirmado ou iniciais. Equipe e Financeiro continuam no menu; cartões explicativos retirados da dashboard.",
       "Equipe: conflitos de revisão nas novas fichas, fotos e documentos retornam a orientação de reconsulta, sem repetição automática da operação pelo servidor.",
       "Equipe: serviços de fotos, recebimento e fichas usam a distribuição de imagens compatível com o ambiente do Supabase, corrigindo a falha de inicialização das funções.",
