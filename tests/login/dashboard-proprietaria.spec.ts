@@ -14,7 +14,7 @@ for (const unidade of ['brotas', 'ipupiara'] as const) {
     const { escritas } = await preparar(page)
     await page.goto(`/sistema/${unidade}/dashboard`)
     await expect(page.getByRole('region', { name: 'Administração da clínica' })).toHaveCount(0)
-    await expect(page.getByRole('heading', { name: 'Resumo financeiro', exact: true })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Financeiro de hoje', exact: true })).toBeVisible()
     await abrirMenu(page)
     const administracao = page.getByRole('navigation', { name: 'Navegação principal' })
     await expect(administracao).toBeVisible()

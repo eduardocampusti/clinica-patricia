@@ -1,0 +1,95 @@
+{
+  "conferidoEm": "2026-10-09T23:11:50.216Z",
+  "commit": "f4b6891e49922ef199096e7b91274cfe6ee0f3da",
+  "branch": "codex/resgate-local-2026-09-26",
+  "canal": "HTTP público + IAB com sessões existentes fornecidas pelo usuário; não novo login nem emulação SQL",
+  "dominios": [
+    {
+      "dominio": "clinicabrotas.com.br",
+      "html_status": 200,
+      "bundle_status": 200,
+      "bundle": "/assets/index-B9d6Dnsb.js",
+      "sha256": "653afddb08cd3ba7a48c903bf3622a82c359f44701ac2fef96e029ef29913558",
+      "versao": "0.5.0",
+      "commit": "f4b6891e",
+      "alteracoes_locais": "!1",
+      "compilado_em": "2026-10-09T23:04:46.847Z",
+      "rotas": [
+        {
+          "tela": "dashboard",
+          "status": 200,
+          "spa": true
+        },
+        {
+          "tela": "equipe",
+          "status": 200,
+          "spa": true
+        },
+        {
+          "tela": "financeiro",
+          "status": 200,
+          "spa": true
+        },
+        {
+          "tela": "configuracoes",
+          "status": 200,
+          "spa": true
+        }
+      ]
+    },
+    {
+      "dominio": "clinicaipupiara.com.br",
+      "html_status": 200,
+      "bundle_status": 200,
+      "bundle": "/assets/index-wiGHU5F1.js",
+      "sha256": "fb723c3943d4bfb92b1b00900d85b0425f5f989648157a313eb94a182190d90c",
+      "versao": "0.5.0",
+      "commit": "f4b6891e",
+      "alteracoes_locais": "!1",
+      "compilado_em": "2026-10-09T23:04:53.550Z",
+      "rotas": [
+        {
+          "tela": "dashboard",
+          "status": 200,
+          "spa": true
+        },
+        {
+          "tela": "equipe",
+          "status": 200,
+          "spa": true
+        },
+        {
+          "tela": "financeiro",
+          "status": 200,
+          "spa": true
+        },
+        {
+          "tela": "configuracoes",
+          "status": 200,
+          "spa": true
+        }
+      ]
+    }
+  ],
+  "autenticado": {
+    "brotas": {
+      "cincoAbas": true,
+      "consultaRealSemAvisos": true,
+      "f5": true,
+      "trocaClinicaAlcanceCorreto": true,
+      "dashboardQuatroBlocos": true,
+      "meuPerfil": true,
+      "novoMembroAcessoTemporarioHabilitado": true
+    },
+    "ipupiara": {
+      "cincoAbas": true,
+      "consultaRealSemAvisos": true,
+      "f5": true,
+      "dashboardQuatroBlocos": true,
+      "meuPerfil": true,
+      "novoMembroAcessoTemporarioHabilitado": true
+    }
+  },
+  "escritasReaisDuranteConferencia": 0,
+  "nota": "Presença de frases antigas nos bundles não representa flags ativas; habilitação observada na interface e no código do commit. Dashboard com conferência manual de indicadores anterior preservada."
+}

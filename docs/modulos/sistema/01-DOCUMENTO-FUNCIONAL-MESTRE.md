@@ -1,5 +1,10 @@
 # Sistema — documento funcional mestre
 
+## Evolução aprovada e integração autorizada — 09/10/2026
+
+O pedido posterior autoriza integrar e publicar a evolução do Claude, substituindo os limites históricos de somente local e de preservação da composição anterior dentro deste recorte. Proprietária apresenta Financeiro de hoje, Precisa de atenção, Operação de hoje e Agenda resumida. Previsto agrupa agendado/confirmado; total não cancelado fica separado. Recepção relê movimento/caixa a cada60s com aba visível, distingue estados, preserva filtros e sinaliza profissional fora da leitura. Não ampliar permissões, fontes, regras financeiras ou conteúdos clínicos. Erros não fabricam zero; troca de contexto cancela resultados antigos. Configurações e Acesso Direto publicados permanecem habilitados. Detalhes e evidências atuais: [relatório27](27-INTEGRACAO-DASHBOARDS-CLAUDE-PUBLICACAO.md). As restrições dos pedidos anteriores abaixo são históricas quando contrariadas explicitamente pelo pedido atual.
+
+
 ## Dashboard administrativa — pedido posterior de09/10/2026
 
 Retirar cartões explicativos não retira as informações úteis. Proprietário(a)

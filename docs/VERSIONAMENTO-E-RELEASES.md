@@ -1,5 +1,15 @@
 # Versionamento e releases — processo em preparação
 
+## Dashboards 0.6.0 validadas; publicação em execução — 2026-10-09T23:42:25.976Z
+
+Fotografia estável de Claude integrada no checkout isolado resgate-local, sobre f4b6891e/0.5.0. Verificações finais: 40 unitários; 64 dashboards administrativos em conjunto; Recepção 41 aprovados/1 ignorado; identidade/convites/recuperação 29 em conjunto; Acesso Direto 14; Configurações 4; Meu perfil 4. São provas sintéticas, não homologação real nova. Tipos/lint/build/diff-check aprovados, avisos preexistentes. Corrigidos novo login e preservação da prova SDK de recuperação através da guarda, sem liberação de pendentes. Dependências/flags/serviços/RLS/Auth preservados, nenhuma escrita Supabase, conta ou contexto novo. Sessões reais existentes B/I disponíveis; leitura da versão0.5 anterior registrada sem expor valores; conferência da0.6 publicada ainda pendente. GraphQL ausente sem dependência nova. Relatório Sistema27; a entrega do Claude24 é histórica e seu bloqueio sintético foi resolvido nas fixtures, sem desligar a guarda. Fontes e índice da árvore principal preservados. Próximo: push autorizado na branch de publicação e leitura dos dois domínios.
+
+
+## Configurações 0.5.0 publicada e conferida — 2026-10-09T23:11:50.216Z (UTC)
+
+Commit f4b6891e49922ef199096e7b91274cfe6ee0f3da na branch de publicação resgate-local, push confirmado. Brotas e Ipupiara servem 0.5.0/f4b6891e com árvore limpa. R5 real concluída após correções: 75 requisitos finais aprovados; 82 registros preservam 80 aprovações e duas falhas retestadas. Encerradas 18 contas/dez contextos acumulados; novas contas sem sessões/refresh/vínculos e logos R5 recusados com 404. Conferência IAB nas sessões existentes: cinco abas, consulta, F5, troca de clínica, dashboard, Meu perfil e Novo membro; sem salvar dados reais. Dashboard e Acesso Direto 0.4.0 preservados. Comparação dos indicadores continua como prova manual anterior. GraphQL ausente e sem homologação funcional, sem dependência dos recursos publicados. Relatório26/provasR5. Checkout principal mantém trabalhos paralelos; registros finais pós-deploy locais, sem novo deploy documental. Nenhuma ação exclusiva do usuário pendente.
+
+
 ## Configurações R5 homologada;0.5.0 preparada — 2026-10-09T23:01:31.694Z
 
 Provas reais completas após correções:75requisitos finais aprovados (82registros/80pass/2falhas históricas retestadas). PNG/JPEG, persistência/F5, histórico, concorrência409, login público, permissões/isolamento bilateral aprovados.18contas/10contextos encerrados; novas2banidas,0sessões/refresh/vínculos,10ctxinativos,públiconull,0versões reais. CFGtrue/versão0.5.0 preparadas após encerramento. Dashboard/AD0.4.0 preservados no checkoutisolado, primário mantém trabalhos paralelos. Migração corretivaPT409 aplicada ledger20261009225111/privada8; R5ledger20261009224204/pública10. GraphQL ausente/não homologado, sem dependência deREST/RPC/Storage/Edges emescopo. Relatório26/provasR5. Ainda semnovo commit/push/deploy; próximo publicação autorizada e leitura autenticada nos dois domínios.

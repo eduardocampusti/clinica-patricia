@@ -1,5 +1,47 @@
 # Configurações R5 — homologação e publicação
 
+## Resultado final — 2026-10-09T23:11:50.216Z (UTC)
+
+Configurações está habilitada e publicada em Brotas e Ipupiara, versão **0.5.0**, commit **f4b6891e49922ef199096e7b91274cfe6ee0f3da**, na branch `codex/resgate-local-2026-09-26`. Push normal confirmado no GitHub e implantação comprovada pelos bundles efetivamente servidos nos dois domínios. Dashboard e Acesso Direto 0.4.0 foram preservados; alterações paralelas do checkout principal ficaram fora do commit.
+
+| Funcionalidade | Prova conectada | Caminho |
+|---|---|---|
+| Dados da clínica | Salvar rascunho, aplicar, ler novamente e F5 nos contextos A/B | Configurações → Dados da clínica |
+| Identidade visual | PNG/JPEG, leitura privada/pública, substituição e validações de arquivo A/B | Configurações → Identidade visual |
+| Timbrados, cabeçalho e rodapé | Persistência, recarga e PDF demonstrativo usando dados consultados A/B | Configurações → Timbrados e documentos |
+| Login personalizado | Projeção aplicada, logo, mensagem, formulário anônimo e novo login normal A/B | Configurações → Tela de login |
+| Histórico e concorrência | Novo rascunho ao restaurar, versões preservadas, conflito 409 e reconciliação A/B | Configurações → Histórico de alterações |
+| Permissões e isolamento | Sessões reais recusaram leitura, escrita, upload e Storage cruzados; Recepção e alcance geral recusados | Restrição por papel e unidade no servidor |
+
+A rodada R5 contém 82 registros: 80 aprovações e duas falhas históricas corrigidas e retestadas. O último resultado de cada um dos 75 requisitos nomeados está aprovado, incluindo pré-condições. Não registrar 82/82. Toda a sequência restante foi concluída com as mesmas duas contas, incluindo contexto B e isolamento bilateral. Evidências anteriores válidas foram reaproveitadas.
+
+Correções: o produto usava SQLSTATE 40001 para conflitos funcionais, o que provocou repetição no PostgREST 14.5; a migração corretiva utiliza PT409 e a Edge privada versão 8 retorna HTTP 409. Assinatura, proprietário, ACL, locks, guardas e validações foram preservados. O executor agora renova sua sessão auxiliar depois do novo login e aguarda a mensagem específica de restauração, sem enfraquecer a saída global do produto. Testes locais: seis de sessão com SDK real/transporte sintético, três do mapeamento de erros, três de hostnames e oito SQL R5 em PostgreSQL descartável. Tipos, lint dirigido, notas de versão e build isolado passaram. Esses testes locais são distintos da homologação conectada.
+
+Encerramento: duas contas R5 banidas, login com senha de teste recusado, zero sessões, refresh tokens e vínculos ativos. Os dez contextos fictícios acumulados estão inativos, com projeção pública nula e zero vínculos. Os logos aplicados de R5 A/B retornaram HTTP 404 após o fechamento. Total acumulado autorizado: 18 contas e dez contextos encerrados, pelas provas anteriores e desta rodada. Nenhuma reativação ou envio de e-mail; zero versões de Configurações gravadas nas clínicas reais durante os testes.
+
+## Publicação e conferência autenticada
+
+| Domínio | Bundle | Compilação UTC |
+|---|---|---|
+| clinicabrotas.com.br | `/assets/index-B9d6Dnsb.js` | 2026-10-09T23:04:46.847Z |
+| clinicaipupiara.com.br | `/assets/index-wiGHU5F1.js` | 2026-10-09T23:04:53.550Z |
+
+Ambos servem 0.5.0/f4b6891e, com árvore limpa; hashes SHA256 e respostas HTTP constam em `database/proofs/configuracoes/2026-10-09-r5/publicacao-sanitizada.json`. A prova é a versão efetivamente servida, não uma leitura do painel ou job da Hostinger.
+
+Automação IAB, com sessões existentes fornecidas pelo usuário: cinco abas de Configurações e consulta real sem avisos em ambas as clínicas, F5, troca de clínica com alcance correto, quatro blocos da dashboard, Meu perfil e Novo membro com opção de senha temporária habilitada. Formulários fechados sem salvar. Nenhuma edição de dados, contas ou marcas reais. Visual de timbrados/login observado em computador e celular; capturas locais fora do Git e sem pacientes. Não foi um novo login de produção nesta rodada nem emulação SQL. A comparação real dos indicadores da dashboard continua registrada como conferência manual anterior do usuário.
+
+## Limites, recuperação e estado dos arquivos
+
+GraphQL permanece sem extensão e sem homologação funcional. Os fluxos publicados usam REST/RPC/Storage/Edges; não houve instalação ou ativação da extensão. Caso GraphQL seja ativado futuramente, sua autorização precisa de homologação funcional antes do uso. Laboratório e emissores clínicos futuros continuam fora da entrega; o PDF de demonstração não tem validade clínica. TypeSafe consultada: controles determinísticos, sem IA ou chamada adicional necessária.
+
+Backend aplicado: R5, arquivo 20261009220000 → ledger 20261009224204; conflito HTTP, arquivo 20261009225100 → ledger 20261009225111; pública versão 10 e privada versão 8. Não reaplicar migrações instaladas indiscriminadamente. Recuperação de frontend: revert normal de f4b6891e49922ef199096e7b91274cfe6ee0f3da e push da mesma branch; retorna Configurações à indisponibilidade e mantém dashboard/Acesso Direto 0.4.0 e proteções. Não devolver erros funcionais a 40001 para tratar regressão visual.
+
+A revisão automática recusou encerrar uma conexão PostgREST presa. A operação não foi executada nem contornada; a leitura posterior confirmou zero conexões presas, e os testes seguintes passaram. Não há impedimento restante dessa operação.
+
+Relatórios, checkpoints e provas finais após o deploy foram atualizados localmente; não foi provocado outro deploy apenas documental. Servidores locais 3000/5189 continuam respondendo HTTP 200. Nenhuma ação exclusiva do usuário pendente para esta entrega.
+
+## Histórico da preparação e execução
+
 Registro 2026-10-09T22:46:29.131Z.
 
 Ampliação única autorizada: duas contas e dois contextos novos; máximo acumulado 18/10. Nenhuma reativação ou envio de e-mail. Migração restrita aplicada uma vez, ledger 20261009224204; catálogo, ACL e integridade 8/8 confirmados. Edge pública versão 10, fonte exata conferida; privada versão 7 e correção encode preservadas. Nenhum recurso R5 criado nesta preparação.

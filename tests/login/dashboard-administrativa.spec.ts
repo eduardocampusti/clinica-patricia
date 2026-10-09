@@ -57,27 +57,29 @@ async function painel(page: Page, modoInicial: Modo = 'movimento', controle?: Co
   return { ...original, chamadas, liberar: () => liberar?.() }
 }
 for (const unidade of ['brotas', 'ipupiara'] as const) test(`fontes, estados, F5 e destinos reais — ${unidade}`, async ({ page }, info) => {
+  await page.clock.setFixedTime(new Date('2026-10-09T11:30:00Z'))
   const { escritas, chamadas } = await painel(page)
   await page.goto(`/sistema/${unidade}/dashboard`)
-  await expect(page.getByTestId('resumo-Agendados').locator('dd')).toHaveText(unidade === 'brotas' ? '2' : '0')
-  await expect(page.getByTestId('resumo-Concluídos').locator('dd')).toHaveText('1')
-  if (unidade === 'brotas') for (const nome of ['Aguardando', 'Em atendimento']) await expect(page.getByTestId(`resumo-${nome}`).locator('dd')).toHaveText('1')
-  await expect(page.locator('.proprietaria-finance-values').getByText(unidade === 'brotas' ? 'R$ 1.250,00' : 'R$ 75,00', { exact: true })).toBeVisible()
-  await expect(page.locator('.proprietaria-finance-values').getByText(unidade === 'brotas' ? 'R$ 250,00' : 'R$ 15,00', { exact: true })).toBeVisible()
-  await expect(page.getByRole('heading', { name: 'Pendências e ações' })).toBeVisible()
-  await expect(page.locator('.proprietaria-pending-list')).toContainText('Repasses pendentes')
-  await expect(page.getByRole('list', { name: 'Agendamentos de hoje' })).toContainText(`Profissional DEMO ${unidade === 'brotas' ? 'Brotas' : 'Ipupiara'}`)
+  await expect(page.getByTestId('resumo-Previstos').locator('dd strong')).toHaveText(unidade === 'brotas' ? '2' : '0')
+  await expect(page.getByTestId('resumo-Concluídos').locator('dd strong')).toHaveText('1')
+  if (unidade === 'brotas') for (const nome of ['Aguardando', 'Em atendimento']) await expect(page.getByTestId(`resumo-${nome}`).locator('dd strong')).toHaveText('1')
+  await expect(page.locator('.prop-moedas').getByText(unidade === 'brotas' ? 'R$ 1.250,00' : 'R$ 75,00', { exact: true })).toBeVisible()
+  await expect(page.locator('.prop-moedas').getByText(unidade === 'brotas' ? 'R$ 250,00' : 'R$ 15,00', { exact: true })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Precisa de atenção' })).toBeVisible()
+  await expect(page.locator('.prop-pendencias')).toContainText('Repasses pendentes')
+  if (unidade === 'brotas') await expect(page.getByRole('list', { name: 'Próximos horários previstos de hoje' })).toContainText('Profissional DEMO Brotas')
+  else await expect(page.getByRole('region', { name: 'Agenda resumida', exact: true })).toContainText('Nenhum horário futuro previsto hoje.')
   await expect(page.locator('main')).not.toContainText('Paciente Fictício Não Deve Aparecer')
   await expect(page.getByRole('region', { name: 'Administração da clínica' })).toHaveCount(0)
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
   await page.screenshot({ path: info.outputPath(`${unidade}-movimento.png`), fullPage: true })
   await page.reload()
-  await expect(page.getByTestId('resumo-Concluídos').locator('dd')).toHaveText('1')
+  await expect(page.getByTestId('resumo-Concluídos').locator('dd strong')).toHaveText('1')
   await page.getByRole('button', { name: 'Abrir Agenda', exact: true }).click()
   await expect(page).toHaveURL(new RegExp(`/sistema/${unidade}/agenda$`))
   await page.goto(`/sistema/${unidade}/dashboard`)
   await expect(page.getByText('Repasses pendentes', { exact: true })).toBeVisible()
-  await page.getByRole('button', { name: 'Conferir no Financeiro' }).first().click()
+  await page.getByRole('button', { name: 'Abrir Financeiro' }).first().click()
   await expect(page).toHaveURL(new RegExp(`/sistema/${unidade}/financeiro$`))
   expect(chamadas.every(c => c.clinica === clinicas[unidade === 'brotas' ? 0 : 1].id)).toBe(true)
   expect(escritas).toEqual([])
@@ -85,7 +87,7 @@ for (const unidade of ['brotas', 'ipupiara'] as const) test(`fontes, estados, F5
 for (const unidade of ['brotas', 'ipupiara'] as const) test(`ações legíveis no tema claro e escuro — ${unidade}`, async ({ page }, info) => {
   await painel(page)
   await page.goto(`/sistema/${unidade}/dashboard`)
-  await expect(page.locator('.proprietaria-finance-values')).toBeVisible()
+  await expect(page.locator('.prop-moedas')).toBeVisible()
   for (const tema of ['claro', 'escuro']) {
     if (tema === 'escuro') await page.getByRole('button', { name: 'Ativar modo escuro' }).click()
     const contraste = await page.getByRole('button', { name: 'Abrir Agenda', exact: true }).evaluate(botao => {
@@ -110,9 +112,9 @@ test('sem movimento mantém os quatro blocos e zero só confirmado', async ({ pa
   const { escritas } = await painel(page, 'vazio')
   await page.goto('/sistema/brotas/dashboard')
   await expect(page.getByRole('heading', { name: 'Nenhum agendamento hoje' })).toBeVisible()
-  await expect(page.locator('.proprietaria-finance-values').getByText('R$ 0,00', { exact: true })).toHaveCount(3)
-  await expect(page.getByText(/Nenhuma pendência de aprovação/)).toBeVisible()
-  for (const titulo of ['Resumo do dia', 'Agenda do dia', 'Resumo financeiro', 'Pendências e ações']) await expect(page.getByRole('heading', { name: titulo, exact: true })).toBeVisible()
+  await expect(page.locator('.prop-moedas').getByText('R$ 0,00', { exact: true })).toHaveCount(3)
+  await expect(page.getByText(/Sem caixas aguardando aprovação/)).toBeVisible()
+  for (const titulo of ['Operação de hoje', 'Agenda resumida', 'Financeiro de hoje', 'Precisa de atenção']) await expect(page.getByRole('heading', { name: titulo, exact: true })).toBeVisible()
   await page.screenshot({ path: info.outputPath('sem-movimento.png'), fullPage: true })
   expect(escritas).toEqual([])
 })
@@ -122,13 +124,13 @@ for (const modo of ['erro', 'negado', 'incompleto', 'financeiro-erro', 'financei
   const erroAgenda = ['erro', 'negado', 'incompleto'].includes(modo)
   await expect(page.getByText(erroAgenda ? modo === 'negado' ? 'Movimento do dia: acesso não autorizado' : 'Movimento do dia indisponível' : modo === 'financeiro-negado' ? 'Resumo financeiro: acesso não autorizado' : 'Resumo financeiro indisponível', { exact: true })).toBeVisible()
   if (erroAgenda) {
-    await expect(page.getByTestId('resumo-Agendados')).toHaveCount(0)
+    await expect(page.getByTestId('resumo-Previstos')).toHaveCount(0)
     await expect(page.getByRole('heading', { name: 'Nenhum agendamento hoje' })).toHaveCount(0)
-    await expect(page.locator('.proprietaria-finance-values')).toContainText('R$ 75,00')
+    await expect(page.locator('.prop-moedas')).toContainText('R$ 75,00')
   } else {
-    await expect(page.locator('.proprietaria-finance-values')).toHaveCount(0)
-    await expect(page.getByText(/Nenhuma pendência de aprovação/)).toHaveCount(0)
-    await expect(page.getByTestId('resumo-Concluídos').locator('dd')).toHaveText('1')
+    await expect(page.locator('.prop-moedas')).toHaveCount(0)
+    await expect(page.getByText(/Sem caixas aguardando aprovação/)).toHaveCount(0)
+    await expect(page.getByTestId('resumo-Concluídos').locator('dd strong')).toHaveText('1')
   }
   if (modo === 'negado' || modo === 'financeiro-erro') await page.screenshot({ path: info.outputPath(`${modo}.png`), fullPage: true })
 })
@@ -139,13 +141,13 @@ test('respostas atrasadas e carregamento não contaminam troca de clínica', asy
   await expect(page.getByText('Consultando valores oficiais…', { exact: true })).toBeVisible()
   await page.getByRole('combobox', { name: 'Selecionar clínica', exact: true }).selectOption(clinicas[1].id)
   await expect(page).toHaveURL(/ipupiara\/dashboard$/)
-  await expect(page.locator('.proprietaria-finance-values')).toContainText('R$ 75,00')
+  await expect(page.locator('.prop-moedas')).toContainText('R$ 75,00')
   liberar()
-  await expect(page.getByTestId('resumo-Agendados').locator('dd')).toHaveText('0')
+  await expect(page.getByTestId('resumo-Previstos').locator('dd strong')).toHaveText('0')
   await expect(page.locator('main')).not.toContainText('Profissional DEMO Brotas')
-  await expect(page.locator('.proprietaria-finance-values')).not.toContainText('R$ 1.250,00')
+  await expect(page.locator('.prop-moedas')).not.toContainText('R$ 1.250,00')
   await page.getByRole('button', { name: 'Atualizar painel', exact: true }).click()
-  await expect(page.getByTestId('resumo-Concluídos').locator('dd')).toHaveText('1')
+  await expect(page.getByTestId('resumo-Concluídos').locator('dd strong')).toHaveText('1')
   await page.getByRole('button', { name: 'Ativar modo escuro' }).click()
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
   await page.screenshot({ path: info.outputPath('troca-ipupiara-escuro.png'), fullPage: true })
@@ -156,19 +158,21 @@ for (const unidade of ['brotas', 'ipupiara'] as const) test(`conferência final:
   await page.clock.setFixedTime(new Date('2026-10-09T11:30:00Z'))
   const { escritas } = await painel(page)
   await page.goto(`/sistema/${unidade}/dashboard`)
-  await expect(page.getByTestId('resumo-Agendados')).toContainText('Agendado ou confirmado; não é o total')
-  for (const [nome, n] of [['Agendados', unidade === 'brotas' ? '2' : '0'], ['Aguardando', unidade === 'brotas' ? '1' : '0'], ['Em atendimento', unidade === 'brotas' ? '1' : '0'], ['Concluídos', '1']]) {
-    await expect(page.getByTestId(`resumo-${nome}`).locator('dd')).toHaveText(n)
+  await expect(page.getByTestId('resumo-Previstos')).toContainText('Agendado ou confirmado')
+  for (const [nome, n] of [['Previstos', unidade === 'brotas' ? '2' : '0'], ['Aguardando', unidade === 'brotas' ? '1' : '0'], ['Em atendimento', unidade === 'brotas' ? '1' : '0'], ['Concluídos', '1']]) {
+    await expect(page.getByTestId(`resumo-${nome}`).locator('dd strong')).toHaveText(n)
   }
-  if (unidade === 'brotas') await expect(page.locator('.proprietaria-next strong')).toHaveText('09:00 · Profissional DEMO Brotas 1')
+  if (unidade === 'brotas') await expect(page.locator('.prop-proximos li').first()).toContainText('Profissional DEMO Brotas 1')
   await page.clock.setFixedTime(new Date('2026-10-09T21:00:00Z'))
   await page.getByRole('button', { name: 'Atualizar painel', exact: true }).click()
-  await expect(page.locator('.proprietaria-next strong')).toHaveText('Nenhum horário futuro agendado ou confirmado hoje.')
+  await expect(page.getByText('Nenhum horário futuro previsto hoje.', { exact: false })).toBeVisible()
+  await expect(page.locator('.prop-proximos')).toHaveCount(0)
   if (unidade === 'brotas') {
-    await expect(page.locator('.proprietaria-next')).toContainText('1 aguardando · 1 em atendimento.')
-    await expect(page.locator('.proprietaria-next')).toContainText('2 horários anteriores ainda em Agendado ou Confirmado.')
+    await expect(page.locator('.prop-vazio-linha')).toContainText('1 aguardando e 1 em atendimento neste momento.')
+    await expect(page.locator('.prop-alerta')).toContainText('2 horários já passaram e seguem previstos')
   } else {
-    await expect(page.locator('.proprietaria-next')).not.toContainText('aguardando ·')
+    await expect(page.locator('.prop-vazio-linha').first()).not.toContainText('aguardando')
+    await expect(page.locator('.prop-alerta')).toHaveCount(0)
   }
   await expect(page.locator('main')).not.toContainText('Nenhum agendamento restante hoje.')
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
@@ -181,20 +185,20 @@ for (const unidade of ['brotas', 'ipupiara'] as const) test(`conferência final:
   const controle: Controle = { modo: 'movimento', consultadoEm: '2026-10-09T11:10:00Z' }
   const { chamadas, escritas } = await painel(page, 'movimento', controle)
   await page.goto(`/sistema/${unidade}/dashboard`)
-  for (const titulo of ['Resumo do dia', 'Agenda do dia']) await expect(page.getByRole('region', { name: titulo, exact: true })).toContainText('Leitura concluída em 09/10/2026, 10:48:00')
-  for (const titulo of ['Resumo financeiro', 'Pendências e ações']) await expect(page.getByRole('region', { name: titulo, exact: true })).toContainText('Dados consultados no servidor em 09/10/2026, 08:10:00')
+  for (const titulo of ['Operação de hoje', 'Agenda resumida']) await expect(page.getByRole('region', { name: titulo, exact: true })).toContainText('Leitura concluída em 09/10/2026, 10:48:00')
+  for (const titulo of ['Financeiro de hoje', 'Precisa de atenção']) await expect(page.getByRole('region', { name: titulo, exact: true })).toContainText('Dados consultados no servidor em 09/10/2026, 08:10:00')
   const antes = chamadas.length
   await page.clock.setFixedTime(new Date('2026-10-09T13:49:00Z'))
   // Resposta financeira ainda antiga: o horário do clique não a torna recente.
   await page.getByRole('button', { name: 'Atualizar painel', exact: true }).click()
-  await expect(page.getByRole('region', { name: 'Resumo do dia', exact: true })).toContainText('10:49:00')
-  await expect(page.getByRole('region', { name: 'Resumo financeiro', exact: true })).toContainText('08:10:00')
+  await expect(page.getByRole('region', { name: 'Operação de hoje', exact: true })).toContainText('10:49:00')
+  await expect(page.getByRole('region', { name: 'Financeiro de hoje', exact: true })).toContainText('08:10:00')
   expect(chamadas.slice(antes).some(c => c.recurso === 'agendamentos')).toBe(true)
   expect(chamadas.slice(antes).some(c => c.recurso === 'financeiro_dashboard_proprietaria')).toBe(true)
   controle.consultadoEm = '2026-10-09T13:50:00Z'
   await page.clock.setFixedTime(new Date('2026-10-09T13:50:00Z'))
   await page.getByRole('button', { name: 'Atualizar painel', exact: true }).click()
-  for (const titulo of ['Resumo financeiro', 'Pendências e ações']) await expect(page.getByRole('region', { name: titulo, exact: true })).toContainText('10:50:00')
+  for (const titulo of ['Financeiro de hoje', 'Precisa de atenção']) await expect(page.getByRole('region', { name: titulo, exact: true })).toContainText('10:50:00')
   expect(escritas).toEqual([])
 })
 
@@ -204,8 +208,8 @@ for (const modo of ['erro', 'negado', 'financeiro-erro', 'financeiro-negado'] as
   const { chamadas, escritas } = await painel(page, 'movimento', controle)
   const unidade = modo.includes('negado') ? 'ipupiara' : 'brotas'
   await page.goto(`/sistema/${unidade}/dashboard`)
-  await expect(page.locator('.proprietaria-finance-values')).toBeVisible()
-  await expect(page.getByTestId('resumo-Concluídos').locator('dd')).toHaveText('1')
+  await expect(page.locator('.prop-moedas')).toBeVisible()
+  await expect(page.getByTestId('resumo-Concluídos').locator('dd strong')).toHaveText('1')
   const antes = chamadas.length
   let liberar!: () => void
   const espera = new Promise<void>(resolve => { liberar = resolve })
@@ -216,20 +220,20 @@ for (const modo of ['erro', 'negado', 'financeiro-erro', 'financeiro-negado'] as
   try {
     await page.getByRole('button', { name: 'Atualizar painel', exact: true }).click()
     for (const texto of ['Consultando movimento do dia…', 'Consultando agenda…', 'Consultando valores oficiais…', 'Consultando pendências financeiras…']) await expect(page.getByText(texto, { exact: true })).toBeVisible()
-    await expect(page.getByTestId('resumo-Agendados')).toHaveCount(0)
-    await expect(page.locator('.proprietaria-finance-values')).toHaveCount(0)
-    await expect(page.locator('.proprietaria-pending-list')).toHaveCount(0)
+    await expect(page.getByTestId('resumo-Previstos')).toHaveCount(0)
+    await expect(page.locator('.prop-moedas')).toHaveCount(0)
+    await expect(page.locator('.prop-pendencias')).toHaveCount(0)
     await expect(page.locator('main')).not.toContainText('08:10:00')
   } finally { liberar(); controle.esperar = undefined }
   const falhaAgenda = modo === 'erro' || modo === 'negado'
-  const bloqueados = falhaAgenda ? ['Resumo do dia', 'Agenda do dia'] : ['Resumo financeiro', 'Pendências e ações']
+  const bloqueados = falhaAgenda ? ['Operação de hoje', 'Agenda resumida'] : ['Financeiro de hoje', 'Precisa de atenção']
   for (const titulo of bloqueados) {
     const bloco = page.getByRole('region', { name: titulo, exact: true })
     await expect(bloco).toContainText(modo.includes('negado') ? 'acesso não autorizado' : 'indisponível')
     await expect(bloco).not.toContainText('10:49:00')
     await expect(bloco).not.toContainText('08:10:00')
   }
-  for (const titulo of falhaAgenda ? ['Resumo financeiro', 'Pendências e ações'] : ['Resumo do dia', 'Agenda do dia']) await expect(page.getByRole('region', { name: titulo, exact: true })).toContainText('10:49:00')
+  for (const titulo of falhaAgenda ? ['Financeiro de hoje', 'Precisa de atenção'] : ['Operação de hoje', 'Agenda resumida']) await expect(page.getByRole('region', { name: titulo, exact: true })).toContainText('10:49:00')
   expect(chamadas.slice(antes).some(c => c.recurso === 'agendamentos')).toBe(true)
   expect(chamadas.slice(antes).some(c => c.recurso === 'financeiro_dashboard_proprietaria')).toBe(true)
   expect(escritas).toEqual([])
@@ -239,8 +243,8 @@ test('conferência final: agenda vazia também identifica sua leitura', async ({
   await page.clock.setFixedTime(new Date('2026-10-09T13:48:00Z'))
   await painel(page, 'vazio')
   await page.goto('/sistema/brotas/dashboard')
-  const agenda = page.getByRole('region', { name: 'Agenda do dia', exact: true })
+  const agenda = page.getByRole('region', { name: 'Agenda resumida', exact: true })
   await expect(agenda).toContainText('Nenhum agendamento hoje')
   await expect(agenda).toContainText('Leitura concluída em 09/10/2026, 10:48:00')
-  await expect(page.locator('.proprietaria-finance-values')).toBeVisible()
+  await expect(page.locator('.prop-moedas')).toBeVisible()
 })

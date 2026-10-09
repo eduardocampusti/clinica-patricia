@@ -12,7 +12,7 @@ async function preparar(page: Page, papel = 'recepcao', quantidade = 205) {
   ]
   const usuario = { id: '11111111-1111-4111-8111-111111111111', email: 'teste@example.invalid', aud: 'authenticated' }
   const jwt = [Buffer.from('{"alg":"HS256","typ":"JWT"}').toString('base64url'), Buffer.from(JSON.stringify({ sub: usuario.id, exp: Math.floor(Date.now() / 1000) + 3600, aud: 'authenticated' })).toString('base64url'), 'synthetic'].join('.')
-  const estado = { falha: false, financeiroFalho: false, caixaModo: 'operacional' as 'operacional' | 'ausente' | 'legado' | 'permissao' | 'estado_invalido' | 'valor_invalido' | 'contexto_invalido', semPermissao: false, truncar: false, atraso: 0, cpfAtraso: 0, escritas: [] as string[], paginas: [] as number[], errosPagina }
+  const estado = { quantidade, leiturasMovimento: 0, leiturasCaixa: 0, falha: false, financeiroFalho: false, caixaModo: 'operacional' as 'operacional' | 'ausente' | 'legado' | 'permissao' | 'estado_invalido' | 'valor_invalido' | 'contexto_invalido', semPermissao: false, truncar: false, atraso: 0, cpfAtraso: 0, escritas: [] as string[], paginas: [] as number[], errosPagina }
   await page.addInitScript(({ jwt, usuario }) => {
     localStorage.setItem('sb-operacional-auth-token', JSON.stringify({ access_token: jwt, refresh_token: 'synthetic', expires_at: Math.floor(Date.now() / 1000) + 3600, expires_in: 3600, token_type: 'bearer', user: usuario }))
     if (!localStorage.getItem('clinica-patricia:tema')) localStorage.setItem('clinica-patricia:tema', 'claro')
@@ -24,18 +24,22 @@ async function preparar(page: Page, papel = 'recepcao', quantidade = 205) {
     const json = (dado: unknown, count?: number, status = 200) => route.fulfill({ status, contentType: 'application/json', headers: count === undefined ? {} : { 'content-range': `0-${Math.max(0, Array.isArray(dado) ? dado.length - 1 : 0)}/${count}`, 'access-control-expose-headers': 'content-range' }, body: JSON.stringify(dado) })
     const clinica = u.searchParams.get('clinica_id')?.slice(3) ?? clinicas[0].id
     const data = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Bahia', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date())
-    const linhas = Array.from({ length: quantidade }, (_, i) => ({ id: `a${String(i).padStart(4, '0')}`, clinica_id: clinica, paciente_id: i === 204 ? 'p0' : `p${i}`, profissional_id: `prof${i % 2}`, data, hora_inicio: i < 3 ? '00:01:00' : '23:00:00', hora_fim: i < 3 ? '00:31:00' : '23:30:00', status: ['aguardando', 'agendado', 'confirmado', 'em_atendimento', 'concluido'][i % 5], updated_at: '2026-10-03T12:00:00+00:00', pacientes: { nome_completo: `${clinica === clinicas[0].id ? 'Brotas' : 'Ipupiara'} Paciente ${i}` }, profissionais: { nome_completo: `Profissional ${i % 2}`, especialidades: { nome: 'Clínica geral' } } }))
+    const linhas = Array.from({ length: estado.quantidade }, (_, i) => ({ id: `a${String(i).padStart(4, '0')}`, clinica_id: clinica, paciente_id: i === 204 ? 'p0' : `p${i}`, profissional_id: `prof${i % 2}`, data, hora_inicio: i < 3 ? '00:01:00' : '23:00:00', hora_fim: i < 3 ? '00:31:00' : '23:30:00', status: ['aguardando', 'agendado', 'confirmado', 'em_atendimento', 'concluido'][i % 5], updated_at: '2026-10-03T12:00:00+00:00', pacientes: { nome_completo: `${clinica === clinicas[0].id ? 'Brotas' : 'Ipupiara'} Paciente ${i}` }, profissionais: { nome_completo: `Profissional ${i % 2}`, especialidades: { nome: 'Clínica geral' } } }))
+    // Guarda real permanece habilitada; esta resposta vale somente para o host sintético.
+    if (tabela === 'acesso_direto_estado') return json({ estado: 'normal' })
+    if (tabela === 'configuracoes_timbrado_consultar') return json({ instituicao: {}, campos: {}, geral: {}, variacoes: {}, versao: 0 })
     const leiturasRpc = ['financeiro_resumo_caixa', 'paciente_buscar_por_cpf', 'paciente_responsavel_legal_resumo', 'agenda_manual_disponivel', 'paciente_cpf_pendente', 'paciente_indicadores']
     if (req.method() !== 'GET' && req.method() !== 'HEAD' && !leiturasRpc.includes(tabela)) { estado.escritas.push(tabela); return json({ message: 'Gravação proibida no teste' }, undefined, 400) }
     if (tabela === 'usuarios_clinicas') return json(singular ? { papel } : u.searchParams.get('select') === 'papel' ? [{ papel }] : clinicas.map(c => ({ clinica_id: c.id, papel })))
     if (tabela === 'clinicas') return json(clinicas)
     if (tabela === 'agendamentos') {
+      estado.leiturasMovimento++
       if (estado.atraso && clinica === clinicas[0].id) await new Promise(resolve => setTimeout(resolve, estado.atraso))
       if (estado.falha || estado.semPermissao) return json({ code: estado.semPermissao ? '42501' : 'XX000' }, undefined, estado.semPermissao ? 403 : 500)
-      if (u.searchParams.get('select') === 'updated_at') return json(linhas.length ? [{ updated_at: linhas[0].updated_at }] : [], quantidade)
+      if (u.searchParams.get('select') === 'updated_at') return json(linhas.length ? [{ updated_at: linhas[0].updated_at }] : [], estado.quantidade)
       const offset = Number(u.searchParams.get('offset') ?? 0), limit = Number(u.searchParams.get('limit') ?? quantidade)
       estado.paginas.push(offset)
-      return json(linhas.slice(offset, offset + (estado.truncar ? 100 : limit)), quantidade)
+      return json(linhas.slice(offset, offset + (estado.truncar ? 100 : limit)), estado.quantidade)
     }
     if (tabela === 'sessoes_caixa') {
       if (estado.caixaModo === 'ausente') return json(singular ? null : [])
@@ -43,6 +47,7 @@ async function preparar(page: Page, papel = 'recepcao', quantidade = 205) {
       return json(singular ? sessao : [sessao])
     }
     if (tabela === 'financeiro_resumo_caixa') {
+      estado.leiturasCaixa++
       if (estado.financeiroFalho) return json({ code: 'XX000' }, undefined, 500)
       if (estado.caixaModo === 'permissao') return json({ code: '42501' }, undefined, 403)
       const id = req.postDataJSON().p_sessao_caixa_id
@@ -178,7 +183,7 @@ test('preparação para publicação: contrato do caixa e destino geral da Agend
   await expect(caixa).toContainText('Período: abertura até a consulta')
   const casos: Array<[typeof s.caixaModo, string]> = [
     ['ausente', 'Nenhuma sessão de caixa aberta está acessível'],
-    ['legado', 'O resumo homologado não está disponível'],
+    ['legado', 'anterior ao resumo oficial por sessão'],
     ['permissao', 'Caixa sem permissão'],
     ['estado_invalido', 'Caixa indisponível'],
     ['valor_invalido', 'Caixa indisponível'],
@@ -223,7 +228,7 @@ test('App normal: conjunto completo, filtros, CPF exato, abas e temas', async ({
   await page.getByLabel('Modalidade da busca').selectOption('nome')
   if (info.project.name !== 'desktop') {
     await expect(page.getByRole('button', { name: /Caixa do turno/ })).toHaveAttribute('aria-expanded', 'false')
-    await expect(page.getByRole('button', { name: /Pendências cadastrais/ })).toHaveAttribute('aria-expanded', 'false')
+    await expect(page.getByRole('button', { name: /Cadastros de pacientes/ })).toBeVisible()
   }
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy()
   await mkdir('scratch/recepcao-integracao/capturas', { recursive: true })
@@ -312,6 +317,26 @@ test('capturas compactas e último registro acessível', async ({ page }, info) 
 
 for (const papel of ['proprietaria', 'medico']) test(`Dashboard preservado: ${papel}`, async ({ page }) => {
   await preparar(page, papel, 0); await page.goto('/sistema/brotas/dashboard', { waitUntil: 'domcontentloaded' })
-  await expect(page.getByRole('heading', { name: 'Olá!' })).toBeVisible()
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText(/^(Bom dia|Boa tarde|Boa noite)!$/)
   await expect(page.getByRole('heading', { name: 'Movimento de hoje' })).toHaveCount(0)
+})
+
+test('atualização periódica relê fontes e conserva filtro explícito quando profissional sai dos dados', async ({ page }) => {
+  await page.clock.install({ time: new Date() })
+  const estado = await preparar(page, 'recepcao', 10)
+  await abrir(page)
+  await page.getByRole('combobox', { name: 'Filtrar por profissional' }).selectOption('prof0')
+  await page.getByRole('textbox', { name: 'Buscar paciente', exact: true }).fill('Brotas')
+  const antes = { movimento: estado.leiturasMovimento, caixa: estado.leiturasCaixa }
+  estado.quantidade = 0
+  await page.clock.runFor(61000)
+  await expect.poll(() => estado.leiturasMovimento).toBeGreaterThan(antes.movimento)
+  await expect.poll(() => estado.leiturasCaixa).toBeGreaterThan(antes.caixa)
+  await expect(page.getByRole('button', { name: 'Atualizar', exact: true })).toBeEnabled()
+  await expect(page.getByRole('combobox', { name: 'Filtrar por profissional' })).toHaveValue('prof0')
+  await expect(page.getByRole('textbox', { name: 'Buscar paciente', exact: true })).toHaveValue('Brotas')
+  await expect(page.locator('.rp-aviso-filtro')).toBeVisible()
+  await expect(page.getByTestId('registro')).toHaveCount(0)
+  expect(estado.escritas).toEqual([])
+  expect(estado.errosPagina).toEqual([])
 })

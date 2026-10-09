@@ -14,7 +14,7 @@
 .rp-preview details { text-align: right; }
 .rp-demo-controls { display: flex; flex-wrap: wrap; gap: 10px; padding-block: 10px; }
 .rp-demo-controls label { text-align: left; }
-.rp-heading { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.rp-heading { display: flex; justify-content: space-between; align-items: start; gap: 16px; flex-wrap: wrap; }
 .rp-heading p { color: var(--texto-secundario); margin-top: 5px; }
 .rp-quick { display: flex; gap: 12px; }
 .rp-button { display: inline-flex; justify-content: center; align-items: center; gap: 8px; border: 1px solid var(--borda); border-radius: 8px; background: var(--fundo-card); color: var(--rp-link); min-height: 42px; padding: 8px 14px; font-weight: 600 !important; white-space: nowrap; transition: background-color 160ms; }
@@ -185,7 +185,50 @@
   .rp-integrado .rp-metric strong { font-size: 24px; }
   .rp-integrado .rp-metric p { font-size: 12px; }
 }
+/* Cabeçalho: ações rápidas e estado da leitura, visíveis sem rolar */
+.rp-heading-acoes { display: flex; flex-direction: column; align-items: end; gap: 8px; min-width: 0; }
+.rp-heading-acoes .rp-quick { flex-direction: row; flex-wrap: wrap; justify-content: end; }
+.rp-estado { display: flex; align-items: center; justify-content: end; flex-wrap: wrap; gap: 4px 10px; color: var(--texto-secundario); font-size: 12px; }
+.rp-estado > span { font-variant-numeric: tabular-nums; }
+.rp-estado .rp-link { font-size: 12px !important; min-height: 36px; }
+
+/* Filtro cujo profissional saiu da leitura atual */
+.rp-aviso-filtro {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 8px 10px; margin-bottom: 10px;
+  padding: 9px 12px; border: 1px solid var(--cor-alerta-borda); border-radius: 8px;
+  background: var(--cor-alerta-suave); color: var(--rp-aviso); font-size: 12px;
+}
+.rp-aviso-filtro > span { flex: 1; min-width: 150px; line-height: 1.5; }
+.rp-aviso-filtro .rp-link { font-size: 12px !important; min-height: 36px; }
+
+/* Atalho para os cadastros de pacientes */
+.rp-atalho { padding: 0; }
+.rp-atalho button { display: flex; width: 100%; align-items: center; gap: 10px; min-height: 70px; padding: 12px 16px; text-align: left; border-radius: 12px; transition: background-color 160ms; }
+.rp-atalho button:hover { background: var(--cor-primaria-suave); }
+.rp-atalho button > span:nth-child(2) { flex: 1; min-width: 0; }
+.rp-atalho strong { font-size: 16px; }
+.rp-atalho small { display: block; margin-top: 2px; color: var(--texto-secundario); }
+.rp-atalho svg { width: 16px; color: var(--rp-link); }
+.rp-atalho .rp-support-icon { color: var(--kpi-1-texto); background: var(--kpi-1-icone-fundo); }
+
+/* Situação do agendamento: texto sempre acompanha a cor */
+.rp-ativo { color: var(--kpi-1-texto); background: var(--kpi-1-icone-fundo); }
+.rp-integrado .rp-arrival { align-items: start; gap: 5px; }
+.rp-integrado .rp-arrival .rp-warning-text { font-size: 11px; }
+.rp-professionals button[aria-pressed=true] { background: var(--cor-primaria-suave); }
+.rp-professionals button[aria-pressed=true] strong { color: var(--rp-link); }
+
 .rp-integrado .rp-table-head, .rp-integrado .rp-record { grid-template-columns: minmax(0, 1.5fr) minmax(120px, 1fr) 130px; }
 .rp-integrado .rp-record-action .rp-link { font-size: 12px; width: 100%; }
 @media (max-width: 1250px) { .rp-integrado .rp-record { grid-template-columns: minmax(0, 1fr) 130px; } .rp-integrado .rp-record-action { grid-column: 1 / -1; grid-row: auto; display: flex; gap: 10px; justify-content: end; } .rp-integrado .rp-record-action :is(.rp-button, .rp-link) { width: auto; } }
 @media (max-width: 639px) { .rp-integrado .rp-record { grid-template-columns: minmax(0, 1fr) 100px; } .rp-integrado .rp-record-action { padding-left: 38px; } }
+/* Até o celular as ações ficam ao lado do título: uma linha a menos no cabeçalho
+   mantém o movimento do dia dentro da primeira tela no tablet. */
+@media (max-width: 639px) {
+  .rp-heading-acoes { width: 100%; flex-direction: column; align-items: stretch; }
+  .rp-heading-acoes .rp-quick { width: 100%; }
+  .rp-estado { justify-content: space-between; }
+  .rp-integrado .rp-arrival { align-items: end; }
+  .rp-atalho button { min-height: 64px; padding: 10px 12px; }
+  .rp-atalho strong { font-size: 14px; }
+}

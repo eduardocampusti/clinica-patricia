@@ -1,7 +1,10 @@
 import { defineConfig, mergeConfig } from 'vite'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import base from '../../vite.config.ts'
 
 export default mergeConfig(base, defineConfig({
+  cacheDir: join(tmpdir(), 'clinica-patricia-recepcao-060', 'vite-cache'),
   plugins: [{ name: 'preview-agenda-isolada', configureServer(server) {
     server.middlewares.use(async (req, res, next) => {
       const url = new URL(req.url ?? '/', 'http://127.0.0.1')

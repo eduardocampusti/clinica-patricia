@@ -1,5 +1,5 @@
 {
-  "versaoEmDesenvolvimento": "0.5.0",
+  "versaoEmDesenvolvimento": "0.6.0",
   "naoLancadas": {
     "novidades": [
       "Equipe: Novo membro permite criar acesso com senha temporária individual válida por 24 horas e papéis explícitos por clínica. A troca por senha pessoal é obrigatória antes de acessar os módulos; a senha e as sessões temporárias anteriores são recusadas após a ativação.",
@@ -19,6 +19,7 @@
       "Página “Sobre o sistema” com versão em execução, créditos de desenvolvimento e contexto da clínica."
     ],
     "melhorias": [
+      "Dashboards: a Proprietária ganhou visão geral com financeiro de hoje, pendências com escopo explícito, operação e agenda resumida. A Recepção distingue agendado de confirmado, mostra profissionais e atualiza movimento e caixa enquanto a aba está visível. Falhas e permissões recusadas permanecem explícitas, sem fabricar valores.",
       "Dashboard do Proprietário(a): movimento e Agenda do dia, resumo oficial do Financeiro e pendências da clínica selecionada. Agendados conta os estados agendado/confirmado; atendimentos aguardando ou iniciados continuam visíveis quando não há horários futuros. Atualizar painel consulta todos os blocos e diferencia atualização de origem, ausência de dados e falha.",
       "Configurações: prévia A4 acompanha a edição; gerar e baixar PDF de demonstração continuam ações explícitas. Conflitos de edição exigem reconsulta; atualizar os dados oficiais no rascunho preserva apresentação e imagens. Emissores clínicos futuros continuam fora desta entrega.",
       "Equipe: na ficha, Formação mostra contadores e cada inscrição com selos de informação e conferência; Atuação aparece em cartões de agenda e valores, serviços e disponibilidade; Recebimento ganhou um cartão único com a chave PIX mascarada como antes; Documentos viraram uma tabela (cartões no celular) com visualizar, baixar e “Mais ações”; o Histórico é uma linha do tempo por dia.",
@@ -63,6 +64,7 @@
       "Equipe: a gestão de acessos por clínica foi instalada no Supabase autorizado e publicada na Edge Function, com consulta real de acesso em Brotas e estado vazio correto em Ipupiara; convite e aceite aguardam redirect allowlisted e conta de teste autorizada."
     ],
     "correcoes": [
+      "Acesso: novo login abre a dashboard da clínica de entrada mesmo durante a verificação de ativação. A recuperação conserva a prova verificada do link, sem alterar permissões ou liberar contas pendentes.",
       "Configurações: envio de PNG/JPEG reencoda a imagem no servidor; conflitos de versão retornam recusa imediata, preservando os dados e evitando repetição automática da requisição.",
       "Configurações: enquanto a homologação está pendente, a edição fica indisponível no ambiente publicado. A prévia local foi preservada.",
       "Sistema Multiclínicas: novo login comum abre a dashboard da clínica autorizada; recargas preservam a página. Saudação usa o nome cadastrado e o horário da Bahia. Identificação da conta no menu e cabeçalho, com foto privada somente por vínculo confirmado ou iniciais. Equipe e Financeiro continuam no menu; cartões explicativos retirados da dashboard.",

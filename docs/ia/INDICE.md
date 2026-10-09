@@ -1,5 +1,10 @@
 # Memória compartilhada — mapa de leitura
 
+## Dashboards 0.6.0 validadas; publicação em execução — 2026-10-09T23:42:25.976Z
+
+Fotografia estável de Claude integrada no checkout isolado resgate-local, sobre f4b6891e/0.5.0. Verificações finais: 40 unitários; 64 dashboards administrativos em conjunto; Recepção 41 aprovados/1 ignorado; identidade/convites/recuperação 29 em conjunto; Acesso Direto 14; Configurações 4; Meu perfil 4. São provas sintéticas, não homologação real nova. Tipos/lint/build/diff-check aprovados, avisos preexistentes. Corrigidos novo login e preservação da prova SDK de recuperação através da guarda, sem liberação de pendentes. Dependências/flags/serviços/RLS/Auth preservados, nenhuma escrita Supabase, conta ou contexto novo. Sessões reais existentes B/I disponíveis; leitura da versão0.5 anterior registrada sem expor valores; conferência da0.6 publicada ainda pendente. GraphQL ausente sem dependência nova. Relatório Sistema27; a entrega do Claude24 é histórica e seu bloqueio sintético foi resolvido nas fixtures, sem desligar a guarda. Fontes e índice da árvore principal preservados. Próximo: push autorizado na branch de publicação e leitura dos dois domínios.
+
+
 ## Acesso Direto0.4.0 publicado; Configurações pendente — 09/10/2026, 17:44:08 -03
 
 GitHubresgate-local:f92e9a4+b56848ce, pushsemforce confirmado. Ambosdomínios servem0.4.0/b56848ce/árvorelimpa; HTTP/bundles/rotas200, não prova autenticada. ADhabilitadoSQL/serviço/frontend após testes reais83+2anteriores e30assertivasR3/RPCbilateral, proteçõesmantidas. CFGfrontendfalse: upload503 por encodePNG inexistente corrigido; PNG/transparênciaLOCAL passou, Edgeprivada6exata; provasconectadasrestantes não aprovadas. Todas14contas/6contextos encerradas; MCP+finallyconfirmam0sessões/refresh/vínculos nasnovas,contextosativos0,allowlist0; não criar substitutas nemreativar. Dashboard/manualpreservada; GraphQLausente nãohomologado. IABpúblico semsessão; sólogininterativo solicitado para conferir0.4.0, não credenciais. Servidores3000/5189disponíveis. Relatório24/evidênciapublicacao-sanitizada.json; recuperação porrevertb56848ce+gatesfalse mantendoRLS/hook. Registrosfinais locaisnão commitados apósdeploy. Próximo: conferirproduçãoautenticada quandonova sessãoexistir; Configurações requer decisão limitada de novosrecursos para repetirapósfix.
@@ -287,3 +292,5 @@ R4 aplicada (ledger20261009210549), catálogo/ACL/integridade8pass; pública9 ex
 Detalhes: 25-CONFIGURACOES-R4-HOMOLOGACAO-PUBLICACAO.md.
 
 - Sistema26: `docs/modulos/sistema/26-CONFIGURACOES-R5-HOMOLOGACAO-PUBLICACAO.md` — R5 real aprovada, recursos encerrados,0.5.0 preparada; comprovação publicada registrada na própria entrega.
+
+- Resultado final Sistema26: Configurações0.5.0 publicada e conferidaB/I; encerramento18/10. Provas de publicação e ativos encerrados salvas localmente apósdeploy.
