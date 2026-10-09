@@ -59,7 +59,7 @@ Deno.serve(async req=>{
       let image:Image;try{image=await Image.decode(bytes)}catch{throw new ErroConfiguracao(422,'Imagem inválida. Exporte novamente como PNG ou JPEG.')}
       if(image.width!==h.largura||image.height!==h.altura||h.orientacao!==1)throw new ErroConfiguracao(422,'Imagem inválida ou com orientação EXIF. Exporte novamente como PNG.')
       // PNG reencodado preserva transparência e remove metadados/executáveis do original.
-      const png=await image.encodePNG(),validado=verificarCabecalhoFoto(png,'image/png')
+      const png=await image.encode(),validado=verificarCabecalhoFoto(png,'image/png')
       const path=`${escopo}/${crypto.randomUUID()}.png`,digest=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new Uint8Array(png).buffer))).map(x=>x.toString(16).padStart(2,'0')).join('')
       const envio=await admin.storage.from('institucionais').upload(path,png,{contentType:'image/png',upsert:false,cacheControl:'31536000'});if(envio.error)throw new ErroConfiguracao(503,'Upload não confirmado. Nenhuma configuração foi salva.')
       const registro=await admin.rpc('configuracoes_ativo_registrar',{p_escopo:escopo,p_ator:ator,p_caminho:path,p_mime:'image/png',p_largura:validado.largura,p_altura:validado.altura,p_tamanho:png.length,p_sha256:digest});conferirRpc(registro.error)

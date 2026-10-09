@@ -1,5 +1,10 @@
 # Decisão pontual para substituir fixtures encerradas — 09/10/2026
 
+## Evidência posterior de09/10/2026
+
+O titular confirmou manualmente a sessão LOCAL de Proprietário(a), F5, Meu perfil e Novo membro sem salvar em Brotas/Ipupiara. Após publicação da dashboard, também confirmou NOVO LOGIN e navegação/troca/F5 nos dois sites. Estes itens por leitura foram aprovados manualmente. Isso não disponibiliza ao agente a sessão para executar a operação normal de criação nem comprova gravações privadas. Bancada SDK conectada5189 preparada, mensagem de conferência ainda pendente; nenhuma R2 consumida/aplicada. As afirmações de ausência de prova de navegação abaixo são históricas. Restrição para não consumir as duas novas contas/contextos antes de preparar e viabilizar execução completa preservada. [Estado atual](../../../docs/modulos/sistema/20-PUBLICACAO-PARCIAL-E-HOMOLOGACAO-PENDENTE.md).
+
+
 **APROVADA pelo titular nesta retomada em 09/10/2026; NÃO APLICADA.** Aprovação uma única vez, máximo acumulado dez contas/quatro contextos, exclusivamente `xftnkusbyqzyvzrovroj`. Condição explícita adicional: antes de criar recursos, resolver e comprovar a sessão legítima do criador. Esta condição não foi satisfeita: o kernel do navegador continua falhando. Nenhuma conta/contexto R2 criado. Não é renovação ilimitada dos oito recursos originais.
 
 [Arquivos concretos e sequência condicionada](r2/README.md). Migration adicional, seeds, template de vínculos, encerramento, recuperação anterior ao consumo, resolver público adicional e bancada R2 foram preparados localmente. Dez contratos SQL sintéticos e seis testes de hosts passaram; bancada compilou. Nenhuma dessas provas locais substitui sessão Auth/homologação conectada.

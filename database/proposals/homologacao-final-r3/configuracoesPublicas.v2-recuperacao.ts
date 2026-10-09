@@ -7,8 +7,6 @@ const HOSTS: Readonly<Record<string,string>> = Object.freeze({
  'configuracoes-homologacao-b.invalid':'homologacao-configuracoes-b',
  'configuracoes-homologacao-r2-a.invalid':'homologacao-configuracoes-r2-a',
  'configuracoes-homologacao-r2-b.invalid':'homologacao-configuracoes-r2-b',
- 'configuracoes-homologacao-r3-a.invalid':'homologacao-configuracoes-r3-a',
- 'configuracoes-homologacao-r3-b.invalid':'homologacao-configuracoes-r3-b',
 })
 export function resolverHostnamePublico(v:unknown):string|null {
  if(!v||typeof v!=='object'||Array.isArray(v))return null

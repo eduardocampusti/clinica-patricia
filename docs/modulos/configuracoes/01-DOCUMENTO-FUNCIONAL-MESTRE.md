@@ -1,5 +1,15 @@
 # Configurações — documento funcional mestre
 
+## Estado atual R3 / release0.4.0 preparada — 09/10/2026, 17:36:42 -03
+
+Acesso Direto homologado conectado, inclusive RPC bilateral I1/I2; preparado para publicação autorizada. Configurações permanece desligada: upload503 identificado/corrigido (encode oficial), teste PNG local aprovado, rehomologação conectada ainda necessária. Todos14contas/6contextos encerrados; limite não renova após encerramento. Dashboard0.3.0/manual preservada. GraphQL ausente e não homologado funcionalmente. Detalhes atuais: relatório24-HOMOLOGACAO-R3-E-PUBLICACAO-FINAL.md; report23 conserva falha histórica. Tipos/notas/build/lint dirigido e4/4 separação sintética juntos aprovados. Sem afirmar publicação nesta preparação.
+
+
+## Disponibilidade na publicação parcial de09/10/2026
+
+Autorização posterior permite publicar recursos independentes comprovados e manter pendentes desligados. A versão0.3.0/de15bd14 publica a dashboard; enquanto BACKEND_CONFIGURACOES_HABILITADO=false, a produção omite Configurações do menu e a rota direta apresenta aviso sem editor. A prévia em desenvolvimento permanece disponível. A apresentação não substitui as guardas/ACL/RLS do servidor. Liberar edição somente após homologação conectada de persistência, upload, permissões e isolamento; não contar provas simuladas como aplicação real. Resultado e limites no relatório20 de Sistema.
+
+
 Estado: APROVADO pelo pedido de implementação local de 08/10/2026. A aprovação
 do pedido não equivale a homologação do backend ou publicação.
 

@@ -361,3 +361,12 @@ Próximo: commit exato na cópia, envio sem force, confirmação dos dois builds
 publicada nas sessões autorizadas. Resultado posterior pode permanecer só local.
 
 [Registro consolidado](<../equipe/34-CONSOLIDACAO-HOMOLOGACAO-REAL.md>).
+
+
+##09/10/2026,15:10 -03 — integridade após R2 autorizada
+
+Somente xftnkusbyqzyvzrovroj: migration adicional R2 de Configurações registrada20261009174524 e confirmada em catálogo/ACL (dois CHECKs/padrão sintético; guardas anteriores preservadas).8 SELECTs individuais das seções1–5 de supabase/tools/verificar-integridade.sql:0 ausências/alertas; não executar seção6/contagem de pacientes. Migrações anteriores/hook não reaplicados. Fixtures R2 criadas/encerradas após falha de transporte CLI antes dos vínculos; não são homologação funcional. Detalhes em [execuçãoR2](../sistema/22-EXECUCAO-R2-E-IMPEDIMENTOS.md). Sem dados clínicos.
+
+## R3 Configurações — 09/10/2026, 17:27:01 -03
+
+Migration restrita dos dois contextos adicionais aprovada; função/CHECK/ACL conferidos pelo catálogo, oito SELECTs de verificar-integridade.sql sem contagem de pacientes:0ausências. Nenhuma alteração em tabelas/dados de pacientes. Evidência sanitizada: database/proofs/configuracoes/2026-10-09-r3/integridade-r3.json.

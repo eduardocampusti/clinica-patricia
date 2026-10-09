@@ -1,7 +1,7 @@
 {
   "projeto": "xftnkusbyqzyvzrovroj",
   "autorizada": true,
-  "aplicada": false,
+  "aplicada": true,
   "condicao_previa": "sessao legitima do criador comprovada antes de criar recursos",
   "limite_acumulado": {
     "contas": 10,
@@ -45,11 +45,11 @@
     },
     {
       "arquivo": "database/proposals/configuracoes/r2/README.md",
-      "sha256": "b0924af092046b97312d8374382656eedc2a27a66db3203eb7cea12073222b62"
+      "sha256": "fcf44b1f3eb5a554c94987d9614dd457075fd403797632e4d188eb29141b2bdc"
     },
     {
       "arquivo": "tests/configuracoes/conectada-r2.vite.config.ts",
-      "sha256": "21d7f33899c02bfbe6558fa8df67d89ca42d516d6ab91e82d82d31db94438b1e"
+      "sha256": "4e6f2ff9cf72bb4b8d1b06f3c16ccaef69d567fc6494416896649a946f1acf97"
     },
     {
       "arquivo": "tests/configuracoes/conectada-r2.tsx",
@@ -86,5 +86,10 @@
     "observacao": "Campos anteriores preservam a fotografia datada de preparação/aplicação; R2 não aplicada.",
     "integridade_git": "releases/2026-10-09-dashboard-configuracoes-acesso-direto.json",
     "hashes_anteriores": "Hashes históricos da preparação/aplicação; não são autorização para reaplicar. Manifesto de Git registra os blobs normalizados desta seleção."
-  }
+  },
+  "migration_remota": "20261009174524",
+  "edge_versao": 2,
+  "recursos_consumidos": true,
+  "recursos_encerrados": true,
+  "homologacao_funcional_aprovada": false
 }

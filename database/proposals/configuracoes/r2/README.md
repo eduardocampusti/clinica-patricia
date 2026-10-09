@@ -1,5 +1,10 @@
 # R2 — ampliação aprovada, aplicação condicionada
 
+## Evidência posterior de09/10/2026
+
+O titular confirmou manualmente a sessão LOCAL de Proprietário(a), F5, Meu perfil e Novo membro sem salvar em Brotas/Ipupiara. Após publicação da dashboard, também confirmou NOVO LOGIN e navegação/troca/F5 nos dois sites. Estes itens por leitura foram aprovados manualmente. Isso não disponibiliza ao agente a sessão para executar a operação normal de criação nem comprova gravações privadas. Bancada SDK conectada5189 preparada, mensagem de conferência ainda pendente; nenhuma R2 consumida/aplicada. As afirmações de ausência de prova de navegação abaixo são históricas. Restrição para não consumir as duas novas contas/contextos antes de preparar e viabilizar execução completa preservada. [Estado atual](../../../../docs/modulos/sistema/20-PUBLICACAO-PARCIAL-E-HOMOLOGACAO-PENDENTE.md).
+
+
 Alvo exclusivo `xftnkusbyqzyvzrovroj`. Uma única vez: duas novas contas/dois novos contextos; máximo acumulado dez/quatro incluindo encerrados. **Nada R2 aplicado/criado/publicado.** As proteções e serviços do relatório18 permanecem instalados nas versões anteriores. A condição do titular é comprovar primeiro acesso à sessão legítima do criador; falhou a inicialização do kernel do navegador, não uma autenticação no Supabase.
 
 ## Arquivos locais
