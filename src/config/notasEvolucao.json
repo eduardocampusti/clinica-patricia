@@ -1,5 +1,5 @@
 {
-  "versaoEmDesenvolvimento": "0.6.0",
+  "versaoEmDesenvolvimento": "0.6.1",
   "naoLancadas": {
     "novidades": [
       "Equipe: Novo membro permite criar acesso com senha temporária individual válida por 24 horas e papéis explícitos por clínica. A troca por senha pessoal é obrigatória antes de acessar os módulos; a senha e as sessões temporárias anteriores são recusadas após a ativação.",
@@ -19,6 +19,8 @@
       "Página “Sobre o sistema” com versão em execução, créditos de desenvolvimento e contexto da clínica."
     ],
     "melhorias": [
+      "Pendências e aprovações mais compacto, indicador total suavizado e horários de leitura agrupados por fonte, preservando estados e valores das dashboards.",
+      "Dashboards da Proprietária e Recepção com faixas coloridas, superfícies tonalizadas e sombras; resumos vazios mais compactos e escopo das pendências em detalhes acessíveis. Valores, filtros, consultas, atualização e permissões preservados.",
       "Dashboards: a Proprietária ganhou visão geral com financeiro de hoje, pendências com escopo explícito, operação e agenda resumida. A Recepção distingue agendado de confirmado, mostra profissionais e atualiza movimento e caixa enquanto a aba está visível. Falhas e permissões recusadas permanecem explícitas, sem fabricar valores.",
       "Dashboard do Proprietário(a): movimento e Agenda do dia, resumo oficial do Financeiro e pendências da clínica selecionada. Agendados conta os estados agendado/confirmado; atendimentos aguardando ou iniciados continuam visíveis quando não há horários futuros. Atualizar painel consulta todos os blocos e diferencia atualização de origem, ausência de dados e falha.",
       "Configurações: prévia A4 acompanha a edição; gerar e baixar PDF de demonstração continuam ações explícitas. Conflitos de edição exigem reconsulta; atualizar os dados oficiais no rascunho preserva apresentação e imagens. Emissores clínicos futuros continuam fora desta entrega.",

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { ArrowUpRight, Banknote, CalendarDays, Clock, HandCoins, Landmark, RefreshCw, TriangleAlert } from 'lucide-react'
+import { ArrowUpRight, Banknote, CalendarDays, CheckCircle2, Clock, HandCoins, Landmark, RefreshCw, Stethoscope, TriangleAlert } from 'lucide-react'
 import CabecalhoDashboard from './CabecalhoDashboard'
 import { FeedbackAlert } from '../feedback/FeedbackAlert'
 import { consultarMovimentoRecepcao, erroLeituraPainel, horaNaBahia, situacaoRecepcao, type MovimentoRecepcao } from '../../lib/dashboardRecepcao'
@@ -8,6 +8,7 @@ import { hojeNaBahia } from '../../lib/pacienteLista'
 import { useAtualizacaoPainel } from '../../hooks/useAtualizacaoPainel'
 import { concluirLeitura, falharLeitura, iniciarLeitura, instanteConservador, leituraDoContexto, type ErroLeitura, type Leitura } from '../../lib/leituraPainel'
 import './painelProprietaria.css'
+import './dashboardAcabamento.css'
 
 const rotuloSituacao = { agendado: 'Agendado', confirmado: 'Confirmado', aguardando: 'Aguardando', em_atendimento: 'Em atendimento', concluido: 'Concluído' }
 const instante = (iso: string) => new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Bahia', dateStyle: 'short', timeStyle: 'medium' }).format(new Date(iso))
@@ -17,7 +18,7 @@ const instante = (iso: string) => new Intl.DateTimeFormat('pt-BR', { timeZone: '
  * outra continua datada e o usuário sabe de quando é o número que está vendo.
  */
 function HoraConsulta({ em, servidor = false }: { em: string; servidor?: boolean }) {
-  return <p className="prop-nota">{servidor ? 'Dados consultados no servidor' : 'Leitura concluída'} em {instante(em)} · Bahia</p>
+  return <p className="prop-nota">{servidor ? 'Financeiro e pendências · consulta no servidor' : 'Operação e agenda · leitura concluída'} em {instante(em)} · Bahia</p>
 }
 
 function Falha({ nome, erro }: { nome: string; erro: ErroLeitura }) {
@@ -83,7 +84,7 @@ export default function PainelProprietaria({ clinicaId, clinicaNome, nomeUsuario
   const referencia = instanteConservador(a.em, f.em)
   const situacaoLeitura = carregando ? 'Atualizando dados…'
     : a.erro || f.erro ? `Atualização malsucedida${referencia ? ` · última leitura confirmada ${instante(referencia)}` : ' · dados indisponíveis'}`
-      : referencia && a.em && f.em ? `Dados confirmados ${instante(referencia)} · America/Bahia`
+      : referencia && a.em && f.em ? 'Consultas concluídas'
         : 'Atualização indisponível'
 
   const pendencias = f.dado ? [
@@ -105,7 +106,7 @@ export default function PainelProprietaria({ clinicaId, clinicaNome, nomeUsuario
       </div>
     </header>
 
-    <section className="prop-card" aria-labelledby="prop-financeiro">
+    <section className="prop-card prop-financeiro" aria-labelledby="prop-financeiro">
       <div className="prop-head">
         <h2 id="prop-financeiro">Financeiro de hoje</h2>
         <button type="button" className="prop-link" onClick={onFinanceiro}>Abrir Financeiro<ArrowUpRight size={15} aria-hidden="true" /></button>
@@ -138,9 +139,9 @@ export default function PainelProprietaria({ clinicaId, clinicaNome, nomeUsuario
       </>}
     </section>
 
-    <section className="prop-card" aria-labelledby="prop-atencao">
+    <section className="prop-card prop-atencao" data-estado={f.dado ? pendentes?.length ? 'pendente' : 'regular' : 'indisponivel'} aria-labelledby="prop-atencao">
       <div className="prop-head">
-        <h2 id="prop-atencao">Precisa de atenção</h2>
+        <h2 id="prop-atencao">Pendências e aprovações</h2>
         <button type="button" className="prop-link" onClick={onFinanceiro}>Abrir Financeiro<ArrowUpRight size={15} aria-hidden="true" /></button>
       </div>
       {!pendencias ? (f.erro ? <Falha nome="Pendências financeiras" erro={f.erro} /> : <Esqueleto rotulo="Consultando pendências financeiras…" linhas={2} />) : <>
@@ -153,49 +154,47 @@ export default function PainelProprietaria({ clinicaId, clinicaNome, nomeUsuario
             </span>
           </li>)}
         </ul> : <p className="prop-vazio-linha">
-          <Clock size={16} aria-hidden="true" />
-          Sem caixas aguardando aprovação ou devolvidos para correção, repasses pendentes ou documentos fiscais pendentes nos escopos consultados.
+          <CheckCircle2 size={20} aria-hidden="true" />
+          Sem pendências nos itens consultados.
         </p>}
-        <p className="prop-nota">O botão acima abre o módulo Financeiro; ele não aplica filtro por pendência. Outras solicitações, como estornos, também são conferidas lá.</p>
-        {f.em && <HoraConsulta em={f.em} servidor />}
+        <details className="prop-escopo"><summary>Ver escopo</summary><p className="prop-nota">Caixas aguardando aprovação ou devolvidos para correção e repasses pendentes: posição atual, sem recorte de data. Documentos fiscais pendentes: recebimentos de hoje. Estes itens usam a mesma consulta do Financeiro de hoje, cujo horário aparece acima. O botão abre o módulo Financeiro; ele não aplica filtro por pendência. Outras solicitações, como estornos, também são conferidas lá.</p></details>
       </>}
     </section>
 
-    <section className="prop-card" aria-labelledby="prop-operacao">
+    <section className="prop-card prop-operacao" aria-labelledby="prop-operacao">
       <div className="prop-head">
         <h2 id="prop-operacao">Operação de hoje</h2>
       </div>
       {!registros ? (a.erro ? <Falha nome="Movimento do dia" erro={a.erro} /> : <Esqueleto rotulo="Consultando movimento do dia…" linhas={2} />) : <>
         <dl className="prop-contagens">
-          <div className="prop-contagem" data-destaque="true">
-            <dt>Agendamentos do dia</dt><dd><strong>{registros.length}</strong><small>Não cancelados</small></dd>
+          <div className="prop-contagem" data-destaque="true" data-cor="1">
+            <dt><span className="prop-moeda-icone" aria-hidden="true"><CalendarDays size={18} /></span>Agendamentos do dia</dt><dd><strong>{registros.length}</strong><small>Não cancelados</small></dd>
           </div>
           {([
-            ['Previstos', contar('previstos'), 'Agendado ou confirmado'],
-            ['Aguardando', aguardando, 'Na recepção'],
-            ['Em atendimento', emAtendimento, 'Atendimentos iniciados'],
-            ['Concluídos', contar('concluido'), 'Atendimentos finalizados'],
-          ] as const).map(([rotulo, valor, nota]) => <div className="prop-contagem" key={rotulo} data-testid={`resumo-${rotulo}`}>
-            <dt>{rotulo}</dt><dd><strong>{valor}</strong><small>{nota}</small></dd>
+            ['Previstos', contar('previstos'), 'Agendado ou confirmado', CalendarDays, 'previstos'],
+            ['Aguardando', aguardando, 'Na recepção', Clock, '3'],
+            ['Em atendimento', emAtendimento, 'Atendimentos iniciados', Stethoscope, '5'],
+            ['Concluídos', contar('concluido'), 'Atendimentos finalizados', CheckCircle2, '4'],
+          ] as const).map(([rotulo, valor, nota, Icone, cor]) => <div className="prop-contagem" key={rotulo} data-cor={cor} data-testid={`resumo-${rotulo}`}>
+            <dt><span className="prop-moeda-icone" aria-hidden="true"><Icone size={18} /></span>{rotulo}</dt><dd><strong>{valor}</strong><small>{nota}</small></dd>
           </div>)}
         </dl>
-        <p className="prop-nota">Os quatro grupos refletem a situação registrada de cada agendamento, sem dedução pelo horário.</p>
+        <details className="prop-escopo prop-interpretacao"><summary>Como interpretar estes indicadores</summary><p className="prop-nota">O total considera agendamentos não cancelados. Previstos reúne Agendado e Confirmado, que continuam sendo situações distintas. Os quatro grupos refletem a situação registrada de cada agendamento, sem dedução pelo horário. Operação e Agenda resumida usam a mesma leitura, identificada abaixo.</p></details>
         {a.em && <HoraConsulta em={a.em} />}
       </>}
     </section>
 
-    <section className="prop-card" aria-labelledby="prop-agenda">
+    <section className="prop-card prop-agenda" aria-labelledby="prop-agenda">
       <div className="prop-head">
         <h2 id="prop-agenda"><CalendarDays size={17} aria-hidden="true" />Agenda resumida</h2>
         <button type="button" className="prop-link" onClick={onAgenda}>Abrir Agenda<ArrowUpRight size={15} aria-hidden="true" /></button>
       </div>
       {!registros ? (a.erro ? <Falha nome="Agenda" erro={a.erro} /> : <Esqueleto rotulo="Consultando agenda…" />)
         : !registros.length ? <div className="prop-vazio">
-          <CalendarDays size={24} aria-hidden="true" />
-          <h3>Nenhum agendamento hoje</h3>
-          <p>A agenda desta clínica está sem movimento nesta data.</p>
+          <span className="prop-vazio-icone" aria-hidden="true"><CalendarDays size={24} /></span>
+          <div className="prop-vazio-texto"><h3>Nenhum agendamento hoje</h3>
+          <p>A agenda desta clínica está sem movimento nesta data.</p></div>
           <button type="button" className="prop-botao" onClick={onAgenda}>Consultar Agenda</button>
-          {a.em && <HoraConsulta em={a.em} />}
         </div> : <>
           {atrasados > 0 && <p className="prop-alerta">
             <TriangleAlert size={16} aria-hidden="true" />
@@ -217,7 +216,6 @@ export default function PainelProprietaria({ clinicaId, clinicaNome, nomeUsuario
             {(aguardando > 0 || emAtendimento > 0) && ` ${aguardando} aguardando e ${emAtendimento} em atendimento neste momento.`}
           </p>}
           <p className="prop-nota">{proximos?.length ? 'Somente os próximos horários previstos de hoje. A agenda completa está no módulo Agenda.' : 'Apenas horários previstos de hoje aparecem aqui.'}</p>
-          {a.em && <HoraConsulta em={a.em} />}
         </>}
     </section>
   </div>

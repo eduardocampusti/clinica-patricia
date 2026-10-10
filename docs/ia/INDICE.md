@@ -1,5 +1,28 @@
 # Memória compartilhada — mapa de leitura
 
+## Entrega local 0.6.1 — 10/10/2026, 06:03:44 -03:00
+
+Build/notas aprovados; recorte autorizado para commit local, sem publicação. Consulte [Sistema32](../modulos/sistema/32-COMMIT-LOCAL-DASHBOARDS-061.md). Recepção real permanece pendente.
+
+
+## Entrega final preparada — 10/10/2026, 05:21:49 -03:00
+
+Acabamento aprovado; escopo exato, provas reutilizadas e impedimento Git no D sem espaço: [Sistema31](../modulos/sistema/31-PREPARACAO-ENTREGA-FINAL-DASHBOARDS.md). Sem commit/push/deploy.
+
+
+## Refinamentos aprovados somente local — 2026-10-09 22:35:00 -03:00
+
+Pendências e aprovações compacto; total estático suavizado; horários compartilhados apenas quando são da mesma fonte (Financeiro/pendências e Operação/agenda), sem data global de sucesso. Interpretação em detalhes, erros explícitos. Recepção preservada. Sem publicação. Estado e evidências: [Sistema29](../modulos/sistema/29-REFINAMENTOS-FINAIS-DASHBOARDS-LOCAL.md).
+
+## Acabamento visual aprovado somente local — 2026-10-09 22:11:38 -03:00
+
+Proprietária/Recepção com linguagem da Agenda, mantendo regras, dados e atualização. Sem commit/push/deploy nesta etapa. Estado e provas: relatório Sistema28-ACABAMENTO-VISUAL-DASHBOARDS-LOCAL.md e checkpoint operacional; publicação0.6 permanece.
+
+## Estado vigente — publicação0.6.0 concluída em09/10/2026
+
+Branch codex/resgate-local-2026-09-26, commits1aad0995/e012c4e4. Ambos os domínios servem0.6.0/e012c4e4. Conferência automática por leitura em sessões reais existentes de Proprietária B/I concluída: dashboard, atualização, Agenda/Financeiro, Meu perfil, Configurações/cinco abas/F5, Equipe/Novo membro, troca bilateral/F5. Recepção sem sessão real nesta etapa; testes sintéticos aprovados. Configurações/AD/backend e trabalhos paralelos preservados; zero novos recursos/escritas Supabase. Relatório Sistema27 e checkpoints registram resultado e limites. Seções anteriores são histórico datado. Atualização pós-deploy local, sem terceiro commit apenas documental.
+
+
 ## Dashboards 0.6.0 validadas; publicação em execução — 2026-10-09T23:42:25.976Z
 
 Fotografia estável de Claude integrada no checkout isolado resgate-local, sobre f4b6891e/0.5.0. Verificações finais: 40 unitários; 64 dashboards administrativos em conjunto; Recepção 41 aprovados/1 ignorado; identidade/convites/recuperação 29 em conjunto; Acesso Direto 14; Configurações 4; Meu perfil 4. São provas sintéticas, não homologação real nova. Tipos/lint/build/diff-check aprovados, avisos preexistentes. Corrigidos novo login e preservação da prova SDK de recuperação através da guarda, sem liberação de pendentes. Dependências/flags/serviços/RLS/Auth preservados, nenhuma escrita Supabase, conta ou contexto novo. Sessões reais existentes B/I disponíveis; leitura da versão0.5 anterior registrada sem expor valores; conferência da0.6 publicada ainda pendente. GraphQL ausente sem dependência nova. Relatório Sistema27; a entrega do Claude24 é histórica e seu bloqueio sintético foi resolvido nas fixtures, sem desligar a guarda. Fontes e índice da árvore principal preservados. Próximo: push autorizado na branch de publicação e leitura dos dois domínios.

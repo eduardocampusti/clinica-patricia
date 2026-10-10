@@ -1,5 +1,13 @@
 # Sistema — documento funcional mestre
 
+## Refinamentos aprovados somente local — 2026-10-09 22:35:00 -03:00
+
+Pendências e aprovações compacto; total estático suavizado; horários compartilhados apenas quando são da mesma fonte (Financeiro/pendências e Operação/agenda), sem data global de sucesso. Interpretação em detalhes, erros explícitos. Recepção preservada. Sem publicação. Estado e evidências: [Sistema29](29-REFINAMENTOS-FINAIS-DASHBOARDS-LOCAL.md).
+
+## Acabamento visual aprovado somente local — 2026-10-09 22:11:38 -03:00
+
+Proprietária/Recepção com linguagem da Agenda, mantendo regras, dados e atualização. Sem commit/push/deploy nesta etapa. Estado e provas: relatório Sistema28-ACABAMENTO-VISUAL-DASHBOARDS-LOCAL.md e checkpoint operacional; publicação0.6 permanece.
+
 ## Evolução aprovada e integração autorizada — 09/10/2026
 
 O pedido posterior autoriza integrar e publicar a evolução do Claude, substituindo os limites históricos de somente local e de preservação da composição anterior dentro deste recorte. Proprietária apresenta Financeiro de hoje, Precisa de atenção, Operação de hoje e Agenda resumida. Previsto agrupa agendado/confirmado; total não cancelado fica separado. Recepção relê movimento/caixa a cada60s com aba visível, distingue estados, preserva filtros e sinaliza profissional fora da leitura. Não ampliar permissões, fontes, regras financeiras ou conteúdos clínicos. Erros não fabricam zero; troca de contexto cancela resultados antigos. Configurações e Acesso Direto publicados permanecem habilitados. Detalhes e evidências atuais: [relatório27](27-INTEGRACAO-DASHBOARDS-CLAUDE-PUBLICACAO.md). As restrições dos pedidos anteriores abaixo são históricas quando contrariadas explicitamente pelo pedido atual.

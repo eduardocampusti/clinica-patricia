@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
 import { mkdir } from 'node:fs/promises'
+import { conferirAcabamento } from '../login/dashboard-acabamento-util'
 
 // Executa o App normal, com autenticação e serviços sintéticos interceptados.
 // A configuração Vite aponta exclusivamente para operacional.synthetic.invalid.
@@ -339,4 +340,21 @@ test('atualização periódica relê fontes e conserva filtro explícito quando 
   await expect(page.getByTestId('registro')).toHaveCount(0)
   expect(estado.escritas).toEqual([])
   expect(estado.errosPagina).toEqual([])
+})
+for (const largura of [1440, 1024, 768, 430, 390, 360]) test(`acabamento visual recepção: ${largura}px`, async ({ page }, info) => {
+  await page.setViewportSize({ width: largura, height: 1000 })
+  await preparar(page, 'recepcao', 15)
+  for (const unidade of ['brotas', 'ipupiara']) {
+    await page.goto(`/sistema/${unidade}/dashboard`)
+    await expect(page.getByRole('button', { name: 'Atualizar', exact: true })).toBeEnabled()
+    const busca = page.getByRole('textbox', { name: 'Buscar paciente', exact: true })
+    await busca.fill('Paciente')
+    await busca.focus()
+    for (const tema of ['claro', 'escuro']) {
+      if (await page.locator('html').getAttribute('data-theme') !== tema) await page.getByRole('button', { name: tema === 'claro' ? 'Ativar modo claro' : 'Ativar modo escuro' }).click()
+      await conferirAcabamento(page, '.rp-integrado')
+      await expect(busca).toHaveValue('Paciente')
+      await page.screenshot({ path: info.outputPath(`recepcao-${largura}-${unidade}-${tema}.png`), fullPage: true })
+    }
+  }
 })

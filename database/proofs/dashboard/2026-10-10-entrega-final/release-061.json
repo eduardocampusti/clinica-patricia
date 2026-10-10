@@ -1,0 +1,36 @@
+{
+  "inicio_utc": "2026-10-10T09:00:26.653Z",
+  "fim_utc": "2026-10-10T09:01:00.405Z",
+  "versao": "0.6.1",
+  "head_build": "e012c4e401cd82f1df538a85c7c735bb3662db0e",
+  "notas": "aprovado",
+  "build": "aprovado",
+  "comando": "npm run build",
+  "configuracao": "VITE_* carregadas em memória; .env não copiado",
+  "metadados": [
+    {
+      "arquivo": "package.json",
+      "sha256": "5036043a7f26b56f670790dadd574b1a50c2d0acd5fe7ebeba97ac9213c116b8"
+    },
+    {
+      "arquivo": "package-lock.json",
+      "sha256": "f76cd4ce29b161c294e6128dc0fa5fc432451dc0fceb136acc188c890f868907"
+    },
+    {
+      "arquivo": "release-please-config.json",
+      "sha256": "120f878248bd28657794c25489a940b426747dfd3eed2d9dd3e79383b8884e5b"
+    },
+    {
+      "arquivo": "src/config/notasEvolucao.json",
+      "sha256": "f2177ce5c68a8d122a0a650a2798750a058327bf87da5d4b750a6d0b44bea2ce"
+    }
+  ],
+  "origem": "build local; não prova publicação",
+  "primeira_tentativa": "Notas aprovadas; npm run build recusado por tsc ausente na instalação local incompleta.",
+  "recuperacao": "npm install usando o lockfile existente; lockfile e declarações de dependências preservados; dependências do checkout C agora em pasta própria.",
+  "suites": "Provas anteriores reutilizadas após igualdade dos hashes de fontes e testes; nenhuma bateria repetida",
+  "recepcao_real": "não verificada",
+  "backend": "não alterado",
+  "push": false,
+  "deploy": false
+}

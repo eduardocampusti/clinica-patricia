@@ -1,5 +1,10 @@
 # Versionamento e releases — processo em preparação
 
+## Estado vigente — publicação0.6.0 concluída em09/10/2026
+
+Branch codex/resgate-local-2026-09-26, commits1aad0995/e012c4e4. Ambos os domínios servem0.6.0/e012c4e4. Conferência automática por leitura em sessões reais existentes de Proprietária B/I concluída: dashboard, atualização, Agenda/Financeiro, Meu perfil, Configurações/cinco abas/F5, Equipe/Novo membro, troca bilateral/F5. Recepção sem sessão real nesta etapa; testes sintéticos aprovados. Configurações/AD/backend e trabalhos paralelos preservados; zero novos recursos/escritas Supabase. Relatório Sistema27 e checkpoints registram resultado e limites. Seções anteriores são histórico datado. Atualização pós-deploy local, sem terceiro commit apenas documental.
+
+
 ## Dashboards 0.6.0 validadas; publicação em execução — 2026-10-09T23:42:25.976Z
 
 Fotografia estável de Claude integrada no checkout isolado resgate-local, sobre f4b6891e/0.5.0. Verificações finais: 40 unitários; 64 dashboards administrativos em conjunto; Recepção 41 aprovados/1 ignorado; identidade/convites/recuperação 29 em conjunto; Acesso Direto 14; Configurações 4; Meu perfil 4. São provas sintéticas, não homologação real nova. Tipos/lint/build/diff-check aprovados, avisos preexistentes. Corrigidos novo login e preservação da prova SDK de recuperação através da guarda, sem liberação de pendentes. Dependências/flags/serviços/RLS/Auth preservados, nenhuma escrita Supabase, conta ou contexto novo. Sessões reais existentes B/I disponíveis; leitura da versão0.5 anterior registrada sem expor valores; conferência da0.6 publicada ainda pendente. GraphQL ausente sem dependência nova. Relatório Sistema27; a entrega do Claude24 é histórica e seu bloqueio sintético foi resolvido nas fixtures, sem desligar a guarda. Fontes e índice da árvore principal preservados. Próximo: push autorizado na branch de publicação e leitura dos dois domínios.
@@ -80,3 +85,13 @@ e evidências anteriores abaixo permanecem históricos.
 4. Após o merge da PR de versão, confirmar a criação da tag e GitHub Release conforme o fluxo aprovado. Eventos gerados pelo `GITHUB_TOKEN` podem não disparar outros workflows automaticamente; conferir o pipeline real. Publicar o frontend é uma ação separada, com aprovação e retorno planejado.
 
 O `CHANGELOG.md` será gerado pela automação quando houver PR de release. A página Sobre usa as notas embarcadas em `src/config/notasEvolucao.json`, não texto remoto em tempo de execução.
+
+
+## Refinamentos visuais — proposta PATCH0.6.1 em 10/10/2026, 05:21:49 -03:00
+
+Proposta compatível, sem função nova/dependências/backend. Quatro JSON candidatos versionados em patch específico, verificador de notas aprovado; NÃO aplicados ao checkout0.6.0, não commitados/publicados. Build de release ainda será realizado na etapa autorizada de aplicação dos metadados. Escopo/limites: Sistema31.
+
+
+## Release local 0.6.1 validada — 10/10/2026, 06:03:44 -03:00
+
+Quatro metadados candidatos aplicados; npm run build (notas, TypeScript e Vite) aprovado. Apenas PATCH visual compatível; dependências e manifesto de tags preservados. Sem push/deploy/tag/release GitHub. Produção permanece na publicação 0.6.0 já comprovada; não confundir build local com versão servida. Relatório Sistema32.

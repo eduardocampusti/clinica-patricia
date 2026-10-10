@@ -1,0 +1,95 @@
+{
+  "data_utc": "2026-10-10T01:39:14.100Z",
+  "escopo": "Refinamentos somente locais; sem commit/push/deploy",
+  "base_publicada": "0.6.0/e012c4e401cd82f1df538a85c7c735bb3662db0e",
+  "fontes_sha256": {
+    "src/components/dashboard/PainelProprietaria.tsx": "e153909758cd4541604770a0115bd8a2d2f4663d9321fc2976ddeb8ebd31e445",
+    "src/components/dashboard/PainelRecepcao.tsx": "4dd7263a57217a5aa3d87cba5baf5160b6843ae79146caf802cdbc098ecc65a0",
+    "src/components/dashboard/dashboardAcabamento.css": "b961debf1d1b364a35c372c3634c107dbc7277ee803185394bae4294a34083fb"
+  },
+  "verificacoes": {
+    "tipos": "aprovado",
+    "lint": "aprovado com avisos preexistentes",
+    "build": "aprovado com aviso preexistente de tamanho",
+    "administrativas_identidade_rotas_sinteticas": 108,
+    "matriz_visual_proprietaria_sintetica": 6,
+    "recepcao_conjunto_final_sintetico": {
+      "aprovados": 59,
+      "inaplicaveis": 1
+    },
+    "total_aprovados_sem_duplicar_repeticoes": 173,
+    "larguras_px": [
+      1440,
+      1024,
+      768,
+      430,
+      390,
+      360
+    ],
+    "temas": [
+      "claro",
+      "escuro"
+    ],
+    "primeiro_conjunto_recepcao": {
+      "aprovados": 58,
+      "inaplicaveis": 1,
+      "falha": "abertura do Movimento não encontrada em 5 s; causa não determinada",
+      "recuperacao": "arquivo completo repetido sem concorrência; timeout preservado"
+    },
+    "sessao_real_existente_local_proprietaria": {
+      "brotas": true,
+      "ipupiara": true,
+      "pendencias_regulares_altura_px": 122,
+      "atualizacao_ipupiara_contagens_valores_iguais": true,
+      "f5_brotas": true,
+      "sem_alertas_ou_transbordamento": true
+    },
+    "sessao_real_recepcao": "não disponível"
+  },
+  "limites": {
+    "consultas_calculos_permissoes_preservados": true,
+    "backend_sql_auth_alterados": false,
+    "novos_recursos_remotos": false,
+    "credenciais_expostas": false,
+    "publicacao": false
+  },
+  "jev": {
+    "conteudo": "descrição sintética genérica; sem arquivos privados",
+    "tipo": "code_change",
+    "confianca": 0.88,
+    "complexidade_escala_0_2": 1,
+    "confianca_complexidade": 0.97,
+    "falta_informacao": 0.33,
+    "interpretacao": "incerta, Codex prosseguiu com leituras locais",
+    "tokens_entrada": 877,
+    "tokens_saida": 119,
+    "tempo_ms": 4326.0187,
+    "custo_usd": 0.000036834
+  },
+  "capturas": {
+    "proprietaria-desktop-claro.png": {
+      "origem": "sintética de teste, sem dados pessoais reais",
+      "sha256": "5768ccd16a38f9ddad2a44b5673a5b56a588dd9c504e0d83202b240cadd6d2f4"
+    },
+    "proprietaria-desktop-escuro.png": {
+      "origem": "sintética de teste, sem dados pessoais reais",
+      "sha256": "17d5799ae80c40c7e2756aeebf8fade3e3fa957e630224a8a8f012398edbbe79"
+    },
+    "proprietaria-mobile-escuro.png": {
+      "origem": "sintética de teste, sem dados pessoais reais",
+      "sha256": "c5bdf60a2c5d765048b07857256bfa063164ae5b41615697f25f24c6c85c96b9"
+    },
+    "recepcao-desktop-claro.png": {
+      "origem": "sintética de teste, sem dados pessoais reais",
+      "sha256": "d2855baf2d2315b5a1adf15b91bf0e62c55453248daaa4fb1cdd6454efb4b73c"
+    },
+    "recepcao-desktop-escuro.png": {
+      "origem": "sintética de teste, sem dados pessoais reais",
+      "sha256": "dd0326e67653b87a51b92644c8dfdfbc9f7a3c293990dc769065502ed05b7f8e"
+    },
+    "recepcao-mobile-escuro.png": {
+      "origem": "sintética de teste, sem dados pessoais reais",
+      "sha256": "32c2ce657269efab0c888770ec55ba1d836df74d28ff0943540d4ed415d6330f"
+    }
+  }
+}
