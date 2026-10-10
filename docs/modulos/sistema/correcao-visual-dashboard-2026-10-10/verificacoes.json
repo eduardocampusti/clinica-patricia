@@ -1,0 +1,75 @@
+{
+  "data": "10/10/2026, 10:30:56 -03:00",
+  "ambiente": "LOCAL_NAO_PUBLICADO",
+  "base": "44b13bb639c671b88e4a5f2e26c30ffa269dfbfa",
+  "testes": {
+    "anterioresAdaptados": 24,
+    "novosFuncionais": 3,
+    "visuaisCompletos": 11,
+    "totalDistinto": 38,
+    "primeiraRodadaVisual": "7/8; primeira navegação não encontrou seção concluída durante recompilação de dependências; rodada final11/11 passou, sem flexibilizar timeout/critério."
+  },
+  "validacoes": [
+    "tsc -b",
+    "npm run build com notas",
+    "oxlint dirigido",
+    "git diff --check"
+  ],
+  "conectado": {
+    "canal": "Navegador interno, prévia normal5190, sessão existente Proprietário(a)",
+    "supabase": "xftnkusbyqzyvzrovroj",
+    "leituras": "Brotas e Ipupiara, mês e30dias, séries vazias confirmadas; recarga concluída;390px sem overflow; nenhuma escrita",
+    "limites": [
+      "Movimentos não nulos somente sintéticos",
+      "Recepção/Médico reais não repetidos",
+      "Aviso anterior da foto pessoal continua fora deste recorte"
+    ]
+  },
+  "semAlteracoes": [
+    "backend",
+    "SQL",
+    "migrations",
+    "dados reais",
+    "contas",
+    "permissões",
+    "dependências",
+    "configurações MCP",
+    "commit",
+    "push",
+    "deploy"
+  ],
+  "preservados": [
+    {
+      "caminho": "package.json",
+      "igualAoManifesto35": true
+    },
+    {
+      "caminho": "package-lock.json",
+      "igualAoManifesto35": true
+    },
+    {
+      "caminho": "src/App.tsx",
+      "igualAoManifesto35": true
+    },
+    {
+      "caminho": "src/lib/financeiro/financeiro.types.ts",
+      "igualAoManifesto35": true
+    },
+    {
+      "caminho": "src/lib/analiseFinanceira.ts",
+      "igualAoManifesto35": true
+    },
+    {
+      "caminho": "src/components/dashboard/AnalisePeriodoBoundary.tsx",
+      "igualAoManifesto35": true
+    },
+    {
+      "caminho": "src/components/ui/chart.tsx",
+      "igualAoManifesto35": true
+    },
+    {
+      "caminho": "tests/login/analise-periodo.config.ts",
+      "igualAoManifesto35": true
+    }
+  ]
+}

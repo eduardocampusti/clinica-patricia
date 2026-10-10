@@ -1,7 +1,8 @@
 {
-  "versaoEmDesenvolvimento": "0.6.1",
+  "versaoEmDesenvolvimento": "0.7.0",
   "naoLancadas": {
     "novidades": [
+      "Dashboard de Proprietário(a): análise financeira por período com evolução diária, valores exatos e comparação das clínicas autorizadas. Filtros independentes dos indicadores de hoje, atualização manual e falhas identificadas por clínica.",
       "Equipe: Novo membro permite criar acesso com senha temporária individual válida por 24 horas e papéis explícitos por clínica. A troca por senha pessoal é obrigatória antes de acessar os módulos; a senha e as sessões temporárias anteriores são recusadas após a ativação.",
       "Configurações: Proprietário(a) pode salvar rascunhos e aplicar dados da clínica, identidade visual, logos, timbrados, cabeçalho, rodapé e personalização do login. O histórico conserva versões e a edição permanece restrita à unidade autorizada.",
       "Meu perfil: configure seu nome e sua foto pessoal pelo avatar ou pela identificação do menu. Salvar confirma a gravação no servidor; é possível substituir ou remover a foto, com prévia e cancelamento. A identidade acompanha a conta entre clínicas; a foto profissional da Equipe permanece independente.",
@@ -19,6 +20,8 @@
       "Página “Sobre o sistema” com versão em execução, créditos de desenvolvimento e contexto da clínica."
     ],
     "melhorias": [
+      "Dashboards: Brotas identificada em azul e Ipupiara em verde, com variantes para os temas claro e escuro, preservando as cores de status e indicadores.",
+      "Dashboard do Proprietário(a): análise do período com filtros compactos, total das duas clínicas somente com fontes atualizadas, evolução diária e comparação visual com nome, valor e barra agrupados por clínica, mantendo os indicadores de hoje.",
       "Pendências e aprovações mais compacto, indicador total suavizado e horários de leitura agrupados por fonte, preservando estados e valores das dashboards.",
       "Dashboards da Proprietária e Recepção com faixas coloridas, superfícies tonalizadas e sombras; resumos vazios mais compactos e escopo das pendências em detalhes acessíveis. Valores, filtros, consultas, atualização e permissões preservados.",
       "Dashboards: a Proprietária ganhou visão geral com financeiro de hoje, pendências com escopo explícito, operação e agenda resumida. A Recepção distingue agendado de confirmado, mostra profissionais e atualiza movimento e caixa enquanto a aba está visível. Falhas e permissões recusadas permanecem explícitas, sem fabricar valores.",

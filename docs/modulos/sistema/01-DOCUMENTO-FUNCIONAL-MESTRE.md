@@ -1,5 +1,24 @@
 # Sistema — documento funcional mestre
 
+## Identidade das clínicas — decisão de10/10/2026
+
+Brotas permanece azul; Ipupiara verde alinhado à marca, com variantes legíveis em claro/escuro. Manter cores estáveis por unidade ao trocar clínica operacional, nomes/valores/traço, composição36 e semântica dos status. Recepção somente identificações existentes, sem comparação financeira. Período/escopo independentes da clínica operacional. Implementação local e evidências no relatório37; não implica aprovação visual do resultado.
+
+
+## Comparação por clínica — ajuste solicitado em10/10/2026
+
+Preservar composição36. Cada clínica deve formar um grupo com nome à esquerda, valor exato à direita e barra imediatamente abaixo, cores atuais e escala comum iniciando em zero. Zero/ausência/erro não geram barra positiva; valores anteriores ficam identificados sem barra durante falha/atualização. Manter mensagem vazia, resultado parcial e isolamento. Resultado local no complemento36; aprovação visual do resultado não presumida.
+
+
+## Correção visual — decisão posterior de10/10/2026
+
+Pedido explícito posterior autoriza corrigir composição35, preservando regras/fontes/permissões/hoje. Contêiner comum máximo1440, controles compactos,3cartões, evolução2/3 e barras1/3, resumo/detalhes e estados explícitos. **Substitui a restrição anterior de “sem total combinado” somente na apresentação:** “Duas clínicas” soma em centavos os totais recebidos das duas fontes válidas e atualizadas; nenhuma soma parcial/desatualizada como completa. Não muda cálculos oficiais nem backend. Bar bruto negativo não pode ser ocultado; zero não ganha barra fictícia; lacunas não recebem zero. Status do painel “Atualização concluída”, mantendo “Concluídos” clínico. Fontes/erros/explicações preservados. Implementação/provas em relatório36; aprovação visual do resultado ainda não concedida.
+
+
+## Análise do período — escopo autorizado em10/10/2026
+
+Acrescentar depois dos blocos existentes e da Agenda somente para Proprietário(a). Mês atual até hoje; 7/30dias e personalizado até366, Bahia. Brotas/Ipupiara/comparação conforme vínculo ativo de Proprietário(a) por unidade, sem alterar clínica operacional ou indicadores de hoje. Valores e duas séries individuais vêm do contrato financeiro existente: bruto, parcela líquida (não lucro), repasses confirmados no período. Sem metas, crescimentos, preenchimento de lacunas com zero ou total combinado. Cartões/tabela/gráfico compartilham dados; erros, ausências, permissões e último sucesso por fonte são explícitos. Atualização manual, sem Realtime/polling/IA. Troca de contexto descarta resposta antiga e recusa remove valores. Recepção/Médico preservados. Estado local, evidências e limites em [Sistema35](35-ANALISE-FINANCEIRA-PERIODO-LOCAL.md); nenhuma aprovação pessoal do acabamento nem publicação inferida.
+
 ## Refinamentos aprovados somente local — 2026-10-09 22:35:00 -03:00
 
 Pendências e aprovações compacto; total estático suavizado; horários compartilhados apenas quando são da mesma fonte (Financeiro/pendências e Operação/agenda), sem data global de sucesso. Interpretação em detalhes, erros explícitos. Recepção preservada. Sem publicação. Estado e evidências: [Sistema29](29-REFINAMENTOS-FINAIS-DASHBOARDS-LOCAL.md).

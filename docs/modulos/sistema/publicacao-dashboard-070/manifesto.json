@@ -1,0 +1,368 @@
+{
+  "versao": "0.7.0",
+  "base": "44b13bb639c671b88e4a5f2e26c30ffa269dfbfa",
+  "arquivos": [
+    {
+      "caminho": "package.json",
+      "sha256": "c1c3ecb6b2bee52b6bbed2c89a7c7252fdc73158bd07d4c28ec16a5f4272123b"
+    },
+    {
+      "caminho": "package-lock.json",
+      "sha256": "c07bc7608b3cd15c0e2eaf2d78dc3d655f19910f90cac62f15e9ad40f10657f3"
+    },
+    {
+      "caminho": "src/App.tsx",
+      "sha256": "586412728a1279cdd555eeffbc7f1f5429d2a1129b87fad64f4a6bc6d03fb4d2"
+    },
+    {
+      "caminho": "src/pages/Dashboard.tsx",
+      "sha256": "b5d214822c9f79815e4cc118ea2a6d7a781c7b56b547988f3e6940f78ab234dc"
+    },
+    {
+      "caminho": "src/config/notasEvolucao.json",
+      "sha256": "d0786f748cd7311271b5023f86156ee4ccce32e6121978e11f0018647149670c"
+    },
+    {
+      "caminho": "src/lib/financeiro/financeiro.types.ts",
+      "sha256": "a89f87c407c0701b593397a0da5ffbe24b4baa42701d5949973fe6ad523edc2d"
+    },
+    {
+      "caminho": "src/lib/analiseFinanceira.ts",
+      "sha256": "5c371ef5940c5e013f1a13126d776f32f24e30336aa2e596c888ef00767ac61c"
+    },
+    {
+      "caminho": "src/components/dashboard/AnalisePeriodo.tsx",
+      "sha256": "dd3e0c7495793319573e908588cdb2741f6fe8947aab89a3a38cde63b0b426a0"
+    },
+    {
+      "caminho": "src/components/dashboard/AnalisePeriodoBoundary.tsx",
+      "sha256": "4e2afe2059d480164cc5293355a9ea0513e3bc1b642d753d7c7b22408750b317"
+    },
+    {
+      "caminho": "src/components/dashboard/GraficoAnalise.tsx",
+      "sha256": "6b0056653d36a7c69dd96cea917a57364e6e09b9667f81641a9e7fa5f818a74b"
+    },
+    {
+      "caminho": "src/components/dashboard/analisePeriodo.css",
+      "sha256": "9c89f9cd2795b0607750cb3d2d498c6055a605baad37b0d6d8cc107337d634d0"
+    },
+    {
+      "caminho": "src/components/ui/chart.tsx",
+      "sha256": "ee698b7d0fc1f5ff895a1d87fd89d8607a2595912bc88ef12e79605f3c974406"
+    },
+    {
+      "caminho": "tests/login/analise-periodo.config.ts",
+      "sha256": "df1251bf3e06bd09e744392c4072d9b34d4b18f4bff6b382678257a59ac86000"
+    },
+    {
+      "caminho": "tests/login/analise-periodo.spec.ts",
+      "sha256": "008b1a6613b0fffe51a876516711123e9c57c70309ea55badfa14a0fa15c7a0a"
+    },
+    {
+      "caminho": "src/components/dashboard/PainelProprietaria.tsx",
+      "sha256": "7d5fbf651e4b2b47d5808be11dadeb3579006153f8b4dd969f23f9ab67119553"
+    },
+    {
+      "caminho": "src/components/dashboard/dashboardAcabamento.css",
+      "sha256": "4c4cb2e2501eeeaac14fd74f6e96aa534277fd769411bdf8253e13bf81666295"
+    },
+    {
+      "caminho": "src/components/dashboard/ComparacaoPeriodo.tsx",
+      "sha256": "00cbb1f02cc37b3e509dee558bcc1036dfd241e7e33ffdad056e40e53a43195b"
+    },
+    {
+      "caminho": "src/components/ui/card.tsx",
+      "sha256": "e80bf5bc5bc87a3040977b8806381bff97b2b9383901bb6f956e3f8ed94e252a"
+    },
+    {
+      "caminho": "tests/login/visual-dashboard.config.ts",
+      "sha256": "90ebe8345e768149ebff15c038f1e550f2be99a3ae14e0c7526315b3ce5620dc"
+    },
+    {
+      "caminho": "tests/login/visual-dashboard.spec.ts",
+      "sha256": "257a860ad4d80a829cbdde0d957d437f6125223427cabde511765ddf17e1e2fb"
+    },
+    {
+      "caminho": "src/config/clinicBrands.ts",
+      "sha256": "2496a0bf23aed0883d25e992bb256ec394e6d7467481c3cb3ac442bae2df5a40"
+    },
+    {
+      "caminho": "src/components/dashboard/IdentificacaoClinicaDashboard.tsx",
+      "sha256": "7b9eefb4f3d543c3439427587893f928fed50c5626ae87eb52d70ced2063d657"
+    },
+    {
+      "caminho": "src/components/dashboard/identidadeClinicasDashboard.css",
+      "sha256": "de14515a967e8deb9e2eebb06b586c7f53a0dc7f7db7bec7a1b3b7fd50947cda"
+    },
+    {
+      "caminho": "src/components/dashboard/CabecalhoDashboard.tsx",
+      "sha256": "77de04d4c70adb502b5033189efc75056cdf4915558775c10f416c215018ce73"
+    },
+    {
+      "caminho": "src/components/dashboard/PainelRecepcao.tsx",
+      "sha256": "569dd7b85b7c5d0d817ace6b18a121ba14221076221b51badc7e734cc1839d6b"
+    },
+    {
+      "caminho": "release-please-config.json",
+      "sha256": "e3c16d3a9d397e0907d37494efdd2d9a5425075448edc97e038d6a0c9653d93a"
+    },
+    {
+      "caminho": "CHECKPOINT.md",
+      "sha256": "2de4d7b38347baf06f9f8ac191e25e20fde9514a4ecd68b417bb3ae2d905ef64"
+    },
+    {
+      "caminho": "docs/ia/CHECKPOINT.md",
+      "sha256": "abc2056fa2775e701bc6bc2bd3a3e616a7089ceeec38b93899fe65b5cdab40f2"
+    },
+    {
+      "caminho": "docs/ia/INDICE.md",
+      "sha256": "7529c47e7374f7e0a41379964034ca13f5d38126263b744ba031ecb18136e77f"
+    },
+    {
+      "caminho": "docs/VERSIONAMENTO-E-RELEASES.md",
+      "sha256": "77bf8cff7e22a80bff8b8d3ba19d5a5a705c3818b2f7a20a2b437aa2d53d72ba"
+    },
+    {
+      "caminho": "docs/modulos/sistema/00-README-SISTEMA.md",
+      "sha256": "ed197b15cd5e785c36cb09293123fc3ada448e9f5621b174ae50571c727f7d18"
+    },
+    {
+      "caminho": "docs/modulos/sistema/01-DOCUMENTO-FUNCIONAL-MESTRE.md",
+      "sha256": "cf3b02dd249f6183b325d269fb190f0f60ad3bc50ed4772553de53941f2e4946"
+    },
+    {
+      "caminho": "docs/modulos/sistema/08-CHECKPOINT.md",
+      "sha256": "f389510a6a5e3fa314282268f0d7e31e02c8c9ae9936ae65680b72758772aeed"
+    },
+    {
+      "caminho": "docs/modulos/sistema/38-PUBLICACAO-EVOLUCAO-DASHBOARDS-070.md",
+      "sha256": "4667c39907ffa72f05a3ba2dd3f8011811481f8350cc8c04f0fff73707f6e3e1"
+    },
+    {
+      "caminho": "docs/modulos/sistema/35-ANALISE-FINANCEIRA-PERIODO-LOCAL.md",
+      "sha256": "25f047b588b0c7e810eb9fad7a16536043f4f66d54c062231fb7009697f0f03c"
+    },
+    {
+      "caminho": "docs/modulos/sistema/36-CORRECAO-VISUAL-DASHBOARD-LOCAL.md",
+      "sha256": "b32f2dde81283cac973f6885f1ecb1104d0097025922066f28e755bde59e4017"
+    },
+    {
+      "caminho": "docs/modulos/sistema/37-IDENTIDADE-CLINICAS-DASHBOARDS.md",
+      "sha256": "22527c9a3709f909099e1352ad0b62ddacbcd9fb81cfd3271e46074c07b82d35"
+    },
+    {
+      "caminho": "docs/modulos/sistema/analise-periodo-2026-10-10/manifesto.json",
+      "sha256": "99a4209433f9b40d6dfb79b063f42c99843ac37f78414b1f0a5f1ad28ac77bad"
+    },
+    {
+      "caminho": "docs/modulos/sistema/analise-periodo-2026-10-10/verificacoes.json",
+      "sha256": "285250f355e0ce04cf7a451bebc8a7138ab45ece94021b6679e1fdcf4bf69aa9"
+    },
+    {
+      "caminho": "docs/modulos/sistema/analise-periodo-2026-10-10/capturas/celular-sintetico.png",
+      "sha256": "800efd2250e7f892204548ee26e786a3292e5db3572eb8282514f7de056d9c8c"
+    },
+    {
+      "caminho": "docs/modulos/sistema/analise-periodo-2026-10-10/capturas/claro-sintetico.png",
+      "sha256": "2c7863aad37a2175459baa69ab8b06ade17a8a52eb23fd50dc90a32782711891"
+    },
+    {
+      "caminho": "docs/modulos/sistema/analise-periodo-2026-10-10/capturas/escuro-sintetico.png",
+      "sha256": "f6e4a6f951275f1714b48dcd171e9e0f0429bbd06054117008ef6707b58b371a"
+    },
+    {
+      "caminho": "docs/modulos/sistema/analise-periodo-2026-10-10/capturas/tablet-sintetico.png",
+      "sha256": "ee17a9c933ff7420c0b0a9ae90620167eebf4568c9961e701697659fbae23aaf"
+    },
+    {
+      "caminho": "docs/modulos/sistema/correcao-visual-dashboard-2026-10-10/manifesto.json",
+      "sha256": "2488045d31be9df18018f2e7a3b3a8835e19d5102e1f06ac5d4958cdad1bf94f"
+    },
+    {
+      "caminho": "docs/modulos/sistema/correcao-visual-dashboard-2026-10-10/verificacoes.json",
+      "sha256": "53cd96c1e936b70be019f906cb9c01816c7a303e852817bb535c9e20e22df776"
+    },
+    {
+      "caminho": "docs/modulos/sistema/correcao-visual-dashboard-2026-10-10/antes/1440-preenchido.json",
+      "sha256": "49f0ae08016573171d56f32aa4696a7321324376617c507931c5b00192a69359"
+    },
+    {
+      "caminho": "docs/modulos/sistema/correcao-visual-dashboard-2026-10-10/antes/1440-preenchido.png",
+      "sha256": "03f65aa001cc4f99accb7316cb6744e54b4ed3ab856341b8ee2b075c1490f92a"
+    },
+    {
+      "caminho": "docs/modulos/sistema/correcao-visual-dashboard-2026-10-10/antes/1920-preenchido.json",
+      "sha256": "ef8bcf6a924fb7e5961e48a72e81214fc04432f0b46009e722c395bef40bb365"
+    },
+    {
+      "caminho": "docs/modulos/sistema/correcao-visual-dashboard-2026-10-10/antes/1920-preenchido.png",
+      "sha256": "62d7abca810c6311e47f68071e2710723a9421c5635453e7cfb999a5be033c6a"
+    },
+    {
+      "caminho": "docs/modulos/sistema/correcao-visual-dashboard-2026-10-10/antes/390-preenchido.json",
+      "sha256": "f6dc66bcb8245944fd61812f30107e85e0d440dea693a05b0aa527417ddcd7c5"
+    },
+    {
+      "caminho": "docs/modulos/sistema/correcao-visual-dashboard-2026-10-10/antes/390-preenchido.png",
+      "sha256": "36989d3006581408ef5eea4773a45a3a79bd8e6fd272177ac2a4c49a6f6b3d28"
+    },
+    {
+      "caminho": "docs/modulos/sistema/correcao-visual-dashboard-2026-10-10/depois/1440-escuro.json",
+      "sha256": "f23398b6870c6fe06cee6cb2cb9a5a400ff5aead662e6b2d29398c707ac57525"
+    },
+    {
+      "caminho": "docs/modulos/sistema/correcao-visual-dashboard-2026-10-10/depois/1440-escuro.png",
+      "sha256": "9799816237807b1afe382b7358647c7150f8e2ef12be2519ca05405a12b7a734"
+    },
+    {
+      "caminho": "docs/modulos/sistema/correcao-visual-dashboard-2026-10-10/depois/1440-lacunas.json",
+      "sha256": "f23398b6870c6fe06cee6cb2cb9a5a400ff5aead662e6b2d29398c707ac57525"
+    },
+    {
+      "caminho": "docs/modulos/sistema/correcao-visual-dashboard-2026-10-10/depois/1440-lacunas.png",
+      "sha256": "c62c6ad630d57a7274720bd17bb47becae3cdeab4b6645161dc85a87e65785a6"
+    },
+    {
+      "caminho": "docs/modulos/sistema/correcao-visual-dashboard-2026-10-10/depois/1440-preenchido.json",
+      "sha256": "f23398b6870c6fe06cee6cb2cb9a5a400ff5aead662e6b2d29398c707ac57525"
+    },
+    {
+      "caminho": "docs/modulos/sistema/correcao-visual-dashboard-2026-10-10/depois/1440-preenchido.png",
+      "sha256": "54c87bacc25df6fa65af03b10492e76347df9a1463dd56b7b0ef3837ba21aeba"
+    },
+    {
+      "caminho": "docs/modulos/sistema/correcao-visual-dashboard-2026-10-10/depois/1440-vazio.json",
+      "sha256": "f23398b6870c6fe06cee6cb2cb9a5a400ff5aead662e6b2d29398c707ac57525"
+    },
+    {
+      "caminho": "docs/modulos/sistema/correcao-visual-dashboard-2026-10-10/depois/1440-vazio.png",
+      "sha256": "327fd7abe490f4fd92e83437c02e794ca54be29e6ee71ceafeeb71e867b16a69"
+    },
+    {
+      "caminho": "docs/modulos/sistema/correcao-visual-dashboard-2026-10-10/depois/1920-escuro.json",
+      "sha256": "d0ed9ad2c005dddc643f737cc2b7dac09257561d5ba28c0d56d9fca59b8573c9"
+    },
+    {
+      "caminho": "docs/modulos/sistema/correcao-visual-dashboard-2026-10-10/depois/1920-escuro.png",
+      "sha256": "e2389bbac435bac1115849d0563c71aafbb93e2470375bb12229c2d0afa0494c"
+    },
+    {
+      "caminho": "docs/modulos/sistema/correcao-visual-dashboard-2026-10-10/depois/1920-preenchido.json",
+      "sha256": "d0ed9ad2c005dddc643f737cc2b7dac09257561d5ba28c0d56d9fca59b8573c9"
+    },
+    {
+      "caminho": "docs/modulos/sistema/correcao-visual-dashboard-2026-10-10/depois/1920-preenchido.png",
+      "sha256": "814adff3ad14d95517d26313998623ce3e5fe112f97f4a3240a2106ba85e836b"
+    },
+    {
+      "caminho": "docs/modulos/sistema/correcao-visual-dashboard-2026-10-10/depois/360-escuro.json",
+      "sha256": "a9ac2ea0f2a66826d9007f1b269f5b1f333168b786b064b688b6ea8ff8c059b4"
+    },
+    {
+      "caminho": "docs/modulos/sistema/correcao-visual-dashboard-2026-10-10/depois/360-escuro.png",
+      "sha256": "e5383ecf92ea3f20473c4adf01e41803f3edc8bb7ad53755b671a45ffaf23ff4"
+    },
+    {
+      "caminho": "docs/modulos/sistema/correcao-visual-dashboard-2026-10-10/depois/360-preenchido.json",
+      "sha256": "a9ac2ea0f2a66826d9007f1b269f5b1f333168b786b064b688b6ea8ff8c059b4"
+    },
+    {
+      "caminho": "docs/modulos/sistema/correcao-visual-dashboard-2026-10-10/depois/360-preenchido.png",
+      "sha256": "0297cda816d80db4ede674bb89f00c9ee4777a6eb9d939964d365b30d907d3f3"
+    },
+    {
+      "caminho": "docs/modulos/sistema/correcao-visual-dashboard-2026-10-10/depois/360-vazio.json",
+      "sha256": "a9ac2ea0f2a66826d9007f1b269f5b1f333168b786b064b688b6ea8ff8c059b4"
+    },
+    {
+      "caminho": "docs/modulos/sistema/correcao-visual-dashboard-2026-10-10/depois/360-vazio.png",
+      "sha256": "f4e10e559892fd400df22f40654ab75b5f2bca548bfa185dca899a7791fc72bf"
+    },
+    {
+      "caminho": "docs/modulos/sistema/correcao-visual-dashboard-2026-10-10/depois/390-escuro.json",
+      "sha256": "a08b4d0fb7a89cc9bcdff6aaaa81c4ec831bc83c60e62d545bebd222768bda46"
+    },
+    {
+      "caminho": "docs/modulos/sistema/correcao-visual-dashboard-2026-10-10/depois/390-escuro.png",
+      "sha256": "0b5ac3abaad565e8ec660cd02af5be7106b452097642ad69e8508258dae1cac0"
+    },
+    {
+      "caminho": "docs/modulos/sistema/correcao-visual-dashboard-2026-10-10/depois/390-preenchido.json",
+      "sha256": "a08b4d0fb7a89cc9bcdff6aaaa81c4ec831bc83c60e62d545bebd222768bda46"
+    },
+    {
+      "caminho": "docs/modulos/sistema/correcao-visual-dashboard-2026-10-10/depois/390-preenchido.png",
+      "sha256": "39a507c424f1f4bdcbf07410d253f67d2b7f408deede98b02f5c284e56cff84f"
+    },
+    {
+      "caminho": "docs/modulos/sistema/correcao-visual-dashboard-2026-10-10/funcionais/celular-sintetico.png",
+      "sha256": "32b2049ec8ae8d01cb9916da0e6839ead9613ee7d001ab5cde648dbed8d4c311"
+    },
+    {
+      "caminho": "docs/modulos/sistema/correcao-visual-dashboard-2026-10-10/funcionais/claro-sintetico.png",
+      "sha256": "813daa5b2e423bc65e14592088a706072fdbaef35efdef1b23f6d1c3a1700f46"
+    },
+    {
+      "caminho": "docs/modulos/sistema/correcao-visual-dashboard-2026-10-10/funcionais/escuro-sintetico.png",
+      "sha256": "8b6ed40ac08911191be528cfb02071d49517fbcb70a5d13de7206b270d6cbd9e"
+    },
+    {
+      "caminho": "docs/modulos/sistema/correcao-visual-dashboard-2026-10-10/funcionais/tablet-sintetico.png",
+      "sha256": "5872b8e2392377ea21ad41e8273c3d4eda813a87aa3dd1cfa04aca0e32990fdc"
+    },
+    {
+      "caminho": "docs/modulos/sistema/comparacao-grupos-2026-10-10/celular.png",
+      "sha256": "9a9535cb63b50e431b871ea3414529156125b3b60a755e2214126b438824bffb"
+    },
+    {
+      "caminho": "docs/modulos/sistema/comparacao-grupos-2026-10-10/claro.png",
+      "sha256": "05a4e25923bf5cb541b4a1fc3714d013132457c5543c727196fccc5250247c5d"
+    },
+    {
+      "caminho": "docs/modulos/sistema/comparacao-grupos-2026-10-10/escuro.png",
+      "sha256": "2518f0bad62aee7467feda1092050cfd8a95a0bbd9f8facac263fae3fd46d081"
+    },
+    {
+      "caminho": "docs/modulos/sistema/comparacao-grupos-2026-10-10/manifesto.json",
+      "sha256": "050e8176dc4079ff9a20cb43978214714d715dc7002c473a40468375159fb83e"
+    },
+    {
+      "caminho": "docs/modulos/sistema/identidade-dashboard-2026-10-10/celular.png",
+      "sha256": "2c438c2066b392b42796c8879c0662f2ab54ade2d354375c46fa2c84ab0bad0f"
+    },
+    {
+      "caminho": "docs/modulos/sistema/identidade-dashboard-2026-10-10/claro.png",
+      "sha256": "73ce933261ae7dccdc2526c646fc6e602264881909d4a85e607861e79e810c95"
+    },
+    {
+      "caminho": "docs/modulos/sistema/identidade-dashboard-2026-10-10/escuro.png",
+      "sha256": "39872014f3d8e49202ac5a42afad8968e895614257a918b7433590ec1573642c"
+    },
+    {
+      "caminho": "docs/modulos/sistema/identidade-dashboard-2026-10-10/manifesto.json",
+      "sha256": "d83194cf0f2d0332274a27561500df34b0e5b7dcc55e39db57a685e95b6507c3"
+    },
+    {
+      "caminho": "docs/modulos/sistema/identidade-dashboard-2026-10-10/recepcao-brotas-claro.png",
+      "sha256": "f943f577f03d76276ee96e25cd4ab2c313a616c67533a80146bfe7f9233e03dd"
+    },
+    {
+      "caminho": "docs/modulos/sistema/identidade-dashboard-2026-10-10/recepcao-brotas-escuro.png",
+      "sha256": "0ce2aab8401ed2c22e65e81dfa5555230afd024444a8178ee0ba0ed1817bfe0d"
+    },
+    {
+      "caminho": "docs/modulos/sistema/identidade-dashboard-2026-10-10/recepcao-ipupiara-claro.png",
+      "sha256": "037bdd45d19250806625a2f36f60c26abe05a0b159eec6e7bf4b240177d43580"
+    },
+    {
+      "caminho": "docs/modulos/sistema/identidade-dashboard-2026-10-10/recepcao-ipupiara-escuro.png",
+      "sha256": "344be3ebf81453b7ba1c49d0eae6fb6523d0a690514bd52fb01f675c9a46ba97"
+    },
+    {
+      "caminho": "docs/modulos/sistema/publicacao-dashboard-070/antes.json",
+      "sha256": "b08f7d20c0dd8d0a5edd704f91adbcaeb667dac1ece18290a53a141680636918"
+    }
+  ],
+  "excluidos": "trabalhos paralelos, scripts temporários, credenciais e evidências pessoais",
+  "verificacao": "Build oficial0.7.0 aprovado; provas sintéticas35–37 reaproveitadas; validação autenticada de produção pendente"
+}

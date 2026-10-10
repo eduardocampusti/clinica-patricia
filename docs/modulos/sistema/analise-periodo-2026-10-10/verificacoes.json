@@ -1,0 +1,88 @@
+{
+  "data": "10/10/2026, 09:41:14 -03:00",
+  "ambiente": "Previa local normal5190 + testes isolados4187",
+  "supabaseRef": "xftnkusbyqzyvzrovroj",
+  "backendAlterado": false,
+  "escritasReais": false,
+  "sinteticos": {
+    "cenariosDistintosValidos": 24,
+    "resultadoComposto": true,
+    "etapas": [
+      {
+        "cenarios": 21,
+        "aprovados": 20,
+        "falhas": 1,
+        "nota": "Expectativa do tooltip avançou para lacuna; ver cenário retestado."
+      },
+      {
+        "cenarios": 7,
+        "aprovados": 7,
+        "nota": "Somente cenários afetados por tooltip/estado, com reteste da falha."
+      },
+      {
+        "cenarios": 1,
+        "aprovados": 1,
+        "nota": "Nova proteção contra falha de importação."
+      },
+      {
+        "cenarios": 2,
+        "aprovados": 2,
+        "nota": "Logout/outra conta e Médico."
+      },
+      {
+        "cenarios": 4,
+        "aprovados": 4,
+        "nota": "Capturas renovadas após ajuste de contraste escuro."
+      },
+      {
+        "cenarios": 2,
+        "aprovados": 2,
+        "nota": "Reteste final de erro parcial e lacunas após distinguir erro de fonte também na tabela diária/tooltip. Total distinto permanece24."
+      }
+    ],
+    "nenhumBackendReal": true
+  },
+  "conectados": {
+    "perfil": "Proprietário(a), sessão existente",
+    "clinicas": [
+      "Brotas",
+      "Ipupiara"
+    ],
+    "leituras": [
+      "mês atual",
+      "últimos7dias",
+      "últimos30dias",
+      "01/09/2026–30/09/2026"
+    ],
+    "comparacao": "Ambas fontes concluídas, sem erro de leitura; clínica operacional mantida.",
+    "independenciaHoje": "Brotas: valores visíveis comparados antes/depois de aplicar30dias, iguais.",
+    "navegacao": [
+      "trocaBrotas/Ipupiara",
+      "F5Ipupiara",
+      "FinanceiroIpupiara/retorno",
+      "comparação móvel390px sem overflow da página"
+    ],
+    "limite": "Séries reais consultadas vazias. Pontos/valores não nulos, falhas e isolamento de outra conta verificados somente sinteticamente. Recepção e Médico reais não testados.",
+    "dadosSensiveisRegistrados": false
+  },
+  "verificadores": {
+    "tipos": "aprovado",
+    "build": "aprovado",
+    "notas": "aprovado",
+    "lintDirigido": "aprovado sem avisos",
+    "diffCheck": "aprovado",
+    "avisoBundle": "preexistente"
+  },
+  "ferramentas": {
+    "reui": "consultas oficiais bem-sucedidas, componentes gratuitos; validate_usage confirma componentes shadcn sem validar props (documentação oficial/CLI inspecionados); checklist de auditoria consultado.",
+    "shadcn": "configuração adicionada; CLIview/help respondeu; MCP não carregado nesta sessão, conexão não testada",
+    "typesafe": "skill avaliada, sem IA no produto",
+    "jev": {
+      "classeConteudo": "sintetico",
+      "tokens": 977,
+      "tempoMs": 1726.0532,
+      "custoUSD": 0.000036036
+    }
+  },
+  "publicacao": "Não executada; nenhum commit/push/deploy"
+}

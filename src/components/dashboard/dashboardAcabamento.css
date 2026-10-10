@@ -151,3 +151,8 @@
 @media (prefers-reduced-motion: reduce) {
   :is(.prop, .rp-integrado) * { transition: none !important; }
 }
+
+/* Composição comum apenas do Proprietário(a), inclusive se a análise não carregar. */
+.dashboard-proprietaria { width:100%; max-width:1440px; min-width:0; margin-inline:auto; display:flex; flex-direction:column; gap:32px; }
+.dashboard-proprietaria > .prop { width:100%; max-width:none; margin:0; padding:0; background:transparent; }
+@media(max-width:480px) { .dashboard-proprietaria { gap:28px; } }

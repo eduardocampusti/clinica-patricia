@@ -1,0 +1,48 @@
+{
+  "largura": 1440,
+  "rolagem": 1440,
+  "blocos": [
+    {
+      "s": ".prop",
+      "x": 272,
+      "width": 1136,
+      "right": 1408
+    },
+    {
+      "s": ".prop-topo",
+      "x": 272,
+      "width": 1136,
+      "right": 1408
+    },
+    {
+      "s": ".prop-moedas",
+      "x": 272,
+      "width": 1136,
+      "right": 1408
+    },
+    {
+      "s": ".analise-periodo",
+      "x": 272,
+      "width": 1136,
+      "right": 1408
+    },
+    {
+      "s": ".analise-resumos",
+      "x": 272,
+      "width": 1136,
+      "right": 1408
+    },
+    {
+      "s": ".analise-graficos",
+      "x": 272,
+      "width": 1136,
+      "right": 1408
+    },
+    {
+      "s": ".analise-resumo-tabela",
+      "x": 272,
+      "width": 1136,
+      "right": 1408
+    }
+  ]
+}

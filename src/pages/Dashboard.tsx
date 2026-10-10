@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { iniciais } from '../lib/texto'
 import { FeedbackAlert } from '../components/feedback/FeedbackAlert'
@@ -8,6 +8,9 @@ import CabecalhoDashboard from '../components/dashboard/CabecalhoDashboard'
 import { hojeNaBahia } from '../lib/pacienteLista'
 import { horaNaBahia } from '../lib/dashboardRecepcao'
 import PainelProprietaria from '../components/dashboard/PainelProprietaria'
+import AnalisePeriodoBoundary from '../components/dashboard/AnalisePeriodoBoundary'
+
+const AnalisePeriodo = lazy(() => import('../components/dashboard/AnalisePeriodo'))
 
 interface ProximoPaciente {
   nome: string
@@ -15,6 +18,7 @@ interface ProximoPaciente {
 }
 
 interface DashboardProps {
+  usuarioId?: string
   clinicaAtivaId: string | null
   clinicaNome: string
   nomeUsuario: string | null
@@ -99,6 +103,6 @@ export default function Dashboard(props: DashboardProps & AcoesPainelRecepcao & 
   return props.papel === 'recepcao' && props.clinicaAtivaId
     ? <PainelRecepcao key={props.clinicaAtivaId} clinicaId={props.clinicaAtivaId} {...props}/>
     : props.papel === 'proprietaria' && props.clinicaAtivaId
-      ? <PainelProprietaria key={props.clinicaAtivaId} clinicaId={props.clinicaAtivaId} {...props}/>
+      ? <div className="dashboard-proprietaria"><PainelProprietaria key={props.clinicaAtivaId} clinicaId={props.clinicaAtivaId} {...props}/>{props.usuarioId && <AnalisePeriodoBoundary key={`${props.usuarioId}:${props.clinicaAtivaId}`}><Suspense fallback={<p role="status">Carregando análise do período…</p>}><AnalisePeriodo key={`${props.usuarioId}:${props.clinicaAtivaId}`} usuarioId={props.usuarioId} clinicaAtivaId={props.clinicaAtivaId} /></Suspense></AnalisePeriodoBoundary>}</div>
     : <DashboardBasico key={props.clinicaAtivaId} {...props}/>
 }

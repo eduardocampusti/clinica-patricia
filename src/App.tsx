@@ -309,7 +309,7 @@ function App() {
       onSair={() => solicitarMudanca(() => void handleSignOut())}
     >
       {tela === 'dashboard' && <Dashboard clinicaAtivaId={clinicaAtivaId} clinicaNome={clinicaAtiva?.nome ?? 'Clínica selecionada'} papel={papel}
-        nomeUsuario={identidade.nome}
+        nomeUsuario={identidade.nome} usuarioId={session.user.id}
         onNovoPaciente={() => encaminharPainel('pacientes', { novoPaciente: true })}
         onNovoAgendamento={() => encaminharPainel('agenda', { novoAgendamento: true })}
         onAbrirPaciente={pacienteId => encaminharPainel('pacientes', { pacienteId })}

@@ -195,7 +195,7 @@ export interface DashboardBase<TResumo> {
 export interface DashboardProfissional extends DashboardBase<ResumoDashboardComum> {}
 
 export interface DashboardProprietaria extends DashboardBase<ResumoDashboardProprietaria> {
-  por_clinica: Array<{ clinica_id: UUID; nome: string; resumo: ResumoDashboardProprietaria }>
+  por_clinica: Array<{ clinica_id: UUID; nome: string; resumo: Omit<ResumoDashboardProprietaria, 'series' | 'lista_repasses' | 'lista_repasses_total' | 'lista_repasses_limite'> }>
   clinicas_total: number
   por_profissional: Array<{ profissional_id: UUID; nome: string; resumo: ResumoDashboardComum }>
   profissionais_total: number

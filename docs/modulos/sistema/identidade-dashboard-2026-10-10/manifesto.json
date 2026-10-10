@@ -1,0 +1,191 @@
+{
+  "data": "10/10/2026 11:10 -03:00",
+  "estado": "LOCAL_NAO_PUBLICADO",
+  "base": "44b13bb639c671b88e4a5f2e26c30ffa269dfbfa",
+  "alterados": [
+    {
+      "caminho": "src/config/clinicBrands.ts",
+      "sha256": "2496a0bf23aed0883d25e992bb256ec394e6d7467481c3cb3ac442bae2df5a40"
+    },
+    {
+      "caminho": "src/components/dashboard/IdentificacaoClinicaDashboard.tsx",
+      "sha256": "7b9eefb4f3d543c3439427587893f928fed50c5626ae87eb52d70ced2063d657"
+    },
+    {
+      "caminho": "src/components/dashboard/identidadeClinicasDashboard.css",
+      "sha256": "de14515a967e8deb9e2eebb06b586c7f53a0dc7f7db7bec7a1b3b7fd50947cda"
+    },
+    {
+      "caminho": "src/components/dashboard/AnalisePeriodo.tsx",
+      "sha256": "dd3e0c7495793319573e908588cdb2741f6fe8947aab89a3a38cde63b0b426a0"
+    },
+    {
+      "caminho": "src/components/dashboard/analisePeriodo.css",
+      "sha256": "9c89f9cd2795b0607750cb3d2d498c6055a605baad37b0d6d8cc107337d634d0"
+    },
+    {
+      "caminho": "src/components/dashboard/CabecalhoDashboard.tsx",
+      "sha256": "77de04d4c70adb502b5033189efc75056cdf4915558775c10f416c215018ce73"
+    },
+    {
+      "caminho": "src/components/dashboard/PainelProprietaria.tsx",
+      "sha256": "7d5fbf651e4b2b47d5808be11dadeb3579006153f8b4dd969f23f9ab67119553"
+    },
+    {
+      "caminho": "src/components/dashboard/PainelRecepcao.tsx",
+      "sha256": "569dd7b85b7c5d0d817ace6b18a121ba14221076221b51badc7e734cc1839d6b"
+    },
+    {
+      "caminho": "src/config/notasEvolucao.json",
+      "sha256": "8b7b4e7011b109ac4df7bcfbcc15196acb52cf3a19bf70b3f056c5fcd222eb90"
+    },
+    {
+      "caminho": "tests/login/analise-periodo.spec.ts",
+      "sha256": "008b1a6613b0fffe51a876516711123e9c57c70309ea55badfa14a0fa15c7a0a"
+    }
+  ],
+  "conjuntoAnaliseMaisCorrecao": [
+    {
+      "caminho": "package.json",
+      "sha256": "f881b1b98dac112766990c1f0d88ac80963598b6f4a2e323dd5768ebf786b6a7"
+    },
+    {
+      "caminho": "package-lock.json",
+      "sha256": "e9731d96b3b777f4fdb007aa65107db2c20b67217d47070f35b84def3f32cce0"
+    },
+    {
+      "caminho": "src/App.tsx",
+      "sha256": "586412728a1279cdd555eeffbc7f1f5429d2a1129b87fad64f4a6bc6d03fb4d2"
+    },
+    {
+      "caminho": "src/pages/Dashboard.tsx",
+      "sha256": "b5d214822c9f79815e4cc118ea2a6d7a781c7b56b547988f3e6940f78ab234dc"
+    },
+    {
+      "caminho": "src/config/notasEvolucao.json",
+      "sha256": "8b7b4e7011b109ac4df7bcfbcc15196acb52cf3a19bf70b3f056c5fcd222eb90"
+    },
+    {
+      "caminho": "src/lib/financeiro/financeiro.types.ts",
+      "sha256": "a89f87c407c0701b593397a0da5ffbe24b4baa42701d5949973fe6ad523edc2d"
+    },
+    {
+      "caminho": "src/lib/analiseFinanceira.ts",
+      "sha256": "5c371ef5940c5e013f1a13126d776f32f24e30336aa2e596c888ef00767ac61c"
+    },
+    {
+      "caminho": "src/components/dashboard/AnalisePeriodo.tsx",
+      "sha256": "dd3e0c7495793319573e908588cdb2741f6fe8947aab89a3a38cde63b0b426a0"
+    },
+    {
+      "caminho": "src/components/dashboard/AnalisePeriodoBoundary.tsx",
+      "sha256": "4e2afe2059d480164cc5293355a9ea0513e3bc1b642d753d7c7b22408750b317"
+    },
+    {
+      "caminho": "src/components/dashboard/GraficoAnalise.tsx",
+      "sha256": "6b0056653d36a7c69dd96cea917a57364e6e09b9667f81641a9e7fa5f818a74b"
+    },
+    {
+      "caminho": "src/components/dashboard/analisePeriodo.css",
+      "sha256": "9c89f9cd2795b0607750cb3d2d498c6055a605baad37b0d6d8cc107337d634d0"
+    },
+    {
+      "caminho": "src/components/ui/chart.tsx",
+      "sha256": "ee698b7d0fc1f5ff895a1d87fd89d8607a2595912bc88ef12e79605f3c974406"
+    },
+    {
+      "caminho": "tests/login/analise-periodo.config.ts",
+      "sha256": "df1251bf3e06bd09e744392c4072d9b34d4b18f4bff6b382678257a59ac86000"
+    },
+    {
+      "caminho": "tests/login/analise-periodo.spec.ts",
+      "sha256": "008b1a6613b0fffe51a876516711123e9c57c70309ea55badfa14a0fa15c7a0a"
+    },
+    {
+      "caminho": "src/components/dashboard/PainelProprietaria.tsx",
+      "sha256": "7d5fbf651e4b2b47d5808be11dadeb3579006153f8b4dd969f23f9ab67119553"
+    },
+    {
+      "caminho": "src/components/dashboard/dashboardAcabamento.css",
+      "sha256": "4c4cb2e2501eeeaac14fd74f6e96aa534277fd769411bdf8253e13bf81666295"
+    },
+    {
+      "caminho": "src/components/dashboard/ComparacaoPeriodo.tsx",
+      "sha256": "00cbb1f02cc37b3e509dee558bcc1036dfd241e7e33ffdad056e40e53a43195b"
+    },
+    {
+      "caminho": "src/components/ui/card.tsx",
+      "sha256": "e80bf5bc5bc87a3040977b8806381bff97b2b9383901bb6f956e3f8ed94e252a"
+    },
+    {
+      "caminho": "tests/login/visual-dashboard.config.ts",
+      "sha256": "90ebe8345e768149ebff15c038f1e550f2be99a3ae14e0c7526315b3ce5620dc"
+    },
+    {
+      "caminho": "tests/login/visual-dashboard.spec.ts",
+      "sha256": "257a860ad4d80a829cbdde0d957d437f6125223427cabde511765ddf17e1e2fb"
+    },
+    {
+      "caminho": "src/config/clinicBrands.ts",
+      "sha256": "2496a0bf23aed0883d25e992bb256ec394e6d7467481c3cb3ac442bae2df5a40"
+    },
+    {
+      "caminho": "src/components/dashboard/IdentificacaoClinicaDashboard.tsx",
+      "sha256": "7b9eefb4f3d543c3439427587893f928fed50c5626ae87eb52d70ced2063d657"
+    },
+    {
+      "caminho": "src/components/dashboard/identidadeClinicasDashboard.css",
+      "sha256": "de14515a967e8deb9e2eebb06b586c7f53a0dc7f7db7bec7a1b3b7fd50947cda"
+    },
+    {
+      "caminho": "src/components/dashboard/CabecalhoDashboard.tsx",
+      "sha256": "77de04d4c70adb502b5033189efc75056cdf4915558775c10f416c215018ce73"
+    },
+    {
+      "caminho": "src/components/dashboard/PainelRecepcao.tsx",
+      "sha256": "569dd7b85b7c5d0d817ace6b18a121ba14221076221b51badc7e734cc1839d6b"
+    }
+  ],
+  "preservadosDoManifestoAnterior": [
+    "package.json",
+    "package-lock.json",
+    "src/App.tsx",
+    "src/pages/Dashboard.tsx",
+    "src/lib/financeiro/financeiro.types.ts",
+    "src/lib/analiseFinanceira.ts",
+    "src/components/dashboard/AnalisePeriodoBoundary.tsx",
+    "src/components/dashboard/GraficoAnalise.tsx",
+    "src/components/ui/chart.tsx",
+    "tests/login/analise-periodo.config.ts",
+    "src/components/dashboard/dashboardAcabamento.css",
+    "src/components/dashboard/ComparacaoPeriodo.tsx",
+    "src/components/ui/card.tsx",
+    "tests/login/visual-dashboard.config.ts",
+    "tests/login/visual-dashboard.spec.ts"
+  ],
+  "verificacoes": {
+    "cenariosDistintos": 10,
+    "tipos": "aprovado",
+    "lint": "aprovado",
+    "notas": "aprovado",
+    "dados": "sintéticos, sem backend real",
+    "capturas": [
+      "celular.png",
+      "claro.png",
+      "escuro.png",
+      "recepcao-brotas-claro.png",
+      "recepcao-brotas-escuro.png",
+      "recepcao-ipupiara-claro.png",
+      "recepcao-ipupiara-escuro.png"
+    ]
+  },
+  "jev": {
+    "conteudo": "sintético",
+    "confianca": 0.46,
+    "complexidade": 1,
+    "confiancaComplexidade": 0.91,
+    "tokens": 969,
+    "tempoMs": 932.1326,
+    "custoUsd": 0.0000357
+  }
+}

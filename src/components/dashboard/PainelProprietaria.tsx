@@ -84,7 +84,7 @@ export default function PainelProprietaria({ clinicaId, clinicaNome, nomeUsuario
   const referencia = instanteConservador(a.em, f.em)
   const situacaoLeitura = carregando ? 'Atualizando dados…'
     : a.erro || f.erro ? `Atualização malsucedida${referencia ? ` · última leitura confirmada ${instante(referencia)}` : ' · dados indisponíveis'}`
-      : referencia && a.em && f.em ? 'Consultas concluídas'
+      : referencia && a.em && f.em ? 'Atualização concluída'
         : 'Atualização indisponível'
 
   const pendencias = f.dado ? [
@@ -97,7 +97,7 @@ export default function PainelProprietaria({ clinicaId, clinicaNome, nomeUsuario
 
   return <div className="prop">
     <header className="prop-topo">
-      <CabecalhoDashboard nome={nomeUsuario} clinicaNome={clinicaNome} agora={agora} contexto="Visão geral" />
+      <CabecalhoDashboard nome={nomeUsuario} clinicaNome={clinicaNome} clinicaId={clinicaId} agora={agora} contexto="Visão geral" />
       <div className="prop-topo-acao">
         <p className="prop-nota" role="status">{situacaoLeitura}</p>
         <button type="button" className="prop-botao" onClick={atualizarPainel} disabled={carregando}>

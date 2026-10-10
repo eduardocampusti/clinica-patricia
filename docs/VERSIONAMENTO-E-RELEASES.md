@@ -1,5 +1,14 @@
 # Versionamento e releases — processo em preparação
 
+## Entrega integrada0.7.0 — em preparação
+
+Análise por período, composição e identidade das clínicas (35–37). Autorização de commit/push/publicação registrada no relatório Sistema38; confirmação efetiva ainda pendente.
+
+## Dashboards 0.6.1 publicadas — 10/10/2026, 06:29:33 -03:00
+
+Dashboards0.6.1/44b13bb6 publicadas e conferidas por leitura nas sessões existentes de Proprietária B/I. Push/versão servida e limites: relatório Sistema33. Recepção real pendente; registros finais somente locais, sem novo deploy documental.
+
+
 ## Versão local 0.6.1 commitada — 10/10/2026, 06:07:56 -03:00
 
 Entrega 19f40d0e92f45a36055b28e16d841aa2301d769b na branch resgate-local; quatro metadados e notas coerentes. Build pré-commit aprovado, compilado sobre a base com alterações locais. Commit local não altera o bundle servido em produção: não houve push/deploy, tag ou Release. Manifesto automático de releases permanece 0.0.0. Registro documental de fechamento posterior não modifica código.

@@ -16,6 +16,7 @@ export interface ClinicBrandConfig {
     destaqueSuave: string
     visual: string
   }
+  coresDashboard: { claro: string; escuro: string }
   textos: {
     descricaoMarca: string
     rodape: string
@@ -36,6 +37,7 @@ export const CLINIC_BRANDS: Record<ClinicBrandSlug, ClinicBrandConfig> = {
     hostname: brotasHostname || 'clinicabrotas.com.br',
     clinicId: brotasId || undefined,
     aliasesClinica: ['brotas', 'clinica brotas'],
+    coresDashboard: { claro: '#326BEA', escuro: '#7EAEFF' },
     imagemLogin: '/imagem_login_brotas.png',
     titulo: 'Acesso à Clínica Brotas',
     subtitulo: 'Entre com suas credenciais profissionais para acessar a operação da Clínica Brotas.',
@@ -58,6 +60,8 @@ export const CLINIC_BRANDS: Record<ClinicBrandSlug, ClinicBrandConfig> = {
     hostname: ipupiaraHostname || 'clinicaipupiara.com.br',
     clinicId: ipupiaraId || undefined,
     aliasesClinica: ['ipupiara', 'clinica ipupiara'],
+    // Variantes legíveis do verde #16A34A definido no design system; só dashboards.
+    coresDashboard: { claro: '#15803D', escuro: '#4ADE80' },
     imagemLogin: '/imagem_login_ipupiara.png',
     titulo: 'Acesso à Clínica Ipupiara',
     subtitulo: 'Entre com suas credenciais profissionais para acessar a operação da Clínica Ipupiara.',

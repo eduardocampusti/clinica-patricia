@@ -1,0 +1,2 @@
+.dashboard-identidade-clinica { color:var(--dashboard-unidade-claro); }
+[data-theme="escuro"] .dashboard-identidade-clinica { color:var(--dashboard-unidade-escuro); }

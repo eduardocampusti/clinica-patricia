@@ -1,5 +1,28 @@
 # Memória compartilhada — mapa de leitura
 
+## Entrega integrada0.7.0 — em preparação
+
+Análise por período, composição e identidade das clínicas (35–37). Autorização de commit/push/publicação registrada no relatório Sistema38; confirmação efetiva ainda pendente.
+
+## Identidade das dashboards — 10/10/2026
+
+[Relatório37](../modulos/sistema/37-IDENTIDADE-CLINICAS-DASHBOARDS.md): Brotas azul/Ipupiara verde, configuração reutilizada, testes/capturas e manifesto local.
+
+
+## Correção visual da análise — 10/10/2026, 10:30:56 -03:00
+
+[Relatório36](../modulos/sistema/36-CORRECAO-VISUAL-DASHBOARD-LOCAL.md): composição, componentes adaptados,38provas, capturas completas e recorte atual. Substitui o acabamento35, sem publicação.
+
+
+## Análise financeira local — 10/10/2026, 09:41:14 -03:00
+
+[Diagnóstico34](../modulos/sistema/34-DIAGNOSTICO-DASHBOARDS-SHADCN-REUI-TEMPO-REAL.md) e [implementação35](../modulos/sistema/35-ANALISE-FINANCEIRA-PERIODO-LOCAL.md). Estado local, manifesto14caminhos, provas e limites; publicação não executada.
+
+## Dashboards 0.6.1 publicadas — 10/10/2026, 06:29:33 -03:00
+
+Dashboards0.6.1/44b13bb6 publicadas e conferidas por leitura nas sessões existentes de Proprietária B/I. Push/versão servida e limites: relatório Sistema33. Recepção real pendente; registros finais somente locais, sem novo deploy documental.
+
+
 ## Dashboards 0.6.1 registradas localmente — 10/10/2026, 06:07:56 -03:00
 
 Commit 19f40d0e92f45a36055b28e16d841aa2301d769b; build/notas/diff-check aprovados. Réplica documental D conciliada seletivamente. Sem push/deploy; Recepção real pendente. [Sistema32](../modulos/sistema/32-COMMIT-LOCAL-DASHBOARDS-061.md).

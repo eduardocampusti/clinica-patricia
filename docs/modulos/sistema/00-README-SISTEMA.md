@@ -1,5 +1,33 @@
 # Sistema — índice
 
+## Entrega integrada0.7.0 — em preparação
+
+Análise por período, composição e identidade das clínicas (35–37). Autorização de commit/push/publicação registrada no relatório Sistema38; confirmação efetiva ainda pendente.
+
+## Identidade das clínicas — 10/10/2026
+
+[Relatório37](37-IDENTIDADE-CLINICAS-DASHBOARDS.md): cores centralizadas, identificação restrita nas duas dashboards,10provas sintéticas e7capturas. Local, não publicado.
+
+
+## Comparação agrupada — 10/10/2026, 10:43:03 -03:00
+
+[Complemento do relatório36](36-CORRECAO-VISUAL-DASHBOARD-LOCAL.md): ajuste somente do card,7provas dirigidas,3capturas sintéticas e manifesto atualizado. Sem publicação.
+
+
+## Correção visual local — 10/10/2026, 10:30:56 -03:00
+
+[Relatório36](36-CORRECAO-VISUAL-DASHBOARD-LOCAL.md): implementação corrigida após rejeição visual35;38provas sintéticas, leitura real vazia B/I, capturas completas, manifesto12/20. Sem backend/publicação; avaliação do usuário pendente.
+
+
+## Análise do período implementada localmente — 10/10/2026, 09:41:14 -03:00
+
+[Relatório35](35-ANALISE-FINANCEIRA-PERIODO-LOCAL.md): fontes autorizadas por clínica, filtros independentes de hoje, gráficos/tabelas, 24 cenários sintéticos e leitura real B/I; séries reais vazias/Recepção real não testada. Somente checkoutC; D conserva fontes paralelas. Sem backend/commit/push/deploy.
+
+## Dashboards 0.6.1 publicadas — 10/10/2026, 06:29:33 -03:00
+
+Dashboards0.6.1/44b13bb6 publicadas e conferidas por leitura nas sessões existentes de Proprietária B/I. Push/versão servida e limites: relatório Sistema33. Recepção real pendente; registros finais somente locais, sem novo deploy documental.
+
+
 ## Dashboards 0.6.1 registradas localmente — 10/10/2026, 06:07:56 -03:00
 
 Commit 19f40d0e92f45a36055b28e16d841aa2301d769b; build/notas/diff-check aprovados. Réplica documental D conciliada seletivamente. Sem push/deploy; Recepção real pendente. [Sistema32](32-COMMIT-LOCAL-DASHBOARDS-061.md).
