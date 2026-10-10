@@ -1,0 +1,81 @@
+{
+  "projeto": "xftnkusbyqzyvzrovroj",
+  "inicio": "2026-10-09T17:47:12.296Z",
+  "origem": "Auth/Edge/Storage reais e Chrome próprio; sem mocks ou emulação de usuário",
+  "testes": [
+    {
+      "requisito": "Condição prévia: sessão legítima do criador comprovada pelo SDK",
+      "aprovado": true,
+      "recebidoEm": "2026-10-09T17:15:02.100Z"
+    },
+    {
+      "requisito": "Pré-execução: recursos inéditos e pacote R2 instalado",
+      "aprovado": true
+    },
+    {
+      "requisito": "Bancada fictícia disponível em origem permitida, sem copiar sessão real",
+      "aprovado": true
+    }
+  ],
+  "contas": [
+    {
+      "id": "92967fa0-aec9-4ea5-a950-3e6a80f9cbee",
+      "papel": "proprietaria",
+      "contexto": "ed60a2c6-59c8-45bc-80b7-e53aa005da01"
+    },
+    {
+      "id": "d0ab6dff-5285-4d7d-bc60-3a5921bd33e4",
+      "papel": "proprietaria",
+      "contexto": "ed60a2c6-59c8-45bc-80b7-e53aa005da02"
+    }
+  ],
+  "contextos": [
+    "ed60a2c6-59c8-45bc-80b7-e53aa005da01",
+    "ed60a2c6-59c8-45bc-80b7-e53aa005da02"
+  ],
+  "encerramento": [
+    {
+      "id": "92967fa0-aec9-4ea5-a950-3e6a80f9cbee",
+      "ban": true,
+      "perfil_ativo": null,
+      "refresh_ativos": 0,
+      "sessoes": 0,
+      "vinculos_ativos": 0,
+      "login_recusado": true,
+      "aprovado": true
+    },
+    {
+      "id": "d0ab6dff-5285-4d7d-bc60-3a5921bd33e4",
+      "ban": true,
+      "perfil_ativo": null,
+      "refresh_ativos": 0,
+      "sessoes": 0,
+      "vinculos_ativos": 0,
+      "login_recusado": true,
+      "aprovado": true
+    }
+  ],
+  "aprovado": false,
+  "impedimento": "CLI recusou a operação; exit=1. Conteúdo bruto omitido.",
+  "contextos_finais": [
+    {
+      "clinica_ativa": false,
+      "contexto_ativo": false,
+      "id": "ed60a2c6-59c8-45bc-80b7-e53aa005da01",
+      "publico_encerrado": true,
+      "vinculos_ativos": 0
+    },
+    {
+      "clinica_ativa": false,
+      "contexto_ativo": false,
+      "id": "ed60a2c6-59c8-45bc-80b7-e53aa005da02",
+      "publico_encerrado": true,
+      "vinculos_ativos": 0
+    }
+  ],
+  "fim": "2026-10-09T17:48:03.594Z",
+  "causa_confirmada": "Transporte CLI: SQL iniciado por -- recebido como opção de comando; vínculos não enviados ao PostgreSQL. SELECT com comentário como argumento falha; mesmo SELECT por arquivo passa.",
+  "correcao_local": "sqlArquivo: enviar SQL revisado com --file; não repetir R2 nem reativar suas contas/contextos.",
+  "envios_email": 0,
+  "testes_funcionais_configuracoes_aprovados": 0
+}

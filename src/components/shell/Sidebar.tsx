@@ -1,256 +1,79 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { Popover } from '@base-ui/react/popover'
 import type { ClinicaAtiva } from '../../hooks/useClinicaAtiva'
 import type { Papel } from '../../hooks/usePapelNaClinica'
-import { iniciais } from '../../lib/texto'
-import { TITULOS_TELA, type Tela } from './types'
-import {
-  IconeAjuda,
-  IconeAtendimentos,
-  IconeCadeado,
-  IconeCalendario,
-  IconeCheck,
-  IconeChevron,
-  IconeDinheiro,
-  IconeArquivo,
-  IconeEngrenagem,
-  IconeEquipe,
-  IconeEspecialidades,
-  IconeFechar,
-  IconeGrafico,
-  IconeGrid,
-  IconeMais,
-  IconePerfil,
-  IconePessoas,
-} from './icons'
-
-function SeloClinica({ nome, corLetra, tamanho }: { nome: string; corLetra: string; tamanho: number }) {
-  const letra = iniciais(nome).slice(-1) || '—'
-  return (
-    <div
-      className="flex flex-none items-center justify-center rounded-full"
-      style={{
-        width: tamanho,
-        height: tamanho,
-        border: '1.5px solid var(--dourado)',
-        backgroundColor: 'var(--dourado-fundo)',
-        boxShadow: '0 2px 6px rgba(184, 135, 61, 0.3)',
-      }}
-    >
-      <span className="fonte-selo" style={{ color: corLetra, fontSize: Math.round(tamanho * 0.45) }}>
-        {letra}
-      </span>
-    </div>
-  )
-}
-
-const ITENS_MENU: { chave: Tela; Icone: typeof IconeGrid }[] = [
-  { chave: 'dashboard', Icone: IconeGrid },
-  { chave: 'agenda', Icone: IconeCalendario },
-  { chave: 'atendimentos', Icone: IconeAtendimentos },
-  { chave: 'pacientes', Icone: IconePessoas },
-  { chave: 'prontuario', Icone: IconeArquivo },
-  { chave: 'financeiro', Icone: IconeDinheiro },
-  { chave: 'relatorios', Icone: IconeGrafico },
-  { chave: 'equipe', Icone: IconeEquipe },
-  { chave: 'especialidades', Icone: IconeEspecialidades },
-  { chave: 'configuracoes', Icone: IconeEngrenagem },
-]
+import { rotuloPapel, rotuloVisao } from '../../lib/papelApresentacao'
+import { useCaminhoAtual } from '../../lib/appRoute'
+import { CLINIC_BRANDS, clinicaCorrespondeAoBrand } from '../../config/clinicBrands'
+import type { Tela } from './types'
+import { itemAtivo, itensParaPapel } from './navigation'
+import { IconeChevron, IconeCheck, IconeFechar, IconeMais, IconeGrid } from './icons'
+import type { IdentidadeConta } from '../../hooks/useIdentidadeConta'
+import { AvatarConta } from './AvatarConta'
+import { detalheIdentidade, rotuloIdentidade } from '../../lib/identidadeApresentacao'
+import { Sidebar as SidebarBase, SidebarHeader, SidebarContent, SidebarFooter, SidebarMenu, SidebarMenuItem, SidebarMenuButton, useSidebar } from '../ui/sidebar'
 
 interface SidebarProps {
-  tela: Tela
+  logoInstitucional?: string
   onNavegar: (tela: Tela) => void
   clinicaAtiva: ClinicaAtiva | null
   clinicasDoUsuario: ClinicaAtiva[]
   onSelecionarClinica: (id: string) => void
   papel: Papel | null
-  aberta: boolean
-  onFechar: () => void
+  identidade: IdentidadeConta
+  onMeuPerfil: () => void
   onSair: () => void
 }
-
-function Sidebar({
-  tela,
-  onNavegar,
-  clinicaAtiva,
-  clinicasDoUsuario,
-  onSelecionarClinica,
-  papel,
-  aberta,
-  onFechar,
-  onSair,
-}: SidebarProps) {
-  const [dropdownAberto, setDropdownAberto] = useState(false)
-  const itensVisiveis = ITENS_MENU.filter((item) => item.chave !== 'prontuario' || papel === 'medico')
-  const podeTrocarClinica = clinicasDoUsuario.length > 1
-
-  function selecionarTela(chave: Tela) {
-    onNavegar(chave)
-    onFechar()
-  }
-
-  function selecionarClinica(id: string) {
-    onSelecionarClinica(id)
-    setDropdownAberto(false)
-  }
-
-  return (
-    <aside
-      className={`fixed inset-y-0 left-0 z-40 flex w-60 flex-none flex-col overflow-y-auto bg-[var(--cor-menu)] px-4 py-7 transition-transform duration-200 lg:static lg:translate-x-0 ${
-        aberta ? 'translate-x-0' : '-translate-x-full'
-      }`}
-    >
-      <div className="relative mb-2 border-b border-[var(--menu-borda)] pb-4">
-        <div className="flex items-center gap-1.5 px-2 pb-1.5 text-[10px] font-semibold tracking-wider text-[var(--menu-texto-terciario)] uppercase">
-          <IconeCadeado />
-          Visão proprietária
-        </div>
-
-        {podeTrocarClinica ? (
-          <button
-            type="button"
-            onClick={() => setDropdownAberto((v) => !v)}
-            className="flex w-full items-center gap-2.5 rounded-xl p-2 text-left transition hover:bg-[var(--menu-hover-bg)]"
-          >
-            {clinicaAtiva ? (
-              <SeloClinica nome={clinicaAtiva.nome} corLetra="var(--cor-primaria)" tamanho={34} />
-            ) : (
-              <div className="flex h-[34px] w-[34px] flex-none items-center justify-center rounded-full border-[1.5px] border-[var(--dourado)] bg-[var(--dourado-fundo)] text-[var(--dourado-texto)]">
-                —
-              </div>
-            )}
-            <div className="min-w-0 flex-1">
-              <div className="truncate text-sm font-semibold text-[var(--menu-texto)]">
-                {clinicaAtiva?.nome ?? 'Sem clínica'}
-              </div>
-              <div className="text-[11.5px] text-[var(--menu-texto-secundario)]">
-                Multiespecialidade
-              </div>
-            </div>
-            <IconeChevron
-              className={`flex-none text-[var(--menu-texto-secundario)] transition-transform duration-200 ${
-                dropdownAberto ? 'rotate-180' : ''
-              }`}
-            />
-          </button>
-        ) : (
-          <div className="flex w-full items-center gap-2.5 rounded-xl p-2">
-            {clinicaAtiva ? (
-              <SeloClinica nome={clinicaAtiva.nome} corLetra="var(--cor-primaria)" tamanho={34} />
-            ) : (
-              <div className="flex h-[34px] w-[34px] flex-none items-center justify-center rounded-full border-[1.5px] border-[var(--dourado)] bg-[var(--dourado-fundo)] text-[var(--dourado-texto)]">
-                —
-              </div>
-            )}
-            <div className="min-w-0 flex-1">
-              <div className="truncate text-sm font-semibold text-[var(--menu-texto)]">
-                {clinicaAtiva?.nome ?? 'Sem clínica'}
-              </div>
-              <div className="text-[11.5px] text-[var(--menu-texto-secundario)]">
-                Multiespecialidade
-              </div>
-            </div>
-          </div>
-        )}
-
-        {podeTrocarClinica && dropdownAberto && (
-          <div className="absolute left-0 right-0 top-[calc(100%-8px)] z-20 flex flex-col gap-0.5 rounded-xl border border-[var(--menu-borda)] bg-[var(--cor-menu)] p-1.5 shadow-[0_10px_28px_rgba(0,0,0,0.35)]">
-            {clinicasDoUsuario.map((c) => {
-              const ativa = c.id === clinicaAtiva?.id
-              return (
-                <button
-                  key={c.id}
-                  type="button"
-                  onClick={() => selecionarClinica(c.id)}
-                  className={`flex items-center gap-2.5 rounded-lg p-2 text-left transition hover:bg-[var(--menu-hover-bg)] ${
-                    ativa ? 'bg-[var(--menu-ativo-bg)]' : ''
-                  }`}
-                >
-                  <SeloClinica nome={c.nome} corLetra={c.cor_primaria} tamanho={16} />
-                  <span className="flex-1 truncate text-[13.5px] font-medium text-[var(--menu-texto)]">
-                    {c.nome}
-                  </span>
-                  <span
-                    className="flex-none text-[var(--menu-texto)]"
-                    style={{ opacity: ativa ? 1 : 0 }}
-                  >
-                    <IconeCheck />
-                  </span>
-                </button>
-              )
-            })}
-          </div>
-        )}
+export default function Sidebar({ onNavegar, clinicaAtiva, clinicasDoUsuario, onSelecionarClinica, papel, identidade, onMeuPerfil, onSair, logoInstitucional }: SidebarProps) {
+  const { open, isMobile, setOpenMobile } = useSidebar()
+  const caminho = useCaminhoAtual()
+  const [seletorAberto, setSeletorAberto] = useState(false)
+  const [logoFalhou,setLogoFalhou]=useState(false)
+  useEffect(()=>setLogoFalhou(false),[logoInstitucional])
+  const recolhido = !isMobile && !open
+  const marca = clinicaAtiva ? Object.values(CLINIC_BRANDS).find(b => clinicaCorrespondeAoBrand(clinicaAtiva, b)) : undefined
+  const itens = marca ? itensParaPapel(papel, marca.slug) : []
+  useEffect(() => { setOpenMobile(false); setSeletorAberto(false) }, [caminho, setOpenMobile])
+  const texto = recolhido ? 'sr-only' : 'min-w-0 truncate'
+  return <SidebarBase>
+    <SidebarHeader>
+      <div className="flex min-h-10 items-center gap-3 px-1 pr-8 lg:pr-0" title="Sistema Multiclínicas · Gestão Clínica">
+        <span aria-hidden="true" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--menu-avatar-bg)]">{logoInstitucional&&!logoFalhou?<img src={logoInstitucional} alt="" className="max-h-8 max-w-8 object-contain" onError={()=>setLogoFalhou(true)}/>:<IconeGrid />}</span>
+        <div className={recolhido ? 'sr-only' : 'min-w-0'}><p className="text-sm font-semibold leading-snug">Sistema Multiclínicas</p><p className="mt-0.5 text-xs text-[var(--menu-texto-secundario)]">Gestão Clínica</p></div>
       </div>
-
-      <button
-        type="button"
-        onClick={() => selecionarTela('agenda')}
-        className="mx-1 mb-4 flex w-[calc(100%-8px)] items-center justify-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-semibold shadow-sm transition hover:shadow-md"
-        style={{ color: 'var(--cor-primaria)' }}
-      >
-        <IconeMais className="h-4 w-4" />
-        Novo Agendamento
+      <p className={`px-2 text-xs text-[var(--menu-texto-secundario)] ${texto}`}>{rotuloVisao(papel)}</p>
+      <Popover.Root open={seletorAberto} onOpenChange={setSeletorAberto}>
+        <Popover.Trigger disabled={clinicasDoUsuario.length < 2} aria-label={`Selecionar clínica: ${clinicaAtiva?.nome ?? 'Carregando'}`} title={clinicaAtiva?.nome} className={`flex min-h-11 w-full items-center gap-2 rounded-lg bg-[var(--menu-hover-bg)] p-2 text-left focus-visible:outline-2 focus-visible:outline-[var(--menu-texto)] ${recolhido ? 'justify-center' : ''}`}>
+          <span aria-hidden="true" className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-[var(--menu-avatar-bg)] text-xs font-bold">{marca?.slug === 'ipupiara' ? 'I' : marca ? 'B' : '—'}</span>
+          <span className={`flex-1 text-sm font-semibold ${texto}`}>{clinicaAtiva?.nome ?? 'Carregando clínica…'}</span>
+          {!recolhido && clinicasDoUsuario.length > 1 && <IconeChevron className="shrink-0" />}
+        </Popover.Trigger>
+        <Popover.Portal><Popover.Positioner side={recolhido ? 'right' : 'bottom'} align="start" sideOffset={8} className="z-[60]">
+          <Popover.Popup className="w-64 rounded-xl border border-[var(--borda)] bg-[var(--fundo-card)] p-2 text-[var(--texto-principal)] shadow-lg outline-none">
+            <Popover.Title className="px-2 py-2 text-xs font-semibold text-[var(--texto-secundario)]">Unidades autorizadas</Popover.Title>
+            {clinicasDoUsuario.map(c => <button key={c.id} type="button" aria-pressed={c.id === clinicaAtiva?.id} onClick={() => { onSelecionarClinica(c.id); setSeletorAberto(false) }} className="flex min-h-11 w-full items-center gap-2 rounded-lg px-2 text-left text-sm hover:bg-[var(--fundo-pagina)] focus-visible:outline-2 focus-visible:outline-[var(--cor-primaria)]"><span className="flex-1">{c.nome}</span>{c.id === clinicaAtiva?.id && <IconeCheck />}</button>)}
+          </Popover.Popup>
+        </Popover.Positioner></Popover.Portal>
+      </Popover.Root>
+      {(papel === 'recepcao' || papel === 'proprietaria') && <button type="button" aria-label="Novo agendamento" title="Novo agendamento" onClick={() => { onNavegar('agenda'); if (marca && itemAtivo(window.location.pathname, `/sistema/${marca.slug}/agenda`)) setOpenMobile(false) }} className="flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-[var(--fundo-card)] px-2 font-semibold text-[var(--texto-principal)] hover:opacity-90 focus-visible:outline-2 focus-visible:outline-[var(--menu-texto)]"><IconeMais /><span className={texto}>Novo agendamento</span></button>}
+    </SidebarHeader>
+    <SidebarContent><nav aria-label="Navegação principal">
+      <p className={`px-3 py-2 text-xs text-[var(--menu-texto-secundario)] ${texto}`}>Navegação</p>
+      {!papel && <p role="status" className="text-xs">Verificando permissões…</p>}
+      <SidebarMenu>{itens.map(({ tela, titulo, href, Icone }) => <SidebarMenuItem key={tela}>
+        <SidebarMenuButton render={<a href={href} />} isActive={itemAtivo(caminho, href)} aria-current={itemAtivo(caminho, href) ? 'page' : undefined} aria-label={titulo} title={recolhido ? titulo : undefined} onClick={evento => {
+          if (evento.ctrlKey || evento.metaKey || evento.shiftKey || evento.altKey || evento.button !== 0) return
+          evento.preventDefault(); onNavegar(tela)
+          if (itemAtivo(window.location.pathname, href)) setOpenMobile(false)
+        }}><span aria-hidden="true" className="shrink-0"><Icone /></span><span className={texto}>{titulo}</span></SidebarMenuButton>
+      </SidebarMenuItem>)}</SidebarMenu>
+    </nav></SidebarContent>
+    <SidebarFooter>
+      <button type="button" aria-label="Meu perfil pela identificação" title={detalheIdentidade(identidade) ?? 'Meu perfil'} onClick={() => { setOpenMobile(false); onMeuPerfil() }} className="mb-2 flex min-h-11 w-full items-center gap-3 rounded-lg px-1 py-2 text-left hover:bg-[var(--menu-hover-bg)] focus-visible:outline-2 focus-visible:outline-[var(--menu-texto)]">
+        <AvatarConta identidade={identidade} papel={rotuloPapel(papel)} menu />
+        <div className={recolhido ? 'sr-only' : 'min-w-0 flex-1'}><p className="break-words text-xs font-semibold leading-snug [overflow-wrap:anywhere]">{rotuloIdentidade(identidade)}</p><p className="mt-0.5 text-xs text-[var(--menu-texto-secundario)]">{rotuloPapel(papel)}</p>{identidade.erroFoto && <p className="mt-0.5 text-xs text-[var(--menu-texto-secundario)]">Foto indisponível</p>}</div>
       </button>
-
-      <nav className="mt-3 flex flex-col gap-0.5">
-        {itensVisiveis.map(({ chave, Icone }) => {
-          const ativo = tela === chave
-          return (
-            <button
-              key={chave}
-              type="button"
-              onClick={() => selecionarTela(chave)}
-              className={`relative flex items-center gap-3 rounded-[10px] py-2.5 pl-3.5 pr-3 text-sm font-medium transition hover:bg-[var(--menu-hover-bg)] ${
-                ativo ? 'bg-[var(--menu-ativo-bg)]' : ''
-              }`}
-            >
-              <span
-                className="absolute left-0 top-2 bottom-2 w-[3px] rounded-full bg-[var(--menu-avatar-bg)]"
-                style={{ opacity: ativo ? 1 : 0 }}
-              />
-              <Icone
-                className={ativo ? 'text-[var(--menu-texto)]' : 'text-[var(--menu-texto-secundario)]'}
-              />
-              <span
-                className={`whitespace-nowrap ${
-                  ativo ? 'text-[var(--menu-texto)]' : 'text-[var(--menu-texto-secundario)]'
-                }`}
-              >
-                {TITULOS_TELA[chave]}
-              </span>
-            </button>
-          )
-        })}
-      </nav>
-
-      <div className="mt-auto border-t border-[var(--menu-borda)] pt-3">
-        <div className="flex flex-col gap-0.5">
-          <button
-            type="button"
-            className="flex items-center gap-3 rounded-[10px] py-2 pl-3.5 pr-3 text-sm text-[var(--menu-texto-secundario)] transition hover:bg-[var(--menu-hover-bg)]"
-          >
-            <IconeAjuda className="h-[18px] w-[18px]" />
-            <span>Ajuda</span>
-          </button>
-          <button
-            type="button"
-            className="flex items-center gap-3 rounded-[10px] py-2 pl-3.5 pr-3 text-sm text-[var(--menu-texto-secundario)] transition hover:bg-[var(--menu-hover-bg)]"
-          >
-            <IconePerfil className="h-[18px] w-[18px]" />
-            <span>Perfil</span>
-          </button>
-          <button
-            type="button"
-            onClick={onSair}
-            className="flex items-center gap-3 rounded-[10px] py-2 pl-3.5 pr-3 text-sm text-[var(--menu-texto-secundario)] transition hover:bg-[var(--menu-hover-bg)]"
-          >
-            <IconeFechar className="h-[18px] w-[18px]" />
-            <span>Sair</span>
-          </button>
-        </div>
-      </div>
-    </aside>
-  )
+      <SidebarMenuButton type="button" aria-label="Sair" title={recolhido ? 'Sair' : undefined} onClick={onSair}><IconeFechar /><span className={texto}>Sair</span></SidebarMenuButton>
+    </SidebarFooter>
+  </SidebarBase>
 }
-
-export default Sidebar

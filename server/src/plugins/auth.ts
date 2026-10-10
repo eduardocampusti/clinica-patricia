@@ -1,6 +1,7 @@
 import type { FastifyReply, FastifyRequest } from 'fastify'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { criarClientDaRequisicao } from '../supabase.js'
+import { exigirAtivacaoServidor } from './ativacao.js'
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -27,6 +28,9 @@ export async function requireAuth(request: FastifyRequest, reply: FastifyReply) 
     return reply.code(401).send({ erro: 'Token de autenticação inválido ou expirado.' })
   }
 
+  try {
+    if (!await exigirAtivacaoServidor(supabaseClient)) return reply.code(403).send({ erro: 'Ativação ou sessão não autorizada.' })
+  } catch { return reply.code(503).send({ erro: 'Não foi possível verificar a ativação da conta.' }) }
   request.usuario = { id: data.user.id, email: data.user.email ?? null }
   request.supabaseClient = supabaseClient
 }

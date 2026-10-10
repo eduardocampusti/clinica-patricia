@@ -1,0 +1,58 @@
+{
+  "projeto": "xftnkusbyqzyvzrovroj",
+  "autorizada": true,
+  "aplicada": true,
+  "novos": {
+    "contas": 2,
+    "contextos": 2
+  },
+  "maximoAcumulado": {
+    "contas": 16,
+    "contextos": 8
+  },
+  "reativacao": false,
+  "email": false,
+  "arquivos": [
+    {
+      "arquivo": "20261009210000_configuracoes_homologacao_r4.sql",
+      "sha256": "14492df547817d0d09290b35975e195c9052466a6ad014d33b2bc0b54287f56d"
+    },
+    {
+      "arquivo": "configuracoesPublicas.r4.ts",
+      "sha256": "1d9917a75851047d1115b5afe6a836afb4adbe0ad2b12b17b32705d5261d4865"
+    },
+    {
+      "arquivo": "contextos.sql",
+      "sha256": "771fac6847639b8eae3e4a3ce94050130fe69a048bb05e10cb1841d5010ed414"
+    },
+    {
+      "arquivo": "encerrar-contextos.sql",
+      "sha256": "2198f94f050fb70856f14a707aa1dd91dca20da0b922d7d3125ec934e5c8c969"
+    },
+    {
+      "arquivo": "executor-corrigido.mjs",
+      "sha256": "f14d49bca9f41b4c55fe1c76cf75e651fabe292aa08260e94e7a0370a5d8a98d"
+    },
+    {
+      "arquivo": "README.md",
+      "sha256": "7dac0bf8ae6f4ac67e1742e6666c8df2458a844857cd2cba086495ae8752929f"
+    },
+    {
+      "arquivo": "sql-seguro-conectado.mjs",
+      "sha256": "52040403484b8d8454db033e1abb436f369e620ca71d216645f76d8d6581f32f"
+    },
+    {
+      "arquivo": "vinculos.template.sql",
+      "sha256": "6c9c9d05ba9e9cd49adb41993c2dbb7b8a3f716baef81f072ac7625b4a8cf11a"
+    }
+  ],
+  "consumida": true,
+  "encerrada": true,
+  "reexecutavel": false,
+  "ledger": "20261009210549",
+  "edgePublica": {
+    "versao": 9,
+    "sha256": "401f74755ab8c082f6f2e6167117b640855bb19a291ae42ecf77ae3986fd1511"
+  },
+  "aprovacaoIntegral": false
+}

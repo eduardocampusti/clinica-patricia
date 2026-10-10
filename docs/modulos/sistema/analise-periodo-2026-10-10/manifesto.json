@@ -1,0 +1,103 @@
+{
+  "data": "10/10/2026, 09:41:14 -03:00",
+  "estado": "LOCAL_NAO_PUBLICADO",
+  "checkout": "C:/Users/Eduardo/.codex/worktrees/salvar-dashboard-configuracoes-acesso/CLINICA PATRICIA",
+  "branch": "codex/resgate-local-2026-09-26",
+  "base": "44b13bb639c671b88e4a5f2e26c30ffa269dfbfa",
+  "versaoBase": "0.6.1",
+  "caminhos": [
+    {
+      "caminho": "package.json",
+      "sha256": "f881b1b98dac112766990c1f0d88ac80963598b6f4a2e323dd5768ebf786b6a7"
+    },
+    {
+      "caminho": "package-lock.json",
+      "sha256": "e9731d96b3b777f4fdb007aa65107db2c20b67217d47070f35b84def3f32cce0"
+    },
+    {
+      "caminho": "src/App.tsx",
+      "sha256": "586412728a1279cdd555eeffbc7f1f5429d2a1129b87fad64f4a6bc6d03fb4d2"
+    },
+    {
+      "caminho": "src/pages/Dashboard.tsx",
+      "sha256": "e50baeea455980dd145f760e49620b868bee1b3c8a5d375cf3d1373af24928e3"
+    },
+    {
+      "caminho": "src/config/notasEvolucao.json",
+      "sha256": "17578b94c45bf63adca41c3905abcd1712ae44d6e34c174226bacd56e1744559"
+    },
+    {
+      "caminho": "src/lib/financeiro/financeiro.types.ts",
+      "sha256": "a89f87c407c0701b593397a0da5ffbe24b4baa42701d5949973fe6ad523edc2d"
+    },
+    {
+      "caminho": "src/lib/analiseFinanceira.ts",
+      "sha256": "5c371ef5940c5e013f1a13126d776f32f24e30336aa2e596c888ef00767ac61c"
+    },
+    {
+      "caminho": "src/components/dashboard/AnalisePeriodo.tsx",
+      "sha256": "4d96b0afc12ef10385cd2cc3496e4ec8146d7f43a7a86b1ab26bb3a99862c8cf"
+    },
+    {
+      "caminho": "src/components/dashboard/AnalisePeriodoBoundary.tsx",
+      "sha256": "4e2afe2059d480164cc5293355a9ea0513e3bc1b642d753d7c7b22408750b317"
+    },
+    {
+      "caminho": "src/components/dashboard/GraficoAnalise.tsx",
+      "sha256": "f82df4a00a8d1435ba0f43728a556035c83a8877931e7195500723a3f05249b7"
+    },
+    {
+      "caminho": "src/components/dashboard/analisePeriodo.css",
+      "sha256": "01757563b3e5ebfda37bb51961418163bbe0f5ed8678ed72909a3a1c84b54a54"
+    },
+    {
+      "caminho": "src/components/ui/chart.tsx",
+      "sha256": "ee698b7d0fc1f5ff895a1d87fd89d8607a2595912bc88ef12e79605f3c974406"
+    },
+    {
+      "caminho": "tests/login/analise-periodo.config.ts",
+      "sha256": "df1251bf3e06bd09e744392c4072d9b34d4b18f4bff6b382678257a59ac86000"
+    },
+    {
+      "caminho": "tests/login/analise-periodo.spec.ts",
+      "sha256": "d8c2694008a1eb6726c69b12b621db4f578dfb1b6a59171bbdec01fba22abedd"
+    }
+  ],
+  "baseline": [
+    {
+      "nome": "index-CvH0cNdd.js",
+      "bytes": 1443162,
+      "gzipBytes": 405351
+    },
+    {
+      "nome": "index-DCssUEBs.css",
+      "bytes": 314993,
+      "gzipBytes": 51533
+    }
+  ],
+  "final": [
+    {
+      "nome": "AnalisePeriodo-B0lTH_P7.css",
+      "bytes": 7418,
+      "gzipBytes": 1884
+    },
+    {
+      "nome": "AnalisePeriodo-BciYcUwE.js",
+      "bytes": 365397,
+      "gzipBytes": 105921
+    },
+    {
+      "nome": "index-BwRUVQHx.js",
+      "bytes": 1444586,
+      "gzipBytes": 405784
+    },
+    {
+      "nome": "index-DCssUEBs.css",
+      "bytes": 314993,
+      "gzipBytes": 51533
+    }
+  ],
+  "excluidos": "Todos os trabalhos anteriores fora destes caminhos; nos compartilhados somente o diff deste escopo. Configuração global MCP e documentação/evidências não são arquivos do produto.",
+  "medicaoGzip": "node:zlib.gzipSync, opções padrão; valores em bytes. Estimativas do log Vite usam parâmetros próprios e podem diferir.",
+  "conferidoEm": "2026-10-10T12:44:37.821Z"
+}

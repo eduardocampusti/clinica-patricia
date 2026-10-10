@@ -1,0 +1,38 @@
+.agenda-lista-cartao { display: contents; }
+.agenda-celular-hora { display: none; }
+/* Agenda apenas: AppShell, tablet e desktop preservados. */
+@media (max-width: 767px) {
+  .agenda-pagina { display: flex; flex-direction: column; gap: calc(var(--spacing) * 4); padding-bottom: calc(var(--spacing) * 24 + env(safe-area-inset-bottom)); }
+  .agenda-pagina > * { margin-block: 0; }
+  .agenda-pagina > .agenda-resumo-dia { order: 2; }
+  .agenda-pagina > .agenda-celular-layout { display: contents; }
+  .agenda-celular-layout > aside { order: 3; }
+  .agenda-celular-dias { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: calc(var(--spacing) * 2); }
+  .agenda-celular-dias button { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: calc(var(--spacing) * 16); border-radius: var(--radius-xl); background: var(--fundo-card); border: 1px solid var(--borda); color: var(--texto-secundario); }
+  .agenda-celular-dias button[aria-pressed="true"] { background: var(--cor-primaria); border-color: var(--cor-primaria); color: var(--texto-sobre-primaria); }
+  .agenda-celular-dias strong { font-size: var(--text-xl); }
+  .agenda-celular-dias button:focus-visible, .agenda-celular-chips button:focus-visible { outline: 2px solid var(--cor-primaria); outline-offset: 2px; }
+  .agenda-celular-chips { display: flex; gap: calc(var(--spacing) * 2); max-width: 100%; overflow-x: auto; padding: var(--spacing) calc(var(--spacing) / 2); }
+  .agenda-celular-chips button { flex-shrink: 0; min-height: calc(var(--spacing) * 11); padding: calc(var(--spacing) * 2) calc(var(--spacing) * 4); border: 1px solid var(--borda); border-radius: calc(infinity * 1px); background: var(--fundo-card); color: var(--texto-principal); font-size: var(--text-sm); font-weight: 600; }
+  .agenda-celular-chips button[aria-pressed="true"] { background: var(--cor-primaria); color: var(--texto-sobre-primaria); border-color: var(--cor-primaria); }
+  .agenda-celular-lista { border: 0; background: transparent; }
+  .agenda-celular-lista .agenda-lista-linha { display: grid; grid-template-columns: calc(var(--spacing) * 13) minmax(0, 1fr); gap: calc(var(--spacing) * 2); padding: calc(var(--spacing) * 2) 0; border: 0; }
+  .agenda-celular-hora { display: block; padding-top: calc(var(--spacing) * 3.5); font-size: var(--text-xs); color: var(--texto-secundario); }
+  .agenda-lista-cartao { display: block; min-width: 0; padding: calc(var(--spacing) * 3); border-radius: var(--radius-xl); background: var(--status-agendado-fundo); }
+  .agenda-lista-linha[data-situacao="confirmado"] .agenda-lista-cartao { background: var(--status-confirmado-fundo); }
+  .agenda-lista-linha[data-situacao="aguardando"] .agenda-lista-cartao { background: var(--status-aguardando-fundo); }
+  .agenda-lista-linha[data-situacao="em-atendimento"] .agenda-lista-cartao { background: var(--status-em-atendimento-fundo); }
+  .agenda-lista-linha[data-situacao="concluido"] .agenda-lista-cartao { background: var(--status-concluido-fundo); }
+  .agenda-lista-linha[data-situacao="cancelado"] .agenda-lista-cartao { background: var(--status-cancelado-fundo); }
+  .agenda-lista-cartao .agenda-lista-consulta { width: 100%; gap: var(--spacing); }
+  .agenda-lista-cartao .agenda-lista-consulta > span:first-child { display: none; }
+  .agenda-lista-cartao .agenda-lista-consulta > span:nth-child(2) { font-size: var(--text-base); line-height: 1.35; }
+  .agenda-lista-cartao .agenda-lista-consulta > span:nth-child(3) { font-size: var(--text-xs); }
+  .agenda-lista-cartao .agenda-lista-acoes { margin-top: calc(var(--spacing) * 2); }
+  .agenda-lista-cartao .agenda-acao-compacta { min-height: calc(var(--spacing) * 11); background: var(--fundo-card); }
+  .agenda-celular-livre { display: grid; grid-template-columns: calc(var(--spacing) * 13) minmax(0, 1fr); gap: calc(var(--spacing) * 2); padding-block: calc(var(--spacing) * 2); }
+  .agenda-celular-livre button { min-height: calc(var(--spacing) * 16); padding: calc(var(--spacing) * 3); border: 1px dashed var(--borda); border-radius: var(--radius-xl); color: var(--texto-secundario); background: var(--fundo-pagina); font-size: var(--text-sm); font-weight: 600; }
+  .agenda-celular-livre button:focus-visible { outline: 2px solid var(--cor-primaria); outline-offset: 2px; }
+  .agenda-celular-novo { position: fixed; inset-inline: 0; bottom: 0; z-index: 10; padding: calc(var(--spacing) * 3) calc(var(--spacing) * 4) max(calc(var(--spacing) * 3), env(safe-area-inset-bottom)); background: var(--fundo-pagina); border-top: 1px solid var(--borda); }
+  .agenda-celular-novo button { width: 100%; min-height: calc(var(--spacing) * 13); }
+}

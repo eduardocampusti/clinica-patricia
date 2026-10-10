@@ -1,0 +1,93 @@
+{
+  "projeto": "xftnkusbyqzyvzrovroj",
+  "inicio": "2026-10-09T20:25:22.182Z",
+  "origem": "Auth/Edge/Storage reais e Chrome próprio; sem mocks ou emulação de usuário",
+  "testes": [
+    {
+      "requisito": "Condição prévia: sessão legítima do criador comprovada pelo SDK",
+      "aprovado": true,
+      "recebidoEm": "2026-10-09T20:24:59.231Z"
+    },
+    {
+      "requisito": "Pré-execução: recursos inéditos e pacote R3 instalado",
+      "aprovado": true
+    },
+    {
+      "requisito": "Bancada fictícia disponível em origem permitida, sem copiar sessão real",
+      "aprovado": true
+    },
+    {
+      "requisito": "Login Auth real da conta fictícia A",
+      "aprovado": true
+    },
+    {
+      "requisito": "Conta existente normal sem pendência artificial A",
+      "aprovado": true
+    },
+    {
+      "requisito": "Dados institucionais: salvar pela interface e ler pelo serviço real A",
+      "aprovado": true
+    },
+    {
+      "requisito": "F5 conserva os dados institucionais A",
+      "aprovado": true
+    }
+  ],
+  "contas": [
+    {
+      "id": "a77c6f78-3668-43ac-b740-7c39211081eb",
+      "papel": "proprietaria",
+      "contexto": "cb620078-44a1-48c7-b5f7-3509f3dd0001"
+    },
+    {
+      "id": "5e317364-9c98-4255-a960-19ae25c292ae",
+      "papel": "proprietaria",
+      "contexto": "cb620078-44a1-48c7-b5f7-3509f3dd0002"
+    }
+  ],
+  "contextos": [
+    "cb620078-44a1-48c7-b5f7-3509f3dd0001",
+    "cb620078-44a1-48c7-b5f7-3509f3dd0002"
+  ],
+  "encerramento": [
+    {
+      "id": "a77c6f78-3668-43ac-b740-7c39211081eb",
+      "ban": true,
+      "perfil_ativo": false,
+      "refresh_ativos": 0,
+      "sessoes": 0,
+      "vinculos_ativos": 0,
+      "login_recusado": true,
+      "aprovado": true
+    },
+    {
+      "id": "5e317364-9c98-4255-a960-19ae25c292ae",
+      "ban": true,
+      "perfil_ativo": false,
+      "refresh_ativos": 0,
+      "sessoes": 0,
+      "vinculos_ativos": 0,
+      "login_recusado": true,
+      "aprovado": true
+    }
+  ],
+  "aprovado": false,
+  "impedimento": "Upload PNG pela interface: serviço503, prévia não apareceu;0ativos/0arquivos. Causa no código: encodePNG inexistente em ImageScript1.3.0. Corrigido encode; repetição conectada pendente.",
+  "contextos_finais": [
+    {
+      "clinica_ativa": false,
+      "contexto_ativo": false,
+      "id": "cb620078-44a1-48c7-b5f7-3509f3dd0001",
+      "publico_encerrado": true,
+      "vinculos_ativos": 0
+    },
+    {
+      "clinica_ativa": false,
+      "contexto_ativo": false,
+      "id": "cb620078-44a1-48c7-b5f7-3509f3dd0002",
+      "publico_encerrado": true,
+      "vinculos_ativos": 0
+    }
+  ],
+  "fim": "2026-10-09T20:27:16.408Z"
+}

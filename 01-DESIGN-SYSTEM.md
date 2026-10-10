@@ -24,12 +24,17 @@ Tokens derivados via `color-mix()`:
 - `--cor-primaria-hover` (85% da primária + 15% preto)
 - `--cor-primaria-suave` (12% da primária + 88% transparente)
 
-Valores reais no banco hoje:
+Paleta das duas clínicas que compõem o estado operacional aprovado:
 | Clínica | `cor_primaria` | `cor_menu` |
 |---|---|---|
 | Brotas | `#2563eb` (azul) | escuro derivado |
 | Ipupiara | `#16a34a` (verde) | escuro derivado |
-| Ibitiara | `#c2410c` (laranja) | escuro derivado |
+
+> Estado arquitetural (12/08/2026): Ibitiara foi reclassificada como laboratório
+> externo e não compõe a paleta operacional do sistema das clínicas. Estado real
+> documentado do banco: a antiga linha "Clínica Ibitiara" ainda existe e não foi
+> desativada; sua cor histórica deve ser preservada com o registro. A desativação
+> futura depende de plano aprovado. Ver `DECISAO-IBITIARA-LABORATORIO.md`.
 
 A v3 NÃO muda essa mecânica — usa os mesmos tokens.
 
@@ -247,7 +252,7 @@ Borda inferior: `1px solid var(--borda)`.
 Altura: `64px`.
 
 Conteúdo (da esquerda para direita):
-- **Abas de clínica** (SÓ para proprietária): "Brotas | Ipupiara | Ibitiara"
+- **Abas de clínica** (SÓ para proprietária): "Brotas | Ipupiara"
   — aba ativa com underline na `--cor-primaria` e texto peso 600.
   Para funcionário/médico: texto fixo "Clínica [Nome]" sem abas.
 - **Busca**: input com ícone de lupa + atalho "Cmd+K", fundo
@@ -552,6 +557,112 @@ Versão anterior arquivada em `docs/_historico/01-DESIGN-SYSTEM-v2.md`.*
   (email + senha). Só o visual evolui.
 - Funcionalidades novas (mostrar/ocultar senha, recuperação de senha,
   lembrar acesso) ficam para um prompt posterior. Este prompt é SÓ visual.
+
+### Acabamento da Agenda — segunda rodada local, 02/10/2026
+
+Esta é a definição local vigente; a primeira rodada abaixo fica como histórico.
+Nenhuma alteração nos tokens compartilhados anteriores, na marca ou nas medidas da grade.
+
+| KPI | Acento vivo claro / escuro | Texto claro / escuro | Contraste texto/fundo do ícone claro / escuro | Mínimo dos textos neutros/degradê claro / escuro |
+| --- | --- | --- | --- | --- |
+| `--kpi-1-*` | #3b82f6 / #60a5fa | #1d4ed8 / #bfdbfe | 5,32 / 7,19 | 7,78 / 4,98 |
+| `--kpi-2-*` | #f59e0b / #fbbf24 | #92400e / #fde68a | 6,10 / 7,51 | 8,24 / 4,83 |
+| `--kpi-3-*` | #f97316 / #fb923c | #9a3412 / #fed7aa | 5,95 / 7,59 | 7,96 / 5,03 |
+| `--kpi-4-*` | #10b981 / #34d399 | #166534 / #a7f3d0 | 5,90 / 7,50 | 8,05 / 4,85 |
+| `--kpi-5-*` | #8b5cf6 / #a78bfa | #6b21a8 / #ddd6fe | 6,77 / 7,51 | 7,66 / 5,02 |
+
+Sufixos: `acento` é vivo (faixa3px e ícone), `texto` é novo e separado para uso textual.
+Números/legendas continuam usando os neutros existentes. Os ícones atuais são decorativos,
+aria-hidden, acompanhados de rótulo completo; não foi exigido contraste textual do acento vivo.
+Em cada conjunto, valores exatos dos fundos:
+
+- `inicio` claro: `color-mix(in srgb, var(--kpi-N-acento) 16%, var(--fundo-card))`.
+- `inicio` escuro: mesma fórmula com **8%** (16% falhou, ver relatório13).
+- `fim` nos dois modos: `var(--fundo-card)`.
+- `icone-fundo` nos dois modos: `color-mix(in srgb, var(--kpi-N-acento) 20%, var(--fundo-card))`.
+
+Cabeçalhos reforçados somente no claro; avatares/textos conservam os valores da primeira rodada:
+
+| Token alterado | Claro | Escuro preservado | Mínimo texto neutro/fundo claro / escuro |
+| --- | --- | --- | --- |
+| `--prof-1-fundo` | #e3eeff | #192d46 | 7,99 / 5,44 |
+| `--prof-2-fundo` | #e4f8ed | #192e2a | 8,44 / 5,59 |
+| `--prof-3-fundo` | #ffe5eb | #352530 | 7,86 / 5,61 |
+| `--prof-4-fundo` | #efe5ff | #2c2541 | 7,71 / 5,66 |
+| `--prof-5-fundo` | #ffeddd | #32271f | 8,20 / 5,67 |
+| `--prof-6-fundo` | #def7f2 | #1b2e35 | 8,32 / 5,50 |
+
+Elevações atuais, sem mudar dimensões:
+
+| Token | Claro | Escuro preservado |
+| --- | --- | --- |
+| `--sombra-1` | 0 2px 4px rgb(30 58 95 / 8%), 0 8px 20px rgb(30 58 95 / 9%) | 0 1px 3px rgb(0 8 20 / 14%), 0 3px 8px rgb(0 8 20 / 10%) |
+| `--sombra-2` | 0 3px 6px rgb(30 58 95 / 12%), 0 12px 28px rgb(30 58 95 / 14%) | 0 2px 4px rgb(0 8 20 / 22%), 0 6px 8px rgb(0 8 20 / 18%) |
+| `--sombra-3` | -3px 0 8px rgb(30 58 95 / 14%), -16px 0 40px rgb(30 58 95 / 18%) | -2px 0 6px rgb(0 8 20 / 25%), -12px 0 32px rgb(0 8 20 / 28%) |
+
+Novos `--agenda-link-texto`: claro mistura65% primária/35% texto principal;
+escuro mistura45% primária/55% texto principal, em srgb via color-mix.
+Aplicação restrita aos links Ver dia inteiro/Ver horários relevantes e Adicionar à lista de espera.
+Contrastes sobre cartão: 9,56 claro/6,43 escuro; sobre realce primário: 8,45/6,14.
+As duas marcas da prévia atual usam a primária #006194 de clinicBrands; não são dados de banco.
+`--agenda-superficie-borda`: claro `var(--borda)`; escuro
+`color-mix(in srgb, var(--borda) 88%, var(--texto-principal))`.
+Cartões mantêm fundo existente, já um degrau acima da página no escuro (#1e293b/#0f172a).
+Sombras/bordas decorativas não são pares de texto. Avatar do usuário no AppShell não alterado.
+
+Medição isolada com a fórmula WCAG/composição já utilizada, 48 pares por tema/clínica/tela;
+resultados em `scratch/agenda-ux/acabamento-cores-2/contrastes-*.json`.
+576 medições nas três telas, dois temas e duas clínicas: mínimos 5,32 claro/4,83 escuro.
+Segunda rodada integral: 289 aprovados, zero falhas, 14 inaplicáveis, retries0.
+Resultados e limites de execução no relatório13; não são evidências de persistência real.
+
+### Acabamento aditivo da Agenda — primeira rodada HISTÓRICA, 02/10/2026
+
+Uso exclusivo da Agenda; fundação em `src/index.css`, aplicação em
+`src/components/agenda/agendaAcabamento.css`. Nenhum token anterior foi substituído.
+As cores da clínica continuam dinâmicas. Cores categóricas usam índice da lista completa
+ordenada de profissionais módulo seis, não a ordem das colunas filtradas.
+
+Valores de cada conjunto KPI, na ordem `acento / inicio / fim / icone-fundo`:
+
+| Conjunto | Claro | Escuro | Contraste acento/ícone claro / escuro |
+| --- | --- | --- | --- |
+| `--kpi-1-*` (dia) | #1d4ed8 / #eff6ff / #ffffff / #dbeafe | #93c5fd / #192d46 / #1e293b / #1e3a5f | 5,49 / 6,38 |
+| `--kpi-2-*` (a confirmar) | #92400e / #fffbeb / #ffffff / #fef3c7 | #fcd34d / #30291d / #1e293b / #42351b | 6,37 / 8,29 |
+| `--kpi-3-*` (aguardando, laranja) | #9a3412 / #fff7ed / #ffffff / #ffedd5 | #fdba74 / #32271f / #1e293b / #48301d | 6,38 / 7,26 |
+| `--kpi-4-*` (livres) | #166534 / #f0fdf4 / #ffffff / #dcfce7 | #86efac / #192e2a / #1e293b / #1b4030 | 6,49 / 8,21 |
+| `--kpi-5-*` (espera por vaga) | #6b21a8 / #faf5ff / #ffffff / #f3e8ff | #d8b4fe / #2c2541 / #1e293b / #3a2854 | 7,39 / 7,37 |
+
+Valores profissionais, na ordem `fundo / avatar / texto`:
+
+| Conjunto | Claro | Escuro | Contraste texto/avatar claro / escuro |
+| --- | --- | --- | --- |
+| `--prof-1-*` | #eff6ff / #dbeafe / #1e40af | #192d46 / #1e3a5f / #bfdbfe | 7,15 / 8,10 |
+| `--prof-2-*` | #f0fdf4 / #dcfce7 / #166534 | #192e2a / #1b4030 / #bbf7d0 | 6,49 / 9,51 |
+| `--prof-3-*` | #fff1f2 / #ffe4e6 / #9f1239 | #352530 / #4c2535 / #fecdd3 | 6,68 / 9,17 |
+| `--prof-4-*` | #faf5ff / #f3e8ff / #6b21a8 | #2c2541 / #3a2854 / #e9d5ff | 7,39 / 9,57 |
+| `--prof-5-*` | #fff7ed / #ffedd5 / #9a3412 | #32271f / #48301d / #fed7aa | 6,38 / 9,04 |
+| `--prof-6-*` | #f0fdfa / #ccfbf1 / #115e59 | #1b2e35 / #16454a / #99f6e4 | 6,73 / 8,39 |
+
+Elevação, duas camadas (deslocamentos/desfoques não alteram medidas):
+
+| Token | Claro | Escuro |
+| --- | --- | --- |
+| `--sombra-1` | 0 1px 3px rgb(30 58 95 / 5%), 0 3px 8px rgb(30 58 95 / 4%) | 0 1px 3px rgb(0 8 20 / 14%), 0 3px 8px rgb(0 8 20 / 10%) |
+| `--sombra-2` | 0 2px 4px rgb(30 58 95 / 9%), 0 6px 8px rgb(30 58 95 / 8%) | 0 2px 4px rgb(0 8 20 / 22%), 0 6px 8px rgb(0 8 20 / 18%) |
+| `--sombra-3` | -2px 0 6px rgb(30 58 95 / 10%), -12px 0 32px rgb(30 58 95 / 12%) | -2px 0 6px rgb(0 8 20 / 25%), -12px 0 32px rgb(0 8 20 / 28%) |
+
+`--agenda-realce-fundo`: `color-mix(in srgb, var(--cor-primaria) 8%, var(--fundo-card))`
+nos dois temas. `--agenda-realce-texto`: mistura 65% da primária com texto principal no
+claro, 35% no escuro, para manter contraste sem mudar a cor da marca.
+Tokens `--agenda-kpi-*` e `--agenda-prof-*` são aliases locais dos conjuntos, não outra paleta.
+Barra de situação reaproveita `--status-*-ponto`, com texto de situação preservado.
+
+Medição isolada: fórmula WCAG/composição do script já existente de contraste, aplicada
+a 46 pares em cada tema/clínica/tela. Inclui ambos os extremos dos degradês, neutros
+nos cabeçalhos e realces derivados da marca. Mínimos 5,49:1 claro e 5,44:1 escuro.
+Resultados detalhados ignorados pelo Git em `scratch/agenda-ux/acabamento-cores/contrastes-*.json`.
+Sombras não são pares de texto. Indicadores não clicáveis não recebem elevação de interação.
 
 ### 12.6 Referências visuais do Stitch
 

@@ -1,0 +1,355 @@
+{
+  "versao_pacote": 1,
+  "plano_conjunto": "docs/modulos/configuracoes/13-SEQUENCIA-CONJUNTA-E-ISOLAMENTO.md",
+  "preparado_em": "2026-10-09T09:32:35.734Z",
+  "projeto": "xftnkusbyqzyvzrovroj",
+  "aplicado": false,
+  "auth_remota_alterada": true,
+  "contas_remotas_criadas": 3,
+  "frontend_habilitado": false,
+  "sql_ordenado": [
+    "supabase/migrations/20261008230000_equipe_acesso_direto.sql",
+    "supabase/migrations/20261008230100_equipe_acesso_direto_protecoes.sql",
+    "supabase/tools/acesso-direto-proteger-configuracoes.sql"
+  ],
+  "dependencias_configuracoes_somente_sua_autorizacao": [
+    "supabase/migrations/20261008213000_configuracoes_institucionais.sql",
+    "supabase/migrations/20261008230050_configuracoes_homologacao_isolada.sql",
+    "supabase/functions/configuracoes/index.ts",
+    "supabase/functions/configuracoes-publicas/index.ts"
+  ],
+  "services": [
+    {
+      "nome": "equipe-acessos",
+      "verify_jwt": true
+    },
+    {
+      "nome": "equipe-recursos",
+      "verify_jwt": false
+    },
+    {
+      "nome": "equipe-fichas",
+      "verify_jwt": false
+    },
+    {
+      "nome": "meu-perfil",
+      "verify_jwt": true
+    },
+    {
+      "nome": "equipe-acesso-direto",
+      "verify_jwt": true
+    }
+  ],
+  "configuracao_auth_proposta": "auth-hook-proposto.json",
+  "leitura_auth_e_schemas_api_pendente": false,
+  "arquivos": [
+    {
+      "arquivo": "database/proposals/acesso-direto/01-preflight-permissoes.sql",
+      "sha256": "43942a64439a48ff86d293b03abfe978375c836c64cbdce194efa282ca0b90cb",
+      "categoria": "verificacao"
+    },
+    {
+      "arquivo": "database/proposals/acesso-direto/02-RECUPERACAO-REQUISICOES.sql",
+      "sha256": "87962d576a889920f1e751b555896311afc3ece89d95852925445d860a759392",
+      "categoria": "verificacao"
+    },
+    {
+      "arquivo": "scripts/test-acesso-direto-sql.mjs",
+      "sha256": "0ea4e56122399cfd24f4c73f778fceda45479380127033b21c67ce54664af8ab",
+      "categoria": "verificacao"
+    },
+    {
+      "arquivo": "scripts/test-equipe-regressao.mjs",
+      "sha256": "846486ce0d47193c5af594e93ffe6dd8c4007d19a1939c5e2d573a88d9456447",
+      "categoria": "verificacao"
+    },
+    {
+      "arquivo": "server/src/env.ts",
+      "sha256": "0a58f51a91b94e033179451a49b211faea21dbe8738bc2861a6c74b0788804e5",
+      "categoria": "servico_e_imports"
+    },
+    {
+      "arquivo": "server/src/plugins/ativacao.ts",
+      "sha256": "0f91da19b91d8d66572275ff35a4aa17805b5432a71dd853e1289b1156f603d3",
+      "categoria": "servico_e_imports"
+    },
+    {
+      "arquivo": "server/src/plugins/auth.ts",
+      "sha256": "4f606a220538d2d44514fd8fa57623e4a84f6d3d32abae6b11d5619b36d77da9",
+      "categoria": "servico_e_imports"
+    },
+    {
+      "arquivo": "server/src/supabase.ts",
+      "sha256": "11fd68804e37728b731fa2665834c73ab488f8781728d6dd0d2a7f0943be1317",
+      "categoria": "servico_e_imports"
+    },
+    {
+      "arquivo": "src/App.tsx",
+      "sha256": "d8415bcb207aaecc9129789d688ae2ee25c21deb6baa955a48008be1aab04b3f",
+      "categoria": "interface_desabilitada"
+    },
+    {
+      "arquivo": "src/components/GuardaAtivacao.tsx",
+      "sha256": "2c5da2965191b0f4d55ccf059a3850dc697817a6951a2756234ede087a2b2a71",
+      "categoria": "interface_desabilitada"
+    },
+    {
+      "arquivo": "src/components/cadastros/AcessoTemporarioPainel.tsx",
+      "sha256": "19bd1d4f46e66f24e73ffdc5171f4dff8a9760eb37a245fe14985431a85755cf",
+      "categoria": "interface_desabilitada"
+    },
+    {
+      "arquivo": "src/components/cadastros/CredencialTemporariaDialog.tsx",
+      "sha256": "fedfabbcfafbf8587d87b740cf2e58bb4b850f224cce6f44724656f14eab5d25",
+      "categoria": "interface_desabilitada"
+    },
+    {
+      "arquivo": "src/components/cadastros/NovoMembroAcesso.tsx",
+      "sha256": "c7f3c3032f59a68eccd72b69c3001179035c76774cc4bf22f3645246a01f3dbe",
+      "categoria": "interface_desabilitada"
+    },
+    {
+      "arquivo": "src/config/acessoDireto.ts",
+      "sha256": "139687c1ad9e064467112254779312182c5dfa35b770c4012b68e5807233c6b1",
+      "categoria": "interface_desabilitada"
+    },
+    {
+      "arquivo": "src/lib/acessoDireto.ts",
+      "sha256": "117260801bdc3b83a4c0ec337110c1f20474c87bd42e746d90241da01e09f374",
+      "categoria": "interface_desabilitada"
+    },
+    {
+      "arquivo": "src/lib/acessoDiretoModelo.ts",
+      "sha256": "1d270134ec52430cc674d041610eaf4bda1911e78ec25ed081c57d46aa86f135",
+      "categoria": "interface_desabilitada"
+    },
+    {
+      "arquivo": "src/lib/equipeAcessos.ts",
+      "sha256": "1223b307a7b01ccabf383e1f5a50093858eb4aa35dc3271c9767d18e9c9ae2f5",
+      "categoria": "interface_desabilitada"
+    },
+    {
+      "arquivo": "src/pages/DefinirSenhaPessoal.tsx",
+      "sha256": "bf2efb0524a0bd092e394c705fcd8cd11447894882cdc23c8ba3d1feb23c6f57",
+      "categoria": "interface_desabilitada"
+    },
+    {
+      "arquivo": "src/pages/cadastros/Equipe.tsx",
+      "sha256": "f595275c355bafdc30bed5b13757aa00178e86a70699ac75244d3664b8be5b0b",
+      "categoria": "interface_desabilitada"
+    },
+    {
+      "arquivo": "supabase/config.toml",
+      "sha256": "f8624baa7a34e3ff0f55d7a275a3e0b08843a02870d3e1bd9c63d0caae19f308",
+      "categoria": "verificacao"
+    },
+    {
+      "arquivo": "supabase/functions/_shared/acessoDireto.ts",
+      "sha256": "c4389deb19528799e5aa40d8d25429af13c9b7bba4c83fdc6e4540c366a09ce3",
+      "categoria": "servico_e_imports"
+    },
+    {
+      "arquivo": "supabase/functions/_shared/equipeDocumento.ts",
+      "sha256": "604fd8c71f4eee43a75db1ab4bc111fb97752367a2e368016b6473d1c60f7711",
+      "categoria": "servico_e_imports"
+    },
+    {
+      "arquivo": "supabase/functions/_shared/equipeFicha.ts",
+      "sha256": "1467a3233a26d78ff73dcc0ca5da672ea145eee22284b5a7db9fd96a26c7b361",
+      "categoria": "servico_e_imports"
+    },
+    {
+      "arquivo": "supabase/functions/_shared/equipeFoto.ts",
+      "sha256": "fa335f7247238362aa7d1e19c4a45641561a595a4a0308c6fa87c2e5562667ad",
+      "categoria": "servico_e_imports"
+    },
+    {
+      "arquivo": "supabase/functions/_shared/equipePdf.ts",
+      "sha256": "50df4c1096f1cef55ab2da81ad3682af5b0618e9db4c6befa14314901a1166ea",
+      "categoria": "servico_e_imports"
+    },
+    {
+      "arquivo": "supabase/functions/_shared/equipeRecebimento.ts",
+      "sha256": "ca8f6428a3528d59645181f57647282027d9e975fe6b129365efae5623bf5ec9",
+      "categoria": "servico_e_imports"
+    },
+    {
+      "arquivo": "supabase/functions/_shared/equipeRecursosServico.ts",
+      "sha256": "1334ce7bfe14e9e6cb1a0b915702cabe2f3b3e34a2881b38d805b6cdb19d395d",
+      "categoria": "servico_e_imports"
+    },
+    {
+      "arquivo": "supabase/functions/_shared/guardaAtivacao.ts",
+      "sha256": "30b59728dfea7f9c3264e67d335ef3e71d07b73301a0447069a2b9684a4aa5f1",
+      "categoria": "servico_e_imports"
+    },
+    {
+      "arquivo": "supabase/functions/configuracoes-publicas/index.ts",
+      "sha256": "bf9340245994ff33252edbc2499710301ba440a60dec27723e70a7890ec2a797",
+      "categoria": "dependencia_autorizacao_separada"
+    },
+    {
+      "arquivo": "supabase/functions/configuracoes/index.ts",
+      "sha256": "a3e181591aa42f882eb1bcc6978ed88662b9f1ccd323a1864179ddc13a106e5d",
+      "categoria": "dependencia_autorizacao_separada"
+    },
+    {
+      "arquivo": "supabase/functions/equipe-acesso-direto/index.ts",
+      "sha256": "d1dbd9e433237d4808d1cb579ffa2cbdb25928bb12aa380fe0f0fe271c3fd1ce",
+      "categoria": "servico_e_imports"
+    },
+    {
+      "arquivo": "supabase/functions/equipe-acessos/conviteAuth.ts",
+      "sha256": "809168b03f2f6085a092fb25250b6be1fd79e6e21fa8fb4412f7ce3fb114ba50",
+      "categoria": "servico_e_imports"
+    },
+    {
+      "arquivo": "supabase/functions/equipe-acessos/emailContext.ts",
+      "sha256": "c562b9ccb2aefb03070ea731bd5c28d2a3f4f7dbbb351a596d42d8e7a61727d1",
+      "categoria": "servico_e_imports"
+    },
+    {
+      "arquivo": "supabase/functions/equipe-acessos/index.ts",
+      "sha256": "7b6312966e3b7881035712e18ad3a5c2883aa1e84c8470d49e28766c997d0dc7",
+      "categoria": "servico_e_imports"
+    },
+    {
+      "arquivo": "supabase/functions/equipe-acessos/redirectUnidade.ts",
+      "sha256": "3c7de71f8c07f9ef7aa11c679059f5d2a05856c37144cbc3c963f7143e648e9f",
+      "categoria": "servico_e_imports"
+    },
+    {
+      "arquivo": "supabase/functions/equipe-fichas/index.ts",
+      "sha256": "2394ae6b6575017ae8893a525debb4a11c95ce7e39abb6bdaf8c1b70628c80ea",
+      "categoria": "servico_e_imports"
+    },
+    {
+      "arquivo": "supabase/functions/equipe-recursos/index.ts",
+      "sha256": "83f3833b568564feb575998b5ed5bcb253c337b11e8da801666cbdffa989709b",
+      "categoria": "servico_e_imports"
+    },
+    {
+      "arquivo": "supabase/functions/meu-perfil/index.ts",
+      "sha256": "b2a989fb36feb2e9e2970dea7a5894ac7bfea4f21e5bbc8c957166344eb86fa5",
+      "categoria": "servico_e_imports"
+    },
+    {
+      "arquivo": "supabase/functions/meu-perfil/servico.ts",
+      "sha256": "5e436e47137e1037579de1962f9a804a35d0cb6646d829604e610fb039dddd1c",
+      "categoria": "servico_e_imports"
+    },
+    {
+      "arquivo": "supabase/migrations/20261008213000_configuracoes_institucionais.sql",
+      "sha256": "42de41897b6a9ee9a3188ed2d04c4ae52d46c5caf9c4c751571bf151d27b69ab",
+      "categoria": "dependencia_autorizacao_separada"
+    },
+    {
+      "arquivo": "supabase/migrations/20261008230000_equipe_acesso_direto.sql",
+      "sha256": "d878cc41b5a9795a14023920c2ed742ef98939f2aa52f046821e38e6a21f986a",
+      "categoria": "sql_acesso_direto"
+    },
+    {
+      "arquivo": "supabase/migrations/20261008230050_configuracoes_homologacao_isolada.sql",
+      "sha256": "1c93a6852ece2fa6cd8d71ee92f5b56842fcf9848658b877d29af9fadc9371a6",
+      "categoria": "dependencia_autorizacao_separada"
+    },
+    {
+      "arquivo": "supabase/migrations/20261008230100_equipe_acesso_direto_protecoes.sql",
+      "sha256": "494e712c119753a51c6f4e00487f100ef8112702e5114dda82642e93d210fd63",
+      "categoria": "sql_acesso_direto"
+    },
+    {
+      "arquivo": "supabase/tests/acesso-direto_contratos.sql",
+      "sha256": "30554a54eb344ce940ece78c9118f73519fe013af673c612fd0ce3ce0ef746e7",
+      "categoria": "verificacao"
+    },
+    {
+      "arquivo": "supabase/tests/acesso-direto_fixture.sql",
+      "sha256": "30d312dd9828b3c3a8d6ab38fe90e0f4a92e1ec00fd4c80fd7174908d744165d",
+      "categoria": "verificacao"
+    },
+    {
+      "arquivo": "supabase/tests/acesso-direto_inventario.sql",
+      "sha256": "67935c67751ddd927e3908b1fec9ab21301047fd71b746d79589694f6b471d61",
+      "categoria": "verificacao"
+    },
+    {
+      "arquivo": "supabase/tests/acesso-direto_revisao-catalogo.sql",
+      "sha256": "e96dadcdd9ffc6f9235359a25feead924ee961865836fcad68911a3da5b20d46",
+      "categoria": "verificacao"
+    },
+    {
+      "arquivo": "supabase/tools/acesso-direto-preflight.sql",
+      "sha256": "44b40e16c0c4bcc70e3de7fb50c20bf750dd392de105a476f2202d36cf70bb3a",
+      "categoria": "verificacao"
+    },
+    {
+      "arquivo": "supabase/tools/acesso-direto-proteger-configuracoes.sql",
+      "sha256": "71109f983371287c1d64c930d8812c0566800a5e41122be1def888e3062bad5a",
+      "categoria": "sql_acesso_direto"
+    },
+    {
+      "arquivo": "supabase/tools/verificar-integridade.sql",
+      "sha256": "ee55ae4ad4fce42006afce8eb7a1ae2ef76cced975e3d4e91056ff2d1233489f",
+      "categoria": "verificacao"
+    },
+    {
+      "arquivo": "tests/acesso-direto/interface.spec.ts",
+      "sha256": "be050e17b6e00abe1ae990ad824a66448150d89837df26229264279229a7440c",
+      "categoria": "verificacao"
+    },
+    {
+      "arquivo": "tests/acesso-direto/preview.tsx",
+      "sha256": "2dadb6dcd6a170a03cd36531ec14e138440caa04d381ae143ca2e843d550c41c",
+      "categoria": "verificacao"
+    },
+    {
+      "arquivo": "tests/acesso-direto/regras.test.ts",
+      "sha256": "a926b8be482784aede809db96a8a280fc75627530d0cd5890d75b109799917ae",
+      "categoria": "verificacao"
+    },
+    {
+      "arquivo": "tests/acesso-direto/tsconfig.backend.json",
+      "sha256": "ffe9eca6e0699791a8482196e06cfc05f1ad35da37c4c88f242f157c2dceade9",
+      "categoria": "verificacao"
+    },
+    {
+      "arquivo": "tests/operacional/observacao-equipe.ts",
+      "sha256": "ac77825baecd91ad6b58dd140a46c7ce8d7e46976a9986657b83d2e3cc9693e3",
+      "categoria": "verificacao"
+    },
+    {
+      "arquivo": "tests/operacional/vite.equipe-regressao.config.ts",
+      "sha256": "7ec92fb2269b277ecf3c982e084591a76aa4fe704e305d6b3fbca911af081117",
+      "categoria": "verificacao"
+    }
+  ],
+  "inventario_sha256": "3f537774613c4f9a731d17c1cfc7466f4eb52f7653323404087ada9a4e307a46",
+  "estado_execucao": "sql_servicos_hook_aplicados_homologacao_parcial",
+  "relatorio_execucao": "docs/modulos/configuracoes/18-APLICACAO-GUARDA-E-SEQUENCIA-AUTORIZADA.md",
+  "aplicacao_sql_concluida": true,
+  "homologacao_conectada_completa": false,
+  "execucao_conjunta": {
+    "em": "2026-10-09T10:18:36.211Z",
+    "contas_criadas": 3,
+    "contas_encerradas": 3,
+    "contextos_criados": 2,
+    "contextos_encerrados": 2,
+    "operacoes_diretas": 0,
+    "frontend_habilitado": false,
+    "servico_direto_habilitado": false
+  },
+  "aplicado_significado": "Pacote integral inclui homologação/consumidor financeiro ainda pendentes; SQL/Edges/hook efetivamente aplicados conforme estado_execucao",
+  "evidencia_execucao": "database/proposals/acesso-direto/EXECUCAO-PARCIAL-20261009.json",
+  "estado_versionamento_20261009": {
+    "backend_supabase_instalado": true,
+    "homologacao": "parcial",
+    "frontend_geral_habilitado": false,
+    "referencia_estado_atual": "docs/modulos/configuracoes/18-APLICACAO-GUARDA-E-SEQUENCIA-AUTORIZADA.md",
+    "escritas_remotas_nesta_etapa": 0,
+    "commit_nao_equivale_a_aplicacao": true,
+    "observacao": "Campos anteriores preservam a fotografia datada de preparação/aplicação; R2 não aplicada.",
+    "integridade_git": "releases/2026-10-09-dashboard-configuracoes-acesso-direto.json",
+    "hashes_anteriores": "Hashes históricos da preparação/aplicação; não são autorização para reaplicar. Manifesto de Git registra os blobs normalizados desta seleção."
+  }
+}

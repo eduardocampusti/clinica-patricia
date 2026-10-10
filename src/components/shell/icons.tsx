@@ -2,6 +2,10 @@ import type { SVGProps } from 'react'
 
 type IconeProps = SVGProps<SVGSVGElement>
 
+export function IconeConfiguracoes(props: IconeProps) {
+  return <svg {...base(props)}><path d="m9 3-1 3-3 1-2 4 2 2-1 3 3 3 3-1 2 2 4-2 1-3 3-1v-4l-3-1-1-3-4-2Z"/><circle cx="12" cy="12" r="3"/></svg>
+}
+
 function base(props: IconeProps) {
   return {
     width: 18,

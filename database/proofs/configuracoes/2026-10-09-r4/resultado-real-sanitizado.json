@@ -1,0 +1,136 @@
+{
+  "projeto": "xftnkusbyqzyvzrovroj",
+  "inicio": "2026-10-09T21:07:08.314Z",
+  "origem": "Auth/Edge/Storage conectados reais; UI da bancada sobre componentes e serviços normais; sem mocks",
+  "testes": [
+    {
+      "requisito": "Condição prévia: sessão legítima do criador comprovada pelo SDK",
+      "aprovado": true,
+      "recebidoEm": "2026-10-09T21:04:35.896Z"
+    },
+    {
+      "requisito": "Pré-execução: recursos inéditos e pacote R4 instalado",
+      "aprovado": true
+    },
+    {
+      "requisito": "Bancada fictícia disponível em origem permitida, sem copiar sessão real",
+      "aprovado": true
+    },
+    {
+      "requisito": "Login Auth real da conta fictícia A",
+      "aprovado": true
+    },
+    {
+      "requisito": "Conta existente normal sem pendência artificial A",
+      "aprovado": true
+    },
+    {
+      "requisito": "Dados institucionais: salvar pela interface e ler pelo serviço real A",
+      "aprovado": true
+    },
+    {
+      "requisito": "F5 conserva os dados institucionais A",
+      "aprovado": true
+    },
+    {
+      "requisito": "Cabeçalho, rodapé e timbrado persistidos no servidor A",
+      "aprovado": true
+    },
+    {
+      "requisito": "Upload real registrado e leitura privada assinada A",
+      "aprovado": true
+    },
+    {
+      "requisito": "Download posterior do logo real A",
+      "aprovado": true
+    },
+    {
+      "requisito": "Recarga preserva timbrado/cabeçalho/rodapé A",
+      "aprovado": true
+    },
+    {
+      "requisito": "Geração real local de PDF de demonstração com configuração persistida A",
+      "aprovado": true
+    },
+    {
+      "requisito": "Projeção pública do login coincide com versão aplicada A",
+      "aprovado": true
+    },
+    {
+      "requisito": "Logo público real do login A",
+      "aprovado": true
+    },
+    {
+      "requisito": "Login anônimo exibe personalização e formulário funcional A",
+      "aprovado": true
+    },
+    {
+      "requisito": "Novo login pela interface lê configuração persistida A",
+      "aprovado": true
+    }
+  ],
+  "contas": [
+    {
+      "id": "5a4f1471-1e4c-44c1-9d39-8215b1635794",
+      "papel": "proprietaria",
+      "contexto": "ed002c24-5c6c-4e8c-b90c-aa4751280001"
+    },
+    {
+      "id": "95d9e95a-c2cd-4fe3-bc59-6fc67aaaa071",
+      "papel": "proprietaria",
+      "contexto": "ed002c24-5c6c-4e8c-b90c-aa4751280002"
+    }
+  ],
+  "contextos": [
+    "ed002c24-5c6c-4e8c-b90c-aa4751280001",
+    "ed002c24-5c6c-4e8c-b90c-aa4751280002"
+  ],
+  "encerramento": [
+    {
+      "id": "5a4f1471-1e4c-44c1-9d39-8215b1635794",
+      "ban": true,
+      "perfil_ativo": false,
+      "refresh_ativos": 0,
+      "sessoes": 0,
+      "vinculos_ativos": 0,
+      "login_recusado": true,
+      "aprovado": true
+    },
+    {
+      "id": "95d9e95a-c2cd-4fe3-bc59-6fc67aaaa071",
+      "ban": true,
+      "perfil_ativo": false,
+      "refresh_ativos": 0,
+      "sessoes": 0,
+      "vinculos_ativos": 0,
+      "login_recusado": true,
+      "aprovado": true
+    },
+    {
+      "tipo": "ativo_publico",
+      "status": 404,
+      "aprovado": true
+    }
+  ],
+  "aprovado": false,
+  "impedimento": "Cannot read properties of undefined (reading 'revisao')",
+  "contextos_finais": [
+    {
+      "clinica_ativa": false,
+      "contexto_ativo": false,
+      "id": "ed002c24-5c6c-4e8c-b90c-aa4751280002",
+      "publico_encerrado": true,
+      "vinculos_ativos": 0
+    },
+    {
+      "clinica_ativa": false,
+      "contexto_ativo": false,
+      "id": "ed002c24-5c6c-4e8c-b90c-aa4751280001",
+      "publico_encerrado": true,
+      "vinculos_ativos": 0
+    }
+  ],
+  "fim": "2026-10-09T21:09:02.002Z",
+  "aprovacaoIntegral": false,
+  "diagnostico": "Consulta auxiliar após saída global retornou401; executor acessou resposta sem data. Corrigido localmente, repetição conectada pendente."
+}

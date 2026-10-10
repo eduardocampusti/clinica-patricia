@@ -1,0 +1,504 @@
+{
+  "projeto": "xftnkusbyqzyvzrovroj",
+  "em": "2026-10-09T11:12:01.981Z",
+  "verificacoes": {
+    "projeto": "xftnkusbyqzyvzrovroj",
+    "inicio": "2026-10-09T10:43:47.125Z",
+    "natureza": "SQL administrativo somente leitura e HTTP anônimo real; nenhum JWT de usuário",
+    "navegador": {
+      "disponivel": false,
+      "erro": "node_repl kernel exited unexpectedly; setup refresh had errors",
+      "tentativa": "cua.getState, antes da obtenção de abas ou sessões"
+    },
+    "checks": [
+      {
+        "nome": "Três contas fictícias continuam encerradas",
+        "aprovado": true,
+        "evidencia": [
+          {
+            "ban": true,
+            "id": "bc45dfd9-46a7-4b0f-892a-1179da6ee75d",
+            "perfil_ativo": null,
+            "refresh_ativos": 0,
+            "sessoes": 0,
+            "vinculos_ativos": 0
+          },
+          {
+            "ban": true,
+            "id": "6a31c4c2-d4e4-4c83-b562-2deefdf67c3d",
+            "perfil_ativo": null,
+            "refresh_ativos": 0,
+            "sessoes": 0,
+            "vinculos_ativos": 0
+          },
+          {
+            "ban": true,
+            "id": "6eea2be7-24e7-4b1f-9ae9-e6b624a7ac06",
+            "perfil_ativo": false,
+            "refresh_ativos": 0,
+            "sessoes": 0,
+            "vinculos_ativos": 0
+          }
+        ]
+      },
+      {
+        "nome": "Nenhuma conta substituta nos domínios de teste",
+        "aprovado": true,
+        "evidencia": {
+          "adicionais": 0
+        }
+      },
+      {
+        "nome": "Dois contextos encerrados sem arquivos, versões, vínculos ou projeção",
+        "aprovado": true,
+        "evidencia": {
+          "contextos": [
+            {
+              "clinica_ativa": false,
+              "contexto_ativo": false,
+              "id": "7fc7ca34-e9a4-4af8-8bcb-0d7e3c922701",
+              "projecao_publica": false,
+              "vinculos_ativos": 0
+            },
+            {
+              "clinica_ativa": false,
+              "contexto_ativo": false,
+              "id": "7fc7ca34-e9a4-4af8-8bcb-0d7e3c922702",
+              "projecao_publica": false,
+              "vinculos_ativos": 0
+            }
+          ],
+          "ativos": 0,
+          "storage": 0,
+          "versoes": 0
+        }
+      },
+      {
+        "nome": "Gates desligados e sem operações/lista/grant global",
+        "aprovado": true,
+        "evidencia": {
+          "controle": {
+            "habilitado": false,
+            "homologacao_habilitada": false,
+            "id": true,
+            "protecoes_instaladas": true
+          },
+          "operacoes": 0,
+          "lista": 0,
+          "grant_global": 0
+        }
+      },
+      {
+        "nome": "Proteções instaladas e função gerenciada preservada",
+        "aprovado": true,
+        "evidencia": {
+          "politicas": 57,
+          "wrappers": 70,
+          "graph": {
+            "hash": "dfa83944e7a73368d44e3ee4d2a1167c",
+            "owner": "supabase_admin"
+          },
+          "rolconfig": [
+            "session_preload_libraries=supautils, safeupdate",
+            "statement_timeout=8s",
+            "lock_timeout=8s",
+            "pgrst.db_pre_request=public.acesso_direto_pre_request"
+          ]
+        }
+      },
+      {
+        "nome": "Leitura oficial do hook instalado e ACL restrita",
+        "aprovado": true,
+        "evidencia": {
+          "diff": {
+            "projeto": "xftnkusbyqzyvzrovroj",
+            "em": "2026-10-09T10:43:53.948Z",
+            "versao": "2.120.0",
+            "scope": {
+              "present": [
+                "api",
+                "auth",
+                "database",
+                "pooler",
+                "realtime",
+                "storage"
+              ],
+              "missing": []
+            },
+            "hook": [],
+            "outros_fingerprint": "34c68685d935bff0891e37b6f3bfebf933d22526deead100507bfc3a09b21e6e",
+            "campos_outros_nao_declarados": true
+          },
+          "acl": {
+            "anon": false,
+            "auth_admin": true,
+            "authenticated": false,
+            "service": false
+          }
+        }
+      },
+      {
+        "nome": "Sete serviços permanecem nas versões aplicadas",
+        "aprovado": true,
+        "evidencia": [
+          {
+            "nome": "equipe-acessos",
+            "version": 10,
+            "status": "ACTIVE",
+            "verify_jwt": true
+          },
+          {
+            "nome": "equipe-recursos",
+            "version": 5,
+            "status": "ACTIVE",
+            "verify_jwt": false
+          },
+          {
+            "nome": "equipe-fichas",
+            "version": 5,
+            "status": "ACTIVE",
+            "verify_jwt": false
+          },
+          {
+            "nome": "meu-perfil",
+            "version": 4,
+            "status": "ACTIVE",
+            "verify_jwt": true
+          },
+          {
+            "nome": "equipe-acesso-direto",
+            "version": 1,
+            "status": "ACTIVE",
+            "verify_jwt": true
+          },
+          {
+            "nome": "configuracoes",
+            "version": 1,
+            "status": "ACTIVE",
+            "verify_jwt": true
+          },
+          {
+            "nome": "configuracoes-publicas",
+            "version": 1,
+            "status": "ACTIVE",
+            "verify_jwt": false
+          }
+        ]
+      },
+      {
+        "nome": "Endpoint GraphQL ainda informa extensão ausente, sem prova de autorização",
+        "aprovado": true,
+        "evidencia": {
+          "status": 200,
+          "data": {
+            "errors": [
+              {
+                "message": "pg_graphql extension is not enabled."
+              }
+            ]
+          },
+          "protecao_comprovada": false,
+          "operacoes_funcionais_homologadas": false
+        }
+      },
+      {
+        "nome": "Serviço direto permanece desabilitado; não é prova do criador",
+        "aprovado": true,
+        "evidencia": {
+          "status": 503,
+          "codigo": "SERVICO_INDISPONIVEL"
+        }
+      },
+      {
+        "nome": "Alias encerrado não retorna marca: configuracoes-homologacao-a.invalid",
+        "aprovado": true,
+        "evidencia": {
+          "status": 200,
+          "marca": false
+        }
+      },
+      {
+        "nome": "Alias encerrado não retorna marca: configuracoes-homologacao-b.invalid",
+        "aprovado": true,
+        "evidencia": {
+          "status": 200,
+          "marca": false
+        }
+      },
+      {
+        "nome": "Seletor público inválido rejeitado",
+        "aprovado": true,
+        "evidencia": {
+          "seletor": {
+            "hostname": "arbitrario.invalid"
+          },
+          "status": 404
+        }
+      },
+      {
+        "nome": "Seletor público inválido rejeitado",
+        "aprovado": true,
+        "evidencia": {
+          "seletor": {
+            "hostname": "7fc7ca34-e9a4-4af8-8bcb-0d7e3c922701"
+          },
+          "status": 404
+        }
+      },
+      {
+        "nome": "Seletor público inválido rejeitado",
+        "aprovado": true,
+        "evidencia": {
+          "seletor": {
+            "hostname": "configuracoes-homologacao-a.invalid",
+            "escopo": "geral"
+          },
+          "status": 404
+        }
+      },
+      {
+        "nome": "Seletor público inválido rejeitado",
+        "aprovado": true,
+        "evidencia": {
+          "seletor": {
+            "hostname": "configuracoes-homologacao-a.invalid",
+            "rascunho": true
+          },
+          "status": 404
+        }
+      },
+      {
+        "nome": "Configurações privadas sem JWT rejeitadas",
+        "aprovado": true,
+        "evidencia": {
+          "status": 401,
+          "nao_comprova_papeis": true
+        }
+      },
+      {
+        "nome": "Upload sem JWT rejeitado antes de gravar arquivo",
+        "aprovado": true,
+        "evidencia": {
+          "status": 401,
+          "nao_comprova_upload_autorizado": true
+        }
+      },
+      {
+        "nome": "Resposta pública real preservada: clinicabrotas.com.br",
+        "aprovado": true,
+        "evidencia": {
+          "status": 200,
+          "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+        }
+      },
+      {
+        "nome": "Resposta pública real preservada: clinicaipupiara.com.br",
+        "aprovado": true,
+        "evidencia": {
+          "status": 200,
+          "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+        }
+      },
+      {
+        "nome": "Encerramento reconferido após todas as requisições",
+        "aprovado": true,
+        "evidencia": {
+          "contas_encerradas": 3,
+          "contextos_ativos": 0,
+          "sessoes": 0,
+          "storage": 0
+        }
+      }
+    ],
+    "estado": {
+      "arquivos_storage_teste": 0,
+      "ativos_teste": 0,
+      "contas": [
+        {
+          "ban": true,
+          "id": "bc45dfd9-46a7-4b0f-892a-1179da6ee75d",
+          "perfil_ativo": null,
+          "refresh_ativos": 0,
+          "sessoes": 0,
+          "vinculos_ativos": 0
+        },
+        {
+          "ban": true,
+          "id": "6a31c4c2-d4e4-4c83-b562-2deefdf67c3d",
+          "perfil_ativo": null,
+          "refresh_ativos": 0,
+          "sessoes": 0,
+          "vinculos_ativos": 0
+        },
+        {
+          "ban": true,
+          "id": "6eea2be7-24e7-4b1f-9ae9-e6b624a7ac06",
+          "perfil_ativo": false,
+          "refresh_ativos": 0,
+          "sessoes": 0,
+          "vinculos_ativos": 0
+        }
+      ],
+      "contextos": [
+        {
+          "clinica_ativa": false,
+          "contexto_ativo": false,
+          "id": "7fc7ca34-e9a4-4af8-8bcb-0d7e3c922701",
+          "projecao_publica": false,
+          "vinculos_ativos": 0
+        },
+        {
+          "clinica_ativa": false,
+          "contexto_ativo": false,
+          "id": "7fc7ca34-e9a4-4af8-8bcb-0d7e3c922702",
+          "projecao_publica": false,
+          "vinculos_ativos": 0
+        }
+      ],
+      "controle": {
+        "habilitado": false,
+        "homologacao_habilitada": false,
+        "id": true,
+        "protecoes_instaladas": true
+      },
+      "extensao": 0,
+      "grant_geral_cfg": 0,
+      "graph": {
+        "hash": "dfa83944e7a73368d44e3ee4d2a1167c",
+        "owner": "supabase_admin"
+      },
+      "hook_acl": {
+        "anon": false,
+        "auth_admin": true,
+        "authenticated": false,
+        "service": false
+      },
+      "lista": 0,
+      "novas_contas_dominios_teste": 0,
+      "operacoes": 0,
+      "politicas": 57,
+      "rolconfig": [
+        "session_preload_libraries=supautils, safeupdate",
+        "statement_timeout=8s",
+        "lock_timeout=8s",
+        "pgrst.db_pre_request=public.acesso_direto_pre_request"
+      ],
+      "versoes_teste": 0,
+      "wrappers": 70
+    },
+    "graphql": {
+      "status": 200,
+      "data": {
+        "errors": [
+          {
+            "message": "pg_graphql extension is not enabled."
+          }
+        ]
+      },
+      "protecao_comprovada": false,
+      "operacoes_funcionais_homologadas": false
+    },
+    "aprovados": 20,
+    "total": 20,
+    "homologacao_completa": false,
+    "escritas_remotas": 0,
+    "fim": "2026-10-09T10:44:02.439Z"
+  },
+  "encerramento": {
+    "projeto": "xftnkusbyqzyvzrovroj",
+    "em": "2026-10-09T11:08:53.125Z",
+    "aprovado": true,
+    "estado": {
+      "contas_antigas_banidas": 3,
+      "contas_r2": 0,
+      "contextos_antigos_encerrados": 2,
+      "contextos_r2": 0,
+      "controle": {
+        "habilitado": false,
+        "homologacao_habilitada": false,
+        "id": true,
+        "protecoes_instaladas": true
+      },
+      "lista": 0,
+      "operacoes": 0,
+      "refresh_antigos_ativos": 0,
+      "sessoes_antigas": 0,
+      "vinculos_antigos_ativos": 0
+    },
+    "escritas_remotas": 0,
+    "sessao_criador_comprovada": false,
+    "novos_recursos_consumidos": 0
+  },
+  "sql_local": {
+    "ambiente": "PostgreSQL local 127.0.0.1:55449; fixture sintética, não sessão Auth/RLS conectada",
+    "em": "2026-10-09T11:04:31.090Z",
+    "checks": [
+      {
+        "nome": "Impressão da função local idêntica à leitura oficial revisada",
+        "aprovado": true
+      },
+      {
+        "nome": "Migration adicional executa e conserva ACL restrita",
+        "aprovado": true
+      },
+      {
+        "nome": "Novos contextos recebem apenas padrão fictício; geral anterior preservado",
+        "aprovado": true
+      },
+      {
+        "nome": "Recuperação antes de consumo restaura função exata",
+        "aprovado": true
+      },
+      {
+        "nome": "Pares e slugs aprovados aceitos sem alterar TTL",
+        "aprovado": true
+      },
+      {
+        "nome": "Par trocado recusado",
+        "aprovado": true
+      },
+      {
+        "nome": "Alias arbitrário recusado",
+        "aprovado": true
+      },
+      {
+        "nome": "TTL superior a 48h recusado",
+        "aprovado": true
+      },
+      {
+        "nome": "Recuperação após consumo não apaga nem estreita histórico",
+        "aprovado": true
+      },
+      {
+        "nome": "Histórico fictício preservado após recusas",
+        "aprovado": true
+      }
+    ],
+    "banco_descartavel_encerrado": true
+  },
+  "hosts_locais": {
+    "aprovados": 6,
+    "total": 6
+  },
+  "build_r2": {
+    "aprovado": true,
+    "publicado": false,
+    "artefato_removido_para_liberar_espaco": true
+  },
+  "r2": {
+    "autorizada_uma_vez": true,
+    "limite_contas_acumuladas": 10,
+    "limite_contextos_acumulados": 4,
+    "aplicada": false,
+    "contas_criadas": 0,
+    "contextos_criados": 0,
+    "condicao": "sessao legitima do criador antes de consumir recursos; ainda nao comprovada"
+  },
+  "kernel": {
+    "reset_oficial": true,
+    "teste_minimo_falhou": true,
+    "apos_liberar_artefato_proprio": "windows sandbox failed: helper_unknown_error: setup refresh had errors"
+  },
+  "homologacao_completa": false,
+  "escritas_remotas": 0
+}

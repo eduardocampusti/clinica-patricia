@@ -1,0 +1,11 @@
+# SPA Vite na Hostinger: este arquivo entra em dist em todo build.
+# Reescrita interna: preserva caminho no navegador e query string de Auth.
+# HTTPS/canonical continuam sob a configuracao da hospedagem.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>

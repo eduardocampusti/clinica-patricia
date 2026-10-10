@@ -1,0 +1,11 @@
+{
+  "janela": {
+    "inicio": "2026-10-09T21:07:00Z",
+    "fim": "2026-10-09T21:09:10Z"
+  },
+  "canal": "MCP oficial query_logs; agregado sem conteúdo de requests/identidade",
+  "servico": "configuracoes",
+  "post200": 8,
+  "post401": 1,
+  "options204": 4
+}

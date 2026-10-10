@@ -1,10 +1,17 @@
-import { useState, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import type { ClinicaAtiva } from '../../hooks/useClinicaAtiva'
 import type { Papel } from '../../hooks/usePapelNaClinica'
 import { ThemeToggle } from '../../theme/ThemeToggle'
+import { rotuloPapel } from '../../lib/papelApresentacao'
 import Sidebar from './Sidebar'
-import type { Tela } from './types'
-import { IconeFechar, IconeLupa, IconeMenuHamburguer, IconeSino } from './icons'
+import { TITULOS_TELA, type Tela } from './types'
+import { SidebarProvider, SidebarInset, SidebarTrigger } from '../ui/sidebar'
+import type { IdentidadeConta } from '../../hooks/useIdentidadeConta'
+import { AvatarConta } from './AvatarConta'
+import { detalheIdentidade, rotuloIdentidade } from '../../lib/identidadeApresentacao'
+import { MeuPerfil } from '../perfil/MeuPerfil'
+import { useMarcaInstitucional } from '../../hooks/useMarcaInstitucional'
+import { useTheme } from '../../theme/ThemeProvider'
 
 interface AppShellProps {
   tela: Tela
@@ -12,7 +19,8 @@ interface AppShellProps {
   clinicaAtiva: ClinicaAtiva | null
   clinicasDoUsuario: ClinicaAtiva[]
   onSelecionarClinica: (id: string) => void
-  emailUsuario: string
+  identidade: IdentidadeConta
+  conta: string
   papel: Papel | null
   onSair: () => void
   children: ReactNode
@@ -24,127 +32,65 @@ function AppShell({
   clinicaAtiva,
   clinicasDoUsuario,
   onSelecionarClinica,
-  emailUsuario,
+  identidade,
+  conta,
   papel,
   onSair,
   children,
 }: AppShellProps) {
-  const [drawerAberto, setDrawerAberto] = useState(false)
-
+  const [perfilAberto, setPerfilAberto] = useState(false)
+  const abrirPerfil = () => { identidade.reconsultar?.(); setPerfilAberto(true) }
+  const marcaInstitucional = useMarcaInstitucional(clinicaAtiva?.id ?? null)
+  const { aplicarCoresClinica } = useTheme()
+  useEffect(()=>{
+    if(!clinicaAtiva||!marcaInstitucional.snapshot)return
+    aplicarCoresClinica({...clinicaAtiva,cor_primaria:marcaInstitucional.apresentacao.cor})
+    const favicon=marcaInstitucional.snapshot.ativos[marcaInstitucional.apresentacao.favicon]
+    if(!favicon)return
+    const link=document.createElement('link');link.rel='icon';link.href=favicon;document.head.append(link)
+    return()=>link.remove()
+  },[clinicaAtiva,marcaInstitucional.snapshot,marcaInstitucional.apresentacao.cor,marcaInstitucional.apresentacao.favicon,aplicarCoresClinica])
   return (
-    <div className="flex min-h-screen bg-[var(--fundo-pagina)]">
+    <SidebarProvider className={tela === 'financeiro' ? 'app-shell-finance' : ''}>
       <Sidebar
-        tela={tela}
         onNavegar={onNavegar}
         clinicaAtiva={clinicaAtiva}
         clinicasDoUsuario={clinicasDoUsuario}
         onSelecionarClinica={onSelecionarClinica}
         papel={papel}
-        aberta={drawerAberto}
-        onFechar={() => setDrawerAberto(false)}
+        identidade={identidade}
+        onMeuPerfil={abrirPerfil}
         onSair={onSair}
+        logoInstitucional={marcaInstitucional.logo}
       />
 
-      {drawerAberto && (
-        <button
-          type="button"
-          aria-label="Fechar menu"
-          onClick={() => setDrawerAberto(false)}
-          className="fixed inset-0 z-30 bg-[var(--sobreposicao)] lg:hidden"
-        />
-      )}
+      <SidebarInset>
+        <header className="app-shell-header flex min-h-16 flex-none items-center gap-3 border-b border-[var(--borda)] bg-[var(--fundo-card)] px-4 sm:px-6 lg:px-8">
+          <SidebarTrigger />
 
-      <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex h-16 flex-none items-center gap-4 border-b border-[var(--borda)] bg-[var(--fundo-card)] px-4 lg:px-6">
-          {/* Botão hambúrguer — só mobile */}
-          <button
-            type="button"
-            onClick={() => setDrawerAberto((v) => !v)}
-            aria-label={drawerAberto ? 'Fechar menu' : 'Abrir menu'}
-            className="flex h-9 w-9 items-center justify-center rounded-lg text-[var(--texto-principal)] transition hover:bg-[var(--fundo-pagina)] lg:hidden"
-          >
-            {drawerAberto ? <IconeFechar /> : <IconeMenuHamburguer />}
-          </button>
-
-          {/* Abas de clínica — só proprietária (desktop) */}
-          {clinicasDoUsuario.length > 1 && (
-            <nav className="hidden items-center gap-1 lg:flex">
-              {clinicasDoUsuario.map((c) => {
-                const ativa = c.id === clinicaAtiva?.id
-                return (
-                  <button
-                    key={c.id}
-                    type="button"
-                    onClick={() => onSelecionarClinica(c.id)}
-                    className={`relative px-3 py-2 text-sm font-medium transition ${
-                      ativa
-                        ? 'text-[var(--cor-primaria)]'
-                        : 'text-[var(--texto-terciario)] hover:text-[var(--texto-principal)]'
-                    }`}
-                  >
-                    {c.nome.replace('Clínica ', '')}
-                    {ativa && (
-                      <span className="absolute bottom-0 left-1 right-1 h-0.5 rounded-full bg-[var(--cor-primaria)]" />
-                    )}
-                  </button>
-                )
-              })}
-            </nav>
-          )}
-
-          {/* Nome da clínica — só funcionário (desktop) */}
-          {clinicasDoUsuario.length <= 1 && clinicaAtiva && (
-            <span className="hidden text-sm font-medium text-[var(--texto-secundario)] lg:block">
-              {clinicaAtiva.nome}
-            </span>
-          )}
-
-          {/* Espaçador */}
-          <div className="flex-1" />
-
-          {/* Busca (desktop) */}
-          <div className="hidden items-center gap-2 rounded-lg border border-[var(--borda)] bg-[var(--fundo-pagina)] px-3 py-1.5 text-sm text-[var(--texto-terciario)] lg:flex">
-            <IconeLupa className="h-4 w-4" />
-            <span>Buscar paciente ou agenda...</span>
-            <kbd className="ml-4 rounded border border-[var(--borda)] bg-[var(--fundo-card)] px-1.5 py-0.5 text-[11px] font-medium text-[var(--texto-terciario)]">
-              Ctrl+K
-            </kbd>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-semibold text-[var(--texto-principal)]">{TITULOS_TELA[tela]}</p>
+            <p className="hidden text-xs text-[var(--texto-secundario)] sm:block">Gestão clínica</p>
           </div>
 
-          {/* Ícones de ação */}
-          <div className="flex items-center gap-2">
-            {/* Sino de notificações */}
-            <button
-              type="button"
-              className="relative flex h-9 w-9 items-center justify-center rounded-lg text-[var(--texto-secundario)] transition hover:bg-[var(--fundo-pagina)]"
-            >
-              <IconeSino className="h-5 w-5" />
-              <span className="absolute right-1.5 top-1.5 flex h-2 w-2 rounded-full bg-[var(--cor-erro)]" />
-            </button>
-
-            {/* Toggle claro/escuro */}
+          <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+            {clinicasDoUsuario.length > 1 ? (
+              <select aria-label="Selecionar clínica" value={clinicaAtiva?.id ?? ''}
+                onChange={(evento) => onSelecionarClinica(evento.target.value)}
+                className="max-w-[115px] min-h-10 truncate rounded-lg border border-[var(--borda)] bg-[var(--fundo-card)] px-2 text-xs font-medium text-[var(--texto-principal)] focus-visible:outline-2 focus-visible:outline-[var(--cor-primaria)] sm:max-w-[190px] sm:px-3 sm:text-sm">
+                {clinicasDoUsuario.map((clinica) => <option key={clinica.id} value={clinica.id}>{clinica.nome}</option>)}
+              </select>
+            ) : clinicaAtiva && <span className="max-w-[110px] truncate text-xs font-medium text-[var(--texto-secundario)] sm:max-w-none sm:text-sm">{clinicaAtiva.nome}</span>}
             <ThemeToggle />
-
-            {/* CTA — Novo Atendimento (desktop) */}
-            <button
-              type="button"
-              onClick={() => onNavegar('atendimentos')}
-              className="hidden items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90 lg:flex"
-              style={{ backgroundColor: 'var(--cor-primaria)' }}
-            >
-              Novo Atendimento
-            </button>
-
-            {/* Avatar do usuário */}
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--fundo-pagina)] text-xs font-bold text-[var(--texto-principal)]">
-              {emailUsuario.slice(0, 2).toUpperCase()}
-            </div>
+            <button type="button" aria-label="Meu perfil pelo avatar" title="Meu perfil" onClick={abrirPerfil} className="flex min-h-11 min-w-11 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-[var(--cor-primaria)]"><AvatarConta identidade={identidade} papel={rotuloPapel(papel)} /></button>
+            <div className="hidden max-w-40 lg:block" title={detalheIdentidade(identidade)}><p className="truncate text-xs font-semibold text-[var(--texto-principal)]" title={identidade.nome ?? undefined}>{rotuloIdentidade(identidade)}</p><p className="text-xs text-[var(--texto-secundario)]">{rotuloPapel(papel)}</p></div>
           </div>
         </header>
 
-        <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-10 lg:py-9">{children}</main>
-      </div>
-    </div>
+        <main className="min-w-0 flex-1 px-4 py-5 sm:px-6 lg:px-8 lg:py-7">{children}</main>
+      </SidebarInset>
+      {perfilAberto && <MeuPerfil key={identidade.chave.split(':')[0]} identidade={identidade} conta={conta} papel={rotuloPapel(papel)} clinica={clinicaAtiva?.nome ?? 'Clínica selecionada'} onFechar={() => setPerfilAberto(false)} />}
+    </SidebarProvider>
   )
 }
 

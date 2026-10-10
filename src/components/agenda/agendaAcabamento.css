@@ -1,0 +1,52 @@
+/* Agenda apenas: nenhuma medida da grade ou do painel é alterada. */
+.agenda-superficie { box-shadow: var(--sombra-1); border-color: var(--agenda-superficie-borda); }
+.agenda-link { color: var(--agenda-link-texto); }
+.agenda-indicador { position: relative; background: linear-gradient(135deg, var(--agenda-kpi-inicio), var(--agenda-kpi-fim)); }
+.agenda-indicador::before { content: ''; position: absolute; inset: 0 0 auto; height: 3px; border-radius: inherit; background: var(--agenda-kpi-acento); }
+.agenda-indicador-icone { display: none; }
+@media (min-width: 768px) {
+  .agenda-indicador-icone { display: flex; position: absolute; right: 10px; bottom: 24px; width: 24px; height: 24px; align-items: center; justify-content: center; border-radius: 8px; color: var(--agenda-kpi-acento); background: var(--agenda-kpi-icone); }
+}
+.agenda-temporal-cabecalho { background: var(--agenda-prof-fundo); }
+.agenda-temporal-cabecalho > div:first-child { flex: 1; }
+.agenda-temporal-cabecalho > div:first-child > div { flex: 1; }
+.agenda-prof-avatar { color: var(--agenda-prof-texto); background: var(--agenda-prof-avatar); }
+.agenda-temporal-registro { position: relative; box-shadow: var(--sombra-1); }
+.agenda-temporal-registro::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 3px; border-radius: inherit; background: var(--situacao-ponto); pointer-events: none; }
+.painel-agenda { box-shadow: var(--sombra-3); }
+.painel-agenda label:has(input[type="radio"]), .painel-agenda [role="group"][aria-labelledby="remarcar-sugestoes"] > button { box-shadow: var(--sombra-1); }
+.agenda-lista-linha:has(button:focus-visible) { background-color: var(--fundo-pagina); }
+.agenda-pagina button, .painel-agenda button, .painel-agenda label:has(input[type="radio"]), .agenda-temporal-registro, .agenda-lista-cartao, .agenda-lista-linha, .agenda-indicador {
+  transition: transform 180ms ease-out, box-shadow 180ms ease-out, background-color 180ms ease-out, border-color 180ms ease-out, color 180ms ease-out;
+}
+.agenda-temporal-registro:has(button:focus-visible), .painel-agenda label:has(input[type="radio"]:focus-visible):not(:has(:disabled)), .painel-agenda [role="group"][aria-labelledby="remarcar-sugestoes"] > button:focus-visible:not(:disabled) { transform: translateY(-1px); box-shadow: var(--sombra-2); }
+.agenda-pagina button.agenda-temporal-livre:focus-visible:not(:disabled), .agenda-celular-livre button:focus-visible:not(:disabled) { border-color: var(--cor-primaria); background: var(--agenda-realce-fundo); color: var(--agenda-realce-texto); }
+.agenda-pagina button:focus-visible:not(:disabled), .painel-agenda button:focus-visible:not(:disabled) { box-shadow: var(--sombra-2); }
+.agenda-pagina [aria-pressed="false"]:focus-visible:not(:disabled), .agenda-pagina #agenda-mini-calendario button:focus-visible:not([aria-pressed="true"]), .painel-agenda [aria-pressed="false"]:focus-visible:not(:disabled) { background-color: var(--agenda-realce-fundo); }
+.agenda-pagina button[class*="bg-[var(--cor-primaria)]"]:not([aria-pressed]), .painel-agenda button[type="submit"] { box-shadow: var(--sombra-1); }
+.agenda-pagina button[class*="bg-[var(--cor-primaria)]"]:not([aria-pressed]):focus-visible:not(:disabled), .painel-agenda button[type="submit"]:focus-visible:not(:disabled) { background-color: var(--cor-primaria-hover); box-shadow: var(--sombra-2); }
+@media (hover: hover) {
+  .agenda-indicador:hover { box-shadow: var(--sombra-2); }
+  .agenda-temporal-registro:has(button:hover), .painel-agenda label:has(input[type="radio"]):hover:not(:has(:disabled)), .painel-agenda [role="group"][aria-labelledby="remarcar-sugestoes"] > button:hover:not(:disabled) { transform: translateY(-1px); box-shadow: var(--sombra-2); }
+  .agenda-pagina button:hover:not(:disabled), .painel-agenda button:hover:not(:disabled) { box-shadow: var(--sombra-2); }
+  .agenda-pagina [aria-pressed="false"]:hover:not(:disabled), .agenda-pagina #agenda-mini-calendario button:hover:not([aria-pressed="true"]), .painel-agenda [aria-pressed="false"]:hover:not(:disabled) { background-color: var(--agenda-realce-fundo); }
+  .agenda-pagina button.agenda-temporal-livre:hover:not(:disabled), .agenda-celular-livre button:hover:not(:disabled) { border-color: var(--cor-primaria); background: var(--agenda-realce-fundo); color: var(--agenda-realce-texto); }
+  .agenda-pagina .agenda-lista-linha:hover { background-color: var(--fundo-pagina); }
+  .agenda-pagina button[class*="bg-[var(--cor-primaria)]"]:not([aria-pressed]):hover:not(:disabled), .painel-agenda button[type="submit"]:hover:not(:disabled) { background-color: var(--cor-primaria-hover); box-shadow: var(--sombra-2); }
+}
+@media (max-width: 767px) {
+  .agenda-celular-lista { box-shadow: none; }
+  .agenda-lista-cartao { position: relative; box-shadow: var(--sombra-1); }
+  .agenda-lista-cartao::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 3px; border-radius: inherit; background: var(--status-agendado-ponto); pointer-events: none; }
+  .agenda-lista-linha[data-situacao="confirmado"] .agenda-lista-cartao::before { background: var(--status-confirmado-ponto); }
+  .agenda-lista-linha[data-situacao="aguardando"] .agenda-lista-cartao::before { background: var(--status-aguardando-ponto); }
+  .agenda-lista-linha[data-situacao="em-atendimento"] .agenda-lista-cartao::before { background: var(--status-em-atendimento-ponto); }
+  .agenda-lista-linha[data-situacao="concluido"] .agenda-lista-cartao::before { background: var(--status-concluido-ponto); }
+  .agenda-lista-linha[data-situacao="cancelado"] .agenda-lista-cartao::before { background: var(--status-cancelado-ponto); }
+  .agenda-lista-cartao:has(button:focus-visible) { transform: translateY(-1px); box-shadow: var(--sombra-2); }
+}
+@media (max-width: 767px) and (hover: hover) { .agenda-lista-cartao:has(button:hover) { transform: translateY(-1px); box-shadow: var(--sombra-2); } }
+@media (prefers-reduced-motion: reduce) {
+  .agenda-pagina *, .painel-agenda * { transition: none !important; }
+  .agenda-temporal-registro, .agenda-lista-cartao, .painel-agenda label:has(input[type="radio"]), .painel-agenda [role="group"][aria-labelledby="remarcar-sugestoes"] > button { transform: none !important; }
+}

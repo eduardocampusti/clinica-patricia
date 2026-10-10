@@ -1,0 +1,50 @@
+{
+  "projeto": "xftnkusbyqzyvzrovroj",
+  "conferencias_remotas_utc": ["2026-10-09T14:22:21.720020Z", "2026-10-09T14:22:51.443185Z", "2026-10-09T14:23:38.378182Z"],
+  "canal": "MCP oficial supabase_clinica_patricia, alvo confirmado por get_project_url e .env; transacoes SQL READ ONLY",
+  "dashboard": {
+    "origem": "conferencia manual informada pelo usuario",
+    "clinicas": ["Brotas", "Ipupiara"],
+    "mesma_data_e_filtros": true,
+    "indicadores_e_quantidades_pendencias_coincidem": true,
+    "valores_individuais_fornecidos": false,
+    "inspecao_automatizada": false
+  },
+  "estado_remoto": {
+    "contas_antigas": 3,
+    "contas_antigas_banidas": 3,
+    "sessoes_antigas": 0,
+    "refresh_antigos_ativos": 0,
+    "vinculos_antigos_ativos": 0,
+    "perfis_antigos_ativos": 0,
+    "contextos_antigos_encerrados": 2,
+    "clinicas_antigas_ativas": 0,
+    "contas_r2": 0,
+    "contextos_r2": 0,
+    "clinicas_r2": 0,
+    "r2_ledger": false,
+    "checks_r2_catalogo": "restritos aos dois contextos antigos; aliases R2 ausentes",
+    "controle": {"habilitado": false, "homologacao_habilitada": false, "protecoes_instaladas": true},
+    "lista": 0,
+    "operacoes": 0,
+    "pre_request": "public.acesso_direto_pre_request",
+    "pre_request_invoker": true,
+    "pre_request_anon_exec": true,
+    "pre_request_authenticated_exec": true,
+    "politicas_acesso_direto_bloqueio_restrictive": 57,
+    "graphql_instalada": false,
+    "edges_active_versoes": {"equipe-acessos":10,"equipe-recursos":5,"equipe-fichas":5,"meu-perfil":4,"equipe-acesso-direto":1,"configuracoes":1,"configuracoes-publicas":1}
+  },
+  "impedimento": {
+    "operacao": "MCP node_repl oficial: inicializar Computer Use com import('@oai/sky')",
+    "erro": "trusted Node process exited unexpectedly; kernel reset, rerun your request",
+    "antes_de_acessar_sessao": true,
+    "criador_autenticado_acessivel_ao_agente": false,
+    "novo_login_real": false,
+    "capacidade_necessaria": "kernel Computer Use/navegador funcional para a sessao legitima existente; nao substituir por sessao administrativa ou SQL emulado"
+  },
+  "escritas_remotas": 0,
+  "novos_recursos_consumidos": 0,
+  "dashboard_alterada": false,
+  "commit_push_deploy": false
+}

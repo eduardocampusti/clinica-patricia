@@ -1,0 +1,5 @@
+-- Seed local intencionalmente neutro.
+--
+-- O baseline do schema ainda nao foi capturado. Este arquivo nao cria objetos e nao insere dados,
+-- permitindo que a configuracao local seja validada sem inventar estrutura ou copiar informacoes
+-- reais. Dados exclusivamente sinteticos serao adicionados somente depois do baseline versionado.

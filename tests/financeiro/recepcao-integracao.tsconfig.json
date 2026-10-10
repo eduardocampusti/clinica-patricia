@@ -1,0 +1,6 @@
+{
+  "extends": "../../tsconfig.app.json",
+  "compilerOptions": { "tsBuildInfoFile": "../../node_modules/.tmp/caixa-integracao.tsbuildinfo" },
+  "include": ["recepcao-integracao.tsx", "recepcao-integracao.spec.ts", "recepcao-integracao.playwright.config.ts"],
+  "exclude": []
+}

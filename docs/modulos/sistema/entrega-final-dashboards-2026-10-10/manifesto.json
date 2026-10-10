@@ -1,0 +1,734 @@
+{
+  "data": "10/10/2026, 05:21:49 -03:00",
+  "root": "C:/Users/Eduardo/.codex/worktrees/salvar-dashboard-configuracoes-acesso/CLINICA PATRICIA",
+  "branch": "codex/resgate-local-2026-09-26",
+  "base": "e012c4e401cd82f1df538a85c7c735bb3662db0e",
+  "remoto": "e012c4e401cd82f1df538a85c7c735bb3662db0e",
+  "git_worktree": "D:/PROJETOS SAAS/CLINICA PATRICIA/.git/worktrees/CLINICA-PATRICIA7",
+  "git_comum": "D:/PROJETOS SAAS/CLINICA PATRICIA/.git",
+  "objetos": "D:/PROJETOS SAAS/CLINICA PATRICIA/.git/objects",
+  "d_livre_bytes": 0,
+  "repositorio": "eduardocampusti/clinica-patricia",
+  "comparacao": "ls-remote oficial; remoto idêntico à base; sem fetch/merge/reset",
+  "validacao_anterior": {
+    "tipos": "aprovado",
+    "lint": "aprovado com avisos preexistentes",
+    "build": "aprovado com aviso preexistente de tamanho",
+    "administrativas_identidade_rotas_sinteticas": 108,
+    "matriz_visual_proprietaria_sintetica": 6,
+    "recepcao_conjunto_final_sintetico": {
+      "aprovados": 59,
+      "inaplicaveis": 1
+    },
+    "total_aprovados_sem_duplicar_repeticoes": 173,
+    "larguras_px": [
+      1440,
+      1024,
+      768,
+      430,
+      390,
+      360
+    ],
+    "temas": [
+      "claro",
+      "escuro"
+    ],
+    "primeiro_conjunto_recepcao": {
+      "aprovados": 58,
+      "inaplicaveis": 1,
+      "falha": "abertura do Movimento não encontrada em 5 s; causa não determinada",
+      "recuperacao": "arquivo completo repetido sem concorrência; timeout preservado"
+    },
+    "sessao_real_existente_local_proprietaria": {
+      "brotas": true,
+      "ipupiara": true,
+      "pendencias_regulares_altura_px": 122,
+      "atualizacao_ipupiara_contagens_valores_iguais": true,
+      "f5_brotas": true,
+      "sem_alertas_ou_transbordamento": true
+    },
+    "sessao_real_recepcao": "não disponível"
+  },
+  "provas_reaproveitadas": true,
+  "hashes_produto_preservados": true,
+  "dependencias": [
+    {
+      "arquivo": "src/pages/Dashboard.tsx",
+      "estado": "já presente e inalterada no commit remoto",
+      "sha256": "a72905ca838be80616ad9d225b7eeea5e4dcc7e3ce669f03edd8e9f0a900c375"
+    },
+    {
+      "arquivo": "src/components/dashboard/CabecalhoDashboard.tsx",
+      "estado": "já presente e inalterada no commit remoto",
+      "sha256": "32af558dc2361699512369581c86cbec22044fcb2841628f4947cc76bb39ea43"
+    },
+    {
+      "arquivo": "src/components/dashboard/painelProprietaria.css",
+      "estado": "já presente e inalterada no commit remoto",
+      "sha256": "81390c5b4749a4fa4097565620ea5ad1133a2f2186f6c4eae263064c9043c58f"
+    },
+    {
+      "arquivo": "src/components/dashboard/painelRecepcao.css",
+      "estado": "já presente e inalterada no commit remoto",
+      "sha256": "84c61d19b2d4753bbff16b216940ffdfddc6e1d050a7704a26313b349ab5c35d"
+    },
+    {
+      "arquivo": "src/components/dashboard/PainelRecepcaoUI.tsx",
+      "estado": "já presente e inalterada no commit remoto",
+      "sha256": "b0ebcdd9765f95213430a7d8e04c80c4239dd35b6a4636914d2c75598698cdc9"
+    },
+    {
+      "arquivo": "src/components/feedback/FeedbackAlert.tsx",
+      "estado": "já presente e inalterada no commit remoto",
+      "sha256": "3fb453f60ffae0c727926a817bccdb799d71f32d9af4623a384a077c2512030f"
+    },
+    {
+      "arquivo": "src/lib/dashboardProprietaria.ts",
+      "estado": "já presente e inalterada no commit remoto",
+      "sha256": "82cc4236d9ed650ad596fcb620c5dbfeebe522b8e36d33e18f6b9a37a23ae62d"
+    },
+    {
+      "arquivo": "src/lib/dashboardRecepcao.ts",
+      "estado": "já presente e inalterada no commit remoto",
+      "sha256": "fd5e891e06bcbebb60e3b78754b5946eef0623ff44267a3c102701e6d8c54465"
+    },
+    {
+      "arquivo": "src/lib/leituraPainel.ts",
+      "estado": "já presente e inalterada no commit remoto",
+      "sha256": "2ee2f72e1c4f9b561599cd66e56b4c58c099c40b6447d061aa17f74cca3185e0"
+    },
+    {
+      "arquivo": "src/lib/pacienteLista.ts",
+      "estado": "já presente e inalterada no commit remoto",
+      "sha256": "e72f65a68a00f87d1594b14bbf1e363cebe7da980b4b9009be391ed75ccdf7d7"
+    },
+    {
+      "arquivo": "src/hooks/useAtualizacaoPainel.ts",
+      "estado": "já presente e inalterada no commit remoto",
+      "sha256": "95d4f3121a59935b831b49781d7416c48e8f9675b93ae50e90b49ff09d23b12d"
+    },
+    {
+      "arquivo": "src/hooks/usePapelNaClinica.ts",
+      "estado": "já presente e inalterada no commit remoto",
+      "sha256": "dafe64f586b90ad93686682cfcefaf13d77c90e100e08c5c3c8c56ad4b9febbd"
+    },
+    {
+      "arquivo": "src/App.tsx",
+      "estado": "já presente e inalterada no commit remoto",
+      "sha256": "d39739ba8bcbb55741735e0a15b99120015035f09e0fd5877bc5863df6e19cc2"
+    },
+    {
+      "arquivo": "src/components/GuardaAtivacao.tsx",
+      "estado": "já presente e inalterada no commit remoto",
+      "sha256": "73aafcc44c4b850b81f4efe3e0d864ac758cfd2c150501de9fcb69cebe7bdd1b"
+    },
+    {
+      "arquivo": "src/lib/contextoAtivacao.ts",
+      "estado": "já presente e inalterada no commit remoto",
+      "sha256": "ff0458159d9af7b07486834ddcbb576420622b452f707e1386932d45aab59734"
+    },
+    {
+      "arquivo": "src/pages/Login.tsx",
+      "estado": "já presente e inalterada no commit remoto",
+      "sha256": "13fb968ea204da78b79906736c5db96c687522602c486dfa363563046f7d6c34"
+    },
+    {
+      "arquivo": "tests/login/dashboard-fixture.ts",
+      "estado": "já presente e inalterada no commit remoto",
+      "sha256": "122f15fa285c89bf28d7185adfb67894783a745dd2bd85aa53624fff3ad9c82b"
+    },
+    {
+      "arquivo": "tests/login/dashboard-administrativa.config.ts",
+      "estado": "já presente e inalterada no commit remoto",
+      "sha256": "cebfc02a2654edfd4497e5036eb36253cd97daf3797a7a7ce0c4284c145f1041"
+    },
+    {
+      "arquivo": "tests/login/dashboard-administrativa.vite.config.ts",
+      "estado": "já presente e inalterada no commit remoto",
+      "sha256": "2eed19e4d897ee0f0b1e6a014a0e61b5daba661fa54bd9a2bad6b69ec4c43cf1"
+    },
+    {
+      "arquivo": "tests/operacional/playwright.config.ts",
+      "estado": "já presente e inalterada no commit remoto",
+      "sha256": "41247362fdd155d6dedf0df73f079ad0541397cff238ac666dc7d000f7f3642e"
+    },
+    {
+      "arquivo": "tests/operacional/vite.config.ts",
+      "estado": "já presente e inalterada no commit remoto",
+      "sha256": "e1bbeaa4156872eb4d6adc57d7c9c5512819134f3913b48d3a1768d6a331a6c7"
+    },
+    {
+      "arquivo": "package.json",
+      "estado": "já presente e inalterada no commit remoto",
+      "sha256": "a8b7a366e794cbf7579763eca797155d0bda0922c243341c9073dc0ec7e35cbb"
+    },
+    {
+      "arquivo": "package-lock.json",
+      "estado": "já presente e inalterada no commit remoto",
+      "sha256": "a2411ca0abfb11470f515f90025754341210dbf34a2f3a64b1e8119026a63b0e"
+    },
+    {
+      "arquivo": "vite.config.ts",
+      "estado": "já presente e inalterada no commit remoto",
+      "sha256": "b24e24a7e8da74aaad49658648b4185de07ef0ff59c9f7e926628c2be100981d"
+    },
+    {
+      "arquivo": "tsconfig.json",
+      "estado": "já presente e inalterada no commit remoto",
+      "sha256": "bf7d3a079dca27b91bbbf245b4d38f2491b501b11dd8baf46f5c6604abf32bd5"
+    },
+    {
+      "arquivo": "scripts/check-release-notes.mjs",
+      "estado": "já presente e inalterada no commit remoto",
+      "sha256": "5d3280fa1595d82b02968d157f24cb86ad4ec1f113fd41dbe7b668ad246d8032"
+    }
+  ],
+  "importacoes": [
+    {
+      "arquivo": "src/components/dashboard/PainelProprietaria.tsx",
+      "importacao": "./CabecalhoDashboard",
+      "resolve": "src/components/dashboard/CabecalhoDashboard.tsx"
+    },
+    {
+      "arquivo": "src/components/dashboard/PainelProprietaria.tsx",
+      "importacao": "../feedback/FeedbackAlert",
+      "resolve": "src/components/feedback/FeedbackAlert.tsx"
+    },
+    {
+      "arquivo": "src/components/dashboard/PainelProprietaria.tsx",
+      "importacao": "../../lib/dashboardRecepcao",
+      "resolve": "src/lib/dashboardRecepcao.ts"
+    },
+    {
+      "arquivo": "src/components/dashboard/PainelProprietaria.tsx",
+      "importacao": "../../lib/dashboardProprietaria",
+      "resolve": "src/lib/dashboardProprietaria.ts"
+    },
+    {
+      "arquivo": "src/components/dashboard/PainelProprietaria.tsx",
+      "importacao": "../../lib/pacienteLista",
+      "resolve": "src/lib/pacienteLista.ts"
+    },
+    {
+      "arquivo": "src/components/dashboard/PainelProprietaria.tsx",
+      "importacao": "../../hooks/useAtualizacaoPainel",
+      "resolve": "src/hooks/useAtualizacaoPainel.ts"
+    },
+    {
+      "arquivo": "src/components/dashboard/PainelProprietaria.tsx",
+      "importacao": "../../lib/leituraPainel",
+      "resolve": "src/lib/leituraPainel.ts"
+    },
+    {
+      "arquivo": "src/components/dashboard/PainelProprietaria.tsx",
+      "importacao": "./painelProprietaria.css",
+      "resolve": "src/components/dashboard/painelProprietaria.css"
+    },
+    {
+      "arquivo": "src/components/dashboard/PainelProprietaria.tsx",
+      "importacao": "./dashboardAcabamento.css",
+      "resolve": "src/components/dashboard/dashboardAcabamento.css"
+    },
+    {
+      "arquivo": "src/components/dashboard/PainelRecepcao.tsx",
+      "importacao": "./PainelRecepcaoUI",
+      "resolve": "src/components/dashboard/PainelRecepcaoUI.tsx"
+    },
+    {
+      "arquivo": "src/components/dashboard/PainelRecepcao.tsx",
+      "importacao": "../../lib/dashboardRecepcao",
+      "resolve": "src/lib/dashboardRecepcao.ts"
+    },
+    {
+      "arquivo": "src/components/dashboard/PainelRecepcao.tsx",
+      "importacao": "../../lib/financeiro/financeiro.caixa-leitura",
+      "resolve": "src/lib/financeiro/financeiro.caixa-leitura.ts"
+    },
+    {
+      "arquivo": "src/components/dashboard/PainelRecepcao.tsx",
+      "importacao": "../../lib/financeiro/financeiro.money",
+      "resolve": "src/lib/financeiro/financeiro.money.ts"
+    },
+    {
+      "arquivo": "src/components/dashboard/PainelRecepcao.tsx",
+      "importacao": "../../lib/financeiro/financeiro.types",
+      "resolve": "src/lib/financeiro/financeiro.types.ts"
+    },
+    {
+      "arquivo": "src/components/dashboard/PainelRecepcao.tsx",
+      "importacao": "../../lib/pacienteLista",
+      "resolve": "src/lib/pacienteLista.ts"
+    },
+    {
+      "arquivo": "src/components/dashboard/PainelRecepcao.tsx",
+      "importacao": "../../lib/pacienteCpf",
+      "resolve": "src/lib/pacienteCpf.ts"
+    },
+    {
+      "arquivo": "src/components/dashboard/PainelRecepcao.tsx",
+      "importacao": "../../lib/cpf",
+      "resolve": "src/lib/cpf.ts"
+    },
+    {
+      "arquivo": "src/components/dashboard/PainelRecepcao.tsx",
+      "importacao": "../../lib/texto",
+      "resolve": "src/lib/texto.ts"
+    },
+    {
+      "arquivo": "src/components/dashboard/PainelRecepcao.tsx",
+      "importacao": "../feedback/FeedbackAlert",
+      "resolve": "src/components/feedback/FeedbackAlert.tsx"
+    },
+    {
+      "arquivo": "src/components/dashboard/PainelRecepcao.tsx",
+      "importacao": "../../lib/leituraPainel",
+      "resolve": "src/lib/leituraPainel.ts"
+    },
+    {
+      "arquivo": "src/components/dashboard/PainelRecepcao.tsx",
+      "importacao": "../../hooks/useAtualizacaoPainel",
+      "resolve": "src/hooks/useAtualizacaoPainel.ts"
+    },
+    {
+      "arquivo": "src/components/dashboard/PainelRecepcao.tsx",
+      "importacao": "./painelRecepcao.css",
+      "resolve": "src/components/dashboard/painelRecepcao.css"
+    },
+    {
+      "arquivo": "src/components/dashboard/PainelRecepcao.tsx",
+      "importacao": "./dashboardAcabamento.css",
+      "resolve": "src/components/dashboard/dashboardAcabamento.css"
+    },
+    {
+      "arquivo": "src/components/dashboard/PainelRecepcao.tsx",
+      "importacao": "./CabecalhoDashboard",
+      "resolve": "src/components/dashboard/CabecalhoDashboard.tsx"
+    },
+    {
+      "arquivo": "tests/login/dashboard-administrativa.spec.ts",
+      "importacao": "./dashboard-fixture",
+      "resolve": "tests/login/dashboard-fixture.ts"
+    },
+    {
+      "arquivo": "tests/login/dashboard-administrativa.spec.ts",
+      "importacao": "./dashboard-acabamento-util",
+      "resolve": "tests/login/dashboard-acabamento-util.ts"
+    },
+    {
+      "arquivo": "tests/operacional/recepcao-integracao.spec.ts",
+      "importacao": "../login/dashboard-acabamento-util",
+      "resolve": "tests/login/dashboard-acabamento-util.ts"
+    }
+  ],
+  "metadados_candidatos": {
+    "versao": "0.6.1",
+    "aplicados": true,
+    "verificador": "Versão 0.6.1 (em desenvolvimento) e notas de evolução coerentes; referência do manifesto: 0.0.0.",
+    "arquivos": [
+      {
+        "arquivo": "package.json",
+        "candidato_local": "C:/Users/Eduardo/.codex/visualizations/2026/10/08/01a11d2e-0969-78c1-a478-e9da9e662630/preparacao-final-dashboards-2026-10-10/metadados-candidatos/package.json",
+        "sha256_candidato": "5036043a7f26b56f670790dadd574b1a50c2d0acd5fe7ebeba97ac9213c116b8"
+      },
+      {
+        "arquivo": "package-lock.json",
+        "candidato_local": "C:/Users/Eduardo/.codex/visualizations/2026/10/08/01a11d2e-0969-78c1-a478-e9da9e662630/preparacao-final-dashboards-2026-10-10/metadados-candidatos/package-lock.json",
+        "sha256_candidato": "f76cd4ce29b161c294e6128dc0fa5fc432451dc0fceb136acc188c890f868907"
+      },
+      {
+        "arquivo": "release-please-config.json",
+        "candidato_local": "C:/Users/Eduardo/.codex/visualizations/2026/10/08/01a11d2e-0969-78c1-a478-e9da9e662630/preparacao-final-dashboards-2026-10-10/metadados-candidatos/release-please-config.json",
+        "sha256_candidato": "120f878248bd28657794c25489a940b426747dfd3eed2d9dd3e79383b8884e5b"
+      },
+      {
+        "arquivo": "src/config/notasEvolucao.json",
+        "candidato_local": "C:/Users/Eduardo/.codex/visualizations/2026/10/08/01a11d2e-0969-78c1-a478-e9da9e662630/preparacao-final-dashboards-2026-10-10/metadados-candidatos/src/config/notasEvolucao.json",
+        "sha256_candidato": "f2177ce5c68a8d122a0a650a2798750a058327bf87da5d4b750a6d0b44bea2ce"
+      }
+    ],
+    "build_candidato": "npm run build completo aprovado na etapa de commit local; comprovante release-061.json"
+  },
+  "sessao_recepcao": "não disponível; inspeção das duas abas reais encontrou apenas Proprietária; sem teste real de Recepção",
+  "sessao_proprietaria": "provas anteriores B/I por leitura reaproveitadas; nesta etapa somente identificação de painel em sessões existentes local/publicada",
+  "capturas": [
+    {
+      "arquivo": "database/proofs/dashboard/2026-10-10-entrega-final/capturas/proprietaria-1440-claro.png",
+      "titulo": "Proprietária · desktop claro · 1440 px",
+      "origem": "sintética, requisições interceptadas; nenhum dado pessoal real",
+      "sha256": "985b0ffed4f957c9f3abb4ef5506bdfa1d5662b451d3048148576d5dab5702d4"
+    },
+    {
+      "arquivo": "database/proofs/dashboard/2026-10-10-entrega-final/capturas/proprietaria-1440-escuro.png",
+      "titulo": "Proprietária · desktop escuro · 1440 px",
+      "origem": "sintética, requisições interceptadas; nenhum dado pessoal real",
+      "sha256": "d060c1143f303c1f6641076a9d26c380cefad86ef2d8c80f9270d66a0e1e25df"
+    },
+    {
+      "arquivo": "database/proofs/dashboard/2026-10-10-entrega-final/capturas/proprietaria-360-escuro.png",
+      "titulo": "Proprietária · celular escuro · 360 px",
+      "origem": "sintética, requisições interceptadas; nenhum dado pessoal real",
+      "sha256": "e51c7c75a2bc818b25391ca9fd73a6080b3094752196e1d62d2ac9498277a9d9"
+    },
+    {
+      "arquivo": "database/proofs/dashboard/2026-10-10-entrega-final/capturas/recepcao-1440-claro.png",
+      "titulo": "Recepção · desktop claro · 1440 px",
+      "origem": "sintética, requisições interceptadas; nenhum dado pessoal real",
+      "sha256": "56abd552c8f176f1ad240727197809c9bcea0b98805a7362b801bfc1fa7767a1"
+    },
+    {
+      "arquivo": "database/proofs/dashboard/2026-10-10-entrega-final/capturas/recepcao-1440-escuro.png",
+      "titulo": "Recepção · desktop escuro · 1440 px",
+      "origem": "sintética, requisições interceptadas; nenhum dado pessoal real",
+      "sha256": "d99f1f903e345fb928a0ff25968290d9b1266a4ed52bf5079bd1a08beacdfb8f"
+    },
+    {
+      "arquivo": "database/proofs/dashboard/2026-10-10-entrega-final/capturas/recepcao-390-escuro.png",
+      "titulo": "Recepção · celular escuro · 390 px",
+      "origem": "sintética, requisições interceptadas; nenhum dado pessoal real",
+      "sha256": "5781718ee20ce8cb427943209a60d21eb7e0e01534ae1963b95274d600c90ee6"
+    }
+  ],
+  "limites": {
+    "produto_alterado": false,
+    "backup_refeito": false,
+    "novo_design": false,
+    "sql": false,
+    "backend": false,
+    "contas": false,
+    "commit": false,
+    "push": false,
+    "deploy": false
+  },
+  "selecionados": [
+    {
+      "arquivo": "src/components/dashboard/PainelProprietaria.tsx",
+      "acao": "incluir conteúdo atual aprovado",
+      "sha256_atual": "e153909758cd4541604770a0115bd8a2d2f4663d9321fc2976ddeb8ebd31e445",
+      "presente_na_base": true,
+      "sha256_entrega_061": "e153909758cd4541604770a0115bd8a2d2f4663d9321fc2976ddeb8ebd31e445"
+    },
+    {
+      "arquivo": "src/components/dashboard/PainelRecepcao.tsx",
+      "acao": "incluir conteúdo atual aprovado",
+      "sha256_atual": "4dd7263a57217a5aa3d87cba5baf5160b6843ae79146caf802cdbc098ecc65a0",
+      "presente_na_base": true,
+      "sha256_entrega_061": "4dd7263a57217a5aa3d87cba5baf5160b6843ae79146caf802cdbc098ecc65a0"
+    },
+    {
+      "arquivo": "src/components/dashboard/dashboardAcabamento.css",
+      "acao": "incluir conteúdo atual aprovado",
+      "sha256_atual": "b961debf1d1b364a35c372c3634c107dbc7277ee803185394bae4294a34083fb",
+      "presente_na_base": false,
+      "sha256_entrega_061": "b961debf1d1b364a35c372c3634c107dbc7277ee803185394bae4294a34083fb"
+    },
+    {
+      "arquivo": "src/config/notasEvolucao.json",
+      "acao": "aplicar exclusivamente os metadados candidatos na etapa seguinte",
+      "sha256_atual": "502c5a7045b589c70271a970929b5bd329da1aade4bb326342f60b52a359c3df",
+      "sha256_candidato": "f2177ce5c68a8d122a0a650a2798750a058327bf87da5d4b750a6d0b44bea2ce",
+      "presente_na_base": true,
+      "sha256_entrega_061": "f2177ce5c68a8d122a0a650a2798750a058327bf87da5d4b750a6d0b44bea2ce"
+    },
+    {
+      "arquivo": "tests/login/dashboard-administrativa.spec.ts",
+      "acao": "incluir conteúdo atual aprovado",
+      "sha256_atual": "8148a1f5c3ef9c41ccd4dc6b4156365024dbd91fabd95b60df77a46f2a3ff179",
+      "presente_na_base": true,
+      "sha256_entrega_061": "8148a1f5c3ef9c41ccd4dc6b4156365024dbd91fabd95b60df77a46f2a3ff179"
+    },
+    {
+      "arquivo": "tests/operacional/recepcao-integracao.spec.ts",
+      "acao": "incluir conteúdo atual aprovado",
+      "sha256_atual": "af674cfe41aee0d02ed051941e75cccba9493bee8b22c83e82bae6586385ee6d",
+      "presente_na_base": true,
+      "sha256_entrega_061": "af674cfe41aee0d02ed051941e75cccba9493bee8b22c83e82bae6586385ee6d"
+    },
+    {
+      "arquivo": "tests/login/dashboard-acabamento-util.ts",
+      "acao": "incluir conteúdo atual aprovado",
+      "sha256_atual": "16d7ef6081121f187f6cd576c63cbd0776dafa126dbc76827f08198dfe51b5c8",
+      "presente_na_base": false,
+      "sha256_entrega_061": "16d7ef6081121f187f6cd576c63cbd0776dafa126dbc76827f08198dfe51b5c8"
+    },
+    {
+      "arquivo": "package.json",
+      "acao": "aplicar exclusivamente os metadados candidatos na etapa seguinte",
+      "sha256_atual": "a8b7a366e794cbf7579763eca797155d0bda0922c243341c9073dc0ec7e35cbb",
+      "sha256_candidato": "5036043a7f26b56f670790dadd574b1a50c2d0acd5fe7ebeba97ac9213c116b8",
+      "presente_na_base": true,
+      "sha256_entrega_061": "5036043a7f26b56f670790dadd574b1a50c2d0acd5fe7ebeba97ac9213c116b8"
+    },
+    {
+      "arquivo": "package-lock.json",
+      "acao": "aplicar exclusivamente os metadados candidatos na etapa seguinte",
+      "sha256_atual": "a2411ca0abfb11470f515f90025754341210dbf34a2f3a64b1e8119026a63b0e",
+      "sha256_candidato": "f76cd4ce29b161c294e6128dc0fa5fc432451dc0fceb136acc188c890f868907",
+      "presente_na_base": true,
+      "sha256_entrega_061": "f76cd4ce29b161c294e6128dc0fa5fc432451dc0fceb136acc188c890f868907"
+    },
+    {
+      "arquivo": "release-please-config.json",
+      "acao": "aplicar exclusivamente os metadados candidatos na etapa seguinte",
+      "sha256_atual": "3821f10a8dcd5d9513ab87b59270d44c6a1e1347bf0b620aa2652599241c5fd7",
+      "sha256_candidato": "120f878248bd28657794c25489a940b426747dfd3eed2d9dd3e79383b8884e5b",
+      "presente_na_base": true,
+      "sha256_entrega_061": "120f878248bd28657794c25489a940b426747dfd3eed2d9dd3e79383b8884e5b"
+    },
+    {
+      "arquivo": "docs/modulos/sistema/00-README-SISTEMA.md",
+      "acao": "incluir documentação/evidência sanitizada do recorte",
+      "sha256_atual": "ceba321dfc1b146d22046b90f82e340bbcd0698e3a467983b1d0a4a2d7f9f23f",
+      "presente_na_base": true,
+      "sha256_entrega_061": "8a2ffeb5886ee80966a592d97d41b74a60fec28f57db424408c053153412f451"
+    },
+    {
+      "arquivo": "docs/modulos/sistema/01-DOCUMENTO-FUNCIONAL-MESTRE.md",
+      "acao": "incluir documentação/evidência sanitizada do recorte",
+      "sha256_atual": "ef8ae09f12f6b172e5c973b3883d1579cec230e0c53023d9a21e5586f081cdae",
+      "presente_na_base": true,
+      "sha256_entrega_061": "ef8ae09f12f6b172e5c973b3883d1579cec230e0c53023d9a21e5586f081cdae"
+    },
+    {
+      "arquivo": "docs/modulos/sistema/08-CHECKPOINT.md",
+      "acao": "incluir documentação/evidência sanitizada do recorte",
+      "sha256_atual": "0cb77be1d2f667d3bce706eab64c153cfd2d23af77e38df574f9d6219b4c4ea3",
+      "presente_na_base": true,
+      "sha256_entrega_061": "3adfb74257b2f9293f8744305bea0af7fa29421dad696be039e0d3cc49061f40"
+    },
+    {
+      "arquivo": "docs/ia/CHECKPOINT.md",
+      "acao": "incluir documentação/evidência sanitizada do recorte",
+      "sha256_atual": "c162e57bfd9c3559cf8b60215aa7b08c841179739c30084fc0ac02f5b1299a81",
+      "presente_na_base": true,
+      "sha256_entrega_061": "1220a043e6a89735892739fb802a9c7ef5c5a8a0c587c904f3714217b1f34428"
+    },
+    {
+      "arquivo": "docs/ia/INDICE.md",
+      "acao": "incluir documentação/evidência sanitizada do recorte",
+      "sha256_atual": "9d5499e3ee3d75245404795d22fc5114dfafd104981f50d4f1b94e958478f325",
+      "presente_na_base": true,
+      "sha256_entrega_061": "7f15d92abdf0934aa9760350aa80a1129dbee3ac755891c52bed4954f3c78c81"
+    },
+    {
+      "arquivo": "CHECKPOINT.md",
+      "acao": "incluir documentação/evidência sanitizada do recorte",
+      "sha256_atual": "8f8db460f9f25d1c6ec27c6c49cae2c268ed7b7a01ac5f80cf4e059507e85ec0",
+      "presente_na_base": true,
+      "sha256_entrega_061": "7f5afae0a504e1987ed239007e306dc17b54cddf8b644e0497f5636a81a9b8b0"
+    },
+    {
+      "arquivo": "docs/VERSIONAMENTO-E-RELEASES.md",
+      "acao": "incluir documentação/evidência sanitizada do recorte",
+      "sha256_atual": "863870f6e0c638897b0418f41edfcd68aeca7469471fde09c35d0d915f436054",
+      "presente_na_base": true,
+      "sha256_entrega_061": "427e43ab5bf8943593394f4b13de7f92c353c4bb0eb2dae50c7f8441cd740e47"
+    },
+    {
+      "arquivo": "docs/modulos/sistema/28-ACABAMENTO-VISUAL-DASHBOARDS-LOCAL.md",
+      "acao": "incluir documentação/evidência sanitizada do recorte",
+      "sha256_atual": "28b6af9d9a78eb2b2a6375e9b7789f9dc7cfd86f00906726bc398e1d6d11a9ea",
+      "presente_na_base": false,
+      "sha256_entrega_061": "28b6af9d9a78eb2b2a6375e9b7789f9dc7cfd86f00906726bc398e1d6d11a9ea"
+    },
+    {
+      "arquivo": "docs/modulos/sistema/29-REFINAMENTOS-FINAIS-DASHBOARDS-LOCAL.md",
+      "acao": "incluir documentação/evidência sanitizada do recorte",
+      "sha256_atual": "49b90f8c8a20e47dd0918e6d7119d5ebee1d90f5cfaaebafa78a18c95c7cf45e",
+      "presente_na_base": false,
+      "sha256_entrega_061": "49b90f8c8a20e47dd0918e6d7119d5ebee1d90f5cfaaebafa78a18c95c7cf45e"
+    },
+    {
+      "arquivo": "docs/modulos/sistema/30-PRESERVACAO-ENTREGA-LOCAL.md",
+      "acao": "incluir documentação/evidência sanitizada do recorte",
+      "sha256_atual": "13865d06aac27f1a41481fb77a0e1f620bd4997de623bb2e3053be943b049b2b",
+      "presente_na_base": false,
+      "sha256_entrega_061": "13865d06aac27f1a41481fb77a0e1f620bd4997de623bb2e3053be943b049b2b"
+    },
+    {
+      "arquivo": "docs/modulos/sistema/31-PREPARACAO-ENTREGA-FINAL-DASHBOARDS.md",
+      "acao": "incluir documentação/evidência sanitizada do recorte",
+      "sha256_atual": "487fb2649a4a68dafa450b608d39fe8ed75b51ead2f921432652de18326d584c",
+      "presente_na_base": false,
+      "sha256_entrega_061": "84fdc2a5562214a6c838d311b95ec58c5268eeb39f71fd77a5b61bade5c06227"
+    },
+    {
+      "arquivo": "database/proofs/dashboard/2026-10-09-refinamentos-local/verificacoes.json",
+      "acao": "incluir documentação/evidência sanitizada do recorte",
+      "sha256_atual": "8c47f0a9f8ffd87cb3d7525455a8aa98c5ab9b682340a055a1c7cec4e0b0d18c",
+      "presente_na_base": false,
+      "sha256_entrega_061": "8c47f0a9f8ffd87cb3d7525455a8aa98c5ab9b682340a055a1c7cec4e0b0d18c"
+    },
+    {
+      "arquivo": "database/proofs/dashboard/2026-10-09-conferencia-capturas/verificacoes.json",
+      "acao": "incluir documentação/evidência sanitizada do recorte",
+      "sha256_atual": "7dc7685bbe4a773071b08f21f73ccc96e90b6b96f1f5973e8447dbc88e460858",
+      "presente_na_base": false,
+      "sha256_entrega_061": "7dc7685bbe4a773071b08f21f73ccc96e90b6b96f1f5973e8447dbc88e460858"
+    },
+    {
+      "arquivo": "database/proofs/dashboard/2026-10-10-entrega-final/verificacoes.json",
+      "acao": "incluir documentação/evidência sanitizada do recorte",
+      "sha256_atual": "093de82a83a5f67990776d5beba30bb12ebce93e1bebc8afbfa4c16fa7d8342b",
+      "presente_na_base": false,
+      "sha256_entrega_061": "093de82a83a5f67990776d5beba30bb12ebce93e1bebc8afbfa4c16fa7d8342b"
+    },
+    {
+      "arquivo": "database/proofs/dashboard/2026-10-10-entrega-final/capturas/proprietaria-1440-claro.png",
+      "acao": "incluir documentação/evidência sanitizada do recorte",
+      "sha256_atual": "985b0ffed4f957c9f3abb4ef5506bdfa1d5662b451d3048148576d5dab5702d4",
+      "presente_na_base": false,
+      "sha256_entrega_061": "985b0ffed4f957c9f3abb4ef5506bdfa1d5662b451d3048148576d5dab5702d4"
+    },
+    {
+      "arquivo": "database/proofs/dashboard/2026-10-10-entrega-final/capturas/proprietaria-1440-escuro.png",
+      "acao": "incluir documentação/evidência sanitizada do recorte",
+      "sha256_atual": "d060c1143f303c1f6641076a9d26c380cefad86ef2d8c80f9270d66a0e1e25df",
+      "presente_na_base": false,
+      "sha256_entrega_061": "d060c1143f303c1f6641076a9d26c380cefad86ef2d8c80f9270d66a0e1e25df"
+    },
+    {
+      "arquivo": "database/proofs/dashboard/2026-10-10-entrega-final/capturas/proprietaria-360-escuro.png",
+      "acao": "incluir documentação/evidência sanitizada do recorte",
+      "sha256_atual": "e51c7c75a2bc818b25391ca9fd73a6080b3094752196e1d62d2ac9498277a9d9",
+      "presente_na_base": false,
+      "sha256_entrega_061": "e51c7c75a2bc818b25391ca9fd73a6080b3094752196e1d62d2ac9498277a9d9"
+    },
+    {
+      "arquivo": "database/proofs/dashboard/2026-10-10-entrega-final/capturas/recepcao-1440-claro.png",
+      "acao": "incluir documentação/evidência sanitizada do recorte",
+      "sha256_atual": "56abd552c8f176f1ad240727197809c9bcea0b98805a7362b801bfc1fa7767a1",
+      "presente_na_base": false,
+      "sha256_entrega_061": "56abd552c8f176f1ad240727197809c9bcea0b98805a7362b801bfc1fa7767a1"
+    },
+    {
+      "arquivo": "database/proofs/dashboard/2026-10-10-entrega-final/capturas/recepcao-1440-escuro.png",
+      "acao": "incluir documentação/evidência sanitizada do recorte",
+      "sha256_atual": "d99f1f903e345fb928a0ff25968290d9b1266a4ed52bf5079bd1a08beacdfb8f",
+      "presente_na_base": false,
+      "sha256_entrega_061": "d99f1f903e345fb928a0ff25968290d9b1266a4ed52bf5079bd1a08beacdfb8f"
+    },
+    {
+      "arquivo": "database/proofs/dashboard/2026-10-10-entrega-final/capturas/recepcao-390-escuro.png",
+      "acao": "incluir documentação/evidência sanitizada do recorte",
+      "sha256_atual": "5781718ee20ce8cb427943209a60d21eb7e0e01534ae1963b95274d600c90ee6",
+      "presente_na_base": false,
+      "sha256_entrega_061": "5781718ee20ce8cb427943209a60d21eb7e0e01534ae1963b95274d600c90ee6"
+    }
+  ],
+  "artefatos_preparacao": [
+    "docs/modulos/sistema/entrega-final-dashboards-2026-10-10/manifesto.json",
+    "docs/modulos/sistema/entrega-final-dashboards-2026-10-10/entrega.patch"
+  ],
+  "fora_do_recorte": [
+    "docs/modulos/sistema/24-EVOLUCAO-DASHBOARDS-PROPRIETARIA-RECEPCAO.md",
+    "docs/modulos/sistema/27-INTEGRACAO-DASHBOARDS-CLAUDE-PUBLICACAO.md",
+    "database/proofs/dashboard/2026-10-09-integracao/publicacao-sanitizada.json",
+    "database/proofs/dashboard/2026-10-09-acabamento-local/capturas/",
+    "scratch/",
+    "alterações de outros módulos emD",
+    "docs/modulos/sistema/entrega-final-dashboards-2026-10-10/entrega.patch"
+  ],
+  "patch": {
+    "arquivo": "docs/modulos/sistema/entrega-final-dashboards-2026-10-10/entrega.patch",
+    "sha256": "fbde31404468f5c9d0eb101859998aa754ee88f7549adaee686c0512cc0496b3",
+    "inclui": "código, testes, dois novos arquivos textuais, recortes documentais rastreados e quatro candidatos de metadados",
+    "nao_substitui": "arquivos novos de relatórios, evidências JSON e capturas explicitamente listados em selecionados",
+    "versionado_nesta_entrega": false,
+    "motivo": "Artefato histórico redundante da preparação; fontes, arquivos novos, manifesto e provas estão selecionados diretamente. Mantido intacto fora do commit."
+  },
+  "prontidao": {
+    "escopo": "preparado",
+    "conflito_remoto": false,
+    "commit": "implementação registrada em 19f40d0e92f45a36055b28e16d841aa2301d769b; fechamento posterior somente documental",
+    "publicacao": "não autorizada nesta etapa; nenhuma escrita no remoto",
+    "recepcao_real": "pendente sem bloquear preparação"
+  },
+  "validacao_composicao_patch": {
+    "resultado": "aprovada",
+    "operacao": "git apply --check em diretório local com somente os arquivos-base necessários",
+    "arquivos_patch": 17,
+    "novo_css_incluido": true,
+    "novo_utilitario_incluido": true,
+    "aplicacao_executada": false,
+    "indice_git_modificado": false,
+    "novo_backup": false
+  },
+  "execucao_commit_local": {
+    "data": "10/10/2026, 06:03:44 -03:00",
+    "versao": "0.6.1",
+    "base": "e012c4e401cd82f1df538a85c7c735bb3662db0e",
+    "remoto": "e012c4e401cd82f1df538a85c7c735bb3662db0e",
+    "d_livre_bytes_conferidos": 25456504832,
+    "notas": "aprovado",
+    "tipos": "aprovado",
+    "build": "aprovado",
+    "push": false,
+    "deploy": false,
+    "recepcao_real": "não verificada",
+    "arquivos": [
+      "src/components/dashboard/PainelProprietaria.tsx",
+      "src/components/dashboard/PainelRecepcao.tsx",
+      "src/components/dashboard/dashboardAcabamento.css",
+      "src/config/notasEvolucao.json",
+      "tests/login/dashboard-administrativa.spec.ts",
+      "tests/operacional/recepcao-integracao.spec.ts",
+      "tests/login/dashboard-acabamento-util.ts",
+      "package.json",
+      "package-lock.json",
+      "release-please-config.json",
+      "docs/modulos/sistema/00-README-SISTEMA.md",
+      "docs/modulos/sistema/01-DOCUMENTO-FUNCIONAL-MESTRE.md",
+      "docs/modulos/sistema/08-CHECKPOINT.md",
+      "docs/ia/CHECKPOINT.md",
+      "docs/ia/INDICE.md",
+      "CHECKPOINT.md",
+      "docs/VERSIONAMENTO-E-RELEASES.md",
+      "docs/modulos/sistema/28-ACABAMENTO-VISUAL-DASHBOARDS-LOCAL.md",
+      "docs/modulos/sistema/29-REFINAMENTOS-FINAIS-DASHBOARDS-LOCAL.md",
+      "docs/modulos/sistema/30-PRESERVACAO-ENTREGA-LOCAL.md",
+      "docs/modulos/sistema/31-PREPARACAO-ENTREGA-FINAL-DASHBOARDS.md",
+      "database/proofs/dashboard/2026-10-09-refinamentos-local/verificacoes.json",
+      "database/proofs/dashboard/2026-10-09-conferencia-capturas/verificacoes.json",
+      "database/proofs/dashboard/2026-10-10-entrega-final/verificacoes.json",
+      "database/proofs/dashboard/2026-10-10-entrega-final/capturas/proprietaria-1440-claro.png",
+      "database/proofs/dashboard/2026-10-10-entrega-final/capturas/proprietaria-1440-escuro.png",
+      "database/proofs/dashboard/2026-10-10-entrega-final/capturas/proprietaria-360-escuro.png",
+      "database/proofs/dashboard/2026-10-10-entrega-final/capturas/recepcao-1440-claro.png",
+      "database/proofs/dashboard/2026-10-10-entrega-final/capturas/recepcao-1440-escuro.png",
+      "database/proofs/dashboard/2026-10-10-entrega-final/capturas/recepcao-390-escuro.png",
+      "docs/modulos/sistema/entrega-final-dashboards-2026-10-10/manifesto.json",
+      "docs/modulos/sistema/32-COMMIT-LOCAL-DASHBOARDS-061.md",
+      "database/proofs/dashboard/2026-10-10-entrega-final/release-061.json"
+    ],
+    "conciliacao_documental": [
+      {
+        "arquivo": "docs/modulos/sistema/28-ACABAMENTO-VISUAL-DASHBOARDS-LOCAL.md",
+        "acao": "já idêntico; nenhuma gravação"
+      },
+      {
+        "arquivo": "docs/modulos/sistema/29-REFINAMENTOS-FINAIS-DASHBOARDS-LOCAL.md",
+        "acao": "somente complemento ausente acrescentado; texto D preservado"
+      },
+      {
+        "arquivo": "docs/modulos/sistema/30-PRESERVACAO-ENTREGA-LOCAL.md",
+        "acao": "réplica de documento antes ausente"
+      },
+      {
+        "arquivo": "docs/modulos/sistema/31-PREPARACAO-ENTREGA-FINAL-DASHBOARDS.md",
+        "acao": "réplica de documento antes ausente"
+      }
+    ],
+    "diff_check": "Arquivo patch histórico mantido somente local; suas linhas de contexto vazias usam espaço válido no formato patch. Diff-check integral dos 33 arquivos versionados aprovado.",
+    "fechamento": {
+      "data": "10/10/2026, 06:07:56 -03:00",
+      "commit_implementacao": "19f40d0e92f45a36055b28e16d841aa2301d769b",
+      "arquivos_commit": 33,
+      "indice_apos_commit": "vazio",
+      "conciliacao_documental": "concluída seletivamente; conteúdo divergente preservado",
+      "recepcao_real": "não verificada",
+      "push": false,
+      "deploy": false,
+      "registro": "Fechamento posterior estritamente documental; hashes sha256_entrega_061 conservam fotografia validada do commit de implementação."
+    }
+  }
+}

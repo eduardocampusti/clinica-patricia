@@ -1,0 +1,89 @@
+{
+  "conferido_em": "2026-10-09T21:18:18.498Z",
+  "fase": "depois",
+  "canal": "HTTP público anônimo, HTML e bundle; não sessão autenticada/painel Hostinger",
+  "resultado": [
+    {
+      "dominio": "clinicabrotas.com.br",
+      "html_status": 200,
+      "bundle_status": 200,
+      "bundle": "/assets/index-DLd_MYsW.js",
+      "sha256": "534824eebf880d6529aa5c696f5f69d4609cd52b352f295276c097fc9857187d",
+      "versao": "0.4.0",
+      "commit": "b56848ce",
+      "alteracoes_locais": "!1",
+      "compilado_em": "2026-10-09T20:41:43.467Z",
+      "rotas": [
+        {
+          "tela": "dashboard",
+          "status": 200,
+          "spa": true
+        },
+        {
+          "tela": "equipe",
+          "status": 200,
+          "spa": true
+        },
+        {
+          "tela": "financeiro",
+          "status": 200,
+          "spa": true
+        },
+        {
+          "tela": "configuracoes",
+          "status": 200,
+          "spa": true
+        }
+      ],
+      "conteudo": {
+        "resumo_dia": true,
+        "agenda_dia": true,
+        "resumo_financeiro": true,
+        "bloqueio_configuracoes": true,
+        "interface_editor_configuracoes": true,
+        "acesso_temporario_indisponivel": true
+      }
+    },
+    {
+      "dominio": "clinicaipupiara.com.br",
+      "html_status": 200,
+      "bundle_status": 200,
+      "bundle": "/assets/index-CZb2ghlD.js",
+      "sha256": "0b3548f836147dea0f491daa91325ac7a2561195ff76c9ca6bf192e74fe02562",
+      "versao": "0.4.0",
+      "commit": "b56848ce",
+      "alteracoes_locais": "!1",
+      "compilado_em": "2026-10-09T20:41:41.793Z",
+      "rotas": [
+        {
+          "tela": "dashboard",
+          "status": 200,
+          "spa": true
+        },
+        {
+          "tela": "equipe",
+          "status": 200,
+          "spa": true
+        },
+        {
+          "tela": "financeiro",
+          "status": 200,
+          "spa": true
+        },
+        {
+          "tela": "configuracoes",
+          "status": 200,
+          "spa": true
+        }
+      ],
+      "conteudo": {
+        "resumo_dia": true,
+        "agenda_dia": true,
+        "resumo_financeiro": true,
+        "bloqueio_configuracoes": true,
+        "interface_editor_configuracoes": true,
+        "acesso_temporario_indisponivel": true
+      }
+    }
+  ]
+}

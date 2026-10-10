@@ -1,0 +1,15 @@
+{
+  "conferidoEm": "2026-10-09T23:10:33.944Z",
+  "resultados": [
+    {
+      "contexto": "dcf5302b-1a4e-4eb7-b2cc-a88a77150001",
+      "status": 404,
+      "aprovado": true
+    },
+    {
+      "contexto": "dcf5302b-1a4e-4eb7-b2cc-a88a77150002",
+      "status": 404,
+      "aprovado": true
+    }
+  ]
+}

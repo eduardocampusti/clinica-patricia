@@ -1,0 +1,105 @@
+{
+  "data_utc": "2026-10-10T01:53:32.478Z",
+  "data_bahia": "09/10/2026, 22:53:32 -03:00",
+  "base": "0.6.0/e012c4e401cd82f1df538a85c7c735bb3662db0e + refinamentos locais do relatório29 não commitados",
+  "fontes_sha256": {
+    "src/components/dashboard/PainelProprietaria.tsx": "e153909758cd4541604770a0115bd8a2d2f4663d9321fc2976ddeb8ebd31e445",
+    "src/components/dashboard/PainelRecepcao.tsx": "4dd7263a57217a5aa3d87cba5baf5160b6843ae79146caf802cdbc098ecc65a0",
+    "src/components/dashboard/dashboardAcabamento.css": "b961debf1d1b364a35c372c3634c107dbc7277ee803185394bae4294a34083fb"
+  },
+  "produto_alterado_nesta_conferencia": false,
+  "servidor_5190": "fontes atuais; leitura direta de sessão real existente de Proprietária em Brotas",
+  "sessao_real": {
+    "proprietaria": {
+      "largura_px": 997,
+      "altura_regular_px": 122,
+      "titulo": "Pendências e aprovações",
+      "status": "Consultas concluídas",
+      "horarios_por_fonte": true,
+      "alertas": 0,
+      "transbordamento": false
+    },
+    "recepcao": "não disponível; não homologada nesta rodada"
+  },
+  "capturas": [
+    {
+      "arquivo": "proprietaria-1440-claro.png",
+      "titulo": "Proprietária · desktop claro · 1440 px",
+      "origem": "sintética, requisições interceptadas; nenhum dado pessoal real",
+      "sha256": "985b0ffed4f957c9f3abb4ef5506bdfa1d5662b451d3048148576d5dab5702d4"
+    },
+    {
+      "arquivo": "proprietaria-1440-escuro.png",
+      "titulo": "Proprietária · desktop escuro · 1440 px",
+      "origem": "sintética, requisições interceptadas; nenhum dado pessoal real",
+      "sha256": "d060c1143f303c1f6641076a9d26c380cefad86ef2d8c80f9270d66a0e1e25df"
+    },
+    {
+      "arquivo": "proprietaria-360-escuro.png",
+      "titulo": "Proprietária · celular escuro · 360 px",
+      "origem": "sintética, requisições interceptadas; nenhum dado pessoal real",
+      "sha256": "e51c7c75a2bc818b25391ca9fd73a6080b3094752196e1d62d2ac9498277a9d9"
+    },
+    {
+      "arquivo": "recepcao-1440-claro.png",
+      "titulo": "Recepção · desktop claro · 1440 px",
+      "origem": "sintética, requisições interceptadas; nenhum dado pessoal real",
+      "sha256": "56abd552c8f176f1ad240727197809c9bcea0b98805a7362b801bfc1fa7767a1"
+    },
+    {
+      "arquivo": "recepcao-1440-escuro.png",
+      "titulo": "Recepção · desktop escuro · 1440 px",
+      "origem": "sintética, requisições interceptadas; nenhum dado pessoal real",
+      "sha256": "d99f1f903e345fb928a0ff25968290d9b1266a4ed52bf5079bd1a08beacdfb8f"
+    },
+    {
+      "arquivo": "recepcao-390-escuro.png",
+      "titulo": "Recepção · celular escuro · 390 px",
+      "origem": "sintética, requisições interceptadas; nenhum dado pessoal real",
+      "sha256": "5781718ee20ce8cb427943209a60d21eb7e0e01534ae1963b95274d600c90ee6"
+    }
+  ],
+  "medidas_sinteticas_proprietaria": {
+    "desktop_1440_claro_escuro": 122,
+    "celular_360_claro_escuro": 190.390625
+  },
+  "testes_captura": {
+    "proprietaria": "1 aprovado (11,9 s)",
+    "recepcao": "1 aprovado (12,4 s)",
+    "escritas": 0,
+    "bateria_anterior": "reaproveitada; não repetida"
+  },
+  "diagnostico": {
+    "captura_antiga": "database/proofs/dashboard/2026-10-09-acabamento-local/capturas/proprietaria-depois.png",
+    "etapa": "relatório28, anterior aos refinamentos29, mesma base0.6.0/e012c4e4",
+    "correspondencia": "conteúdo observado combina as três divergências relatadas; arquivos exatos vistos pelo usuário não foram fornecidos separadamente",
+    "entrega_anterior": "caminhos Markdown usavam prefixo /D:/; substituídos por links HTTP locais verificados; causa específica de renderização no cliente não comprovada"
+  },
+  "limites": {
+    "sql": false,
+    "backend": false,
+    "dados_reais_alterados": false,
+    "novos_usuarios": false,
+    "commit": false,
+    "push": false,
+    "deploy": false
+  },
+  "skills": {
+    "typesafe": "lida e avaliada; conferência determinística, sem integração nem leitura de TYPESAFE_API_KEY",
+    "jev": {
+      "descricao": "sintética genérica",
+      "decisao": "code_change",
+      "confianca": 0.39,
+      "origem_decisao_final": "Codex: somente conferir e gerar evidências",
+      "tokens_entrada": 874,
+      "tokens_saida": 119,
+      "tempo_ms": 1096.2527,
+      "custo_usd": 0.000036708
+    }
+  },
+  "armazenamento": {
+    "d_livre_bytes": 0,
+    "capturas_e_checkpoint": "checkout isolado no C",
+    "replica_principal": "não salva: espaço insuficiente; arquivos existentes preservados"
+  }
+}

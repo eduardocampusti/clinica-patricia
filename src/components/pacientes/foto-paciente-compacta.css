@@ -1,0 +1,16 @@
+.foto-paciente-gatilho { display: none; }
+@media (max-width: 620px) {
+  .foto-paciente-gatilho { display: flex; width: 100%; min-height: 60px; align-items: center; gap: 12px; padding: 8px 10px; text-align: left; color: var(--texto-principal); background: var(--fundo-pagina); border: 1px solid var(--borda); border-radius: 8px; font: inherit; cursor: pointer; }
+  .foto-paciente-gatilho > span:nth-child(2) { flex: 1; min-width: 0; }
+  .foto-paciente-gatilho strong { display: block; font-size: 13px; }
+  .foto-paciente-gatilho small, .foto-paciente-gatilho strong + span { font-size: 12px; color: var(--texto-secundario); font-weight: 400; }
+  .foto-paciente-gatilho:focus-visible { outline: 2px solid var(--cor-primaria); outline-offset: 3px; }
+  .foto-paciente-miniatura { display: grid; place-items: center; width: 36px; height: 36px; flex-shrink: 0; border-radius: 50%; overflow: hidden; color: var(--texto-principal); background: var(--cor-primaria-suave); font-size: 12px; }
+  .foto-paciente-miniatura img { width: 100%; height: 100%; object-fit: cover; }
+  .foto-paciente-miniatura svg { width: 20px; height: 20px; }
+  .foto-paciente-miniatura .pacientes-avatar { width: 36px; height: 36px; }
+  .foto-paciente-gatilho + div:not([hidden]) { padding-top: 12px; }
+  .pacientes-pagina .paciente-foto-area { grid-column: 1 / -1; grid-row: auto; }
+  .paciente-edicao .foto-paciente-compacta { margin-bottom: 12px; }
+  .paciente-edicao .foto-paciente-compacta .edicao-identidade { gap: 12px; margin-bottom: 12px; }
+}

@@ -1,0 +1,14 @@
+import {readFileSync} from 'node:fs';
+import {resolve} from 'node:path';
+import {alvo,sql,dados,salvar,destino} from './controle.mjs';
+alvo();
+const f=JSON.parse(readFileSync(resolve(destino,'execucao.json'),'utf8'));
+const ids=Object.values(f.usuarios).map(u=>u.id);if(ids.length!==5||ids.some(id=>!/^[a-f0-9-]{36}$/.test(id)))throw new Error('Identidades divergentes.');
+const r=dados(sql("begin read only;select dados_antes,dados_depois from public.auditoria where (usuario_id=any(array["+ids.map(id=>"'"+id+"'::uuid")+"]) and entidade in ('equipe_fotos','profissionais_recebimento','equipe_ficha')) or (entidade='equipe_fotos' and entidade_id='"+f.membros.medico_clt+"');commit;"));
+const texto=JSON.stringify(r);
+const proibidos=['00001234','74125896364','Documento ficticio','1500.00','favorecido@equipe3133.example.invalid','Nome Fictício','dados_encrypted','cpf_key'];
+const vazamento=proibidos.some(p=>texto.includes(p))||/eyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]+\./.test(texto);
+const camposSeguros=r.every(e=>[e.dados_antes,e.dados_depois].every(v=>v==null||Object.keys(v).every(k=>['campos_alterados','campos','revisao','evento'].includes(k))));
+salvar('auditoria-final.json',{run:f.run,instante:new Date().toISOString(),eventos:r.length,camposSomenteMetadados:camposSeguros,valoresOuSegredosDetectados:vazamento});
+console.log(JSON.stringify({eventos:r.length,camposSomenteMetadados:camposSeguros,valoresOuSegredosDetectados:vazamento}));
+if(!r.length||vazamento||!camposSeguros)process.exitCode=1;

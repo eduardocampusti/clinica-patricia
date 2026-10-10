@@ -1,0 +1,195 @@
+{
+  "data": "10/10/2026, 10:43:03 -03:00",
+  "estado": "LOCAL_NAO_PUBLICADO",
+  "base": "44b13bb639c671b88e4a5f2e26c30ffa269dfbfa",
+  "alterados": [
+    {
+      "caminho": "src/components/dashboard/ComparacaoPeriodo.tsx",
+      "sha256": "00cbb1f02cc37b3e509dee558bcc1036dfd241e7e33ffdad056e40e53a43195b"
+    },
+    {
+      "caminho": "src/components/dashboard/analisePeriodo.css",
+      "sha256": "9df88e79812751a37272f92bbc3e66dd61ecdacdfca3f72997c9398d2a2c2c44"
+    },
+    {
+      "caminho": "src/config/notasEvolucao.json",
+      "sha256": "8ae89e0f5cd84bebed5f5023e47b3ff512ea985d789041515417c72b4a087536"
+    },
+    {
+      "caminho": "tests/login/analise-periodo.spec.ts",
+      "sha256": "34d955d657463b3f94f470f761c10200f70dad9e32c61a8e7d21620d280daa26"
+    }
+  ],
+  "conjuntoAnaliseMaisCorrecao": [
+    {
+      "caminho": "package.json",
+      "sha256": "f881b1b98dac112766990c1f0d88ac80963598b6f4a2e323dd5768ebf786b6a7"
+    },
+    {
+      "caminho": "package-lock.json",
+      "sha256": "e9731d96b3b777f4fdb007aa65107db2c20b67217d47070f35b84def3f32cce0"
+    },
+    {
+      "caminho": "src/App.tsx",
+      "sha256": "586412728a1279cdd555eeffbc7f1f5429d2a1129b87fad64f4a6bc6d03fb4d2"
+    },
+    {
+      "caminho": "src/pages/Dashboard.tsx",
+      "sha256": "b5d214822c9f79815e4cc118ea2a6d7a781c7b56b547988f3e6940f78ab234dc"
+    },
+    {
+      "caminho": "src/config/notasEvolucao.json",
+      "sha256": "8ae89e0f5cd84bebed5f5023e47b3ff512ea985d789041515417c72b4a087536"
+    },
+    {
+      "caminho": "src/lib/financeiro/financeiro.types.ts",
+      "sha256": "a89f87c407c0701b593397a0da5ffbe24b4baa42701d5949973fe6ad523edc2d"
+    },
+    {
+      "caminho": "src/lib/analiseFinanceira.ts",
+      "sha256": "5c371ef5940c5e013f1a13126d776f32f24e30336aa2e596c888ef00767ac61c"
+    },
+    {
+      "caminho": "src/components/dashboard/AnalisePeriodo.tsx",
+      "sha256": "6fc8f7f5615623e345eed09e79c160f8564ed435c26ca3c86323e23e8f8c1155"
+    },
+    {
+      "caminho": "src/components/dashboard/AnalisePeriodoBoundary.tsx",
+      "sha256": "4e2afe2059d480164cc5293355a9ea0513e3bc1b642d753d7c7b22408750b317"
+    },
+    {
+      "caminho": "src/components/dashboard/GraficoAnalise.tsx",
+      "sha256": "6b0056653d36a7c69dd96cea917a57364e6e09b9667f81641a9e7fa5f818a74b"
+    },
+    {
+      "caminho": "src/components/dashboard/analisePeriodo.css",
+      "sha256": "9df88e79812751a37272f92bbc3e66dd61ecdacdfca3f72997c9398d2a2c2c44"
+    },
+    {
+      "caminho": "src/components/ui/chart.tsx",
+      "sha256": "ee698b7d0fc1f5ff895a1d87fd89d8607a2595912bc88ef12e79605f3c974406"
+    },
+    {
+      "caminho": "tests/login/analise-periodo.config.ts",
+      "sha256": "df1251bf3e06bd09e744392c4072d9b34d4b18f4bff6b382678257a59ac86000"
+    },
+    {
+      "caminho": "tests/login/analise-periodo.spec.ts",
+      "sha256": "34d955d657463b3f94f470f761c10200f70dad9e32c61a8e7d21620d280daa26"
+    },
+    {
+      "caminho": "src/components/dashboard/PainelProprietaria.tsx",
+      "sha256": "d520c66bfb51ab7491ff796840e3227ae6b1398a22f41c38f6e9de1a93d5e97e"
+    },
+    {
+      "caminho": "src/components/dashboard/dashboardAcabamento.css",
+      "sha256": "4c4cb2e2501eeeaac14fd74f6e96aa534277fd769411bdf8253e13bf81666295"
+    },
+    {
+      "caminho": "src/components/dashboard/ComparacaoPeriodo.tsx",
+      "sha256": "00cbb1f02cc37b3e509dee558bcc1036dfd241e7e33ffdad056e40e53a43195b"
+    },
+    {
+      "caminho": "src/components/ui/card.tsx",
+      "sha256": "e80bf5bc5bc87a3040977b8806381bff97b2b9383901bb6f956e3f8ed94e252a"
+    },
+    {
+      "caminho": "tests/login/visual-dashboard.config.ts",
+      "sha256": "90ebe8345e768149ebff15c038f1e550f2be99a3ae14e0c7526315b3ce5620dc"
+    },
+    {
+      "caminho": "tests/login/visual-dashboard.spec.ts",
+      "sha256": "257a860ad4d80a829cbdde0d957d437f6125223427cabde511765ddf17e1e2fb"
+    }
+  ],
+  "preservados": [
+    {
+      "caminho": "package.json",
+      "igual": true
+    },
+    {
+      "caminho": "package-lock.json",
+      "igual": true
+    },
+    {
+      "caminho": "src/App.tsx",
+      "igual": true
+    },
+    {
+      "caminho": "src/pages/Dashboard.tsx",
+      "igual": true
+    },
+    {
+      "caminho": "src/lib/financeiro/financeiro.types.ts",
+      "igual": true
+    },
+    {
+      "caminho": "src/lib/analiseFinanceira.ts",
+      "igual": true
+    },
+    {
+      "caminho": "src/components/dashboard/AnalisePeriodo.tsx",
+      "igual": true
+    },
+    {
+      "caminho": "src/components/dashboard/AnalisePeriodoBoundary.tsx",
+      "igual": true
+    },
+    {
+      "caminho": "src/components/dashboard/GraficoAnalise.tsx",
+      "igual": true
+    },
+    {
+      "caminho": "src/components/ui/chart.tsx",
+      "igual": true
+    },
+    {
+      "caminho": "tests/login/analise-periodo.config.ts",
+      "igual": true
+    },
+    {
+      "caminho": "src/components/dashboard/PainelProprietaria.tsx",
+      "igual": true
+    },
+    {
+      "caminho": "src/components/dashboard/dashboardAcabamento.css",
+      "igual": true
+    },
+    {
+      "caminho": "src/components/ui/card.tsx",
+      "igual": true
+    },
+    {
+      "caminho": "tests/login/visual-dashboard.config.ts",
+      "igual": true
+    },
+    {
+      "caminho": "tests/login/visual-dashboard.spec.ts",
+      "igual": true
+    }
+  ],
+  "testes": {
+    "direcionados": 7,
+    "resultado": "aprovados",
+    "tipos": "tsc -b aprovado",
+    "lint": "dirigido aprovado",
+    "backend": "nenhuma operação",
+    "capturas": [
+      "claro.png",
+      "escuro.png",
+      "celular.png"
+    ],
+    "dados": "exclusivamente sintéticos; aviso visível; nenhuma conta ou dado criado no Supabase"
+  },
+  "jev": {
+    "conteudo": "sintético",
+    "confianca": 0.74,
+    "complexidade": 0.97,
+    "confiancaComplexidade": 0.93,
+    "noulInformacaoFaltante": 0.47,
+    "decisaoIncerteza": "Codex prosseguiu com pedido completo e leitura local",
+    "tokens": 970,
+    "tempoMs": 900.798,
+    "custoUsd": 0.000035742
+  }
+}

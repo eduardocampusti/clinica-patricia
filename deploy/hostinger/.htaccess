@@ -1,0 +1,14 @@
+# Somente para hosting Apache/LiteSpeed confirmado. Preservar o arquivo anterior.
+Options -Indexes
+RewriteEngine On
+RewriteCond %{HTTP_HOST} ^(?:www\.)?clinicabrotas\.com\.br$ [NC]
+RewriteCond %{HTTPS} !=on [OR]
+RewriteCond %{HTTP_HOST} ^www\. [NC]
+RewriteRule ^ https://clinicabrotas.com.br%{REQUEST_URI} [R=301,L,NE]
+RewriteCond %{HTTP_HOST} ^(?:www\.)?clinicaipupiara\.com\.br$ [NC]
+RewriteCond %{HTTPS} !=on [OR]
+RewriteCond %{HTTP_HOST} ^www\. [NC]
+RewriteRule ^ https://clinicaipupiara.com.br%{REQUEST_URI} [R=301,L,NE]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.html [L]

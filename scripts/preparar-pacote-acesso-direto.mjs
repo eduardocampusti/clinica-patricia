@@ -1,0 +1,19 @@
+import fs from 'node:fs'
+import path from 'node:path'
+import crypto from 'node:crypto'
+const root=process.cwd(), dir='database/proposals/acesso-direto'
+const sql=['supabase/migrations/20261008230000_equipe_acesso_direto.sql','supabase/migrations/20261008230100_equipe_acesso_direto_protecoes.sql','supabase/tools/acesso-direto-proteger-configuracoes.sql']
+const services=['equipe-acessos','equipe-recursos','equipe-fichas','meu-perfil','equipe-acesso-direto']
+const closure=new Set()
+function imports(file){if(closure.has(file))return;closure.add(file);const text=fs.readFileSync(file,'utf8');for(const m of text.matchAll(/(?:import|export)\s+(?:[^'"]*?\s+from\s+)?['"]([^'"]+)['"]/g)){if(!m[1].startsWith('.'))continue;let target=path.resolve(path.dirname(path.resolve(file)),m[1]);if(!fs.existsSync(target)&&target.endsWith('.js'))target=target.slice(0,-3)+'.ts';if(!target.startsWith(root+path.sep)||!fs.existsSync(target))throw Error('Import local divergente: '+file);imports(path.relative(root,target).replaceAll('\\','/'))}}
+for(const name of services)imports(`supabase/functions/${name}/index.ts`)
+imports('server/src/plugins/auth.ts')
+const front=['src/config/acessoDireto.ts','src/lib/acessoDiretoModelo.ts','src/lib/acessoDireto.ts','src/lib/equipeAcessos.ts','src/components/GuardaAtivacao.tsx','src/pages/DefinirSenhaPessoal.tsx','src/components/cadastros/NovoMembroAcesso.tsx','src/components/cadastros/CredencialTemporariaDialog.tsx','src/components/cadastros/AcessoTemporarioPainel.tsx','src/pages/cadastros/Equipe.tsx','src/App.tsx']
+const dependency=['supabase/migrations/20261008213000_configuracoes_institucionais.sql','supabase/migrations/20261008230050_configuracoes_homologacao_isolada.sql','supabase/functions/configuracoes/index.ts','supabase/functions/configuracoes-publicas/index.ts']
+const verification=['database/proposals/acesso-direto/01-preflight-permissoes.sql','database/proposals/acesso-direto/02-RECUPERACAO-REQUISICOES.sql','supabase/tests/acesso-direto_inventario.sql','supabase/tests/acesso-direto_revisao-catalogo.sql','supabase/tests/acesso-direto_fixture.sql','supabase/tests/acesso-direto_contratos.sql','supabase/tools/acesso-direto-preflight.sql','supabase/tools/verificar-integridade.sql','scripts/test-acesso-direto-sql.mjs','scripts/test-equipe-regressao.mjs','tests/operacional/vite.equipe-regressao.config.ts','tests/operacional/observacao-equipe.ts','tests/acesso-direto/regras.test.ts','tests/acesso-direto/interface.spec.ts','tests/acesso-direto/preview.tsx','tests/acesso-direto/tsconfig.backend.json','supabase/config.toml']
+if(!fs.readFileSync(front[0],'utf8').includes('ACESSO_DIRETO_HABILITADO = false'))throw Error('Frontend habilitado indevidamente')
+const files=[...new Set([...sql,...closure,...front,...dependency,...verification])].sort()
+const hash=f=>crypto.createHash('sha256').update(fs.readFileSync(f)).digest('hex')
+const result={versao_pacote:1,plano_conjunto:"docs/modulos/configuracoes/13-SEQUENCIA-CONJUNTA-E-ISOLAMENTO.md",preparado_em:new Date().toISOString(),projeto:'xftnkusbyqzyvzrovroj',aplicado:false,auth_remota_alterada:false,contas_remotas_criadas:0,frontend_habilitado:false,sql_ordenado:sql,dependencias_configuracoes_somente_sua_autorizacao:dependency,services:services.map(nome=>({nome,verify_jwt:!['equipe-recursos','equipe-fichas'].includes(nome)})),configuracao_auth_proposta:'auth-hook-proposto.json',leitura_auth_e_schemas_api_pendente:true,arquivos:files.map(arquivo=>({arquivo,sha256:hash(arquivo),categoria:sql.includes(arquivo)?'sql_acesso_direto':dependency.includes(arquivo)?'dependencia_autorizacao_separada':front.includes(arquivo)?'interface_desabilitada':closure.has(arquivo)?'servico_e_imports':'verificacao'})),inventario_sha256:hash(`${dir}/inventario-revisado.json`)}
+fs.writeFileSync(`${dir}/manifesto.json`,JSON.stringify(result,null,2)+'\n')
+console.log({arquivos:result.arquivos.length,servicos:services.length,frontend:false,aplicado:false})

@@ -1,0 +1,400 @@
+{
+  "projeto": "xftnkusbyqzyvzrovroj",
+  "inicio": "2026-10-09T22:46:45.623Z",
+  "origem": "Auth/Edge/Storage reais e Chrome próprio; sem mocks ou emulação de usuário",
+  "testes": [
+    {
+      "requisito": "Condição prévia: sessão legítima do criador comprovada pelo SDK",
+      "aprovado": true,
+      "recebidoEm": "2026-10-09T22:46:38.421Z"
+    },
+    {
+      "requisito": "Pré-execução: recursos inéditos e pacote R5 instalado",
+      "aprovado": true
+    },
+    {
+      "requisito": "Bancada fictícia disponível em origem permitida, sem copiar sessão real",
+      "aprovado": true
+    },
+    {
+      "requisito": "Login Auth real da conta fictícia A",
+      "aprovado": true
+    },
+    {
+      "requisito": "Conta existente normal sem pendência artificial A",
+      "aprovado": true
+    },
+    {
+      "requisito": "Dados institucionais: salvar pela interface e ler pelo serviço real A",
+      "aprovado": true
+    },
+    {
+      "requisito": "F5 conserva os dados institucionais A",
+      "aprovado": true
+    },
+    {
+      "requisito": "Cabeçalho, rodapé e timbrado persistidos no servidor A",
+      "aprovado": true
+    },
+    {
+      "requisito": "Upload real registrado e leitura privada assinada A",
+      "aprovado": true
+    },
+    {
+      "requisito": "Download posterior do logo real A",
+      "aprovado": true
+    },
+    {
+      "requisito": "Recarga preserva timbrado/cabeçalho/rodapé A",
+      "aprovado": true
+    },
+    {
+      "requisito": "Geração real local de PDF de demonstração com configuração persistida A",
+      "aprovado": true
+    },
+    {
+      "requisito": "Projeção pública do login coincide com versão aplicada A",
+      "aprovado": true
+    },
+    {
+      "requisito": "Logo público real do login A",
+      "aprovado": true
+    },
+    {
+      "requisito": "Login anônimo exibe personalização e formulário funcional A",
+      "aprovado": true
+    },
+    {
+      "requisito": "Novo login pela interface lê configuração persistida A",
+      "aprovado": true
+    },
+    {
+      "requisito": "Segunda sessão real para concorrência A",
+      "aprovado": true
+    },
+    {
+      "requisito": "Duas sessões reais: edição desatualizada recusada409 A",
+      "aprovado": false
+    },
+    {
+      "requisito": "Segunda sessão real para concorrência A",
+      "aprovado": true
+    },
+    {
+      "requisito": "Duas sessões reais: edição desatualizada recusada409 A",
+      "aprovado": true
+    },
+    {
+      "requisito": "Rascunho não altera o login público A",
+      "aprovado": true
+    },
+    {
+      "requisito": "Restauração cria novo rascunho sem apagar versões A",
+      "aprovado": false
+    },
+    {
+      "requisito": "Restauração cria novo rascunho sem apagar versões A",
+      "aprovado": true
+    },
+    {
+      "requisito": "Restaurar não publica automaticamente A",
+      "aprovado": true
+    },
+    {
+      "requisito": "Substituição registra novo ativo e preserva histórico A",
+      "aprovado": true
+    },
+    {
+      "requisito": "Logo anterior deixa de ter leitura pública A",
+      "aprovado": true
+    },
+    {
+      "requisito": "Ativo histórico continua disponível à sessão autorizada A",
+      "aprovado": true
+    },
+    {
+      "requisito": "Upload inválido recusado: falso.png A",
+      "aprovado": true
+    },
+    {
+      "requisito": "Upload inválido recusado: tipo.gif A",
+      "aprovado": true
+    },
+    {
+      "requisito": "Upload inválido recusado: limite.png A",
+      "aprovado": true
+    },
+    {
+      "requisito": "Upload inválido recusado: dimensao.png A",
+      "aprovado": true
+    },
+    {
+      "requisito": "Fonte fictícia alterada exige reconciliação409 A",
+      "aprovado": true
+    },
+    {
+      "requisito": "Reconciliação preserva apresentação e atualiza só a fonte fictícia A",
+      "aprovado": true
+    },
+    {
+      "requisito": "Login Auth real da conta fictícia B",
+      "aprovado": true
+    },
+    {
+      "requisito": "Conta existente normal sem pendência artificial B",
+      "aprovado": true
+    },
+    {
+      "requisito": "Dados institucionais: salvar pela interface e ler pelo serviço real B",
+      "aprovado": true
+    },
+    {
+      "requisito": "F5 conserva os dados institucionais B",
+      "aprovado": true
+    },
+    {
+      "requisito": "Cabeçalho, rodapé e timbrado persistidos no servidor B",
+      "aprovado": true
+    },
+    {
+      "requisito": "Upload real registrado e leitura privada assinada B",
+      "aprovado": true
+    },
+    {
+      "requisito": "Download posterior do logo real B",
+      "aprovado": true
+    },
+    {
+      "requisito": "Recarga preserva timbrado/cabeçalho/rodapé B",
+      "aprovado": true
+    },
+    {
+      "requisito": "Geração real local de PDF de demonstração com configuração persistida B",
+      "aprovado": true
+    },
+    {
+      "requisito": "Projeção pública do login coincide com versão aplicada B",
+      "aprovado": true
+    },
+    {
+      "requisito": "Logo público real do login B",
+      "aprovado": true
+    },
+    {
+      "requisito": "Login anônimo exibe personalização e formulário funcional B",
+      "aprovado": true
+    },
+    {
+      "requisito": "Novo login pela interface lê configuração persistida B",
+      "aprovado": true
+    },
+    {
+      "requisito": "Segunda sessão real para concorrência B",
+      "aprovado": true
+    },
+    {
+      "requisito": "Duas sessões reais: edição desatualizada recusada409 B",
+      "aprovado": true
+    },
+    {
+      "requisito": "Rascunho não altera o login público B",
+      "aprovado": true
+    },
+    {
+      "requisito": "Restauração cria novo rascunho sem apagar versões B",
+      "aprovado": true
+    },
+    {
+      "requisito": "Restaurar não publica automaticamente B",
+      "aprovado": true
+    },
+    {
+      "requisito": "Substituição registra novo ativo e preserva histórico B",
+      "aprovado": true
+    },
+    {
+      "requisito": "Logo anterior deixa de ter leitura pública B",
+      "aprovado": true
+    },
+    {
+      "requisito": "Ativo histórico continua disponível à sessão autorizada B",
+      "aprovado": true
+    },
+    {
+      "requisito": "Upload inválido recusado: falso.png B",
+      "aprovado": true
+    },
+    {
+      "requisito": "Upload inválido recusado: tipo.gif B",
+      "aprovado": true
+    },
+    {
+      "requisito": "Upload inválido recusado: limite.png B",
+      "aprovado": true
+    },
+    {
+      "requisito": "Upload inválido recusado: dimensao.png B",
+      "aprovado": true
+    },
+    {
+      "requisito": "Fonte fictícia alterada exige reconciliação409 B",
+      "aprovado": true
+    },
+    {
+      "requisito": "Reconciliação preserva apresentação e atualiza só a fonte fictícia B",
+      "aprovado": true
+    },
+    {
+      "requisito": "Sessão real nega leitura de contexto sem vínculo 0",
+      "aprovado": true
+    },
+    {
+      "requisito": "Sessão real nega leitura de contexto sem vínculo 0",
+      "aprovado": true
+    },
+    {
+      "requisito": "Sessão real nega leitura de contexto sem vínculo 0",
+      "aprovado": true
+    },
+    {
+      "requisito": "Sessão real nega escrita no outro contexto 0",
+      "aprovado": true
+    },
+    {
+      "requisito": "Sessão real nega upload no outro contexto 0",
+      "aprovado": true
+    },
+    {
+      "requisito": "Storage real recusa ativo privado do outro contexto 0",
+      "aprovado": true
+    },
+    {
+      "requisito": "REST não expõe configuração do outro contexto 0",
+      "aprovado": true
+    },
+    {
+      "requisito": "Sem administração global 0",
+      "aprovado": true
+    },
+    {
+      "requisito": "Sessão real nega leitura de contexto sem vínculo 1",
+      "aprovado": true
+    },
+    {
+      "requisito": "Sessão real nega leitura de contexto sem vínculo 1",
+      "aprovado": true
+    },
+    {
+      "requisito": "Sessão real nega leitura de contexto sem vínculo 1",
+      "aprovado": true
+    },
+    {
+      "requisito": "Sessão real nega escrita no outro contexto 1",
+      "aprovado": true
+    },
+    {
+      "requisito": "Sessão real nega upload no outro contexto 1",
+      "aprovado": true
+    },
+    {
+      "requisito": "Storage real recusa ativo privado do outro contexto 1",
+      "aprovado": true
+    },
+    {
+      "requisito": "REST não expõe configuração do outro contexto 1",
+      "aprovado": true
+    },
+    {
+      "requisito": "Sem administração global 1",
+      "aprovado": true
+    },
+    {
+      "requisito": "Recepção real nega Configurações no próprio contexto",
+      "aprovado": true
+    },
+    {
+      "requisito": "Restauração do papel autorizado apenas na fixture B",
+      "aprovado": true
+    },
+    {
+      "requisito": "Identidade pública real preservada: clinicabrotas.com.br",
+      "aprovado": true
+    },
+    {
+      "requisito": "Identidade pública real preservada: clinicaipupiara.com.br",
+      "aprovado": true
+    },
+    {
+      "requisito": "Upload JPEG real normalizado pelo serviço 0",
+      "aprovado": true
+    },
+    {
+      "requisito": "Upload JPEG real normalizado pelo serviço 1",
+      "aprovado": true
+    }
+  ],
+  "contas": [
+    {
+      "id": "bc9a8f85-860e-4ae5-bd92-ca057561a45e",
+      "papel": "proprietaria",
+      "contexto": "dcf5302b-1a4e-4eb7-b2cc-a88a77150001"
+    },
+    {
+      "id": "6c9d51b7-0298-4f39-8415-e1854789bee3",
+      "papel": "proprietaria",
+      "contexto": "dcf5302b-1a4e-4eb7-b2cc-a88a77150002"
+    }
+  ],
+  "contextos": [
+    "dcf5302b-1a4e-4eb7-b2cc-a88a77150001",
+    "dcf5302b-1a4e-4eb7-b2cc-a88a77150002"
+  ],
+  "encerramento": [
+    {
+      "id": "bc9a8f85-860e-4ae5-bd92-ca057561a45e",
+      "ban": true,
+      "perfil_ativo": false,
+      "refresh_ativos": 0,
+      "sessoes": 0,
+      "vinculos_ativos": 0,
+      "login_recusado": true,
+      "aprovado": true
+    },
+    {
+      "id": "6c9d51b7-0298-4f39-8415-e1854789bee3",
+      "ban": true,
+      "perfil_ativo": false,
+      "refresh_ativos": 0,
+      "sessoes": 0,
+      "vinculos_ativos": 0,
+      "login_recusado": true,
+      "aprovado": true
+    },
+    {
+      "tipo": "ativo_publico",
+      "status": 404,
+      "aprovado": true
+    }
+  ],
+  "aprovado": true,
+  "impedimento": "Duas sessões reais: edição desatualizada recusada409 A",
+  "conjuntoRestanteConcluido": true,
+  "contextos_finais": [
+    {
+      "clinica_ativa": false,
+      "contexto_ativo": false,
+      "id": "dcf5302b-1a4e-4eb7-b2cc-a88a77150001",
+      "publico_encerrado": true,
+      "vinculos_ativos": 0
+    },
+    {
+      "clinica_ativa": false,
+      "contexto_ativo": false,
+      "id": "dcf5302b-1a4e-4eb7-b2cc-a88a77150002",
+      "publico_encerrado": true,
+      "vinculos_ativos": 0
+    }
+  ],
+  "encerramentoConfirmado": true,
+  "fim": "2026-10-09T22:59:29.743Z"
+}

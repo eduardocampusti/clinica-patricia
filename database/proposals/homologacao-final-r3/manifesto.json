@@ -1,0 +1,55 @@
+{
+  "projeto": "xftnkusbyqzyvzrovroj",
+  "autorizada": true,
+  "aplicada": true,
+  "novos": {
+    "contas": 4,
+    "contextos": 2
+  },
+  "maximoAcumulado": {
+    "contas": 14,
+    "contextos": 6
+  },
+  "reativacao": false,
+  "email": false,
+  "arquivos": [
+    {
+      "arquivo": "20261009170000_configuracoes_homologacao_r3.sql",
+      "sha256": "5ffb76a91f608db80d4f95c6b8786d91228e38e4b2dfde2f1d30b3a674e069aa"
+    },
+    {
+      "arquivo": "configuracoesPublicas.r3.ts",
+      "sha256": "4526d723e2e9f74bd75fb5c8e58cb2a429870479d4b189ffa599554a9eaf7fec"
+    },
+    {
+      "arquivo": "configuracoesPublicas.v2-recuperacao.ts",
+      "sha256": "b2c3ada8df3d029ed50dbaa5622b4487a2fae3a1e600b625893f55eaa45050ee"
+    },
+    {
+      "arquivo": "contextos.sql",
+      "sha256": "170b857672874e4e6ac1c7151bb51164bff6a1da0960d24756a179dce33537b9"
+    },
+    {
+      "arquivo": "encerrar-contextos.sql",
+      "sha256": "48b2d310409986ddaf82b128325a5875383a24e5e78b5a56933633f3cf116f92"
+    },
+    {
+      "arquivo": "README.md",
+      "sha256": "037f708f9f171cb647aa0a6701be145f44831cd87b74e52e22b21e20bf33a53c"
+    },
+    {
+      "arquivo": "vinculos.template.sql",
+      "sha256": "f55f05da143e269d9d17e38d25ba934ebeafc5765d0d38c6ad4bc5500fcae07c"
+    }
+  ],
+  "autorizacao": "Resposta explícita do usuário em 09/10/2026: ampliação única de quatro contas/dois contextos; máximo acumulado14/6; publicação dos recursos aprovados autorizada.",
+  "migrationLedger": "20261009202252",
+  "edge": {
+    "antes": 5,
+    "depois": 7,
+    "bundle": "9789851ad9903bea3b82b09a5f7a284812b85745cc3a0271aa5b24bc96e2c72d"
+  },
+  "recursosConsumidos": true,
+  "recursosEncerrados": true,
+  "reexecutavel": false
+}

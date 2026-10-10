@@ -1,0 +1,26 @@
+{
+  "conferidoEm": "2026-10-09T23:42:25.976Z",
+  "base": "f4b6891e49922ef199096e7b91274cfe6ee0f3da",
+  "versaoPreparada": "0.6.0",
+  "projetoSupabase": "xftnkusbyqzyvzrovroj",
+  "escritasRemotas": 0,
+  "recursosNovos": 0,
+  "contasEncerradasAcumuladas": 18,
+  "contextosEncerradosAcumulados": 10,
+  "unitarios": 40,
+  "browserSintetico": {
+    "administrativo": 64,
+    "recepcao": 41,
+    "recepcaoIgnorado": 1,
+    "identidade": 29,
+    "acessoDireto": 14,
+    "configuracoes": 4,
+    "meuPerfil": 4
+  },
+  "tipos": true,
+  "lint": true,
+  "build": true,
+  "diffCheck": true,
+  "publicacaoAindaNaoComprovada": true,
+  "recepcaoSessaoRealNestaEtapa": false
+}

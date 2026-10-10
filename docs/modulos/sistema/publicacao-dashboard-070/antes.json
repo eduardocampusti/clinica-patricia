@@ -1,0 +1,24 @@
+[
+  {
+    "dominio": "clinicabrotas.com.br",
+    "htmlStatus": 200,
+    "jsStatus": 200,
+    "bundle": "/assets/index-tCkF47MH.js",
+    "versao": "0.6.1",
+    "commit": "44b13bb6",
+    "alteracoesLocais": "!1",
+    "compiladoEm": "2026-10-10T09:17:34.634Z",
+    "observadoEm": "2026-10-10T14:16:25.154Z"
+  },
+  {
+    "dominio": "clinicaipupiara.com.br",
+    "htmlStatus": 200,
+    "jsStatus": 200,
+    "bundle": "/assets/index-Bdm4ueTa.js",
+    "versao": "0.6.1",
+    "commit": "44b13bb6",
+    "alteracoesLocais": "!1",
+    "compiladoEm": "2026-10-10T09:17:38.356Z",
+    "observadoEm": "2026-10-10T14:16:25.172Z"
+  }
+]

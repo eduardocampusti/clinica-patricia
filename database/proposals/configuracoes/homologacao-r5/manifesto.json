@@ -1,0 +1,69 @@
+{
+  "projeto": "xftnkusbyqzyvzrovroj",
+  "autorizada": true,
+  "aplicada": true,
+  "novos": {
+    "contas": 2,
+    "contextos": 2
+  },
+  "maximoAcumulado": {
+    "contas": 18,
+    "contextos": 10
+  },
+  "reativacao": false,
+  "email": false,
+  "arquivos": [
+    {
+      "arquivo": "20261009220000_configuracoes_homologacao_r5.sql",
+      "sha256": "5fb00bc6e36151f1338aa62c50477941f7386f0de2f04ac13342261f0f65b1b7"
+    },
+    {
+      "arquivo": "configuracoesPublicas.r5.ts",
+      "sha256": "47d5c5377c46a55c242fe71345d96f42e1c530b9d49bb31f1d2c861c20d871ef"
+    },
+    {
+      "arquivo": "contextos.sql",
+      "sha256": "f225301e157fb962ea6dd8fdfe11efa0183723292408fa740797031f7cd21815"
+    },
+    {
+      "arquivo": "encerrar-contextos.sql",
+      "sha256": "8719c38091083b0ef198d496636b6916e9518df8de5ed488ba3fda04c294ab85"
+    },
+    {
+      "arquivo": "executor-corrigido.mjs",
+      "sha256": "caa864565594d841b3a9f3717f984352c5836b094b1d17c02ab837fb4d404591"
+    },
+    {
+      "arquivo": "README.md",
+      "sha256": "89bf43e1d60dc84f1947b11f94e3b26c5d4f4b28a4b937f58c4c79df8420da70"
+    },
+    {
+      "arquivo": "sql-seguro-conectado.mjs",
+      "sha256": "52040403484b8d8454db033e1abb436f369e620ca71d216645f76d8d6581f32f"
+    },
+    {
+      "arquivo": "vinculos.template.sql",
+      "sha256": "66e1796e70f3508004143f37d3ae05e82955e6d412e825f1e2af35ed6504dbc1"
+    },
+    {
+      "arquivo": "continuacao-registrada.mjs",
+      "sha256": "025fbb508b3146224f6fdb865a53691d430bf378cffee36eff4bbffbcb726bfa"
+    }
+  ],
+  "aplicacao": {
+    "ledger": "20261009224204",
+    "publicaVersao": 10,
+    "privadaVersaoPreservada": 7,
+    "integridade": "8/8",
+    "recursosCriados": 0,
+    "registradoEm": "2026-10-09T22:46:29.131Z"
+  },
+  "consumida": true,
+  "encerrada": true,
+  "homologacaoAprovada": true,
+  "correcaoConflito": {
+    "migration": "supabase/migrations/20261009225100_configuracoes_conflito_http.sql",
+    "ledger": "20261009225111",
+    "privadaVersao": 8
+  }
+}

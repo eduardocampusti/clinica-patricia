@@ -1,0 +1,72 @@
+[
+  {
+    "arquivo": "src/components/dashboard/CabecalhoDashboard.tsx",
+    "sha256": "32AF558DC2361699512369581C86CBEC22044FCB2841628F4947CC76BB39EA43",
+    "ultimaEdicao": "2026-10-09T16:22:11.4626463-03:00"
+  },
+  {
+    "arquivo": "src/components/dashboard/PainelProprietaria.tsx",
+    "sha256": "5D0E754EC15182206E3D5EBC4E89E6E2B2803CC28D4AE04C0199BDA46496A367",
+    "ultimaEdicao": "2026-10-09T17:27:26.8616953-03:00"
+  },
+  {
+    "arquivo": "src/components/dashboard/painelProprietaria.css",
+    "sha256": "81390C5B4749A4FA4097565620EA5AD1133A2F2186F6C4EAE263064C9043C58F",
+    "ultimaEdicao": "2026-10-09T16:28:54.0734417-03:00"
+  },
+  {
+    "arquivo": "src/components/dashboard/PainelRecepcao.tsx",
+    "sha256": "ADCE029E42F642BE0C208CC68A6EDCCC78E29888F75983337BD9443254D377CE",
+    "ultimaEdicao": "2026-10-09T17:12:27.7685865-03:00"
+  },
+  {
+    "arquivo": "src/components/dashboard/painelRecepcao.css",
+    "sha256": "84C61D19B2D4753BBFF16B216940FFDFDDC6E1D050A7704A26313B349AB5C35D",
+    "ultimaEdicao": "2026-10-09T16:40:12.3105280-03:00"
+  },
+  {
+    "arquivo": "src/lib/leituraPainel.ts",
+    "sha256": "2EE2F72E1C4F9B561599CD66E56B4C58C099C40B6447D061AA17F74CCA3185E0",
+    "ultimaEdicao": "2026-10-09T16:58:47.0016366-03:00"
+  },
+  {
+    "arquivo": "src/lib/leituraPainel.test.ts",
+    "sha256": "D4D8E07C658AA982A791551CC679582C671347E4C2EFE02D1640E6CB718E3C76",
+    "ultimaEdicao": "2026-10-09T16:30:19.9952623-03:00"
+  },
+  {
+    "arquivo": "src/lib/atualizacaoPainel.ts",
+    "sha256": "E608B3E469B9863B5B4BD15FCC41C6EA2BEDC09D0972ACBA12BD4C80D2E39E50",
+    "ultimaEdicao": "2026-10-09T16:15:38.3611507-03:00"
+  },
+  {
+    "arquivo": "src/lib/atualizacaoPainel.test.ts",
+    "sha256": "E60933C4C761ADA38C92CE3B7CC16CD3FDE3F14FA717EE75CB70103D26B0801D",
+    "ultimaEdicao": "2026-10-09T16:16:27.4193996-03:00"
+  },
+  {
+    "arquivo": "src/hooks/useAtualizacaoPainel.ts",
+    "sha256": "95D4F3121A59935B831B49781D7416C48E8F9675B93AE50E90B49FF09D23B12D",
+    "ultimaEdicao": "2026-10-09T16:15:56.0317275-03:00"
+  },
+  {
+    "arquivo": "tests/login/dashboard-administrativa.spec.ts",
+    "sha256": "9B05CB128DAD310BCB8F621AB0446BB0CA179E624DD6D35A856D55591750B2DC",
+    "ultimaEdicao": "2026-10-09T17:01:40.8295995-03:00"
+  },
+  {
+    "arquivo": "tests/login/dashboard-proprietaria.spec.ts",
+    "sha256": "5147F70AC5640520BAB6FEB9410FB4C12D0E6476F98FBEEA97AA9932D1DEBDCE",
+    "ultimaEdicao": "2026-10-09T16:29:00.4318859-03:00"
+  },
+  {
+    "arquivo": "tests/operacional/recepcao-integracao.spec.ts",
+    "sha256": "59AA13A0E24F115C69CCA639740FF928DEECF98975C8B97D3083B23D9CB8DC4F",
+    "ultimaEdicao": "2026-10-09T16:40:51.0188504-03:00"
+  },
+  {
+    "arquivo": "docs/modulos/sistema/24-EVOLUCAO-DASHBOARDS-PROPRIETARIA-RECEPCAO.md",
+    "sha256": "CAD961B5DDA6A8FE8D84ABE00C687A08166854AB175404E6EB252C1BE62DE8D3",
+    "ultimaEdicao": "2026-10-09T18:13:29.1289741-03:00"
+  }
+]

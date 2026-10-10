@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { registrarEntradaCaixa, type FormaPagamento } from '../../lib/api'
+import { FeedbackAlert } from '../feedback/FeedbackAlert'
 
 const FORMAS_PAGAMENTO: { valor: FormaPagamento; rotulo: string }[] = [
   { valor: 'dinheiro', rotulo: 'Dinheiro' },
@@ -28,6 +29,7 @@ interface FormRegistrarEntradaProps {
   profissionais: ProfissionalOpcaoEntrada[]
   pacienteIdInicial?: string
   profissionalIdInicial?: string
+  agendamentoIdInicial?: string
   onRegistrado: () => void | Promise<void>
   /** Card próprio (sombra + raio + fundo). Desliga quando o formulário já
    * está dentro de outro contêiner com esse chrome (ex.: um modal). */
@@ -44,6 +46,7 @@ export function FormRegistrarEntrada({
   profissionais,
   pacienteIdInicial,
   profissionalIdInicial,
+  agendamentoIdInicial,
   onRegistrado,
   comCard = true,
 }: FormRegistrarEntradaProps) {
@@ -86,6 +89,11 @@ export function FormRegistrarEntrada({
       return
     }
 
+    if (formaPagamento === 'cortesia' && !descricao.trim()) {
+      setErro('Informe o motivo da cortesia.')
+      return
+    }
+
     setRegistrando(true)
     try {
       await registrarEntradaCaixa(
@@ -95,6 +103,7 @@ export function FormRegistrarEntrada({
         descricao.trim() || null,
         pacienteId,
         profissionalId,
+        agendamentoIdInicial,
       )
       setValor('')
       setDescricao('')
@@ -194,7 +203,7 @@ export function FormRegistrarEntrada({
 
         <div className="sm:col-span-2">
           <label className="mb-1.5 block text-sm font-medium text-[var(--texto-principal)]">
-            Descrição (opcional)
+            {formaPagamento === 'cortesia' ? 'Motivo da cortesia' : 'Descrição (opcional)'}
           </label>
           <input
             type="text"
@@ -206,14 +215,7 @@ export function FormRegistrarEntrada({
         </div>
       </div>
 
-      {erro && (
-        <p
-          role="alert"
-          className="rounded-lg border border-[var(--cor-erro-borda)] bg-[var(--cor-erro-suave)] px-3 py-2 text-sm text-[var(--cor-erro)]"
-        >
-          {erro}
-        </p>
-      )}
+      {erro && <FeedbackAlert variant="destructive" title="Não foi possível registrar a entrada" description={erro} urgent />}
 
       <button
         type="submit"

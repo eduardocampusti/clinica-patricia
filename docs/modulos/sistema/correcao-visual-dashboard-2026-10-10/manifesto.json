@@ -1,0 +1,174 @@
+{
+  "data": "10/10/2026, 10:30:56 -03:00",
+  "estado": "LOCAL_NAO_PUBLICADO",
+  "checkout": "C:/Users/Eduardo/.codex/worktrees/salvar-dashboard-configuracoes-acesso/CLINICA PATRICIA",
+  "branch": "codex/resgate-local-2026-09-26",
+  "base": "44b13bb639c671b88e4a5f2e26c30ffa269dfbfa",
+  "correcaoVisual": [
+    {
+      "caminho": "src/pages/Dashboard.tsx",
+      "sha256": "b5d214822c9f79815e4cc118ea2a6d7a781c7b56b547988f3e6940f78ab234dc"
+    },
+    {
+      "caminho": "src/components/dashboard/PainelProprietaria.tsx",
+      "sha256": "d520c66bfb51ab7491ff796840e3227ae6b1398a22f41c38f6e9de1a93d5e97e"
+    },
+    {
+      "caminho": "src/components/dashboard/dashboardAcabamento.css",
+      "sha256": "4c4cb2e2501eeeaac14fd74f6e96aa534277fd769411bdf8253e13bf81666295"
+    },
+    {
+      "caminho": "src/components/dashboard/AnalisePeriodo.tsx",
+      "sha256": "6fc8f7f5615623e345eed09e79c160f8564ed435c26ca3c86323e23e8f8c1155"
+    },
+    {
+      "caminho": "src/components/dashboard/GraficoAnalise.tsx",
+      "sha256": "6b0056653d36a7c69dd96cea917a57364e6e09b9667f81641a9e7fa5f818a74b"
+    },
+    {
+      "caminho": "src/components/dashboard/ComparacaoPeriodo.tsx",
+      "sha256": "f4158c1beaedbcd91930693cefd654bce99407e5e20cd4e79e3bc9693597ce39"
+    },
+    {
+      "caminho": "src/components/dashboard/analisePeriodo.css",
+      "sha256": "f64efa0e545c1a313f01c098853011ef252fa23bba094b912ed63bf584017fb2"
+    },
+    {
+      "caminho": "src/components/ui/card.tsx",
+      "sha256": "e80bf5bc5bc87a3040977b8806381bff97b2b9383901bb6f956e3f8ed94e252a"
+    },
+    {
+      "caminho": "src/config/notasEvolucao.json",
+      "sha256": "c997637031d1b74ef7e0d69d1871a01e0b55a59521c08e1a15f3f4fb1064022f"
+    },
+    {
+      "caminho": "tests/login/analise-periodo.spec.ts",
+      "sha256": "a2d93d60c9f63543db14d139e25ad8a88e6335d123739f7a801d735ea4e599d2"
+    },
+    {
+      "caminho": "tests/login/visual-dashboard.config.ts",
+      "sha256": "90ebe8345e768149ebff15c038f1e550f2be99a3ae14e0c7526315b3ce5620dc"
+    },
+    {
+      "caminho": "tests/login/visual-dashboard.spec.ts",
+      "sha256": "257a860ad4d80a829cbdde0d957d437f6125223427cabde511765ddf17e1e2fb"
+    }
+  ],
+  "conjuntoAnaliseMaisCorrecao": [
+    {
+      "caminho": "package.json",
+      "sha256": "f881b1b98dac112766990c1f0d88ac80963598b6f4a2e323dd5768ebf786b6a7"
+    },
+    {
+      "caminho": "package-lock.json",
+      "sha256": "e9731d96b3b777f4fdb007aa65107db2c20b67217d47070f35b84def3f32cce0"
+    },
+    {
+      "caminho": "src/App.tsx",
+      "sha256": "586412728a1279cdd555eeffbc7f1f5429d2a1129b87fad64f4a6bc6d03fb4d2"
+    },
+    {
+      "caminho": "src/pages/Dashboard.tsx",
+      "sha256": "b5d214822c9f79815e4cc118ea2a6d7a781c7b56b547988f3e6940f78ab234dc"
+    },
+    {
+      "caminho": "src/config/notasEvolucao.json",
+      "sha256": "c997637031d1b74ef7e0d69d1871a01e0b55a59521c08e1a15f3f4fb1064022f"
+    },
+    {
+      "caminho": "src/lib/financeiro/financeiro.types.ts",
+      "sha256": "a89f87c407c0701b593397a0da5ffbe24b4baa42701d5949973fe6ad523edc2d"
+    },
+    {
+      "caminho": "src/lib/analiseFinanceira.ts",
+      "sha256": "5c371ef5940c5e013f1a13126d776f32f24e30336aa2e596c888ef00767ac61c"
+    },
+    {
+      "caminho": "src/components/dashboard/AnalisePeriodo.tsx",
+      "sha256": "6fc8f7f5615623e345eed09e79c160f8564ed435c26ca3c86323e23e8f8c1155"
+    },
+    {
+      "caminho": "src/components/dashboard/AnalisePeriodoBoundary.tsx",
+      "sha256": "4e2afe2059d480164cc5293355a9ea0513e3bc1b642d753d7c7b22408750b317"
+    },
+    {
+      "caminho": "src/components/dashboard/GraficoAnalise.tsx",
+      "sha256": "6b0056653d36a7c69dd96cea917a57364e6e09b9667f81641a9e7fa5f818a74b"
+    },
+    {
+      "caminho": "src/components/dashboard/analisePeriodo.css",
+      "sha256": "f64efa0e545c1a313f01c098853011ef252fa23bba094b912ed63bf584017fb2"
+    },
+    {
+      "caminho": "src/components/ui/chart.tsx",
+      "sha256": "ee698b7d0fc1f5ff895a1d87fd89d8607a2595912bc88ef12e79605f3c974406"
+    },
+    {
+      "caminho": "tests/login/analise-periodo.config.ts",
+      "sha256": "df1251bf3e06bd09e744392c4072d9b34d4b18f4bff6b382678257a59ac86000"
+    },
+    {
+      "caminho": "tests/login/analise-periodo.spec.ts",
+      "sha256": "a2d93d60c9f63543db14d139e25ad8a88e6335d123739f7a801d735ea4e599d2"
+    },
+    {
+      "caminho": "src/components/dashboard/PainelProprietaria.tsx",
+      "sha256": "d520c66bfb51ab7491ff796840e3227ae6b1398a22f41c38f6e9de1a93d5e97e"
+    },
+    {
+      "caminho": "src/components/dashboard/dashboardAcabamento.css",
+      "sha256": "4c4cb2e2501eeeaac14fd74f6e96aa534277fd769411bdf8253e13bf81666295"
+    },
+    {
+      "caminho": "src/components/dashboard/ComparacaoPeriodo.tsx",
+      "sha256": "f4158c1beaedbcd91930693cefd654bce99407e5e20cd4e79e3bc9693597ce39"
+    },
+    {
+      "caminho": "src/components/ui/card.tsx",
+      "sha256": "e80bf5bc5bc87a3040977b8806381bff97b2b9383901bb6f956e3f8ed94e252a"
+    },
+    {
+      "caminho": "tests/login/visual-dashboard.config.ts",
+      "sha256": "90ebe8345e768149ebff15c038f1e550f2be99a3ae14e0c7526315b3ce5620dc"
+    },
+    {
+      "caminho": "tests/login/visual-dashboard.spec.ts",
+      "sha256": "257a860ad4d80a829cbdde0d957d437f6125223427cabde511765ddf17e1e2fb"
+    }
+  ],
+  "preservados": [
+    {
+      "caminho": "package.json",
+      "igualAoManifesto35": true
+    },
+    {
+      "caminho": "package-lock.json",
+      "igualAoManifesto35": true
+    },
+    {
+      "caminho": "src/App.tsx",
+      "igualAoManifesto35": true
+    },
+    {
+      "caminho": "src/lib/financeiro/financeiro.types.ts",
+      "igualAoManifesto35": true
+    },
+    {
+      "caminho": "src/lib/analiseFinanceira.ts",
+      "igualAoManifesto35": true
+    },
+    {
+      "caminho": "src/components/dashboard/AnalisePeriodoBoundary.tsx",
+      "igualAoManifesto35": true
+    },
+    {
+      "caminho": "src/components/ui/chart.tsx",
+      "igualAoManifesto35": true
+    },
+    {
+      "caminho": "tests/login/analise-periodo.config.ts",
+      "igualAoManifesto35": true
+    }
+  ],
+  "observacao": "12 arquivos alterados nesta correção;20 no conjunto cumulativo da análise. Compartilhados exigem seleção de trechos; não autoriza publicação nem inclusão de trabalhos paralelos."
+}

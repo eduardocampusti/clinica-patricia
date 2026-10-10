@@ -1,0 +1,18 @@
+[
+  {
+    "recebidoEm": "2026-10-09T19:44:52.288Z",
+    "origem": "SDK normal da sessão fictícia antes da ativação",
+    "rotulo": "H4",
+    "rpc": "financeiro_resumo_caixa",
+    "codigo": "42501",
+    "aprovado": true
+  },
+  {
+    "recebidoEm": "2026-10-09T19:44:36.838Z",
+    "origem": "SDK normal da sessão fictícia antes da ativação",
+    "rotulo": "H5",
+    "rpc": "financeiro_resumo_caixa",
+    "codigo": "42501",
+    "aprovado": true
+  }
+]

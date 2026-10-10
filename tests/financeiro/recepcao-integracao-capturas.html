@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="pt-BR">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Caixa da Recepção · capturas da integração local</title>
+<style>
+body{margin:0;background:#f4f7fc;color:#15243a;font:16px/1.5 system-ui,sans-serif}main{max-width:1200px;margin:auto;padding:24px}h1{font-size:26px}a{color:#124cbb}a:focus-visible{outline:3px solid #124cbb;outline-offset:4px}.aviso{padding:16px;border:1px solid #b8d1fb;border-radius:12px;background:#e9f2ff}.grade{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:24px;margin-top:24px}figure{margin:0;padding:16px;border:1px solid #d2dcec;border-radius:12px;background:white}img{display:block;width:100%;height:330px;object-fit:contain;object-position:top;background:#f4f7fc}figcaption{margin-top:12px}small{display:block;color:#516176}nav{display:flex;flex-wrap:wrap;gap:16px;margin:24px 0}
+</style>
+<main>
+<h1>Caixa da Recepção · integração local</h1>
+<p class="aviso"><strong>Capturas sintéticas · nenhum dado real.</strong> Componentes da aplicação normal com respostas simuladas durante os testes. Não comprovam operações ou persistência no banco.</p>
+<p>Desktop: 1440 × 1000. Celular: 390 × 844, com verificações adicionais em 360 e 430 pixels. Imagens de página inteira incluem conteúdo abaixo da área visível; os painéis têm rolagem interna.</p>
+<nav><a href="/scratch/Caixa_Recepcao_Integracao_Capturas_PNG.zip" download>Baixar as 11 capturas (ZIP)</a><a href="http://127.0.0.1:3000/sistema/ipupiara/financeiro">Aplicação normal local</a><a href="http://127.0.0.1:4186/tests/financeiro/recepcao-preview.html">Prévia isolada</a></nav>
+<div class="grade" id="capturas"></div>
+<p>O teclado virtual de um aparelho físico e o zoom nativo de 125%/150% permanecem não verificados. As 41 capturas da prévia anterior foram preservadas separadamente.</p>
+</main>
+<script>
+const capturas=[['desktop-aberto','Caixa aberto · desktop'],['desktop-escuro','Tema escuro · desktop'],['desktop-split-troco','Pagamento dividido e troco · desktop'],['desktop-fechamento','Conferência com divergência · desktop'],['mobile-aberto','Caixa aberto · celular'],['mobile-escuro','Tema escuro · celular'],['mobile-split-troco','Pagamento dividido e troco · celular'],['mobile-fechamento','Conferência com divergência · celular'],['mobile-360','Celular · 360 pixels'],['mobile-390','Celular · 390 pixels'],['mobile-430','Celular · 430 pixels']];
+document.getElementById('capturas').innerHTML=capturas.map(([nome,titulo])=>`<figure><a href="/scratch/caixa-integracao/${nome}.png"><img loading="lazy" src="/scratch/caixa-integracao/${nome}.png" alt="${titulo}"></a><figcaption><a href="/scratch/caixa-integracao/${nome}.png">${titulo}</a><small>Abrir a captura completa</small></figcaption></figure>`).join('');
+</script>
+</html>

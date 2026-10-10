@@ -1,0 +1,95 @@
+{
+  "projeto": "xftnkusbyqzyvzrovroj",
+  "autorizada": true,
+  "aplicada": true,
+  "condicao_previa": "sessao legitima do criador comprovada antes de criar recursos",
+  "limite_acumulado": {
+    "contas": 10,
+    "contextos": 4
+  },
+  "novos": {
+    "contas": 2,
+    "contextos": 2
+  },
+  "reativacao": false,
+  "emails": 0,
+  "frontend_geral_habilitado": false,
+  "arquivos": [
+    {
+      "arquivo": "database/proposals/configuracoes/r2/20261009075000_configuracoes_homologacao_r2.sql",
+      "sha256": "73eebe6b09ebc63d712184bc7eccc0758ac79cd6c1ebb94f78d21b9ba38b8566"
+    },
+    {
+      "arquivo": "database/proposals/configuracoes/r2/contextos.sql",
+      "sha256": "5f16b99ad94a57be1f2aadd6af99478e87aba363e1b7a531bc74e1d1635c1b1c"
+    },
+    {
+      "arquivo": "database/proposals/configuracoes/r2/vinculos.template.sql",
+      "sha256": "f9688805edaedfa09224231526d2d086b3e54d9a2129f9dbed37eb0ee6fd7f40"
+    },
+    {
+      "arquivo": "database/proposals/configuracoes/r2/encerrar-contextos.sql",
+      "sha256": "406ec8dfbdfd25a61974d640adae1fc77f3401b1c660e5559cf5867ad91d23c2"
+    },
+    {
+      "arquivo": "database/proposals/configuracoes/r2/configuracoesPublicas.ts",
+      "sha256": "b2c3ada8df3d029ed50dbaa5622b4487a2fae3a1e600b625893f55eaa45050ee"
+    },
+    {
+      "arquivo": "database/proposals/configuracoes/r2/configuracoesPublicas.anterior.ts",
+      "sha256": "2685f89a413abdb0b71c7b9118ed2df9443489dd2682b6ab179a74af87fdb49a"
+    },
+    {
+      "arquivo": "database/proposals/configuracoes/r2/recuperar-antes-de-consumir.sql",
+      "sha256": "1f008131e60e0ca3d31f3e6e2f0de74776fb4417536ee5203c990d8d3a6acabe"
+    },
+    {
+      "arquivo": "database/proposals/configuracoes/r2/README.md",
+      "sha256": "fcf44b1f3eb5a554c94987d9614dd457075fd403797632e4d188eb29141b2bdc"
+    },
+    {
+      "arquivo": "tests/configuracoes/conectada-r2.vite.config.ts",
+      "sha256": "4e6f2ff9cf72bb4b8d1b06f3c16ccaef69d567fc6494416896649a946f1acf97"
+    },
+    {
+      "arquivo": "tests/configuracoes/conectada-r2.tsx",
+      "sha256": "e2e101914d90587268c8e49bbd9270869a6d6facedaa4fb207ce1d23faee9d4f"
+    },
+    {
+      "arquivo": "tests/configuracoes/conectada-r2.html",
+      "sha256": "367313619f26f1d25a1c9c71b1da2336f6e5c99ebdbde7e47741701d3a22dc9c"
+    },
+    {
+      "arquivo": "scripts/verificar-publicacao-configuracoes-r2.mjs",
+      "sha256": "a8ff55c06ce449a59417dfeb9618ab5116b2d0330ba641ce5f6e7e01313a9045"
+    },
+    {
+      "arquivo": "scripts/preparar-configuracoes-r2.mjs",
+      "sha256": "326abaeec1f26eaf2b3407a0660dd08e6ac3cae724e5063cc992e5ae47146378"
+    },
+    {
+      "arquivo": "scripts/test-configuracoes-r2-sql.mjs",
+      "sha256": "f874def531ad25bb92eeb5f45a6d1e3831a7a0dd53e460abd94aeb083710184b"
+    },
+    {
+      "arquivo": "tests/configuracoes/hosts-publicos-r2.test.ts",
+      "sha256": "43fd124a329f7448fe51eefd23160ea021d8366ad08b9f8f0cf63a90883ff1bc"
+    }
+  ],
+  "estado_versionamento_20261009": {
+    "backend_supabase_instalado": false,
+    "homologacao": "parcial",
+    "frontend_geral_habilitado": false,
+    "referencia_estado_atual": "docs/modulos/configuracoes/18-APLICACAO-GUARDA-E-SEQUENCIA-AUTORIZADA.md",
+    "escritas_remotas_nesta_etapa": 0,
+    "commit_nao_equivale_a_aplicacao": true,
+    "observacao": "Campos anteriores preservam a fotografia datada de preparação/aplicação; R2 não aplicada.",
+    "integridade_git": "releases/2026-10-09-dashboard-configuracoes-acesso-direto.json",
+    "hashes_anteriores": "Hashes históricos da preparação/aplicação; não são autorização para reaplicar. Manifesto de Git registra os blobs normalizados desta seleção."
+  },
+  "migration_remota": "20261009174524",
+  "edge_versao": 2,
+  "recursos_consumidos": true,
+  "recursos_encerrados": true,
+  "homologacao_funcional_aprovada": false
+}

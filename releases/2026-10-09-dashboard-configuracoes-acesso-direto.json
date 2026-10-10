@@ -1,0 +1,935 @@
+{
+  "data": "2026-10-09T11:54:00-03:00",
+  "repositorio": "eduardocampusti/clinica-patricia",
+  "branch": "codex/resgate-local-2026-09-26",
+  "base": "26909341beaa46b68bacc8e77684f6f6ba67f903",
+  "primeiro_commit": "2bcd8a4f47a2dc78fcc8c1715e3242d114fbe651",
+  "push_realizado": false,
+  "publicacao_realizada": false,
+  "homologacao_backend": "parcial",
+  "dashboard_comparacao": "manual informada pelo titular em Brotas e Ipupiara",
+  "flags_gerais": false,
+  "criterio_sha256": "Conteúdo do blob no índice Git, depois da normalização pelos atributos; não equivale ao hash histórico aplicado ao banco. Este manifesto exclui seu próprio hash para evitar circularidade.",
+  "arquivos": [
+    {
+      "arquivo": "CHECKPOINT.md",
+      "sha256": "1a76857dc3dc262881a35d8e6c2431bc0040168d96c4359c81b871732da276e4",
+      "bytes": 137622
+    },
+    {
+      "arquivo": "database/proposals/acesso-direto/01-preflight-permissoes.sql",
+      "sha256": "43942a64439a48ff86d293b03abfe978375c836c64cbdce194efa282ca0b90cb",
+      "bytes": 1461
+    },
+    {
+      "arquivo": "database/proposals/acesso-direto/02-RECUPERACAO-REQUISICOES.sql",
+      "sha256": "87962d576a889920f1e751b555896311afc3ece89d95852925445d860a759392",
+      "bytes": 1395
+    },
+    {
+      "arquivo": "database/proposals/acesso-direto/EXECUCAO-PARCIAL-20261009.json",
+      "sha256": "818813a7da00cc178de8adacda3d20e288c2b21a5f830a402c9b291dc42e5f14",
+      "bytes": 10369
+    },
+    {
+      "arquivo": "database/proposals/acesso-direto/README.md",
+      "sha256": "b193f695b4718b11d5a56fea2ae5983c98729bfafd7885876197fe5263760c30",
+      "bytes": 5708
+    },
+    {
+      "arquivo": "database/proposals/acesso-direto/RECUPERACAO-ESTADO-ANTERIOR-20261009.sql",
+      "sha256": "2fa598abc8197510c9d344af2429a9de298ecd2df28693c287d3830431373e26",
+      "bytes": 966
+    },
+    {
+      "arquivo": "database/proposals/acesso-direto/RETOMADA-DASHBOARD-MANUAL-20261009.json",
+      "sha256": "b7bdd93d863ec14e2fc5c9fe04f5025f0b29f63402e8a179171955bb0f8fc0bd",
+      "bytes": 2213
+    },
+    {
+      "arquivo": "database/proposals/acesso-direto/RETOMADA18-20261009.json",
+      "sha256": "e9420c8cb7ce1cdbf26d1c730f3ce8a0e521f0501a8920f9bb298dd1fc8c8e1b",
+      "bytes": 13909
+    },
+    {
+      "arquivo": "database/proposals/acesso-direto/auth-hook-proposto.json",
+      "sha256": "a4ee86d770f26ba24204d667e6e281308c59f2162e3c56d7e0885a4e8187c12b",
+      "bytes": 679
+    },
+    {
+      "arquivo": "database/proposals/acesso-direto/inventario-revisado.json",
+      "sha256": "3f537774613c4f9a731d17c1cfc7466f4eb52f7653323404087ada9a4e307a46",
+      "bytes": 28468
+    },
+    {
+      "arquivo": "database/proposals/acesso-direto/manifesto.json",
+      "sha256": "d5bda495ce81cf27fe6fc088597f95b7876bf088ed5df47722f3b0e55ce21576",
+      "bytes": 14096
+    },
+    {
+      "arquivo": "database/proposals/configuracoes/20261008_contextos_homologacao.sql",
+      "sha256": "6d1d48223657c06563eb6efb3f6b762f0d3e205454fac346594069b8ebf71bee",
+      "bytes": 1866
+    },
+    {
+      "arquivo": "database/proposals/configuracoes/20261008_encerrar_contextos.sql",
+      "sha256": "5d65c6df9185610359e3727d73f4a5f3618dbaadba357787cf973a747ba20266",
+      "bytes": 1243
+    },
+    {
+      "arquivo": "database/proposals/configuracoes/20261008_vinculos_homologacao.sql",
+      "sha256": "729c14e6f13ddb0105582741924b665cc03f110be1908fe2834d0541ad200db3",
+      "bytes": 2024
+    },
+    {
+      "arquivo": "database/proposals/configuracoes/AMPLIACAO-PONTUAL-RETOMADA18.md",
+      "sha256": "e523305a5c96e3ff9519f5ba1aac953c73b9cc6b3fe0a79b6d22825d9e5ca2ff",
+      "bytes": 6388
+    },
+    {
+      "arquivo": "database/proposals/configuracoes/README.md",
+      "sha256": "ce9767c4c2ce319c31b9e9faab86afe71c8e5c19c70feb93e287dfd412f8bacd",
+      "bytes": 3250
+    },
+    {
+      "arquivo": "database/proposals/configuracoes/manifesto.json",
+      "sha256": "816b1141c3105a0873a3326a7d64fd3ac8891a88f84240dc0646800540f8263c",
+      "bytes": 12871
+    },
+    {
+      "arquivo": "database/proposals/configuracoes/r2/20261009075000_configuracoes_homologacao_r2.sql",
+      "sha256": "73eebe6b09ebc63d712184bc7eccc0758ac79cd6c1ebb94f78d21b9ba38b8566",
+      "bytes": 4258
+    },
+    {
+      "arquivo": "database/proposals/configuracoes/r2/README.md",
+      "sha256": "b0924af092046b97312d8374382656eedc2a27a66db3203eb7cea12073222b62",
+      "bytes": 7726
+    },
+    {
+      "arquivo": "database/proposals/configuracoes/r2/configuracoesPublicas.anterior.ts",
+      "sha256": "2685f89a413abdb0b71c7b9118ed2df9443489dd2682b6ab179a74af87fdb49a",
+      "bytes": 807
+    },
+    {
+      "arquivo": "database/proposals/configuracoes/r2/configuracoesPublicas.ts",
+      "sha256": "b2c3ada8df3d029ed50dbaa5622b4487a2fae3a1e600b625893f55eaa45050ee",
+      "bytes": 959
+    },
+    {
+      "arquivo": "database/proposals/configuracoes/r2/contextos.sql",
+      "sha256": "5f16b99ad94a57be1f2aadd6af99478e87aba363e1b7a531bc74e1d1635c1b1c",
+      "bytes": 2013
+    },
+    {
+      "arquivo": "database/proposals/configuracoes/r2/encerrar-contextos.sql",
+      "sha256": "406ec8dfbdfd25a61974d640adae1fc77f3401b1c660e5559cf5867ad91d23c2",
+      "bytes": 1390
+    },
+    {
+      "arquivo": "database/proposals/configuracoes/r2/manifesto.json",
+      "sha256": "8ef20c742f66170cd65e0c126c24f72f25439fc8b6472ee2483f7e575c96c082",
+      "bytes": 3645
+    },
+    {
+      "arquivo": "database/proposals/configuracoes/r2/recuperar-antes-de-consumir.sql",
+      "sha256": "1f008131e60e0ca3d31f3e6e2f0de74776fb4417536ee5203c990d8d3a6acabe",
+      "bytes": 2174
+    },
+    {
+      "arquivo": "database/proposals/configuracoes/r2/vinculos.template.sql",
+      "sha256": "f9688805edaedfa09224231526d2d086b3e54d9a2129f9dbed37eb0ee6fd7f40",
+      "bytes": 2171
+    },
+    {
+      "arquivo": "docs/ia/CHECKPOINT.md",
+      "sha256": "96c3e8820101b700c65a412745c810a03397fc5c0620c1b6f0bc8edd4b8b1602",
+      "bytes": 76818
+    },
+    {
+      "arquivo": "docs/ia/INDICE.md",
+      "sha256": "5327c4e0deaec21b3d7f66d9d83a488e8e51939f50684bd62a5f635153cfd9b9",
+      "bytes": 20253
+    },
+    {
+      "arquivo": "docs/modulos/configuracoes/00-README-CONFIGURACOES.md",
+      "sha256": "f1c3daf506eefa28a8f9f98fd3e5eac42f537372bf977433aa53887e1cd19df0",
+      "bytes": 12869
+    },
+    {
+      "arquivo": "docs/modulos/configuracoes/01-DOCUMENTO-FUNCIONAL-MESTRE.md",
+      "sha256": "85ebd5c67e6f5fba4b85a32c06362824951727adc61331e7eab61c211c665bab",
+      "bytes": 6512
+    },
+    {
+      "arquivo": "docs/modulos/configuracoes/06-ARQUITETURA-TECNICA.md",
+      "sha256": "979e39e59fcb02fd057b4493aa8d0857bf38c59672649a29604a827f0925dd38",
+      "bytes": 10731
+    },
+    {
+      "arquivo": "docs/modulos/configuracoes/08-CHECKPOINT.md",
+      "sha256": "218f8488d9d89f6717c4a00befd78b273666a9110f6df39d6902f24c0b43e9e9",
+      "bytes": 20774
+    },
+    {
+      "arquivo": "docs/modulos/configuracoes/09-RELATORIO-IMPLEMENTACAO.md",
+      "sha256": "1e197ecc4f1149b1696f3492bcbfcf279ea74c806d099047e871fa4aa61a9f07",
+      "bytes": 10478
+    },
+    {
+      "arquivo": "docs/modulos/configuracoes/10-REVISAO-PDF-EXPERIENCIA-BACKEND.md",
+      "sha256": "5da6cf02b578c057b51214f07bce1f91ff628826c7877435b8b1cd5cb3421e5d",
+      "bytes": 14457
+    },
+    {
+      "arquivo": "docs/modulos/configuracoes/11-ROTEIRO-HOMOLOGACAO-CONFIGURACOES.md",
+      "sha256": "9e921ec70c66db477539a393741156adfe9b5fd839c3ec5e8f429e9435628fa2",
+      "bytes": 11013
+    },
+    {
+      "arquivo": "docs/modulos/configuracoes/12-HOMOLOGACAO-CONECTADA-PREFLIGHT.md",
+      "sha256": "305b3219e1dc8365b08f69c627f6442aa212662b58385cc1da8d199225d8888d",
+      "bytes": 19385
+    },
+    {
+      "arquivo": "docs/modulos/configuracoes/13-SEQUENCIA-CONJUNTA-E-ISOLAMENTO.md",
+      "sha256": "47ae2529d480e8e058cee42de1f11c56666d98a5fa1c7796273086e60c27e4bb",
+      "bytes": 28505
+    },
+    {
+      "arquivo": "docs/modulos/configuracoes/14-EXECUCAO-CONJUNTA-HOMOLOGACAO.md",
+      "sha256": "32dffe10f48e87e12fcf7236838acbec2370ca902b30d70729447c0f4d077de8",
+      "bytes": 16677
+    },
+    {
+      "arquivo": "docs/modulos/configuracoes/15-LEITURA-MANUAL-AUTH-DATA-API.md",
+      "sha256": "453cb785ac4d7f560b06e5a268410606cf21f326dacc47dd1cc6af62ed225088",
+      "bytes": 22125
+    },
+    {
+      "arquivo": "docs/modulos/configuracoes/16-APLICACAO-E-HOMOLOGACAO-CONJUNTA.md",
+      "sha256": "b38561a40b7c39911a392fde19f112d2053b60a8d9995da94ac9ea1b756cea6c",
+      "bytes": 12237
+    },
+    {
+      "arquivo": "docs/modulos/configuracoes/17-CORRECAO-GRAPHQL-E-GATE-DE-APLICACAO.md",
+      "sha256": "29a8e6dade9a69de571700bf0f1966924067e4caa73c6759be77f6c091105734",
+      "bytes": 13208
+    },
+    {
+      "arquivo": "docs/modulos/configuracoes/18-APLICACAO-GUARDA-E-SEQUENCIA-AUTORIZADA.md",
+      "sha256": "a5fb31aacea78b797a3c969624f9645ab01d95af8ce96b2018b7ee441acb7559",
+      "bytes": 35012
+    },
+    {
+      "arquivo": "docs/modulos/equipe/00-README-EQUIPE.md",
+      "sha256": "2d4ac0d70ce91de216ee16ee9e9598b990c7e7b08e8f8a2bbfc2f59fad40fd7c",
+      "bytes": 29548
+    },
+    {
+      "arquivo": "docs/modulos/equipe/01-DOCUMENTO-FUNCIONAL-MESTRE.md",
+      "sha256": "41893bab12608cae04bb650fc82c258539b41ba3d979d81b8eb38d2ed592bcf0",
+      "bytes": 25997
+    },
+    {
+      "arquivo": "docs/modulos/equipe/08-CHECKPOINT.md",
+      "sha256": "26a35f9b09597c65544693424b4a6d03c27ec186d1e51ed517c6fe67be52952d",
+      "bytes": 59004
+    },
+    {
+      "arquivo": "docs/modulos/equipe/39-ACESSO-DIRETO-SENHA-TEMPORARIA.md",
+      "sha256": "f61173375477d61104d8a9453f3e438cb4ec6c0a004eb621ce5817fece6b5ce5",
+      "bytes": 14534
+    },
+    {
+      "arquivo": "docs/modulos/equipe/40-REVISAO-BACKEND-PACOTE-APLICACAO.md",
+      "sha256": "0adc377853e08e7fe76e3a0f3f15a96c29898b1ce6da69a60ef9d9b53ece2d71",
+      "bytes": 28745
+    },
+    {
+      "arquivo": "docs/modulos/sistema/00-README-SISTEMA.md",
+      "sha256": "840e4ac5c2f1abda74c2d834d2d43d26c8ab854670f71110e229786299777ac6",
+      "bytes": 15191
+    },
+    {
+      "arquivo": "docs/modulos/sistema/01-DOCUMENTO-FUNCIONAL-MESTRE.md",
+      "sha256": "5370232c1b09c1495bb3bc72b657ec202f151b87b89942a871714fe129415c65",
+      "bytes": 19759
+    },
+    {
+      "arquivo": "docs/modulos/sistema/08-CHECKPOINT.md",
+      "sha256": "cc3d8492ba4f20e172cc0ba8cdf034dbbeae0abf4207e5a95fd91ca2768c6536",
+      "bytes": 29566
+    },
+    {
+      "arquivo": "docs/modulos/sistema/18-DASHBOARD-ADMINISTRATIVA-PROPRIETARIO.md",
+      "sha256": "68fbf85511c731c004f1c4a94fb069e02b3405afdfabc0676b9dcc4b96ddae2a",
+      "bytes": 28588
+    },
+    {
+      "arquivo": "docs/modulos/sistema/19-VERSIONAMENTO-DASHBOARD-CONFIGURACOES-ACESSO-DIRETO.md",
+      "sha256": "db34f095fa0d5a92296b0a45e1eed6e30ce5576c186cc40e94ba6e38cf36eafd",
+      "bytes": 8059
+    },
+    {
+      "arquivo": "scripts/preparar-configuracoes-r2.mjs",
+      "sha256": "326abaeec1f26eaf2b3407a0660dd08e6ac3cae724e5063cc992e5ae47146378",
+      "bytes": 6478
+    },
+    {
+      "arquivo": "scripts/preparar-imagens-configuracoes.ps1",
+      "sha256": "9627feb12405e1d2b9727d8b78886a6f488b971728995e92b6aae7c9a95ce47f",
+      "bytes": 1436
+    },
+    {
+      "arquivo": "scripts/preparar-pacote-acesso-direto.mjs",
+      "sha256": "740dec1469d16ff113090fc220ead4e4114ac74eb84f54fff7fe7bbd7b3105d6",
+      "bytes": 3953
+    },
+    {
+      "arquivo": "scripts/preparar-vinculos-configuracoes.mjs",
+      "sha256": "905ec3d47c8458b47b0d4e460c4efc78cd15120c9208bfd03cf851df7d7be854",
+      "bytes": 789
+    },
+    {
+      "arquivo": "scripts/preview-configuracoes.mjs",
+      "sha256": "bf8c984832cc28b5a5beba4c787effafaaaf43effe5a434e3a964e8c058944f1",
+      "bytes": 471
+    },
+    {
+      "arquivo": "scripts/test-acesso-direto-sql.mjs",
+      "sha256": "0ea4e56122399cfd24f4c73f778fceda45479380127033b21c67ce54664af8ab",
+      "bytes": 5724
+    },
+    {
+      "arquivo": "scripts/test-configuracoes-r2-sql.mjs",
+      "sha256": "f874def531ad25bb92eeb5f45a6d1e3831a7a0dd53e460abd94aeb083710184b",
+      "bytes": 6283
+    },
+    {
+      "arquivo": "scripts/test-configuracoes-sequencia.mjs",
+      "sha256": "187667f721f3bd8aedb4852b8bf3701e8cbab92a725050ea912e7964c88438b7",
+      "bytes": 6501
+    },
+    {
+      "arquivo": "scripts/test-equipe-regressao.mjs",
+      "sha256": "846486ce0d47193c5af594e93ffe6dd8c4007d19a1939c5e2d573a88d9456447",
+      "bytes": 968
+    },
+    {
+      "arquivo": "scripts/verificar-publicacao-configuracoes-r2.mjs",
+      "sha256": "a8ff55c06ce449a59417dfeb9618ab5116b2d0330ba641ce5f6e7e01313a9045",
+      "bytes": 4606
+    },
+    {
+      "arquivo": "scripts/verificar-publicacao-configuracoes.mjs",
+      "sha256": "bd6dbb942a16e743d8cbba9f855508345f5cacaeca313ab2ee375d3d582476cd",
+      "bytes": 4594
+    },
+    {
+      "arquivo": "server/src/env.ts",
+      "sha256": "0a58f51a91b94e033179451a49b211faea21dbe8738bc2861a6c74b0788804e5",
+      "bytes": 1356
+    },
+    {
+      "arquivo": "server/src/plugins/ativacao.ts",
+      "sha256": "0f91da19b91d8d66572275ff35a4aa17805b5432a71dd853e1289b1156f603d3",
+      "bytes": 259
+    },
+    {
+      "arquivo": "server/src/plugins/auth.ts",
+      "sha256": "4f606a220538d2d44514fd8fa57623e4a84f6d3d32abae6b11d5619b36d77da9",
+      "bytes": 1552
+    },
+    {
+      "arquivo": "server/src/supabase.ts",
+      "sha256": "11fd68804e37728b731fa2665834c73ab488f8781728d6dd0d2a7f0943be1317",
+      "bytes": 629
+    },
+    {
+      "arquivo": "src/App.tsx",
+      "sha256": "ac211b44ab140008226b19d48b994103d03eb3cbe287665bf025730ea1532cc6",
+      "bytes": 22297
+    },
+    {
+      "arquivo": "src/assets/pdf/NotoSans-Bold.ttf",
+      "sha256": "c976e4b1b99edc88775377fcc21692ca4bfa46b6d6ca6522bfda505b28ff9d6a",
+      "bytes": 575740
+    },
+    {
+      "arquivo": "src/assets/pdf/NotoSans-Regular.ttf",
+      "sha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+      "bytes": 569208
+    },
+    {
+      "arquivo": "src/assets/pdf/OFL.txt",
+      "sha256": "0dab92d0544f7b233403f14b84a663bdbfa746982eda629e7f4f9ffe1b036feb",
+      "bytes": 4377
+    },
+    {
+      "arquivo": "src/assets/pdf/README.md",
+      "sha256": "3828ef2bef0a34f47e6c78bf39668970cf78adc8145ed3b0b610b42b67d1ead2",
+      "bytes": 670
+    },
+    {
+      "arquivo": "src/components/GuardaAtivacao.tsx",
+      "sha256": "2c5da2965191b0f4d55ccf059a3850dc697817a6951a2756234ede087a2b2a71",
+      "bytes": 3981
+    },
+    {
+      "arquivo": "src/components/cadastros/AcessoTemporarioPainel.tsx",
+      "sha256": "19bd1d4f46e66f24e73ffdc5171f4dff8a9760eb37a245fe14985431a85755cf",
+      "bytes": 3461
+    },
+    {
+      "arquivo": "src/components/cadastros/CredencialTemporariaDialog.tsx",
+      "sha256": "fedfabbcfafbf8587d87b740cf2e58bb4b850f224cce6f44724656f14eab5d25",
+      "bytes": 2418
+    },
+    {
+      "arquivo": "src/components/cadastros/NovoMembroAcesso.tsx",
+      "sha256": "c7f3c3032f59a68eccd72b69c3001179035c76774cc4bf22f3645246a01f3dbe",
+      "bytes": 3686
+    },
+    {
+      "arquivo": "src/components/configuracoes/PreviaTimbrado.tsx",
+      "sha256": "1e3c868cc62f4218a08b0dfdbc7b821b9727440a305866cb1803a10c2cc225a6",
+      "bytes": 2398
+    },
+    {
+      "arquivo": "src/components/dashboard/PainelProprietaria.tsx",
+      "sha256": "b94dc2781f0db397873d1a0d19d071ae58279726f1ca975501b5d519fd6c18ca",
+      "bytes": 11360
+    },
+    {
+      "arquivo": "src/components/dashboard/painelProprietaria.css",
+      "sha256": "0024488f73a7d868fb7084d2dd02c4f5baadf448139acaec8e10a4349eb513a8",
+      "bytes": 4369
+    },
+    {
+      "arquivo": "src/components/shell/AppShell.tsx",
+      "sha256": "c727eb29e9000454a74eb73d19d73ee121fed12d5fd99edf93fa8ee5e01e207a",
+      "bytes": 5083
+    },
+    {
+      "arquivo": "src/components/shell/Sidebar.tsx",
+      "sha256": "52ead472de1f34dab69737ff0a736bf98e044feb3c2c696462a0db49734c3f7a",
+      "bytes": 7556
+    },
+    {
+      "arquivo": "src/components/shell/icons.tsx",
+      "sha256": "395764a613aa4e8b48efaf1a382026d7d6644fe41d2374243d45603e27962ade",
+      "bytes": 5399
+    },
+    {
+      "arquivo": "src/components/shell/navigation.ts",
+      "sha256": "dd3bce62661b8948f4ae248be3eb75b1bd5d231d79b801bbf729b03c11f7f093",
+      "bytes": 1341
+    },
+    {
+      "arquivo": "src/components/shell/types.ts",
+      "sha256": "102a371fbbba0bbc4f75975ebeeb993575a309f8a87ca60f60f3ecb41b2c3737",
+      "bytes": 1050
+    },
+    {
+      "arquivo": "src/config/acessoDireto.ts",
+      "sha256": "139687c1ad9e064467112254779312182c5dfa35b770c4012b68e5807233c6b1",
+      "bytes": 222
+    },
+    {
+      "arquivo": "src/config/clinicBrands.ts",
+      "sha256": "33f98422c6125d82d60795515698f847947d608d82496095a06bb5733a890279",
+      "bytes": 4999
+    },
+    {
+      "arquivo": "src/config/notasEvolucao.json",
+      "sha256": "e5915141c72a0bba527ddc2353d2879c17f4eb2ab242065d6a33fa2b00cc44ca",
+      "bytes": 21315
+    },
+    {
+      "arquivo": "src/hooks/useClinicaAtiva.ts",
+      "sha256": "0a53febe06720ec7267394620a0994dd1efaebc6f808cf3562f2368a938ecf64",
+      "bytes": 2074
+    },
+    {
+      "arquivo": "src/hooks/useClinicasDoUsuario.ts",
+      "sha256": "af66005ee4cea8a29333779e6d4186830127a3a7378e33d67de4cd5f56b91cdc",
+      "bytes": 2374
+    },
+    {
+      "arquivo": "src/hooks/useMarcaInstitucional.ts",
+      "sha256": "40849460c51a8ad8f8bf56836414b37c87465496a33b7c951e608c61ceea0416",
+      "bytes": 2086
+    },
+    {
+      "arquivo": "src/lib/acessoDireto.ts",
+      "sha256": "117260801bdc3b83a4c0ec337110c1f20474c87bd42e746d90241da01e09f374",
+      "bytes": 4288
+    },
+    {
+      "arquivo": "src/lib/acessoDiretoModelo.ts",
+      "sha256": "1d270134ec52430cc674d041610eaf4bda1911e78ec25ed081c57d46aa86f135",
+      "bytes": 2333
+    },
+    {
+      "arquivo": "src/lib/clinicAccess.ts",
+      "sha256": "763454b35a0b8c9830d667fb96d0cf0d725ab78b9e27aa54f9f31a9cbcfaae01",
+      "bytes": 1409
+    },
+    {
+      "arquivo": "src/lib/configuracoes.test.ts",
+      "sha256": "b6caef35c335c978eaf6cf8c61c9aa8e3f57b0b0bfe99ab536c259c834fe5ce1",
+      "bytes": 3916
+    },
+    {
+      "arquivo": "src/lib/configuracoes.ts",
+      "sha256": "960f79f002f6d07b0fd25e85c77553f2b64075b26737ac8b1fd98fbb89680bc7",
+      "bytes": 6584
+    },
+    {
+      "arquivo": "src/lib/dashboardProprietaria.test.ts",
+      "sha256": "3a2e1d5aa618a38be14ff9c256c5bc497636ddd1a8d1710b199898b27b7f36b8",
+      "bytes": 3054
+    },
+    {
+      "arquivo": "src/lib/dashboardProprietaria.ts",
+      "sha256": "82cc4236d9ed650ad596fcb620c5dbfeebe522b8e36d33e18f6b9a37a23ae62d",
+      "bytes": 2472
+    },
+    {
+      "arquivo": "src/lib/equipeAcessos.ts",
+      "sha256": "1223b307a7b01ccabf383e1f5a50093858eb4aa35dc3271c9767d18e9c9ae2f5",
+      "bytes": 5154
+    },
+    {
+      "arquivo": "src/lib/financeiro/financeiro.relatorios.ts",
+      "sha256": "4b9eaa6e7ebdb672e0eec28368c40f0fc8e6b836dce00e9f4487834b9764bf69",
+      "bytes": 6083
+    },
+    {
+      "arquivo": "src/lib/financeiroRelatorios.ts",
+      "sha256": "3942adc7b6d35eab7e1a94b17ff1343166e6e545abe73fed94360a0311e0dcd0",
+      "bytes": 14036
+    },
+    {
+      "arquivo": "src/lib/timbradoFontes.ts",
+      "sha256": "3f68b41db8770595eec232c9dad49864707962aa39da85a4091cab5338cae8d2",
+      "bytes": 1303
+    },
+    {
+      "arquivo": "src/lib/timbradoPdf.ts",
+      "sha256": "b9bd5d7683b1cdea1147e70b76216558b66de38f734fa48fae89e6594038ca8d",
+      "bytes": 7846
+    },
+    {
+      "arquivo": "src/pages/Configuracoes.tsx",
+      "sha256": "d63616708d8cc44f102459dd39b95fcc48dc1c448c8e33c6edc1a92f43d8aea8",
+      "bytes": 28777
+    },
+    {
+      "arquivo": "src/pages/Dashboard.tsx",
+      "sha256": "a72905ca838be80616ad9d225b7eeea5e4dcc7e3ce669f03edd8e9f0a900c375",
+      "bytes": 4994
+    },
+    {
+      "arquivo": "src/pages/DefinirSenhaPessoal.tsx",
+      "sha256": "bf2efb0524a0bd092e394c705fcd8cd11447894882cdc23c8ba3d1feb23c6f57",
+      "bytes": 3898
+    },
+    {
+      "arquivo": "src/pages/FinanceiroRelatorios.tsx",
+      "sha256": "fd5009fb71159ed06264782e953ad9e0286a2c0e57f6048c17ef114c371758ca",
+      "bytes": 28414
+    },
+    {
+      "arquivo": "src/pages/Login.tsx",
+      "sha256": "6c290de109912bdaad0909c952a828e50012029e0e0f17e154f9e6406f17c590",
+      "bytes": 16591
+    },
+    {
+      "arquivo": "src/pages/cadastros/Equipe.tsx",
+      "sha256": "8950a0b0c5d35b126246c85fb7b420f27483abccdd65c5da2ae88746eb942419",
+      "bytes": 73592
+    },
+    {
+      "arquivo": "src/pages/configuracoes.css",
+      "sha256": "587fc0346154b0b7928d62a5d835f326cefec752284a32c7d11f4a747fa3e57b",
+      "bytes": 7427
+    },
+    {
+      "arquivo": "src/pages/login.css",
+      "sha256": "92c6a22c96a675afdc8be72940df01bee30b38a1ecab373e2b90f9689b9e6882",
+      "bytes": 17839
+    },
+    {
+      "arquivo": "supabase/config.toml",
+      "sha256": "0fb0f2e5b551e6ca2ba13a1770345e63e60ba8313d2eadce1cbad14f72509a2b",
+      "bytes": 16134
+    },
+    {
+      "arquivo": "supabase/functions/_shared/acessoDireto.ts",
+      "sha256": "c4389deb19528799e5aa40d8d25429af13c9b7bba4c83fdc6e4540c366a09ce3",
+      "bytes": 3859
+    },
+    {
+      "arquivo": "supabase/functions/_shared/configuracoes.ts",
+      "sha256": "d8e4d028a3d10b1b5cf475b016135a338d141bd066ce4e73b6bf1234141d72e9",
+      "bytes": 10073
+    },
+    {
+      "arquivo": "supabase/functions/_shared/configuracoesPublicas.ts",
+      "sha256": "2685f89a413abdb0b71c7b9118ed2df9443489dd2682b6ab179a74af87fdb49a",
+      "bytes": 807
+    },
+    {
+      "arquivo": "supabase/functions/_shared/equipeDocumento.ts",
+      "sha256": "604fd8c71f4eee43a75db1ab4bc111fb97752367a2e368016b6473d1c60f7711",
+      "bytes": 2730
+    },
+    {
+      "arquivo": "supabase/functions/_shared/equipeFicha.ts",
+      "sha256": "1467a3233a26d78ff73dcc0ca5da672ea145eee22284b5a7db9fd96a26c7b361",
+      "bytes": 19551
+    },
+    {
+      "arquivo": "supabase/functions/_shared/equipeFoto.ts",
+      "sha256": "fa335f7247238362aa7d1e19c4a45641561a595a4a0308c6fa87c2e5562667ad",
+      "bytes": 4207
+    },
+    {
+      "arquivo": "supabase/functions/_shared/equipePdf.ts",
+      "sha256": "50df4c1096f1cef55ab2da81ad3682af5b0618e9db4c6befa14314901a1166ea",
+      "bytes": 2950
+    },
+    {
+      "arquivo": "supabase/functions/_shared/equipeRecebimento.ts",
+      "sha256": "ca8f6428a3528d59645181f57647282027d9e975fe6b129365efae5623bf5ec9",
+      "bytes": 7658
+    },
+    {
+      "arquivo": "supabase/functions/_shared/equipeRecursosServico.ts",
+      "sha256": "1334ce7bfe14e9e6cb1a0b915702cabe2f3b3e34a2881b38d805b6cdb19d395d",
+      "bytes": 5313
+    },
+    {
+      "arquivo": "supabase/functions/_shared/guardaAtivacao.ts",
+      "sha256": "30b59728dfea7f9c3264e67d335ef3e71d07b73301a0447069a2b9684a4aa5f1",
+      "bytes": 440
+    },
+    {
+      "arquivo": "supabase/functions/configuracoes-publicas/index.ts",
+      "sha256": "bc645246766b04d2c1f7e1b52627adfb0a5a64cf81ac0ef9c7bb5e160f89eb16",
+      "bytes": 2578
+    },
+    {
+      "arquivo": "supabase/functions/configuracoes/index.ts",
+      "sha256": "a3e181591aa42f882eb1bcc6978ed88662b9f1ccd323a1864179ddc13a106e5d",
+      "bytes": 10041
+    },
+    {
+      "arquivo": "supabase/functions/equipe-acesso-direto/index.ts",
+      "sha256": "d1dbd9e433237d4808d1cb579ffa2cbdb25928bb12aa380fe0f0fe271c3fd1ce",
+      "bytes": 8918
+    },
+    {
+      "arquivo": "supabase/functions/equipe-acessos/conviteAuth.ts",
+      "sha256": "809168b03f2f6085a092fb25250b6be1fd79e6e21fa8fb4412f7ce3fb114ba50",
+      "bytes": 2404
+    },
+    {
+      "arquivo": "supabase/functions/equipe-acessos/emailContext.ts",
+      "sha256": "c562b9ccb2aefb03070ea731bd5c28d2a3f4f7dbbb351a596d42d8e7a61727d1",
+      "bytes": 692
+    },
+    {
+      "arquivo": "supabase/functions/equipe-acessos/index.ts",
+      "sha256": "7b6312966e3b7881035712e18ad3a5c2883aa1e84c8470d49e28766c997d0dc7",
+      "bytes": 19888
+    },
+    {
+      "arquivo": "supabase/functions/equipe-acessos/redirectUnidade.ts",
+      "sha256": "3c7de71f8c07f9ef7aa11c679059f5d2a05856c37144cbc3c963f7143e648e9f",
+      "bytes": 908
+    },
+    {
+      "arquivo": "supabase/functions/equipe-fichas/index.ts",
+      "sha256": "2394ae6b6575017ae8893a525debb4a11c95ce7e39abb6bdaf8c1b70628c80ea",
+      "bytes": 13403
+    },
+    {
+      "arquivo": "supabase/functions/equipe-recursos/index.ts",
+      "sha256": "83f3833b568564feb575998b5ed5bcb253c337b11e8da801666cbdffa989709b",
+      "bytes": 7390
+    },
+    {
+      "arquivo": "supabase/functions/meu-perfil/index.ts",
+      "sha256": "b2a989fb36feb2e9e2970dea7a5894ac7bfea4f21e5bbc8c957166344eb86fa5",
+      "bytes": 6044
+    },
+    {
+      "arquivo": "supabase/functions/meu-perfil/servico.ts",
+      "sha256": "5e436e47137e1037579de1962f9a804a35d0cb6646d829604e610fb039dddd1c",
+      "bytes": 2620
+    },
+    {
+      "arquivo": "supabase/migrations/20261008213000_configuracoes_institucionais.sql",
+      "sha256": "42de41897b6a9ee9a3188ed2d04c4ae52d46c5caf9c4c751571bf151d27b69ab",
+      "bytes": 25958
+    },
+    {
+      "arquivo": "supabase/migrations/20261008230000_equipe_acesso_direto.sql",
+      "sha256": "d878cc41b5a9795a14023920c2ed742ef98939f2aa52f046821e38e6a21f986a",
+      "bytes": 25515
+    },
+    {
+      "arquivo": "supabase/migrations/20261008230050_configuracoes_homologacao_isolada.sql",
+      "sha256": "1c93a6852ece2fa6cd8d71ee92f5b56842fcf9848658b877d29af9fadc9371a6",
+      "bytes": 3085
+    },
+    {
+      "arquivo": "supabase/migrations/20261008230100_equipe_acesso_direto_protecoes.sql",
+      "sha256": "494e712c119753a51c6f4e00487f100ef8112702e5114dda82642e93d210fd63",
+      "bytes": 9105
+    },
+    {
+      "arquivo": "supabase/tests/acesso-direto_contratos.sql",
+      "sha256": "30554a54eb344ce940ece78c9118f73519fe013af673c612fd0ce3ce0ef746e7",
+      "bytes": 10995
+    },
+    {
+      "arquivo": "supabase/tests/acesso-direto_fixture.sql",
+      "sha256": "30d312dd9828b3c3a8d6ab38fe90e0f4a92e1ec00fd4c80fd7174908d744165d",
+      "bytes": 4072
+    },
+    {
+      "arquivo": "supabase/tests/acesso-direto_inventario.sql",
+      "sha256": "67935c67751ddd927e3908b1fec9ab21301047fd71b746d79589694f6b471d61",
+      "bytes": 2132
+    },
+    {
+      "arquivo": "supabase/tests/acesso-direto_revisao-catalogo.sql",
+      "sha256": "e96dadcdd9ffc6f9235359a25feead924ee961865836fcad68911a3da5b20d46",
+      "bytes": 1675
+    },
+    {
+      "arquivo": "supabase/tests/configuracoes_fixture.sql",
+      "sha256": "fe767ca1f8021c4b9e6b19040966a1fa1ab417fda0e8c50d8aac9f171744e58d",
+      "bytes": 1734
+    },
+    {
+      "arquivo": "supabase/tests/configuracoes_isolamento_contratos.sql",
+      "sha256": "03c3a24e65e83ca10463aed2bb56f2eda141da69cf4e5844d75cf1e8d19ae732",
+      "bytes": 10917
+    },
+    {
+      "arquivo": "supabase/tests/configuracoes_pos_aplicacao.sql",
+      "sha256": "cb85ba87ec61ec7fc6d780f59c1a4b5b106f75f3976ba2862e546eb2a5244279",
+      "bytes": 2263
+    },
+    {
+      "arquivo": "supabase/tests/configuracoes_preflight.sql",
+      "sha256": "89795661ca549b40d769e24209a71a1eac3dc8c0516e76dcd1e3ea2c947e3585",
+      "bytes": 1891
+    },
+    {
+      "arquivo": "supabase/tools/acesso-direto-preflight.sql",
+      "sha256": "44b40e16c0c4bcc70e3de7fb50c20bf750dd392de105a476f2202d36cf70bb3a",
+      "bytes": 1845
+    },
+    {
+      "arquivo": "supabase/tools/acesso-direto-proteger-configuracoes.sql",
+      "sha256": "71109f983371287c1d64c930d8812c0566800a5e41122be1def888e3062bad5a",
+      "bytes": 2858
+    },
+    {
+      "arquivo": "supabase/tools/verificar-integridade.sql",
+      "sha256": "ee55ae4ad4fce42006afce8eb7a1ae2ef76cced975e3d4e91056ff2d1233489f",
+      "bytes": 5695
+    },
+    {
+      "arquivo": "tests/acesso-direto/deno.d.ts",
+      "sha256": "5e3244f95917baf90a9866be4f1d3a9c4bc70d0085b520054f0b8fb132e2360b",
+      "bytes": 170
+    },
+    {
+      "arquivo": "tests/acesso-direto/flag-sintetica.ts",
+      "sha256": "1685f242822ee86d08cdd3c04f87179972e48e2e4a764adfe171a20882ce9739",
+      "bytes": 189
+    },
+    {
+      "arquivo": "tests/acesso-direto/interface.spec.ts",
+      "sha256": "be050e17b6e00abe1ae990ad824a66448150d89837df26229264279229a7440c",
+      "bytes": 15093
+    },
+    {
+      "arquivo": "tests/acesso-direto/playwright.config.ts",
+      "sha256": "68e2a4b1bbde1c44f734c364debdf5e307a7b9c81f29698a280eef01948fbf88",
+      "bytes": 823
+    },
+    {
+      "arquivo": "tests/acesso-direto/preview.html",
+      "sha256": "0f6084d793ab6a8e93dd4d450cb15afe70ec5d444fe0a7307944d82561b9e48c",
+      "bytes": 281
+    },
+    {
+      "arquivo": "tests/acesso-direto/preview.tsx",
+      "sha256": "2dadb6dcd6a170a03cd36531ec14e138440caa04d381ae143ca2e843d550c41c",
+      "bytes": 2730
+    },
+    {
+      "arquivo": "tests/acesso-direto/regras.test.ts",
+      "sha256": "a926b8be482784aede809db96a8a280fc75627530d0cd5890d75b109799917ae",
+      "bytes": 11143
+    },
+    {
+      "arquivo": "tests/acesso-direto/tsconfig.backend.json",
+      "sha256": "ffe9eca6e0699791a8482196e06cfc05f1ad35da37c4c88f242f157c2dceade9",
+      "bytes": 552
+    },
+    {
+      "arquivo": "tests/acesso-direto/vite.config.ts",
+      "sha256": "130385a34fe509e2bea8457f4a0b0fcca419e0ed124842f16b0dfb7457fb2d2d",
+      "bytes": 427
+    },
+    {
+      "arquivo": "tests/configuracoes/conectada-r2.html",
+      "sha256": "367313619f26f1d25a1c9c71b1da2336f6e5c99ebdbde7e47741701d3a22dc9c",
+      "bytes": 315
+    },
+    {
+      "arquivo": "tests/configuracoes/conectada-r2.tsx",
+      "sha256": "e2e101914d90587268c8e49bbd9270869a6d6facedaa4fb207ce1d23faee9d4f",
+      "bytes": 2408
+    },
+    {
+      "arquivo": "tests/configuracoes/conectada-r2.vite.config.ts",
+      "sha256": "21d7f33899c02bfbe6558fa8df67d89ca42d516d6ab91e82d82d31db94438b1e",
+      "bytes": 1720
+    },
+    {
+      "arquivo": "tests/configuracoes/conectada.html",
+      "sha256": "c845bd15bfa069986173aed85bd08d009392bc0f6f554c9a4c424b8b9df255de",
+      "bytes": 312
+    },
+    {
+      "arquivo": "tests/configuracoes/conectada.tsx",
+      "sha256": "bfe5af11c4de667f16d2f0dde242d161df8d66d5302924d5af43e34eb2ac8db0",
+      "bytes": 2408
+    },
+    {
+      "arquivo": "tests/configuracoes/conectada.vite.config.ts",
+      "sha256": "6c88842eaec6ea01ca8a579e5eecddc91c59b3d3be8fc28bc94c2cc2faf69aaa",
+      "bytes": 1702
+    },
+    {
+      "arquivo": "tests/configuracoes/configuracoes.spec.ts",
+      "sha256": "fa95d9e778ec13dac6ed97d267e3728e79a12136ccaabde29d4e75e2504b4d1f",
+      "bytes": 16445
+    },
+    {
+      "arquivo": "tests/configuracoes/deno.d.ts",
+      "sha256": "0c7b91583e9187bae766432067535cacbf6354b90ca48ab2902763bb5e1a5cf9",
+      "bytes": 356
+    },
+    {
+      "arquivo": "tests/configuracoes/hosts-publicos-r2.test.ts",
+      "sha256": "43fd124a329f7448fe51eefd23160ea021d8366ad08b9f8f0cf63a90883ff1bc",
+      "bytes": 1313
+    },
+    {
+      "arquivo": "tests/configuracoes/hosts-publicos.test.ts",
+      "sha256": "c652b37e6baaec1aee17623c19c52e7f0c873dd13de02514de102e5a84b84da6",
+      "bytes": 1425
+    },
+    {
+      "arquivo": "tests/configuracoes/playwright.config.ts",
+      "sha256": "e23c7197af283727bf672166582c3849ca32ec8e07f60fc5d35dc31f07bc17fc",
+      "bytes": 646
+    },
+    {
+      "arquivo": "tests/configuracoes/preview.html",
+      "sha256": "e496ae4173501bc29b7d7f0c547ae503b8a128c487a2fc4f6ce675f1c8320679",
+      "bytes": 310
+    },
+    {
+      "arquivo": "tests/configuracoes/preview.tsx",
+      "sha256": "c4d240b0f845d1603ad48bf8a498f6011ef2d148e6e1e0cef293aee487405d9a",
+      "bytes": 3263
+    },
+    {
+      "arquivo": "tests/configuracoes/revisao.config.ts",
+      "sha256": "4f9ebe833eeddf03ca9594ed6825c4b1816c7800655b545365475ff849704a9c",
+      "bytes": 642
+    },
+    {
+      "arquivo": "tests/configuracoes/revisao.spec.ts",
+      "sha256": "7fb85081af88484767b683e0f1b673028ff94752105df8b135b66cfa40df3d7d",
+      "bytes": 10092
+    },
+    {
+      "arquivo": "tests/configuracoes/tsconfig.backend.json",
+      "sha256": "206c658a298ed9596eb930abfd16c2cfad04cb1a9bcf6a10c33ab99b7c3656eb",
+      "bytes": 453
+    },
+    {
+      "arquivo": "tests/configuracoes/tsconfig.conectada.json",
+      "sha256": "15484ed51cc6fc0f53083b59af894494604eb3e710c0b85a8198e7a83ab212b7",
+      "bytes": 192
+    },
+    {
+      "arquivo": "tests/configuracoes/validar-pdfs.py",
+      "sha256": "623afc05f3ee6f6b5d96742f0e73820fac016637ac4a63529bfa1da9629d335b",
+      "bytes": 2273
+    },
+    {
+      "arquivo": "tests/configuracoes/validar-revisao-pdfs.py",
+      "sha256": "143629550cdc0ed316f0db161ecbb5b6283a91255572d977db05cbabe3247d2e",
+      "bytes": 4060
+    },
+    {
+      "arquivo": "tests/configuracoes/vite.config.ts",
+      "sha256": "0481e62c389901bde80f5466ce58343bcb19f6bb8afcb66bb5a3ef63dfde252f",
+      "bytes": 435
+    },
+    {
+      "arquivo": "tests/login/dashboard-administrativa.config.ts",
+      "sha256": "cebfc02a2654edfd4497e5036eb36253cd97daf3797a7a7ce0c4284c145f1041",
+      "bytes": 899
+    },
+    {
+      "arquivo": "tests/login/dashboard-administrativa.spec.ts",
+      "sha256": "78bcdc485742a25004fafe31dfc34a9d006ef2db6ec11a86e0829d7bac2e89f9",
+      "bytes": 19432
+    },
+    {
+      "arquivo": "tests/login/dashboard-administrativa.vite.config.ts",
+      "sha256": "2eed19e4d897ee0f0b1e6a014a0e61b5daba661fa54bd9a2bad6b69ec4c43cf1",
+      "bytes": 312
+    },
+    {
+      "arquivo": "tests/login/dashboard-fixture.ts",
+      "sha256": "911e61ad384b15f0a4bee62a7f672d979d15dafa486739659cb5f9c920b0f6c5",
+      "bytes": 8658
+    },
+    {
+      "arquivo": "tests/login/dashboard-identidade.spec.ts",
+      "sha256": "942261cc57c519a17d580db22c483077bf070d1612bd02e21c7810edf9d05014",
+      "bytes": 9576
+    },
+    {
+      "arquivo": "tests/login/dashboard-proprietaria.spec.ts",
+      "sha256": "5d37e20f41cb56043a623e5066f8cb914ba18be7d3113a7e965147c8fa74800b",
+      "bytes": 7604
+    },
+    {
+      "arquivo": "tests/operacional/observacao-equipe.ts",
+      "sha256": "ac77825baecd91ad6b58dd140a46c7ce8d7e46976a9986657b83d2e3cc9693e3",
+      "bytes": 1064
+    },
+    {
+      "arquivo": "tests/operacional/vite.equipe-regressao.config.ts",
+      "sha256": "7ec92fb2269b277ecf3c982e084591a76aa4fe704e305d6b3fbca911af081117",
+      "bytes": 482
+    }
+  ]
+}

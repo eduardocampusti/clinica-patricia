@@ -1,0 +1,448 @@
+{
+  "projeto": "xftnkusbyqzyvzrovroj",
+  "em": "2026-10-09T18:03:28.617Z",
+  "consultas": 8,
+  "sem_contagem_pacientes": true,
+  "ausencias": [],
+  "resultado": true,
+  "linhas": [
+    {
+      "consulta": 1,
+      "linhas": [
+        {
+          "name": "preflight_executor",
+          "qtd_statements": 1,
+          "tipo": "MIGRATION REGISTRADA",
+          "version": "20260915010000"
+        },
+        {
+          "name": "btree_gist",
+          "qtd_statements": 1,
+          "tipo": "MIGRATION REGISTRADA",
+          "version": "20260915010001"
+        },
+        {
+          "name": "baseline_instalacao_nova",
+          "qtd_statements": 1,
+          "tipo": "MIGRATION REGISTRADA",
+          "version": "20260915010002"
+        },
+        {
+          "name": "acls_default_privileges",
+          "qtd_statements": 1,
+          "tipo": "MIGRATION REGISTRADA",
+          "version": "20260915010003"
+        },
+        {
+          "name": "hardening_geral",
+          "qtd_statements": 1,
+          "tipo": "MIGRATION REGISTRADA",
+          "version": "20260915010004"
+        },
+        {
+          "name": "prontuario_rpc",
+          "qtd_statements": 1,
+          "tipo": "MIGRATION REGISTRADA",
+          "version": "20260915010005"
+        },
+        {
+          "name": "financeiro_fase1_fundacao",
+          "qtd_statements": 36,
+          "tipo": "MIGRATION REGISTRADA",
+          "version": "20260921014112"
+        },
+        {
+          "name": "financeiro_fase2_seguranca",
+          "qtd_statements": 24,
+          "tipo": "MIGRATION REGISTRADA",
+          "version": "20260921102203"
+        },
+        {
+          "name": "financeiro_fase3_recebimento",
+          "qtd_statements": 22,
+          "tipo": "MIGRATION REGISTRADA",
+          "version": "20260921104621"
+        },
+        {
+          "name": "financeiro_fase4_caixa_estados",
+          "qtd_statements": 8,
+          "tipo": "MIGRATION REGISTRADA",
+          "version": "20260921115106"
+        },
+        {
+          "name": "financeiro_fase4_caixa_operacoes",
+          "qtd_statements": 76,
+          "tipo": "MIGRATION REGISTRADA",
+          "version": "20260921115109"
+        },
+        {
+          "name": "financeiro_fase5_estornos",
+          "qtd_statements": 42,
+          "tipo": "MIGRATION REGISTRADA",
+          "version": "20260921124154"
+        },
+        {
+          "name": "financeiro_fase6_repasses",
+          "qtd_statements": 50,
+          "tipo": "MIGRATION REGISTRADA",
+          "version": "20260921132754"
+        },
+        {
+          "name": "financeiro_fase7_fiscal_interno",
+          "qtd_statements": 37,
+          "tipo": "MIGRATION REGISTRADA",
+          "version": "20260921141607"
+        },
+        {
+          "name": "financeiro_fase8_dashboards",
+          "qtd_statements": 24,
+          "tipo": "MIGRATION REGISTRADA",
+          "version": "20260922015417"
+        },
+        {
+          "name": "financeiro_fase9_relatorios",
+          "qtd_statements": 17,
+          "tipo": "MIGRATION REGISTRADA",
+          "version": "20260922034925"
+        },
+        {
+          "name": "financeiro_fase10c_resumo_caixa",
+          "qtd_statements": 7,
+          "tipo": "MIGRATION REGISTRADA",
+          "version": "20260922181438"
+        },
+        {
+          "name": "fase13_hardening_security_definer",
+          "qtd_statements": 8,
+          "tipo": "MIGRATION REGISTRADA",
+          "version": "20260923143456"
+        },
+        {
+          "name": "pacientes_cpf_pendente_rpc",
+          "qtd_statements": 23,
+          "tipo": "MIGRATION REGISTRADA",
+          "version": "20260924120000"
+        },
+        {
+          "name": "pacientes_busca_cpf_segura",
+          "qtd_statements": 6,
+          "tipo": "MIGRATION REGISTRADA",
+          "version": "20260924130000"
+        },
+        {
+          "name": "pacientes_responsavel_legal",
+          "qtd_statements": 22,
+          "tipo": "MIGRATION REGISTRADA",
+          "version": "20260925100000"
+        },
+        {
+          "name": "pacientes_foto_privada",
+          "qtd_statements": 29,
+          "tipo": "MIGRATION REGISTRADA",
+          "version": "20260925120000"
+        },
+        {
+          "name": "pacientes_edicao_administrativa",
+          "qtd_statements": 1,
+          "tipo": "MIGRATION REGISTRADA",
+          "version": "20260926100000"
+        },
+        {
+          "name": "pacientes_edicao_conflito_http",
+          "qtd_statements": 1,
+          "tipo": "MIGRATION REGISTRADA",
+          "version": "20260926101000"
+        },
+        {
+          "name": "pacientes_cpf_leitura_correcao",
+          "qtd_statements": null,
+          "tipo": "MIGRATION REGISTRADA",
+          "version": "20260927100000"
+        },
+        {
+          "name": "pacientes_endereco_estruturado",
+          "qtd_statements": 22,
+          "tipo": "MIGRATION REGISTRADA",
+          "version": "20260928110000"
+        },
+        {
+          "name": "equipe_cadastro_edicao",
+          "qtd_statements": 33,
+          "tipo": "MIGRATION REGISTRADA",
+          "version": "20260928153000"
+        },
+        {
+          "name": "equipe_gestao_acessos",
+          "qtd_statements": 19,
+          "tipo": "MIGRATION REGISTRADA",
+          "version": "20260929120000"
+        },
+        {
+          "name": "equipe_gestao_acessos_correcoes",
+          "qtd_statements": 22,
+          "tipo": "MIGRATION REGISTRADA",
+          "version": "20260929190000"
+        },
+        {
+          "name": "pacientes_cpf_legado_invalido",
+          "qtd_statements": null,
+          "tipo": "MIGRATION REGISTRADA",
+          "version": "20260929210000"
+        },
+        {
+          "name": "equipe_convites_expiracao_recuperacao",
+          "qtd_statements": 10,
+          "tipo": "MIGRATION REGISTRADA",
+          "version": "20260930100000"
+        }
+      ]
+    },
+    {
+      "consulta": 2,
+      "linhas": [
+        {
+          "existe": true,
+          "nome": "pacientes",
+          "tipo": "TABELA"
+        },
+        {
+          "existe": true,
+          "nome": "pacientes_responsaveis_legais",
+          "tipo": "TABELA"
+        },
+        {
+          "existe": true,
+          "nome": "auditoria",
+          "tipo": "TABELA"
+        }
+      ]
+    },
+    {
+      "consulta": 3,
+      "linhas": [
+        {
+          "existe": true,
+          "nome": "auditoria.motivo",
+          "tipo": "COLUNA"
+        }
+      ]
+    },
+    {
+      "consulta": 4,
+      "linhas": [
+        {
+          "existe": true,
+          "nome": "bairro",
+          "tipo": "COLUNA ENDERECO"
+        },
+        {
+          "existe": true,
+          "nome": "cep",
+          "tipo": "COLUNA ENDERECO"
+        },
+        {
+          "existe": true,
+          "nome": "cidade",
+          "tipo": "COLUNA ENDERECO"
+        },
+        {
+          "existe": true,
+          "nome": "complemento",
+          "tipo": "COLUNA ENDERECO"
+        },
+        {
+          "existe": true,
+          "nome": "endereco_historico",
+          "tipo": "COLUNA ENDERECO"
+        },
+        {
+          "existe": true,
+          "nome": "logradouro",
+          "tipo": "COLUNA ENDERECO"
+        },
+        {
+          "existe": true,
+          "nome": "numero",
+          "tipo": "COLUNA ENDERECO"
+        },
+        {
+          "existe": true,
+          "nome": "uf",
+          "tipo": "COLUNA ENDERECO"
+        }
+      ]
+    },
+    {
+      "consulta": 5,
+      "linhas": [
+        {
+          "existe": true,
+          "nome": "paciente_menor_criar_com_responsavel",
+          "tipo": "RPC"
+        },
+        {
+          "existe": true,
+          "nome": "paciente_definir_cpf",
+          "tipo": "RPC"
+        },
+        {
+          "existe": true,
+          "nome": "paciente_ler_cpf",
+          "tipo": "RPC"
+        },
+        {
+          "existe": true,
+          "nome": "paciente_corrigir_cpf",
+          "tipo": "RPC"
+        },
+        {
+          "existe": true,
+          "nome": "paciente_editar_administrativo",
+          "tipo": "RPC"
+        },
+        {
+          "existe": true,
+          "nome": "paciente_menor_criar_com_responsavel (endereco estruturado)",
+          "tipo": "RPC"
+        },
+        {
+          "existe": true,
+          "nome": "paciente_responsavel_legal_resumo",
+          "tipo": "RPC"
+        },
+        {
+          "existe": true,
+          "nome": "pacientes_responsavel_validar_cpf_gravacao",
+          "tipo": "RPC"
+        }
+      ]
+    },
+    {
+      "consulta": 6,
+      "linhas": [
+        {
+          "anon_permitido": false,
+          "authenticated_permitido": true,
+          "rpc": "paciente_corrigir_cpf",
+          "security_definer": true
+        },
+        {
+          "anon_permitido": false,
+          "authenticated_permitido": true,
+          "rpc": "paciente_ler_cpf",
+          "security_definer": true
+        }
+      ]
+    },
+    {
+      "consulta": 7,
+      "linhas": [
+        {
+          "nome": "pacientes-fotos",
+          "privado": true,
+          "tipo": "BUCKET"
+        }
+      ]
+    },
+    {
+      "consulta": 8,
+      "linhas": [
+        {
+          "diagnostico": "sem mencao textual",
+          "rpc": "paciente_cpf_pendente",
+          "tipo": "DEPENDENCIA TEXTUAL"
+        },
+        {
+          "diagnostico": "sem mencao textual",
+          "rpc": "pacientes_bloquear_troca_clinica",
+          "tipo": "DEPENDENCIA TEXTUAL"
+        },
+        {
+          "diagnostico": "sem mencao textual",
+          "rpc": "paciente_buscar_por_cpf",
+          "tipo": "DEPENDENCIA TEXTUAL"
+        },
+        {
+          "diagnostico": "sem mencao textual",
+          "rpc": "paciente_definir_cpf",
+          "tipo": "DEPENDENCIA TEXTUAL"
+        },
+        {
+          "diagnostico": "sem mencao textual",
+          "rpc": "pacientes_validar_cpf_gravacao",
+          "tipo": "DEPENDENCIA TEXTUAL"
+        },
+        {
+          "diagnostico": "sem mencao textual",
+          "rpc": "pacientes_cpf_valido",
+          "tipo": "DEPENDENCIA TEXTUAL"
+        },
+        {
+          "diagnostico": "sem mencao textual",
+          "rpc": "pacientes_responsavel_validar_cpf_gravacao",
+          "tipo": "DEPENDENCIA TEXTUAL"
+        },
+        {
+          "diagnostico": "menciona pacientes_responsaveis_legais",
+          "rpc": "paciente_menor_criar_com_responsavel",
+          "tipo": "DEPENDENCIA TEXTUAL"
+        },
+        {
+          "diagnostico": "menciona pacientes_responsaveis_legais",
+          "rpc": "paciente_responsavel_legal_resumo",
+          "tipo": "DEPENDENCIA TEXTUAL"
+        },
+        {
+          "diagnostico": "sem mencao textual",
+          "rpc": "paciente_foto_objeto_autorizado",
+          "tipo": "DEPENDENCIA TEXTUAL"
+        },
+        {
+          "diagnostico": "sem mencao textual",
+          "rpc": "paciente_foto_clinica_requisicao",
+          "tipo": "DEPENDENCIA TEXTUAL"
+        },
+        {
+          "diagnostico": "sem mencao textual",
+          "rpc": "paciente_obter_foto",
+          "tipo": "DEPENDENCIA TEXTUAL"
+        },
+        {
+          "diagnostico": "sem mencao textual",
+          "rpc": "paciente_remover_foto",
+          "tipo": "DEPENDENCIA TEXTUAL"
+        },
+        {
+          "diagnostico": "sem mencao textual",
+          "rpc": "paciente_definir_foto",
+          "tipo": "DEPENDENCIA TEXTUAL"
+        },
+        {
+          "diagnostico": "sem mencao textual",
+          "rpc": "pacientes_revisionar_edicao",
+          "tipo": "DEPENDENCIA TEXTUAL"
+        },
+        {
+          "diagnostico": "menciona pacientes_responsaveis_legais",
+          "rpc": "paciente_editar_administrativo",
+          "tipo": "DEPENDENCIA TEXTUAL"
+        },
+        {
+          "diagnostico": "sem mencao textual",
+          "rpc": "paciente_corrigir_cpf",
+          "tipo": "DEPENDENCIA TEXTUAL"
+        },
+        {
+          "diagnostico": "sem mencao textual",
+          "rpc": "paciente_menor_criar_com_responsavel",
+          "tipo": "DEPENDENCIA TEXTUAL"
+        },
+        {
+          "diagnostico": "sem mencao textual",
+          "rpc": "paciente_ler_cpf",
+          "tipo": "DEPENDENCIA TEXTUAL"
+        }
+      ]
+    }
+  ]
+}
