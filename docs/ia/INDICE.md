@@ -1,5 +1,10 @@
 # Memória compartilhada — mapa de leitura
 
+## Dashboards 0.6.1 registradas localmente — 10/10/2026, 06:07:56 -03:00
+
+Commit 19f40d0e92f45a36055b28e16d841aa2301d769b; build/notas/diff-check aprovados. Réplica documental D conciliada seletivamente. Sem push/deploy; Recepção real pendente. [Sistema32](../modulos/sistema/32-COMMIT-LOCAL-DASHBOARDS-061.md).
+
+
 ## Entrega local 0.6.1 — 10/10/2026, 06:03:44 -03:00
 
 Build/notas aprovados; recorte autorizado para commit local, sem publicação. Consulte [Sistema32](../modulos/sistema/32-COMMIT-LOCAL-DASHBOARDS-061.md). Recepção real permanece pendente.

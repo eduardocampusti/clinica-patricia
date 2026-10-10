@@ -639,7 +639,7 @@
   "prontidao": {
     "escopo": "preparado",
     "conflito_remoto": false,
-    "commit": "autorizado, espaço resolvido, build aprovado; registro local em execução",
+    "commit": "implementação registrada em 19f40d0e92f45a36055b28e16d841aa2301d769b; fechamento posterior somente documental",
     "publicacao": "não autorizada nesta etapa; nenhuma escrita no remoto",
     "recepcao_real": "pendente sem bloquear preparação"
   },
@@ -718,6 +718,17 @@
         "acao": "réplica de documento antes ausente"
       }
     ],
-    "diff_check": "Arquivo patch histórico mantido somente local; suas linhas de contexto vazias usam espaço válido no formato patch. Diff-check integral dos 33 arquivos versionados aprovado."
+    "diff_check": "Arquivo patch histórico mantido somente local; suas linhas de contexto vazias usam espaço válido no formato patch. Diff-check integral dos 33 arquivos versionados aprovado.",
+    "fechamento": {
+      "data": "10/10/2026, 06:07:56 -03:00",
+      "commit_implementacao": "19f40d0e92f45a36055b28e16d841aa2301d769b",
+      "arquivos_commit": 33,
+      "indice_apos_commit": "vazio",
+      "conciliacao_documental": "concluída seletivamente; conteúdo divergente preservado",
+      "recepcao_real": "não verificada",
+      "push": false,
+      "deploy": false,
+      "registro": "Fechamento posterior estritamente documental; hashes sha256_entrega_061 conservam fotografia validada do commit de implementação."
+    }
   }
 }

@@ -1,5 +1,10 @@
 # Versionamento e releases — processo em preparação
 
+## Versão local 0.6.1 commitada — 10/10/2026, 06:07:56 -03:00
+
+Entrega 19f40d0e92f45a36055b28e16d841aa2301d769b na branch resgate-local; quatro metadados e notas coerentes. Build pré-commit aprovado, compilado sobre a base com alterações locais. Commit local não altera o bundle servido em produção: não houve push/deploy, tag ou Release. Manifesto automático de releases permanece 0.0.0. Registro documental de fechamento posterior não modifica código.
+
+
 ## Estado vigente — publicação0.6.0 concluída em09/10/2026
 
 Branch codex/resgate-local-2026-09-26, commits1aad0995/e012c4e4. Ambos os domínios servem0.6.0/e012c4e4. Conferência automática por leitura em sessões reais existentes de Proprietária B/I concluída: dashboard, atualização, Agenda/Financeiro, Meu perfil, Configurações/cinco abas/F5, Equipe/Novo membro, troca bilateral/F5. Recepção sem sessão real nesta etapa; testes sintéticos aprovados. Configurações/AD/backend e trabalhos paralelos preservados; zero novos recursos/escritas Supabase. Relatório Sistema27 e checkpoints registram resultado e limites. Seções anteriores são histórico datado. Atualização pós-deploy local, sem terceiro commit apenas documental.
